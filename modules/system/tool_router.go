@@ -3,13 +3,13 @@ package system
 import (
 	auth2 "common/middleware/auth"
 	"github.com/lostvip-com/lv_framework/web/router"
-	"system/controller"
+	"system/api"
 )
 
 // 加载路由
 func init() {
 	// 服务监控
-	tool := new(controller.GenController)
+	tool := new(api.GenController)
 	g1 := router.New("/tool", auth2.TokenCheck(), auth2.PermitCheck)
 	g1.GET("/build", "tool:build:view", tool.Build)
 	g1.GET("/swagger", "tool:swagger:view", tool.Swagger)

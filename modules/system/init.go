@@ -5,7 +5,7 @@ import (
 	"github.com/lostvip-com/lv_framework/lv_db"
 	"github.com/lostvip-com/lv_framework/lv_log"
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
-	_ "system/controller"
+	_ "system/api"
 	"system/model"
 )
 

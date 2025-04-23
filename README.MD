@@ -1,8 +1,8 @@
 <p align="center">
 	<img alt="logo" src="https://oscimg.oschina.net/oscnet/up-dd77653d7c9f197dd9d93684f3c8dcfbab6.png">
 </p>
-<h1 align="center" style="margin: 30px 0 30px; font-weight: bold;">ruoyi-go</h1>
-<h4 align="center">Go语言版轻量级快速开发框架</h4>
+<h1 align="center" style="margin: 30px 0 30px; font-weight: bold;">ruoyi-vue-go</h1>
+<h4 align="center">Go语言版轻量级快速开发框架(go1.24 + vue3)</h4>
 
 
 ## 框架简介

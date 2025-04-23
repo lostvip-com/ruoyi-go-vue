@@ -8,13 +8,13 @@ package {{.PackageName}}
 import (
         "github.com/lostvip-com/lv_framework/web/router"
         "common/middleware/auth"
-        "{{.ModuleName}}/internal/{{.PackageName}}/controller"
+        "{{.ModuleName}}/internal/{{.PackageName}}/api"
 )
 
 func init() {
 	group_{{.BusinessName}} := router.New( "/{{.PackageName}}/{{.BusinessName}}", auth.TokenCheck())
 
-	{{.BusinessName}} := controller.{{.ClassName}}Api{}
+	{{.BusinessName}} := api.{{.ClassName}}Api{}
 	group_{{.BusinessName}}.GET("/", "{{.PackageName}}:{{.BusinessName}}:view", {{.BusinessName}}.PreList{{.ClassName}})
 	group_{{.BusinessName}}.GET("/preAdd{{.ClassName}}", "{{.PackageName}}:{{.BusinessName}}:add", {{.BusinessName}}.PreAdd{{.ClassName}})
 	group_{{.BusinessName}}.GET("/preEdit{{.ClassName}}", "{{.PackageName}}:{{.BusinessName}}:edit", {{.BusinessName}}.PreEdit{{.ClassName}})

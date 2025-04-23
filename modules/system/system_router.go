@@ -3,22 +3,22 @@ package system
 import (
 	auth2 "common/middleware/auth"
 	"github.com/lostvip-com/lv_framework/web/router"
-	controller "system/controller"
+	"system/api"
 )
 
 func init() {
 
 	gcommon := router.New("/common", auth2.TokenCheck(), auth2.PermitCheck)
-	common := controller.CommonController{}
+	common := api.CommonController{}
 	gcommon.GET("/download", "", common.DownloadTmp)
 	gcommon.GET("/downloadUpload", "", common.DownloadUpload)
 	// 加载框架路由
 	group_home := router.New("/system", auth2.TokenCheck(), auth2.PermitCheck)
-	home := controller.HomeController{}
+	home := api.HomeController{}
 	group_home.GET("/home", "", home.Home)
 	//系统配置
 	g1 := router.New("/system/config", auth2.TokenCheck(), auth2.PermitCheck)
-	config := controller.ConfigController{}
+	config := api.ConfigController{}
 	g1.GET("/", "system:config:view", config.List)
 	g1.POST("/list", "system:config:list", config.ListAjax)
 	g1.GET("/add", "system:config:add", config.Add)
@@ -30,7 +30,7 @@ func init() {
 	g1.POST("/checkConfigKeyUnique", "system:config:view", config.CheckConfigKeyUnique)
 	// 字典类型参数路由
 	g3 := router.New("/system/dict", auth2.TokenCheck(), auth2.PermitCheck)
-	dictType := controller.DictTypeController{}
+	dictType := api.DictTypeController{}
 	g3.GET("/", "system:dict:view", dictType.List)
 	g3.POST("/list", "system:dict:list", dictType.ListAjax)
 	g3.GET("/add", "system:dict:add", dictType.Add)
@@ -47,7 +47,7 @@ func init() {
 	g3.GET("/treeData", "system:dict:view", dictType.TreeData)
 	// 字典内容参数路由
 	g4 := router.New("/system/dict/data", auth2.TokenCheck(), auth2.PermitCheck)
-	dictData := controller.DictDataController{}
+	dictData := api.DictDataController{}
 	g4.POST("/list", "system:dict:view", dictData.ListAjax)
 	g4.GET("/add", "system:dict:add", dictData.Add)
 	g4.POST("/add", "system:dict:add", dictData.AddSave)
@@ -57,7 +57,7 @@ func init() {
 	g4.POST("/export", "system:dict:export", dictData.Export)
 	//dept
 	groupDept := router.New("/system/dept", auth2.TokenCheck(), auth2.PermitCheck)
-	deptContr := controller.DeptController{}
+	deptContr := api.DeptController{}
 	groupDept.GET("/", "system:dept:view", deptContr.List)
 	groupDept.POST("/list", "system:dept:list", deptContr.ListAjax)
 	groupDept.GET("/add", "system:dept:add", deptContr.Add)
@@ -71,7 +71,7 @@ func init() {
 	groupDept.GET("/roleDeptTreeData", "system:dept:view", deptContr.RoleDeptTreeData)
 	// 用户管理路由
 	groupUser := router.New("/system/user", auth2.TokenCheck(), auth2.PermitCheck)
-	user := controller.UserApi{}
+	user := api.UserApi{}
 	groupUser.GET("/", "system:user:view", user.List)
 	groupUser.POST("/list", "system:user:list", user.ListAjax)
 	groupUser.GET("/add", "system:user:add", user.Add)
@@ -87,7 +87,7 @@ func init() {
 
 	// 个人中心路由
 	groupProfile := router.New("/system/user/profile", auth2.TokenCheck(), auth2.PermitCheck)
-	profile := controller.ProfileController{}
+	profile := api.ProfileController{}
 	groupProfile.GET("/", "", profile.Profile)
 	groupProfile.GET("/avatar", "", profile.Avatar)
 	groupProfile.GET("/resetPwd", "", profile.EditPwd)
@@ -100,7 +100,7 @@ func init() {
 	groupProfile.POST("/updateAvatar", "", profile.UpdateAvatar)
 	// 角色路由
 	groupRole := router.New("/system/role", auth2.TokenCheck(), auth2.PermitCheck)
-	roleController := controller.RoleController{}
+	roleController := api.RoleController{}
 	groupRole.GET("/", "system:role:view", roleController.List)
 	groupRole.POST("/list", "system:role:list", roleController.ListAjax)
 	groupRole.GET("/add", "system:role:add", roleController.Add)
@@ -121,7 +121,7 @@ func init() {
 
 	// 菜单路由
 	groupMenu := router.New("/system/menu", auth2.TokenCheck(), auth2.PermitCheck)
-	menuController := controller.MenuController{}
+	menuController := api.MenuController{}
 	groupMenu.GET("/", "system:menu:view", menuController.List)
 	groupMenu.POST("/list", "system:menu:list", menuController.ListAjax)
 	groupMenu.GET("/add", "system:menu:add", menuController.Add)
@@ -137,7 +137,7 @@ func init() {
 	groupMenu.GET("/menuTreeData", "system:menu:view", menuController.MenuTreeData)
 	// 岗位路由
 	groupPost := router.New("/system/post", auth2.TokenCheck(), auth2.PermitCheck)
-	postController := controller.PostController{}
+	postController := api.PostController{}
 	groupPost.GET("/", "system:post:view", postController.List)
 	groupPost.POST("/list", "system:post:list", postController.ListAjax)
 	groupPost.GET("/add", "system:post:add", postController.Add)

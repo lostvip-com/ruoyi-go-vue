@@ -3,12 +3,12 @@ package system
 import (
 	auth2 "common/middleware/auth"
 	"github.com/lostvip-com/lv_framework/web/router"
-	"system/controller"
+	"system/api"
 )
 
 // 加载路由
 func init() {
-	serverController := controller.ServiceController{}
+	serverController := api.ServiceController{}
 	g0 := router.New("/health")
 	g0.GET("/", "", serverController.Health)
 	// 服务监控
@@ -16,7 +16,7 @@ func init() {
 	g1.GET("/", "monitor:server:view", serverController.Server)
 	//登录日志
 	g2 := router.New("/monitor/logininfor", auth2.TokenCheck(), auth2.PermitCheck)
-	loginInforController := controller.LoginInforController{}
+	loginInforController := api.LoginInforController{}
 	g2.GET("/", "monitor:logininfor:view", loginInforController.List)
 	g2.POST("/list", "monitor:logininfor:list", loginInforController.ListAjax)
 	g2.POST("/export", "monitor:logininfor:export", loginInforController.Export)
@@ -26,7 +26,7 @@ func init() {
 
 	//操作日志
 	g3 := router.New("/monitor/operlog", auth2.TokenCheck(), auth2.PermitCheck)
-	operController := controller.OperlogController{}
+	operController := api.OperlogController{}
 	g3.GET("/", "monitor:operlog:view", operController.List)
 	g3.POST("/list", "monitor:operlog:list", operController.ListAjax)
 	g3.POST("/remove", "monitor:operlog:export", operController.Remove)
@@ -35,7 +35,7 @@ func init() {
 
 	//在线用户
 	g4 := router.New("/monitor/online", auth2.TokenCheck(), auth2.PermitCheck)
-	onlineController := controller.OnlineController{}
+	onlineController := api.OnlineController{}
 	g4.GET("/", "monitor:online:view", onlineController.List)
 	g4.POST("/list", "monitor:online:list", onlineController.ListAjax)
 	g4.POST("/forceLogout", "monitor:online:forceLogout", onlineController.ForceLogout)
