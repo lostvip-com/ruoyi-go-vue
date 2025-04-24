@@ -4,16 +4,13 @@ import (
 	global2 "common/global"
 	util2 "common/util"
 	"github.com/gin-gonic/gin"
-	"github.com/lostvip-com/lv_framework/lv_global"
 	"github.com/lostvip-com/lv_framework/lv_log"
 	"github.com/lostvip-com/lv_framework/utils/lv_conv"
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
 	"github.com/lostvip-com/lv_framework/utils/lv_net"
 	"github.com/lostvip-com/lv_framework/utils/lv_secret"
 	"github.com/lostvip-com/lv_framework/utils/lv_try"
-	"github.com/lostvip-com/lv_framework/web/lv_dto"
 	"github.com/mssola/user_agent"
-	"net/url"
 	"system/model"
 	"system/service"
 
@@ -21,15 +18,12 @@ import (
 	"time"
 )
 
-type LoginController struct {
+type LoginApi struct {
 }
 type RegisterReq struct {
 	UserName string `form:"username"  binding:"required,min=4,max=30"`
 	Password string `form:"password" binding:"required,min=6,max=30"`
 	//
-	//ValidateCode string `form:"validateCode" binding:"min=4,max=10"`
-	//IdKey        string `form:"idkey"        binding:"min=5,max=30"`
-
 	ValidateCode string `form:"validateCode" `
 	IdKey        string `form:"idkey" `
 }
@@ -37,12 +31,12 @@ type RegisterReq struct {
 /**
  * 调用公共服务提供的验证方法
  */
-func (w *LoginController) VerifyCaptcha(IdKey string, ValidateCode string) (string, error) {
+func (w *LoginApi) VerifyCaptcha(IdKey string, ValidateCode string) (string, error) {
 	return "", nil
 }
 
 // 验证登录
-func (w *LoginController) CheckLogin(c *gin.Context) {
+func (w *LoginApi) Login(c *gin.Context) {
 	var req = RegisterReq{}
 	//获取参数
 	if err := c.ShouldBind(&req); err != nil {
@@ -105,7 +99,7 @@ func (w *LoginController) CheckLogin(c *gin.Context) {
 	c.AbortWithStatusJSON(http.StatusOK, gin.H{"code": 200, "msg": "success", "token": token})
 }
 
-func (w *LoginController) SaveLogs(c *gin.Context, req *RegisterReq, msg string) {
+func (w *LoginApi) SaveLogs(c *gin.Context, req *RegisterReq, msg string) {
 	var logininfor model.SysLoginInfo
 	logininfor.LoginName = req.UserName
 	logininfor.Ipaddr = c.ClientIP()
@@ -120,27 +114,13 @@ func (w *LoginController) SaveLogs(c *gin.Context, req *RegisterReq, msg string)
 	logininfor.Insert()
 }
 
-// CaptchaImage 图形验证码生成逻辑,使用其它服务的公共接口生成，不再单独维护
-func (w *LoginController) CaptchaImage(c *gin.Context) {
-	//传参数
-	clientId := c.PostForm("uuid")
-	//返回值
-	params := url.Values{}
-	params.Set("uuid", clientId)
-	url_captcha := lv_global.Config().GetValueStr("url_captcha")
-	if url_captcha == "" {
-		util2.Err(c, "请配置验证码地址url_captcha")
+// 注销
+func (w *LoginApi) Logout(c *gin.Context) {
+	var user service.SessionService
+	tokenStr := lv_net.GetParam(c, "token")
+	err := user.SignOut(tokenStr)
+	if err != nil {
 		return
 	}
-	json, err := lv_net.PostForm(url_captcha, params)
-	lv_err.HasErrAndPanic(err)
-	dataMap := lv_conv.ToMap(json)
-	base64stringC := dataMap["data"]
-	c.JSON(http.StatusOK, lv_dto.CaptchaRes{
-		Code:           200,
-		CaptchaEnabled: true,
-		Uuid:           clientId,
-		Img:            base64stringC,
-		Msg:            "操作成功",
-	})
+	util2.Success(c, nil, "success")
 }

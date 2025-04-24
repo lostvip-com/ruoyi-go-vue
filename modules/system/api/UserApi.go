@@ -85,20 +85,3 @@ func (w *UserApi) Export(c *gin.Context) {
 	}
 	util2.SucessResp(c).SetMsg(url).Log("导出Excel", req).WriteJsonExit()
 }
-
-func (w *UserApi) GetUserInfo(c *gin.Context) {
-	var req *lv_dto.IdsReq
-	//获取参数
-	if err := c.ShouldBind(&req); err != nil {
-		util2.ErrorResp(c).SetBtype(lv_dto.Buniss_Del).SetMsg(err.Error()).WriteJsonExit()
-	}
-	var userService service2.UserService
-	user := userService.GetProfile(c)
-
-	data := make(map[string]any)
-	data["roles"] = ""
-	data["permissions"] = ""
-	data["user"] = user
-	data["dept"] = ""
-	util2.Success(c, data, "success")
-}

@@ -14,7 +14,7 @@ func init() {
 	gcommon.GET("/downloadUpload", "", common.DownloadUpload)
 	// 加载框架路由
 	group_home := router.New("/system", auth2.TokenCheck(), auth2.PermitCheck)
-	home := api.HomeController{}
+	home := api.HomeApi{}
 	group_home.GET("/home", "", home.Home)
 	//系统配置
 	g1 := router.New("/system/config", auth2.TokenCheck(), auth2.PermitCheck)
@@ -82,7 +82,7 @@ func init() {
 	groupUser.POST("/export", "system:user:export", user.Export)
 	groupUser.GET("/resetPwd", "system:user:resetPwd", user.ResetPwd)
 	groupUser.POST("/resetPwd", "system:user:resetPwd", user.ResetPwdSave)
-	groupUser.POST("/getInfo", "system:user:view", user.GetUserInfo)
+
 	groupUser.POST("/changeStatus", "system:user:edit", user.ChangeStatus)
 
 	// 个人中心路由
