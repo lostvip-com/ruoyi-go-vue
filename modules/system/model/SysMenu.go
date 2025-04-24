@@ -1,29 +1,34 @@
 package model
 
 import (
-	"common/models"
 	"github.com/lostvip-com/lv_framework/lv_db"
+	"time"
 )
 
-// SysMenu 菜单权限
 type SysMenu struct {
-	MenuId   int64  `gorm:"type:bigint(20);primary_key;auto_increment;菜单ID;" json:"menuId"`
-	MenuName string `gorm:"type:varchar(50);comment:菜单名称;" json:"menuName"`
-	ParentId int64  `gorm:"type:bigint(20);comment:父菜单ID;" json:"parentId"`
-	OrderNum int    `gorm:"type:int(11);comment:显示顺序;" json:"orderNum"`
-	Url      string `gorm:"type:varchar(200);comment:请求地址;" json:"url"`
-	Target   string `gorm:"type:varchar(20);comment:打开方式（menuItem页签 menuBlank新窗口）;" json:"target"`
-	MenuType string `gorm:"type:char(1);comment:菜单类型（M目录 C菜单 F按钮）;" json:"menuType"`
-	Visible  string `gorm:"type:char(1);comment:菜单状态（0显示 1隐藏）;" json:"visible"`
-	Perms    string `gorm:"type:varchar(100);comment:权限标识;" json:"perms"`
-	Icon     string `gorm:"type:varchar(100);comment:菜单图标;" json:"icon"`
-	UpdateBy string `gorm:"type:varchar(64);comment:更新者;" json:"updateBy"`
-	Remark   string `gorm:"type:varchar(500);comment:备注;" json:"remark"`
-	CreateBy string `gorm:"type:varchar(32);comment:创建人;column:create_by;"  json:"createBy"`
-	models.BaseModel
+	MenuId     int64     `gorm:"size:20;primary_key;auto_increment;comment:菜单ID;" json:"menu_id"` // 菜单ID
+	MenuName   string    `gorm:"size:32;" json:"menu_name"`                                       // 菜单名称
+	ParentId   int64     `gorm:"size:32;" json:"parent_id"`                                       // 父菜单ID
+	OrderNum   int32     `gorm:"size:32;" json:"order_num"`                                       // 显示顺序
+	Path       string    `gorm:"size:32;" json:"path"`                                            // 路由地址
+	Component  string    `gorm:"size:32;" json:"component"`                                       // 组件路径
+	Query      string    `gorm:"size:32;" json:"query"`                                           // 路由参数
+	RouteName  string    `gorm:"size:32;" json:"route_name"`                                      // 路由名称
+	IsFrame    string    `gorm:"size:1;" json:"is_frame"`                                         // 是否为外链（0是 1否）
+	IsCache    string    `gorm:"size:1;" json:"is_cache"`                                         // 是否缓存（0缓存 1不缓存）
+	MenuType   string    `gorm:"size:1;" json:"menu_type"`                                        // 菜单类型（M目录 C菜单 F按钮）
+	Visible    string    `gorm:"size:1;" json:"visible"`                                          // 菜单状态（0显示 1隐藏）
+	Status     string    `gorm:"size:1;" json:"status"`                                           // 菜单状态（0正常 1停用）
+	Perms      string    `gorm:"size:32;" json:"perms"`                                           // 权限标识
+	Icon       string    `gorm:"size:32;" json:"icon"`                                            // 菜单图标
+	CreateBy   string    `gorm:"size:32;" json:"create_by"`                                       // 创建者
+	CreateTime time.Time `gorm:"size:32;" json:"create_time"`                                     // 创建时间
+	UpdateBy   string    `gorm:"size:32;" json:"update_by"`                                       // 更新者
+	UpdateTime time.Time `gorm:"size:32;" json:"update_time"`                                     // 更新时间
+	Remark     string    `gorm:"size:32;" json:"remark"`                                          // 备注
 	//
-	Children   []*SysMenu `gorm:"-" json:"children"`
-	ParentName string     `gorm:"-" json:"parentName"`
+	Children   []SysMenu `gorm:"-" json:"children"`
+	ParentName string    `gorm:"-" json:"parentName"`
 }
 
 func (e *SysMenu) TableName() string {

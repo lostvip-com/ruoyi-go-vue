@@ -44,61 +44,40 @@ func (svc *MenuService) DeleteRecordById(id int64) bool {
 }
 
 // 添加数据
-func (svc *MenuService) AddSave(req *vo.AddMenuReq, c *gin.Context) (int64, error) {
-
-	var entity model.SysMenu
-	entity.MenuName = req.MenuName
-	entity.Visible = req.Visible
-	entity.ParentId = req.ParentId
-	entity.Remark = ""
-	entity.MenuType = req.MenuType
-	entity.Url = req.Url
-	entity.Perms = req.Perms
-	entity.Target = req.Target
-	entity.Icon = req.Icon
-	entity.OrderNum = req.OrderNum
-	entity.CreateTime = time.Now()
-	entity.CreateBy = ""
-
+func (svc *MenuService) AddSave(req *model.SysMenu, c *gin.Context) (int64, error) {
+	req.CreateTime = time.Now()
 	var userService UserService
 	user := userService.GetProfile(c)
-
 	if user == nil {
-		entity.CreateBy = user.LoginName
+		req.CreateBy = user.LoginName
 	}
-
-	err := entity.Insert()
-	return entity.MenuId, err
+	err := req.Insert()
+	return req.MenuId, err
 }
 
 // 修改数据
-func (svc *MenuService) EditSave(req *vo.EditMenuReq, c *gin.Context) (int64, error) {
+func (svc *MenuService) EditSave(req *model.SysMenu, c *gin.Context) (int64, error) {
 	entity := &model.SysMenu{MenuId: req.MenuId}
 	err := entity.FindOne()
-
 	if err != nil {
 		return 0, err
 	}
 	entity.MenuName = req.MenuName
 	entity.Visible = req.Visible
 	entity.ParentId = req.ParentId
-	entity.Remark = ""
+	entity.Remark = req.Remark
 	entity.MenuType = req.MenuType
-	entity.Url = req.Url
+	entity.Component = req.Component
 	entity.Perms = req.Perms
-	entity.Target = req.Target
-	entity.Icon = req.Icon
+	entity.IsFrame = req.IsFrame
+	entity.Visible = req.Visible
+	entity.IsCache = req.IsCache
 	entity.OrderNum = req.OrderNum
 	entity.UpdateTime = time.Now()
-	entity.UpdateBy = ""
-
-	var userService UserService
-	user := userService.GetProfile(c)
-
+	user := GetUserService().GetProfile(c)
 	if user == nil {
-		entity.UpdateBy = user.LoginName
+		req.UpdateBy = user.LoginName
 	}
-
 	return entity.MenuId, entity.Update()
 }
 
@@ -155,84 +134,84 @@ func (svc *MenuService) ListMenuNormalByUser(userId int64, menuType string) (*[]
 }
 
 // SelectMenuNormalAll 获取管理员菜单数据,不区分资源类型传空即可
-func (svc *MenuService) SelectMenuNormalAll(menuType string) (*[]model.SysMenu, error) {
-	//从数据库中读取
+func (svc *MenuService) SelectMenuNormalAll(userId int64, menuType string) (*[]vo.RouterVO, error) {
+	var menus []model.SysMenu
 	var dao dao.MenuDao
-	menus, err := dao.SelectMenuNormalAll(menuType)
+	var err error
+	if userId == 0 {
+		menus, err = dao.SelectMenuNormalAll(menuType)
+	} else {
+		menus, err = dao.SelectMenusByUserId(userId, menuType)
+	}
 	lv_err.HasErrAndPanic(err)
-	arr := make([]model.SysMenu, 0)
-	childrenMap := svc.InitChildMap(menus)
-	for _, menu := range menus {
-		if menu.ParentId == 0 { //发现子菜单
-			svc.FillAllChildren(&menu, childrenMap)
-			arr = append(arr, menu)
-		}
+	arr := make([]vo.RouterVO, 0)
+	pcMap := svc.InitParentChildMap(menus)
+	list0 := pcMap[0]
+	for i := 1; i < len(list0); i++ {
+		fillChildrenTree(&list0[i], pcMap)
 	}
 	//存入缓存
 	return &arr, nil
 }
 
-// 根据用户ID读取菜单数据
-func (svc *MenuService) SelectMenusByUserId(userId int64, menuType string) (*[]model.SysMenu, error) {
-	//从数据库中读取
-	var dao dao.MenuDao
-	menus, err := dao.SelectMenusByUserId(userId, menuType)
-	//存入缓存
-	arr := make([]model.SysMenu, 0)
-	if err == nil {
-		childrenMap := svc.InitChildMap(menus)
-		for _, menu := range menus {
-			if menu.ParentId == 0 { //发现子菜单
-				svc.FillAllChildren(&menu, childrenMap)
-				arr = append(arr, menu)
-			}
-		}
+func fillChildrenTree(v *vo.RouterVO, pcFlatMap map[int64][]vo.RouterVO) {
+	v.Children = pcFlatMap[v.MenuId]
+	for i := 1; i < len(v.Children); i++ {
+		fillChildrenTree(&v.Children[i], pcFlatMap)
 	}
-	//存入缓存
-	return &arr, err
 }
 
-// 获取管理员菜单数据
-//
-//	func (svc *MenuService) GenMenus(parent *model.SysMenu, menus []model.SysMenu) {
-//		if parent.MenuType == "F" {
-//			return
-//		}
-//		if parent.Children == nil {
-//			//parent.Children = []model.SysMenu{}
-//			parent.Children = make([]model.SysMenu, 0)
-//		}
-//		for i := range menus {
-//			if menus[i].ParentId == parent.MenuId { //发现子菜单
-//				parent.Children = append(parent.Children, menus[i])
-//				svc.GenMenus(&menus[i], menus)
-//			}
-//		}
-//		if len(parent.Children) == 0 {
-//			return
-//		}
-//
-// }
-func (svc *MenuService) InitChildMap(menus []model.SysMenu) map[int64][]*model.SysMenu {
-	childrenMap := make(map[int64][]*model.SysMenu)
-	for i, _ := range menus {
+func (svc *MenuService) GenMenus(parent *model.SysMenu, allMenus []model.SysMenu) {
+	if parent.MenuType == "F" {
+		return
+	}
+	if parent.Children == nil {
+		parent.Children = make([]model.SysMenu, 0)
+	}
+	for i := range allMenus {
+		if allMenus[i].ParentId == parent.MenuId { //发现子菜单
+			parent.Children = append(parent.Children, allMenus[i])
+			svc.GenMenus(&allMenus[i], allMenus) //接着找下一级的子菜单
+		}
+	}
+	if len(parent.Children) == 0 {
+		return
+	}
+}
+func (svc *MenuService) InitParentChildMap(menus []model.SysMenu) map[int64][]vo.RouterVO {
+	childrenMap := make(map[int64][]vo.RouterVO)
+	len := len(menus)
+	for i := 0; i < len; i++ {
 		if menus[i].MenuType == "F" { //忽略按钮
 			continue
 		}
-		//每个menu都预设子菜单项
-		childrenMap[menus[i].MenuId] = make([]*model.SysMenu, 0)
+		childrenMap[menus[i].MenuId] = make([]vo.RouterVO, 0) //每个menu都预设子菜单项
 	}
 
-	for i, _ := range menus {
-		if menus[i].MenuType == "F" { //忽略按钮
+	for i := 0; i < len; i++ {
+		menu := menus[i]
+		if menu.MenuType == "F" { //忽略按钮
 			continue
 		}
-		pid := menus[i].ParentId
-		//组织父子关系
-		childrenMap[pid] = append(childrenMap[pid], &menus[i])
-		//svc.GenMenus(&menus[i], menus)
+		router := svc.menu2RouteVo(&menu) //格式变化
+		pid := menu.ParentId
+		childrenMap[pid] = append(childrenMap[pid], router) //组织父子关系
 	}
 	return childrenMap
+}
+
+func (svc *MenuService) menu2RouteVo(menu *model.SysMenu) vo.RouterVO {
+	meta := vo.Meta{Title: menu.MenuName, Icon: menu.Icon, NoCache: menu.IsCache == "1"}
+	if menu.IsFrame == "0" {
+		meta.Link = menu.Path
+	}
+	router := vo.RouterVO{
+		Name:      menu.RouteName,
+		Path:      menu.Path,
+		Hidden:    menu.Visible == "1",
+		Component: menu.Component,
+		Meta:      meta}
+	return router
 }
 
 // 根据角色ID查询菜单
@@ -301,15 +280,4 @@ func (svc *MenuService) IsRolePermited(roleKeys string, perms string) (bool, int
 	sql := "SELECT count(*) from sys_menu m,sys_role_menu rm,sys_role r where m.menu_id=rm.menu_id and rm.role_id = r.role_id and r.role_key in @Roles and m.perms=@Perms"
 	count, err := lv_dao.CountByNamedSql(sql, map[string]interface{}{"Roles": roles, "Perms": perms})
 	return count > 0, err
-}
-
-func (svc *MenuService) FillAllChildren(m *model.SysMenu, childrenMap map[int64][]*model.SysMenu) {
-	children := childrenMap[m.MenuId]
-	if children == nil || len(children) <= 0 {
-		return
-	}
-	for i := range children {
-		m.Children = childrenMap[m.MenuId]
-		svc.FillAllChildren(children[i], childrenMap)
-	}
 }
