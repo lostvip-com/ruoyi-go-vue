@@ -4,6 +4,7 @@ import (
 	"common/util"
 	"github.com/gin-gonic/gin"
 	"github.com/lostvip-com/lv_framework/web/lv_dto"
+	"system/model"
 	"system/service"
 )
 
@@ -29,64 +30,17 @@ func (w *HomeApi) GetUserInfo(c *gin.Context) {
 	util.Success(c, data, "success")
 }
 
-// 后台框架首页
-//func (w *HomeApi) Index(c *gin.Context) {
-//	var userService service.UserService
-//	user := userService.GetProfile(c)
-//	loginname := user.LoginName
-//	username := user.UserName
-//	avatar := user.Avatar
-//	if avatar == "" {
-//		avatar = "/resource/img/profile.jpg"
-//	}
-//	var menus *[]model.SysMenu
-//	//获取菜单数据
-//	menuService := service.MenuService{}
-//	if userService.IsAdmin(user.UserId) {
-//		tmp, err := menuService.SelectMenuNormalAll("")
-//		if err == nil {
-//			menus = tmp
-//		}
-//	} else {
-//		tmp, err := menuService.SelectMenusByUserId(user.UserId, "")
-//		if err == nil {
-//			menus = tmp
-//		}
-//	}
-//
-//	//获取配置数据
-//	var configService service.ConfigService
-//	sideTheme := configService.GetValueFromRam("sys.index.sideTheme")
-//	skinName := configService.GetValueFromRam("sys.index.skinName")
-//	//设置首页风格
-//	menuStyle := c.Query("menuStyle")
-//	cookie, _ := c.Request.Cookie("menuStyle")
-//	if cookie == nil {
-//		cookie = &http.Cookie{
-//			Name:     "menuStyle",
-//			Value:    menuStyle,
-//			HttpOnly: true,
-//		}
-//		http.SetCookie(c.Writer, cookie)
-//	}
-//	if menuStyle == "" { //未指定则从cookie中取
-//		menuStyle = cookie.Value
-//	}
-//	var targetIndex string         //默认首页
-//	if menuStyle == "index_left" { //指定了左侧风格,
-//		targetIndex = "index_left"
-//	} else { //否则默认风格
-//		targetIndex = "index"
-//	}
-//	//"menuStyle", cookie.Value, 1000, cookie.Path, cookie.Domain, cookie.Secure, cookie.HttpOnly
-//	c.SetCookie(cookie.Name, menuStyle, cookie.MaxAge, cookie.Path, cookie.Domain, cookie.Secure, cookie.HttpOnly)
-//	util.BuildTpl(c, targetIndex).WriteTpl(gin.H{
-//		"avatar":    avatar,
-//		"loginname": loginname,
-//		"username":  username,
-//		"menus":     menus,
-//		"sideTheme": sideTheme,
-//		"skinName":  skinName,
-//	})
-//	c.Abort()
-//}
+// GetRouters 后台框架菜单
+func (w *HomeApi) GetRouters(c *gin.Context) {
+	userService := service.GetUserService()
+	user := userService.GetProfile(c)
+	var menus *[]model.SysMenu
+	menuService := service.MenuService{}
+	if userService.IsAdmin(user.UserId) {
+		menus, _ = menuService.SelectMenuNormalAll("")
+	} else {
+		menus, _ = menuService.SelectMenusByUserId(user.UserId, "")
+	}
+	//获取配置数
+	util.Success(c, menus, "success")
+}

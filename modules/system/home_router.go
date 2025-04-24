@@ -19,4 +19,5 @@ func init() {
 	home := api.HomeApi{}
 	g1.GET("/logout", "", login.Logout)
 	g1.POST("/getInfo", "system:user:view", home.GetUserInfo)
+	g1.POST("/getRouters", "system:user:view", home.GetRouters)
 }
