@@ -3,6 +3,7 @@ package service
 import (
 	"github.com/lostvip-com/lv_framework/lv_db"
 	"github.com/lostvip-com/lv_framework/lv_db/lv_dao"
+	"github.com/lostvip-com/lv_framework/lv_log"
 	"github.com/lostvip-com/lv_framework/utils/lv_conv"
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
 	"github.com/lostvip-com/lv_framework/web/lv_dto"
@@ -147,16 +148,25 @@ func (svc *MenuService) SelectMenuNormalAll(userId int64, menuType string) ([]vo
 	pcMap := svc.InitParentChildMap(menus)
 	list0 := pcMap[0]
 	for i := 1; i < len(list0); i++ {
-		fillChildrenTree(&list0[i], pcMap)
+		it := &list0[i]
+		lv_log.Infof("%v --- %v", i, it)
+		fillChildrenTree(it, pcMap)
 	}
 	//存入缓存
 	return arr, nil
 }
 
-func fillChildrenTree(v *vo.RouterVO, pcFlatMap map[int64][]vo.RouterVO) {
-	v.Children = pcFlatMap[v.MenuId]
-	for i := 1; i < len(v.Children); i++ {
-		fillChildrenTree(&v.Children[i], pcFlatMap)
+func fillChildrenTree(parent *vo.RouterVO, pcFlatMap map[int64][]vo.RouterVO) {
+	children := pcFlatMap[parent.MenuId] // 获取本节点的子节点
+	parent.Children = children
+	lv_log.Infof("当前节点 %d 的子节点数：%d", parent.MenuId, len(children)) // 调试日志
+	if parent.Children == nil || len(parent.Children) == 0 {
+		return
+	}
+	for i := 0; i < len(parent.Children); i++ {
+		child := &parent.Children[i]                                       // 明确引用子节点
+		lv_log.Infof("子节点 %d 的 ID：%d，内容：%v", i, child.MenuId, child) // 打印子节点详细信息
+		fillChildrenTree(child, pcFlatMap)                                 // 递归处理子节点
 	}
 }
 

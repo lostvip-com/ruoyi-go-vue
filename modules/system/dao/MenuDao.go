@@ -121,7 +121,6 @@ func (dao *MenuDao) SelectMenuNormalAll(menuType string) ([]model.SysMenu, error
 
 	tb := lv_db.GetMasterGorm()
 	tb = tb.Table("sys_menu as m")
-	tb.Select("distinct m.menu_id, m.parent_id, m.menu_name, m.url, m.visible, ifnull(m.perms,'') as perms, m.target, m.menu_type, m.icon, m.order_num, m.create_time")
 	tb.Where(" m.visible = 0")
 	if lv_logic.IsNotEmpty(menuType) {
 		tb.Where("m.menu_type=?", menuType)
@@ -148,7 +147,7 @@ func (dao *MenuDao) SelectMenusByUserId(userId int64, menuType string) ([]model.
 	tb.Joins("LEFT join sys_role_menu as rm on m.menu_id = rm.menu_id")
 	tb.Joins("LEFT join sys_user_role as ur on rm.role_id = ur.role_id")
 	tb.Joins("LEFT join sys_role as ro on ur.role_id = ro.role_id")
-	tb.Select("distinct m.menu_id, m.parent_id, m.menu_name, m.url, m.visible, ifnull(m.perms,'') as perms, m.target, m.menu_type, m.icon, m.order_num, m.create_time")
+	//tb.Select("distinct m.*")
 	tb.Where("ur.user_id = ? and  m.visible = 0  AND ro.status = 0", userId)
 	if lv_logic.IsNotEmpty(menuType) {
 		tb.Where("m.menu_type=?", menuType)
