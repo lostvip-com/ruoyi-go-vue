@@ -35,7 +35,7 @@ type Token struct {
 // #安全密钥robnote
 // encryptKey = "cm9ibm90ZQ=="
 // 创建Claims
-func New(loginName string, userId, tenantId int64) *MyClaims {
+func New(UserName string, userId, tenantId int64) *MyClaims {
 	timeOut := cast.ToInt(lv_global.Config().GetVipperCfg().Get("token.timeout"))
 
 	if timeOut <= 0 {
@@ -51,7 +51,7 @@ func New(loginName string, userId, tenantId int64) *MyClaims {
 	var claims MyClaims
 	claims.UserId = userId
 	claims.TenantId = tenantId
-	claims.Subject = loginName
+	claims.Subject = UserName
 	claims.IssuedAt = time.Now().Unix()
 	claims.ExpiresAt = time.Now().Add(time.Second * time.Duration(timeOut)).Unix()
 	claims.RefreshTime = time.Now().Add(time.Second * time.Duration(refresh)).Unix()

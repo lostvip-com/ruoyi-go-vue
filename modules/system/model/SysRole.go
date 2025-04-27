@@ -6,7 +6,7 @@ import (
 )
 
 type SysRole struct {
-	RoleId    int64  `gorm:"type:bigint(20);primary_key;auto_increment;角色ID;" json:"roleId"`
+	RoleId    int64  `gorm:"size:20;primary_key;auto_increment;角色ID;" json:"roleId"`
 	RoleName  string `gorm:"type:varchar(30);comment:角色名称;" json:"roleName"`
 	RoleKey   string `gorm:"type:varchar(100);comment:角色权限字符串;uniqueIndex:idx_roleKey" json:"roleKey"`
 	RoleSort  int    `gorm:"type:int(11);comment:显示顺序;" json:"roleSort"`

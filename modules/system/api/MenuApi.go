@@ -42,7 +42,7 @@ func (w *MenuApi) AddSave(c *gin.Context) {
 	}
 	user := service.GetUserService().GetProfile(c)
 	if user != nil {
-		req.CreateBy = user.LoginName
+		req.CreateBy = user.UserName
 	}
 	id, err := service.GetMenuServiceInstance().AddSave(req)
 
@@ -63,7 +63,7 @@ func (w *MenuApi) EditSave(c *gin.Context) {
 	}
 	user := service.GetUserService().GetProfile(c)
 	if user != nil {
-		req.UpdateBy = user.LoginName
+		req.UpdateBy = user.UserName
 	}
 	rs, err := service.GetMenuServiceInstance().Edit(req)
 

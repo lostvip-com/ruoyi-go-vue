@@ -93,11 +93,11 @@ func (w *RoleController) ChangeStatus(c *gin.Context) {
 // 获取用户列表
 func (w *RoleController) UnallocatedList(c *gin.Context) {
 	roleId := lv_conv.Int64(c.PostForm("roleId"))
-	loginName := c.PostForm("loginName")
+	UserName := c.PostForm("UserName")
 	phonenumber := c.PostForm("phonenumber")
 	var rows []map[string]string
 	var userService service.UserService
-	userList, err := userService.SelectUnallocatedList(roleId, loginName, phonenumber)
+	userList, err := userService.SelectUnallocatedList(roleId, UserName, phonenumber)
 
 	if err == nil && userList != nil {
 		rows = *userList
@@ -154,12 +154,12 @@ func (w *RoleController) AuthDataScopeSave(c *gin.Context) {
 // 查询已分配用户角色列表
 func (w *RoleController) AllocatedList(c *gin.Context) {
 	roleId := lv_conv.Int64(c.PostForm("roleId"))
-	loginName := c.PostForm("loginName")
+	UserName := c.PostForm("UserName")
 	phonenumber := c.PostForm("phonenumber")
 	var rows []map[string]string
 
 	var userService service.UserService
-	userList, err := userService.SelectAllocatedList(roleId, loginName, phonenumber)
+	userList, err := userService.SelectAllocatedList(roleId, UserName, phonenumber)
 
 	if err == nil && userList != nil {
 		rows = *userList

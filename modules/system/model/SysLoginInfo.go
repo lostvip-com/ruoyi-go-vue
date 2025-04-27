@@ -13,8 +13,8 @@ import (
 
 // SysLogininfor 系统访问记录
 type SysLoginInfo struct {
-	InfoId        int64     `gorm:"type:bigint(20);primary_key;auto_increment;访问ID;" json:"infoId"`
-	LoginName     string    `gorm:"type:varchar(50);comment:登录账号;" json:"loginName"`
+	InfoId        int64     `gorm:"size:20;primary_key;auto_increment;访问ID;" json:"infoId"`
+	UserName      string    `gorm:"type:varchar(50);comment:登录账号;" json:"UserName"`
 	Ipaddr        string    `gorm:"type:varchar(50);comment:登录IP地址;" json:"ipaddr"`
 	LoginLocation string    `gorm:"type:varchar(255);comment:登录地点;" json:"loginLocation"`
 	Browser       string    `gorm:"type:varchar(50);comment:浏览器类型;" json:"browser"`

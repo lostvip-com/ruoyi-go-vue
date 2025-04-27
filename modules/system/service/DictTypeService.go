@@ -61,7 +61,7 @@ func (svc *DictTypeService) AddSave(req *common_vo.AddDictTypeReq, c *gin.Contex
 	var userService UserService
 	user := userService.GetProfile(c)
 	if user != nil {
-		entity.CreateBy = user.LoginName
+		entity.CreateBy = user.UserName
 	}
 	err := entity.Save()
 	return entity.DictId, err
@@ -83,7 +83,7 @@ func (svc *DictTypeService) EditSave(req *common_vo.EditDictTypeReq, c *gin.Cont
 	var userService UserService
 	user := userService.GetProfile(c)
 	if user == nil {
-		entity.UpdateBy = user.LoginName
+		entity.UpdateBy = user.UserName
 	}
 	err = entity.Updates()
 	return entity.DictId, err

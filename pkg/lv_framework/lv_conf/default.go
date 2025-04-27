@@ -136,6 +136,11 @@ func (e *ConfigDefault) LoadConf() {
 		e.vipperCfg.SetConfigType("yaml")
 		e.vipperCfg.AddConfigPath("./")
 		e.vipperCfg.ReadInConfig()
+	} else if lv_file.IsFileExist("resources/bootstrap.yml") || lv_file.IsFileExist("resources/bootstrap.yaml") {
+		e.vipperCfg.SetConfigName("bootstrap")
+		e.vipperCfg.SetConfigType("yaml")
+		e.vipperCfg.AddConfigPath("./resources")
+		e.vipperCfg.ReadInConfig()
 	} else {
 		fmt.Println("未找到配置文件 bootstrap.yml 将使用默认配置！！！")
 	}
@@ -144,6 +149,11 @@ func (e *ConfigDefault) LoadConf() {
 		e.vipperCfg.SetConfigName("application")
 		e.vipperCfg.SetConfigType("yaml")
 		e.vipperCfg.AddConfigPath("./")
+		e.vipperCfg.MergeInConfig()
+	} else if lv_file.IsFileExist("resources/application.yml") || lv_file.IsFileExist("resources/application.yaml") {
+		e.vipperCfg.SetConfigName("application")
+		e.vipperCfg.SetConfigType("yaml")
+		e.vipperCfg.AddConfigPath("./resources")
 		e.vipperCfg.MergeInConfig()
 	} else {
 		fmt.Println("未找到配置文件 application.yml 将使用默认配置！！！")

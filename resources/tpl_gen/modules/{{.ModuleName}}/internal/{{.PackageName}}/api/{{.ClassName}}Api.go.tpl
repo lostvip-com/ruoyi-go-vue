@@ -39,7 +39,7 @@ func (w {{.ClassName}}Api) Add{{.ClassName}}(c *gin.Context) {
 	var svc service.{{.ClassName}}Service
 	var userService sysService.UserService
 	user := userService.GetProfile(c)
-	req.CreateBy = user.LoginName
+	req.CreateBy = user.UserName
 	id, err := svc.AddSave(req)
 	lv_err.HasErrAndPanic(err)
 	util.SucessData(c, id)
@@ -53,7 +53,7 @@ func (w {{.ClassName}}Api) Save{{.ClassName}}(c *gin.Context) {
 	var svc service.{{.ClassName}}Service
 	var userService sysService.UserService
 	user := userService.GetProfile(c)
-	req.UpdateBy = user.LoginName
+	req.UpdateBy = user.UserName
 	err = svc.EditSave(req)
 	lv_err.HasErrAndPanic(err)
 	util.Success(c, nil, "success")

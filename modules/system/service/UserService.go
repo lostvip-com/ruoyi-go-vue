@@ -42,7 +42,7 @@ func (svc *UserService) SelectRecordById(id int64) (*model.SysUser, error) {
 // 根据条件分页查询用户列表
 func (svc UserService) SelectRecordList(param *common_vo.SelectUserPageReq) (*[]map[string]string, int64, error) {
 	var deptService DeptService
-	var dept = deptService.SelectDeptById(param.DeptId)
+	var dept, _ = deptService.FindById(param.DeptId)
 	if dept != nil { //数据权限
 		param.Ancestors = dept.Ancestors
 	}
@@ -53,7 +53,7 @@ func (svc UserService) SelectRecordList(param *common_vo.SelectUserPageReq) (*[]
 // 导出excel
 func (svc UserService) Export(param *common_vo.SelectUserPageReq) (string, error) {
 	head := []string{"用户名", "呢称", "Email", "电话号码", "性别", "部门", "领导", "状态", "删除标记", "创建人", "创建时间", "备注"}
-	col := []string{"loginName", "userName", "u.email", "phonenumber", "sex", "deptName", "leader", "status", "delFlag", "createBy", "createTime", "Remark"}
+	col := []string{"UserName", "userName", "u.email", "phonenumber", "sex", "deptName", "leader", "status", "delFlag", "createBy", "createTime", "Remark"}
 	var d dao.SysUserDao
 	listMap, err := d.SelectExportList(param)
 	lv_err.HasErrAndPanic(err)
@@ -63,7 +63,7 @@ func (svc UserService) Export(param *common_vo.SelectUserPageReq) (string, error
 // 新增用户
 func (svc UserService) AddSave(req *common_vo.AddUserReq, c *gin.Context) (int64, error) {
 	var u model.SysUser
-	u.LoginName = req.LoginName
+	u.UserName = req.UserName
 	u.UserName = req.UserName
 	u.Email = req.Email
 	u.Phonenumber = req.Phonenumber
@@ -75,7 +75,7 @@ func (svc UserService) AddSave(req *common_vo.AddUserReq, c *gin.Context) (int64
 	u.LoginDate = &t
 	//生成密码
 	newSalt := lv_gen.GenerateSubId(6)
-	newToken := req.LoginName + req.Password + newSalt
+	newToken := req.UserName + req.Password + newSalt
 	newToken = lv_secret.MustEncryptString(newToken)
 	u.Salt = newSalt
 	u.Password = newToken
@@ -83,7 +83,7 @@ func (svc UserService) AddSave(req *common_vo.AddUserReq, c *gin.Context) (int64
 	createUser := svc.GetProfile(c)
 
 	if createUser != nil {
-		u.CreateBy = createUser.LoginName
+		u.CreateBy = createUser.UserName
 	}
 	u.DelFlag = "0"
 
@@ -151,7 +151,7 @@ func (svc UserService) EditSave(req *common_vo.EditUserReq, c *gin.Context) erro
 	updateUser := svc.GetProfile(c)
 
 	if updateUser != nil {
-		userPtr.UpdateBy = updateUser.LoginName
+		userPtr.UpdateBy = updateUser.UserName
 	}
 	err = lv_db.GetMasterGorm().Transaction(func(tx *gorm.DB) error {
 		if err := tx.Updates(userPtr).Error; err != nil {
@@ -252,14 +252,14 @@ func (svc UserService) IsSignedIn(tokenStr string) bool {
 // 用户登录，成功返回用户信息，否则返回nil; passport应当会md5值字符串
 func (svc UserService) SignIn(loginnName, password string) (*model.SysUser, error) {
 	//查询用户信息
-	user := model.SysUser{LoginName: loginnName}
+	user := model.SysUser{UserName: loginnName}
 	err := user.FindOne()
 
 	if err != nil {
 		return nil, err
 	}
 	//校验密码
-	pwdNew := user.LoginName + password + user.Salt
+	pwdNew := user.UserName + password + user.Salt
 
 	pwdNew = lv_secret.MustEncryptString(pwdNew)
 
@@ -287,8 +287,8 @@ func (svc UserService) ForceLogout(c *gin.Context) error {
 }
 
 // 检查账号是否符合规范,存在返回false,否则true
-func (svc UserService) CheckPassport(loginName string) bool {
-	entity := model.SysUser{LoginName: loginName}
+func (svc UserService) CheckPassport(UserName string) bool {
+	entity := model.SysUser{UserName: UserName}
 	if err := entity.FindOne(); err != nil {
 		return false
 	} else {
@@ -301,15 +301,15 @@ func (svc UserService) GetProfile(c *gin.Context) *model.SysUser {
 	token := lv_net.GetParam(c, "token")
 	key := "login:" + token
 	userId, _ := lv_cache.GetCacheClient().HGet(key, "userId")
-	roleKeys, _ := lv_cache.GetCacheClient().HGet(key, "roleKeys")
 	u := new(model.SysUser)
 	u.UserId = cast.ToInt64(userId)
 	err := u.FindOne()
 	if err != nil {
 		panic(err)
-	} else {
-		u.RoleKeys = roleKeys
 	}
+	// 部门
+	u.Dept, _ = GetDeptServiceInstance().FindById(u.DeptId)
+	u.Roles, _ = dao.GetSysRoleDao().FindRoles(u.UserId)
 	return u
 }
 
@@ -384,7 +384,7 @@ func (svc UserService) UpdatePassword(profile *common_vo.PasswordReq, c *gin.Con
 	}
 
 	//校验密码
-	token := user.LoginName + profile.OldPassword + user.Salt
+	token := user.UserName + profile.OldPassword + user.Salt
 	token = lv_secret.MustEncryptString(token)
 
 	if token != user.Password {
@@ -393,7 +393,7 @@ func (svc UserService) UpdatePassword(profile *common_vo.PasswordReq, c *gin.Con
 
 	//新校验密码
 	newSalt := lv_gen.GenerateSubId(6)
-	newToken := user.LoginName + profile.NewPassword + newSalt
+	newToken := user.UserName + profile.NewPassword + newSalt
 	newToken = lv_secret.MustEncryptString(newToken)
 
 	user.Salt = newSalt
@@ -416,7 +416,7 @@ func (svc UserService) ResetPassword(params *common_vo.ResetPwdReq) (bool, error
 	}
 	//新校验密码
 	newSalt := lv_gen.GenerateSubId(6)
-	newToken := user.LoginName + params.Password + newSalt
+	newToken := user.UserName + params.Password + newSalt
 	newToken = lv_secret.MustEncryptString(newToken)
 
 	user.Salt = newSalt
@@ -433,7 +433,7 @@ func (svc UserService) CheckPassword(user *model.SysUser, password string) bool 
 		return false
 	}
 	//校验密码
-	token := user.LoginName + password + user.Salt
+	token := user.UserName + password + user.Salt
 	token = lv_secret.MustEncryptString(token)
 
 	if strings.Compare(token, user.Password) == 0 {
@@ -444,9 +444,9 @@ func (svc UserService) CheckPassword(user *model.SysUser, password string) bool 
 }
 
 // 根据登录名查询用户信息
-func (svc UserService) SelectUserByLoginName(loginName string) (*model.SysUser, error) {
+func (svc UserService) SelectUserByUserName(UserName string) (*model.SysUser, error) {
 	var vo dao.SysUserDao
-	return vo.SelectUserByLoginName(loginName)
+	return vo.SelectUserByUserName(UserName)
 }
 
 // 根据手机号查询用户信息
@@ -456,15 +456,15 @@ func (svc UserService) SelectUserByPhoneNumber(phonenumber string) (*model.SysUs
 }
 
 // 查询已分配用户角色列表
-func (svc UserService) SelectAllocatedList(roleId int64, loginName, phonenumber string) (*[]map[string]string, error) {
+func (svc UserService) SelectAllocatedList(roleId int64, UserName, phonenumber string) (*[]map[string]string, error) {
 	var vo dao.SysUserDao
-	return vo.SelectAllocatedList(roleId, loginName, phonenumber)
+	return vo.SelectAllocatedList(roleId, UserName, phonenumber)
 }
 
 // 查询未分配用户角色列表
-func (svc UserService) SelectUnallocatedList(roleId int64, loginName, phonenumber string) (*[]map[string]string, error) {
+func (svc UserService) SelectUnallocatedList(roleId int64, UserName, phonenumber string) (*[]map[string]string, error) {
 	var vo dao.SysUserDao
-	return vo.SelectUnallocatedList(roleId, loginName, phonenumber)
+	return vo.SelectUnallocatedList(roleId, UserName, phonenumber)
 }
 
 // 查询未分配用户角色列表
@@ -474,6 +474,13 @@ func (svc UserService) GetRoleKeys(userId int64) (string, error) {
 	}
 	var sql = " SELECT GROUP_CONCAT(r.role_key) roles from sys_user_role ur,sys_role r where ur.user_id=? and ur.role_id = r.role_id "
 	var roles string
+	err := lv_db.GetMasterGorm().Raw(sql, userId).Scan(&roles).Error
+	return roles, err
+}
+
+func (svc UserService) GetRoles(userId int64) ([]model.SysRole, error) {
+	sql := " select r.* from sys_user_role ur,sys_role r where ur.user_id=? and ur.role_id = r.role_id "
+	roles := make([]model.SysRole, 0)
 	err := lv_db.GetMasterGorm().Raw(sql, userId).Scan(&roles).Error
 	return roles, err
 }

@@ -13,7 +13,7 @@ import (
 
 // SysOperLog 操作日志记录
 type SysOperLog struct {
-	OperId        int64     `gorm:"type:bigint(20);primary_key;auto_increment;日志主键;" json:"operId"`
+	OperId        int64     `gorm:"size:20;primary_key;auto_increment;日志主键;" json:"operId"`
 	Title         string    `gorm:"type:varchar(50);comment:模块标题;" json:"title"`
 	BusinessType  int       `gorm:"type:int(11);comment:业务类型（0其它 1新增 2修改 3删除）;" json:"businessType"`
 	Method        string    `gorm:"type:varchar(100);comment:方法名称;" json:"method"`

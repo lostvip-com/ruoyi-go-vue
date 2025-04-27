@@ -39,14 +39,14 @@ func (d SysUserDao) SelectPageList(param *common_vo.SelectUserPageReq) (*[]map[s
 func (d SysUserDao) GetSql(param *common_vo.SelectUserPageReq) (map[string]interface{}, string) {
 	sqlParams := make(map[string]interface{})
 	sql := `
-            select u.user_id, u.dept_id, u.login_name, u.user_name, u.email, u.avatar, u.phonenumber, u.password,u.sex, u.salt, u.status, u.del_flag, 
+            select u.user_id, u.dept_id, u.user_name, u.user_name, u.email, u.avatar, u.phonenumber, u.password,u.sex, u.salt, u.status, u.del_flag, 
             u.login_ip, u.login_date, u.create_by, u.create_time, u.remark,d.dept_name, d.leader
             from sys_user u left join sys_dept d on  u.dept_id = d.dept_id where u.del_flag =0 
            `
 	if param != nil {
-		if param.LoginName != "" {
-			sql += " and  u.login_name like @loginName "
-			sqlParams["loginName"] = "%" + param.LoginName + "%"
+		if param.UserName != "" {
+			sql += " and  u.user_name like @UserName "
+			sqlParams["UserName"] = "%" + param.UserName + "%"
 		}
 
 		if param.Phonenumber != "" {
@@ -93,20 +93,20 @@ func (d SysUserDao) SelectExportList(param *common_vo.SelectUserPageReq) (*[]map
 }
 
 // 根据条件分页查询已分配用户角色列表
-func (d SysUserDao) SelectAllocatedList(roleId int64, loginName, phonenumber string) (*[]map[string]string, error) {
+func (d SysUserDao) SelectAllocatedList(roleId int64, UserName, phonenumber string) (*[]map[string]string, error) {
 	db := lv_db.GetMasterGorm()
 	sqlParams := make(map[string]interface{})
 	sql := `
-            select distinct u.user_id, u.dept_id, u.login_name, u.user_name, u.email, u.avatar, u.phonenumber,u.status, u.create_time
+            select distinct u.user_id, u.dept_id, u.user_name, u.user_name, u.email, u.avatar, u.phonenumber,u.status, u.create_time
             from sys_user u 
             left join sys_dept d on  u.dept_id = d.dept_id 
             left join sys_user_role ur on  u.user_id = ur.user_id
              left join sys_role r on  r.role_id = ur.role_id
             where u.del_flag =0 and  r.role_id = ` + cast.ToString(roleId)
 
-	if loginName != "" {
-		sql += " and u.login_name like @loginName "
-		sqlParams["loginName"] = "%" + loginName + "%"
+	if UserName != "" {
+		sql += " and u.user_name like @UserName "
+		sqlParams["UserName"] = "%" + UserName + "%"
 	}
 
 	if phonenumber != "" {
@@ -119,17 +119,17 @@ func (d SysUserDao) SelectAllocatedList(roleId int64, loginName, phonenumber str
 }
 
 // 根据条件分页查询未分配用户角色列表
-func (d SysUserDao) SelectUnallocatedList(roleId int64, loginName, phonenumber string) (*[]map[string]string, error) {
+func (d SysUserDao) SelectUnallocatedList(roleId int64, UserName, phonenumber string) (*[]map[string]string, error) {
 	db := lv_db.GetMasterGorm()
 	sqlParams := make(map[string]interface{})
 	sql := `
-            select distinct u.user_id, u.dept_id, u.login_name, u.user_name, u.email, u.avatar, u.phonenumber,u.status, u.create_time
+            select distinct u.user_id, u.dept_id, u.user_name, u.user_name, u.email, u.avatar, u.phonenumber,u.status, u.create_time
             from sys_user u 
             where u.del_flag =0  `
 	sql += " and u.user_id not in (select u.user_id from sys_user u inner join sys_user_role ur on u.user_id = ur.user_id and ur.role_id = " + cast.ToString(roleId) + ") "
-	if loginName != "" {
-		sql += " and u.login_name like @loginName "
-		sqlParams["loginName"] = "%" + loginName + "%"
+	if UserName != "" {
+		sql += " and u.user_name like @UserName "
+		sqlParams["UserName"] = "%" + UserName + "%"
 	}
 
 	if phonenumber != "" {
@@ -149,10 +149,10 @@ func (d SysUserDao) CountPhone(phone string) (int64, error) {
 	return total, err
 }
 
-// SelectUserByLoginName 根据登录名查询用户信息
-func (d SysUserDao) SelectUserByLoginName(loginName string) (*model.SysUser, error) {
+// SelectUserByUserName 根据登录名查询用户信息
+func (d SysUserDao) SelectUserByUserName(UserName string) (*model.SysUser, error) {
 	var entity = new(model.SysUser)
-	entity.LoginName = loginName
+	entity.UserName = UserName
 	err := entity.FindOne()
 	return entity, err
 }

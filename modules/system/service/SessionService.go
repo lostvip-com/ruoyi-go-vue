@@ -22,7 +22,7 @@ func (svc *SessionService) IsSignedIn(tokenStr string) bool {
 // 用户登录，成功返回用户信息，否则返回nil; passport应当会md5值字符串
 func (svc *SessionService) SignIn(loginnName, password string) (*model.SysUser, error) {
 	//查询用户信息
-	user := model.SysUser{LoginName: loginnName}
+	user := model.SysUser{UserName: loginnName}
 	err := user.FindOne()
 
 	if err != nil {
@@ -30,7 +30,7 @@ func (svc *SessionService) SignIn(loginnName, password string) (*model.SysUser, 
 	}
 
 	//校验密码
-	pwdNew := user.LoginName + password + user.Salt
+	pwdNew := user.UserName + password + user.Salt
 
 	pwdNew = lv_secret.MustEncryptString(pwdNew)
 
@@ -63,7 +63,7 @@ func (svc *SessionService) SaveUserToSession(token string, user *model.SysUser, 
 	fieldMap := make(map[string]interface{})
 	fieldMap["userName"] = user.UserName
 	fieldMap["userId"] = user.UserId
-	fieldMap["loginName"] = user.LoginName
+	fieldMap["UserName"] = user.UserName
 	fieldMap["avatar"] = user.Avatar
 	fieldMap["roleKeys"] = roleKeys
 	fieldMap["deptId"] = user.DeptId
@@ -93,7 +93,7 @@ func (svc *SessionService) SaveLoginLog2DB(token string, user *model.SysUser, us
 	var userOnline model.SysUserOnline
 	// 保存用户信息到session
 	loginLocation := util.GetCityByIp(ip)
-	userOnline.LoginName = user.UserName
+	userOnline.UserName = user.UserName
 	userOnline.Browser = browser
 	userOnline.Os = os
 	userOnline.DeptName = ""

@@ -15,6 +15,15 @@ import (
 type DictDataService struct {
 }
 
+var dictDataService *DictDataService
+
+func GetDictDataServiceInstance() *DictDataService {
+	if dictDataService == nil {
+		dictDataService = &DictDataService{}
+	}
+	return dictDataService
+}
+
 // 根据主键查询数据
 func (svc *DictDataService) SelectRecordById(id int64) (*models.SysDictData, error) {
 	entity := &models.SysDictData{DictCode: id}
@@ -57,7 +66,7 @@ func (svc *DictDataService) AddSave(req *common_vo.AddDictDataReq, c *gin.Contex
 	user := userService.GetProfile(c)
 
 	if user != nil {
-		entity.CreateBy = user.LoginName
+		entity.CreateBy = user.UserName
 	}
 
 	err := entity.Save()
@@ -78,7 +87,7 @@ func (svc *DictDataService) EditSave(req *common_vo.EditDictDataReq, c *gin.Cont
 	var userService UserService
 	user := userService.GetProfile(c)
 	if user == nil {
-		entity.UpdateBy = user.LoginName
+		entity.UpdateBy = user.UserName
 	}
 
 	return entity.Updates()

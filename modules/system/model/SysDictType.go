@@ -13,7 +13,7 @@ import (
 
 // SysDictType 字典类型
 type SysDictType struct {
-	DictId   int64  `gorm:"type:bigint(20);primary_key;auto_increment;字典主键;" json:"dictId"`
+	DictId   int64  `gorm:"size:20;primary_key;auto_increment;字典主键;" json:"dictId"`
 	DictName string `gorm:"type:varchar(100);comment:字典名称;" json:"dictName"`
 	DictType string `gorm:"type:varchar(100);comment:字典类型;" json:"dictType"`
 	Status   string `gorm:"type:char(1);comment:状态（0正常 1停用）;" json:"status"`

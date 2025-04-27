@@ -9,7 +9,7 @@ import (
 )
 
 type GenTable struct {
-	TableId        int64  `gorm:"type:bigint(20);primary_key;auto_increment;编号;" json:"tableId"`
+	TableId        int64  `gorm:"size:20;primary_key;auto_increment;编号;" json:"tableId"`
 	TbName         string `gorm:"type:varchar(200);comment:表名称;column:table_name" json:"tableName"`
 	TableComment   string `gorm:"type:varchar(500);comment:表描述;" json:"tableComment"`
 	ClassName      string `gorm:"type:varchar(100);comment:实体类名称;" json:"className"`

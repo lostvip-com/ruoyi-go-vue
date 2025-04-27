@@ -13,7 +13,7 @@ import (
 
 // 新增页面请求参数
 type AddOnlineReq struct {
-	LoginName      string    `form:"loginName" binding:"required"`
+	UserName       string    `form:"UserName" binding:"required"`
 	DeptName       string    `form:"deptName" binding:"required"`
 	Ipaddr         string    `form:"ipaddr" `
 	LoginLocation  string    `form:"loginLocation" `
@@ -28,7 +28,7 @@ type AddOnlineReq struct {
 // 分页请求参数
 type OnlinePageReq struct {
 	SessionId      string    `form:"sessionId"`      //用户会话id
-	LoginName      string    `form:"loginName"`      //登录账号
+	UserName       string    `form:"UserName"`       //登录账号
 	DeptName       string    `form:"deptName"`       //部门名称
 	Ipaddr         string    `form:"ipaddr"`         //登录IP地址
 	LoginLocation  string    `form:"loginLocation"`  //登录地点

@@ -85,14 +85,14 @@ func (w *LoginInforController) Export(c *gin.Context) {
 
 // 解锁账号
 func (w *LoginInforController) Unlock(c *gin.Context) {
-	loginName := c.Query("loginName")
-	if loginName == "" {
-		util.ErrorResp(c).SetMsg("参数错误").Log("解锁账号", "loginName="+loginName).WriteJsonExit()
+	UserName := c.Query("UserName")
+	if UserName == "" {
+		util.ErrorResp(c).SetMsg("参数错误").Log("解锁账号", "UserName="+UserName).WriteJsonExit()
 	} else {
 		var logininforService service.LoginInforService
-		logininforService.RemovePasswordCounts(loginName)
-		logininforService.Unlock(loginName)
-		util.SucessResp(c).Log("解锁账号", "loginName="+loginName).WriteJsonExit()
+		logininforService.RemovePasswordCounts(UserName)
+		logininforService.Unlock(UserName)
+		util.SucessResp(c).Log("解锁账号", "UserName="+UserName).WriteJsonExit()
 	}
 
 }

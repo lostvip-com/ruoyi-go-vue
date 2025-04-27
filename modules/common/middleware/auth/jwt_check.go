@@ -65,7 +65,7 @@ package auth
 //		// 将当前请求的uid信息保存到请求的上下文c上
 //		c.Set("tenantId", t.Claim.TenantId)
 //		c.Set("userId", t.Claim.UserId)
-//		c.Set("loginName", t.Claim.Subject)
+//		c.Set("UserName", t.Claim.Subject)
 //		//判断是否有新的token生成
 //		if t.NewToken != "" {
 //			c.Writer.Header().Set("nt", t.NewToken)

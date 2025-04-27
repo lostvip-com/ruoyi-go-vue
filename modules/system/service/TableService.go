@@ -76,7 +76,7 @@ func (svc TableService) SaveEdit(req *vo.GenTableEditReq, c *gin.Context) error 
 	var userService UserService
 	user := userService.GetProfile(c)
 	if user != nil {
-		table.UpdateBy = user.LoginName
+		table.UpdateBy = user.UserName
 	}
 	err = lv_db.GetMasterGorm().Transaction(func(tx *gorm.DB) error {
 		var err error

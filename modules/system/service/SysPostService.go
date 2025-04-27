@@ -53,7 +53,7 @@ func (svc SysPostService) AddSave(req *vo.AddPostReq, c *gin.Context) (int64, er
 	var userService UserService
 	user := userService.GetProfile(c)
 	if user != nil {
-		entity.CreateBy = user.LoginName
+		entity.CreateBy = user.UserName
 	}
 
 	err := entity.Save()
@@ -78,7 +78,7 @@ func (svc SysPostService) EditSave(req *vo.EditSysPostReq, c *gin.Context) error
 	user := userService.GetProfile(c)
 
 	if user == nil {
-		entity.UpdateBy = user.LoginName
+		entity.UpdateBy = user.UserName
 	}
 
 	return entity.Updates()

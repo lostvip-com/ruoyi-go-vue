@@ -9,8 +9,8 @@ import (
 )
 
 type GenTableColumn struct {
-	ColumnId      int64  `gorm:"type:bigint(20);primary_key;auto_increment;编号;" json:"columnId"`
-	TableId       int64  `gorm:"type:bigint(20);comment:归属表编号;" json:"tableId"`
+	ColumnId      int64  `gorm:"size:20;primary_key;auto_increment;编号;" json:"columnId"`
+	TableId       int64  `gorm:"size:20;comment:归属表编号;" json:"tableId"`
 	ColumnName    string `gorm:"type:varchar(200);comment:列名称;" json:"columnName"`
 	ColumnComment string `gorm:"type:varchar(500);comment:列描述;" json:"columnComment"`
 	ColumnType    string `gorm:"type:varchar(100);comment:列类型;" json:"columnType"`

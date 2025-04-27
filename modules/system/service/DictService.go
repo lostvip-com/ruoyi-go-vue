@@ -9,6 +9,15 @@ import (
 type DictService struct {
 }
 
+var dictService *DictService
+
+func GetDictServiceInstance() *DictService {
+	if userService == nil {
+		dictService = &DictService{}
+	}
+	return dictService
+}
+
 // 根据字典类型和字典键值查询字典数据信息
 func (svc *DictService) DictLabel(dictType string, dictValue string) string {
 	dictData := &dictDataModel.SysDictData{DictType: dictType, DictValue: lv_conv.String(dictValue)}

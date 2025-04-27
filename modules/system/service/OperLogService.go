@@ -42,14 +42,13 @@ func (svc OperLogService) Add(c *gin.Context, title, inContent string, outConten
 		operLog.Status = 1
 	}
 
-	operLog.OperName = user.LoginName
+	operLog.OperName = user.UserName
 	operLog.RequestMethod = c.Request.Method
 
 	//获取用户部门
 	var deptServic DeptService
-	dept := deptServic.SelectDeptById(user.DeptId)
-
-	if dept != nil {
+	dept, err := deptServic.FindById(user.DeptId)
+	if err == nil {
 		operLog.DeptName = dept.DeptName
 	} else {
 		operLog.DeptName = ""
@@ -59,8 +58,7 @@ func (svc OperLogService) Add(c *gin.Context, title, inContent string, outConten
 	operLog.OperIp = c.ClientIP()
 	operLog.OperLocation = util.GetCityByIp(operLog.OperIp)
 	operLog.OperTime = time.Now()
-	err := operLog.Save()
-	return err
+	return operLog.Save()
 }
 
 // 根据条件分页查询用户列表

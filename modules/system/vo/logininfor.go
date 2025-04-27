@@ -7,7 +7,7 @@ import (
 // Fill with you ideas below.
 // 查询列表请求参数
 type LoginInfoPageReq struct {
-	LoginName string `form:"loginName"` //登录名
+	UserName  string `form:"UserName"`  //登录名
 	Status    string `form:"status"`    //状态
 	Ipaddr    string `form:"ipaddr"`    //登录地址
 	BeginTime string `form:"beginTime"` //数据范围

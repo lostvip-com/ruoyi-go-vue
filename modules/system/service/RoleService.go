@@ -15,6 +15,15 @@ import (
 
 type RoleService struct{}
 
+var roleService *RoleService
+
+func GetRoleServiceInstance() *RoleService {
+	if roleService == nil {
+		roleService = &RoleService{}
+	}
+	return roleService
+}
+
 // 根据主键查询数据
 func (svc *RoleService) SelectRecordById(id int64) (*model.SysRole, error) {
 	entity := &model.SysRole{RoleId: id}
@@ -48,7 +57,7 @@ func (svc *RoleService) AddSave(req *common_vo.AddRoleReq, c *gin.Context) (int6
 	user := userService.GetProfile(c)
 
 	if user != nil {
-		role.CreateBy = user.LoginName
+		role.CreateBy = user.UserName
 	}
 	session := lv_db.GetMasterGorm().Begin()
 	err := session.Save(role).Error
@@ -97,7 +106,7 @@ func (svc *RoleService) EditSave(req *common_vo.EditRoleReq, c *gin.Context) (in
 	var userService UserService
 	user := userService.GetProfile(c)
 	if user == nil {
-		r.CreateBy = user.LoginName
+		r.CreateBy = user.UserName
 	}
 	db := lv_db.GetMasterGorm()
 	err = db.Transaction(func(tx *gorm.DB) error {
@@ -148,7 +157,7 @@ func (svc *RoleService) AuthDataScope(req *common_vo.DataScopeReq, c *gin.Contex
 	var userService UserService
 	user := userService.GetProfile(c)
 	if user != nil {
-		entity.UpdateBy = user.LoginName
+		entity.UpdateBy = user.UserName
 	}
 	entity.UpdateTime = time.Now()
 
@@ -206,7 +215,7 @@ func (svc *RoleService) SelectRoleContactVo(userId int64) ([]common_vo.SysRoleFl
 	if err != nil || roleAll == nil {
 		return nil, errors.New("未查询到角色数据")
 	}
-	userRole, err := dao.SelectRoleContactVo(userId)
+	userRole, err := dao.FindRoles(userId)
 	if userRole != nil {
 		for i := range userRole {
 			for j := range roleAll {

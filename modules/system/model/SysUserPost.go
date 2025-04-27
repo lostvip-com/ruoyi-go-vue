@@ -12,8 +12,8 @@ import (
 
 // SysUserPost 用户与岗位关联
 type SysUserPost struct {
-	UserId  int64 `gorm:"type:bigint(20);primary_key;auto_increment;用户ID;"     json:"userId"  form:"userId"`
-	PostId  int64 `gorm:"type:bigint(20);primary_key;auto_increment;岗位ID;"     json:"postId"  form:"postId"`
+	UserId  int64 `gorm:"size:20;primary_key;auto_increment;用户ID;"     json:"userId"  form:"userId"`
+	PostId  int64 `gorm:"size:20;primary_key;auto_increment;岗位ID;"     json:"postId"  form:"postId"`
 	DelFlag int   `gorm:"type:tinyint(1);default:0;comment:删除标记;" column:del_flag; json:"delFlag"`
 }
 

@@ -39,8 +39,8 @@ type CheckEmailAllReq struct {
 }
 
 // 检查phone请求参数
-type CheckLoginNameReq struct {
-	LoginName string `form:"loginName"  binding:"required"`
+type CheckUserNameReq struct {
+	UserName string `form:"UserName"  binding:"required"`
 }
 
 // 检查phone请求参数
@@ -61,7 +61,7 @@ type CheckPasswordReq struct {
 
 // 查询用户列表请求参数
 type SelectUserPageReq struct {
-	LoginName   string `form:"loginName"`   //登录名
+	UserName    string `form:"UserName"`    //登录名
 	Status      string `form:"status"`      //状态
 	Phonenumber string `form:"phonenumber"` //手机号码
 	BeginTime   string `form:"beginTime"`   //数据范围
@@ -80,7 +80,7 @@ type AddUserReq struct {
 	UserName    string `form:"userName"  binding:"required,min=5,max=30"`
 	Phonenumber string `form:"phonenumber"  binding:"required,len=11"`
 	Email       string `form:"email"  binding:"required,email"`
-	LoginName   string `form:"loginName"  binding:"required"`
+	NickName    string `form:"nickName"  binding:"required"`
 	Password    string `form:"password"  binding:"required,min=5,max=30"`
 	DeptId      int64  `form:"deptId" binding:"required`
 	Sex         string `form:"sex"  binding:"required"`

@@ -55,14 +55,11 @@ func init() {
 	groupDept := router.New("/system/dept", auth2.TokenCheck(), auth2.PermitCheck)
 	deptContr := api.DeptController{}
 	groupDept.POST("/list", "system:dept:list", deptContr.ListAjax)
-	groupDept.GET("/add", "system:dept:add", deptContr.Add)
 	groupDept.POST("/add", "system:dept:add", deptContr.AddSave)
 	groupDept.POST("/remove", "system:dept:remove", deptContr.Remove)
 	groupDept.GET("/remove", "system:dept:remove", deptContr.Remove)
-	groupDept.GET("/edit", "system:dept:edit", deptContr.Edit)
 	groupDept.POST("/edit", "system:dept:edit", deptContr.EditSave)
 	groupDept.GET("/treeData", "system:dept:view", deptContr.TreeData)
-	groupDept.GET("/selectDeptTree", "system:dept:view", deptContr.SelectDeptTree)
 	groupDept.GET("/roleDeptTreeData", "system:dept:view", deptContr.RoleDeptTreeData)
 	// 用户管理路由
 	groupUser := router.New("/system/user", auth2.TokenCheck(), auth2.PermitCheck)
@@ -75,7 +72,6 @@ func init() {
 	groupUser.GET("/edit", "system:user:edit", user.Edit)
 	groupUser.POST("/edit", "system:user:edit", user.EditSave)
 	groupUser.POST("/export", "system:user:export", user.Export)
-	groupUser.GET("/resetPwd", "system:user:resetPwd", user.ResetPwd)
 	groupUser.POST("/resetPwd", "system:user:resetPwd", user.ResetPwdSave)
 
 	groupUser.POST("/changeStatus", "system:user:edit", user.ChangeStatus)
@@ -90,7 +86,7 @@ func init() {
 	groupProfile.POST("/resetSavePwd", "", profile.UpdatePassword)
 	groupProfile.POST("/checkPhoneOK", "", profile.CheckPhoneOK)
 	groupProfile.POST("/checkEmailOK", "", profile.CheckEmailOK)
-	groupProfile.POST("/checkLoginNameOK", "", profile.CheckLoginNameOK)
+	groupProfile.POST("/checkUserNameOK", "", profile.CheckUserNameOK)
 	groupProfile.POST("/checkPassword", "", profile.CheckPassword)
 	groupProfile.POST("/updateAvatar", "", profile.UpdateAvatar)
 	// 角色路由

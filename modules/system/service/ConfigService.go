@@ -98,7 +98,7 @@ func (svc *ConfigService) AddSave(req *common_vo.AddConfigReq, c *gin.Context) (
 	user := userService.GetProfile(c)
 
 	if user != nil {
-		entity.CreateBy = user.LoginName
+		entity.CreateBy = user.UserName
 	}
 
 	err := entity.Save()
@@ -121,7 +121,7 @@ func (svc *ConfigService) EditSave(req *common_vo.EditConfigReq, c *gin.Context)
 	user := userService.GetProfile(c)
 
 	if user == nil {
-		entity.UpdateBy = user.LoginName
+		entity.UpdateBy = user.UserName
 	}
 
 	err = entity.Update()

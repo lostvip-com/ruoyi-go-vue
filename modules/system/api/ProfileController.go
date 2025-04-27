@@ -76,13 +76,13 @@ func (w *ProfileController) EditPwd(c *gin.Context) {
 }
 
 // 检查登录名是否存在
-func (w *ProfileController) CheckLoginNameOK(c *gin.Context) {
-	var req userModel.CheckLoginNameReq
+func (w *ProfileController) CheckUserNameOK(c *gin.Context) {
+	var req userModel.CheckUserNameReq
 	if err := c.ShouldBind(&req); err != nil {
 		c.Writer.WriteString("1")
 		return
 	}
-	entity := model.SysUser{LoginName: req.LoginName}
+	entity := model.SysUser{UserName: req.UserName}
 	err := entity.FindOne()
 	if err == nil { //查到了
 		c.Writer.WriteString(global.JQ_BE_NO)
@@ -156,7 +156,7 @@ func (w *ProfileController) UpdateAvatar(c *gin.Context) {
 		util.ErrorResp(c).SetBtype(lv_dto.Buniss_Edit).SetMsg("没有获取到上传文件").Log("保存头像", gin.H{"userid": user.UserId}).WriteJsonExit()
 	}
 	curdate := time.Now().UnixNano()
-	filename := user.LoginName + strconv.FormatInt(curdate, 10) + ".png"
+	filename := user.UserName + strconv.FormatInt(curdate, 10) + ".png"
 	dts := saveDir + filename
 
 	if err := c.SaveUploadedFile(fileHead, dts); err != nil {

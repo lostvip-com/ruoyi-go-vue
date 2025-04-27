@@ -16,6 +16,15 @@ import (
 
 type DeptService struct{}
 
+var deptService *DeptService
+
+func GetDeptServiceInstance() *DeptService {
+	if userService == nil {
+		deptService = &DeptService{}
+	}
+	return deptService
+}
+
 // 新增保存信息
 func (svc *DeptService) AddSave(req *common_vo.AddDeptReq, c *gin.Context) (int64, error) {
 	if req.OrderNum == 0 {
@@ -36,7 +45,7 @@ func (svc *DeptService) AddSave(req *common_vo.AddDeptReq, c *gin.Context) (int6
 	lv_reflect.CopyProperties(req, dept0)
 	user := userService.GetProfile(c)
 	if user != nil && user.UserId > 0 {
-		dept0.CreateBy = user.LoginName
+		dept0.CreateBy = user.UserName
 	}
 	dept0.CreateTime = time.Now()
 	//这里跟原版不一样了，多加了一级自己的ID，以方便数据权限控制
@@ -72,7 +81,7 @@ func (svc *DeptService) EditSave(req *common_vo.EditDeptReq, c *gin.Context) (in
 		var userService UserService
 		user := userService.GetProfile(c)
 		if user != nil && user.UserId > 0 {
-			dept0.UpdateBy = user.LoginName
+			dept0.UpdateBy = user.UserName
 		}
 		dept0.UpdateTime = time.Now()
 		dept0.Update()
@@ -97,8 +106,8 @@ func (svc *DeptService) DeleteDeptById(deptId int64) error {
 	return dao.DeleteDeptById(deptId)
 }
 
-// SelectDeptById 根据部门ID查询信息
-func (svc *DeptService) SelectDeptById(deptId int64) *models.SysDept {
+// FindById 根据部门ID查询信息
+func (svc *DeptService) FindById(deptId int64) (*models.SysDept, error) {
 	var dao dao.SysDeptDao
 	dept, err := dao.SelectDeptById(deptId)
 	if dept.ParentId > 0 {
@@ -107,11 +116,7 @@ func (svc *DeptService) SelectDeptById(deptId int64) *models.SysDept {
 			dept.ParentName = parentDept.DeptName
 		}
 	}
-	if err != nil {
-		return nil
-	}
-
-	return dept
+	return dept, err
 }
 
 // 根据ID查询所有子部门

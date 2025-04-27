@@ -27,8 +27,8 @@ func (w *OnlineApi) ListAjax(c *gin.Context) {
 		tb.Where("t.session_id = ?", param.SessionId)
 	}
 
-	if param.LoginName != "" {
-		tb.Where("t.login_name like ?", "%"+param.LoginName+"%")
+	if param.UserName != "" {
+		tb.Where("t.user_name like ?", "%"+param.UserName+"%")
 	}
 
 	if param.DeptName != "" {

@@ -7,7 +7,7 @@ import (
 
 type SysUserOnline struct {
 	SessionId      string    `gorm:"type:varchar(64);primary_key;参数主键;" json:"sessionId"`
-	LoginName      string    `gorm:"type:varchar(64);comment:登录名;" json:"loginName"`
+	UserName       string    `gorm:"type:varchar(64);comment:登录名;" json:"UserName"`
 	DeptName       string    `gorm:"type:varchar(64);comment:登录名;" json:"deptName"`
 	Ipaddr         string    `gorm:"type:varchar(64);" json:"ipaddr"`
 	LoginLocation  string    `gorm:"type:varchar(64);" json:"loginLocation"`

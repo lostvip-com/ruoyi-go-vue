@@ -3,7 +3,8 @@ package api
 import (
 	"common/util"
 	"github.com/gin-gonic/gin"
-	"github.com/lostvip-com/lv_framework/web/lv_dto"
+	"net/http"
+	"system/model"
 	"system/service"
 	"system/vo"
 )
@@ -11,19 +12,22 @@ import (
 type HomeApi struct{}
 
 func (w *HomeApi) GetUserInfo(c *gin.Context) {
-	var req *lv_dto.IdsReq
-	//获取参数
-	if err := c.ShouldBind(&req); err != nil {
-		util.ErrorResp(c).SetBtype(lv_dto.Buniss_Del).SetMsg(err.Error()).WriteJsonExit()
+	u, ok := c.Get("user")
+	if !ok {
+		util.Fail(c, "fail!")
 	}
-	user := service.GetUserService().GetProfile(c)
+	user := u.(*model.SysUser)
+	roles := user.GetRoleKeys()
+	isAdmin := service.GetUserService().IsAdmin(user.UserId)
+	var permissions []string
+	if isAdmin {
+		permissions = []string{"*:*:*"}
+	} else {
+		permissions = service.GetPermissionServiceInstance().FindPerms(roles)
+	}
 
-	data := make(map[string]any)
-	data["roles"] = ""
-	data["permissions"] = ""
-	data["user"] = user
-	data["dept"] = ""
-	util.Success(c, data, "success")
+	//获取参数
+	c.AbortWithStatusJSON(http.StatusOK, gin.H{"code": 200, "msg": "success", "user": user, "roles": roles, "permissions": permissions})
 }
 
 // GetRouters 后台框架菜单

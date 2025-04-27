@@ -51,7 +51,7 @@ func (w *UserApi) AddSave(c *gin.Context) {
 	}
 	var userService service2.UserService
 	//判断登录名是否已注册
-	count, err := userService.CountCol("username", req.LoginName)
+	count, err := userService.CountCol("username", req.UserName)
 	if count > 0 {
 		util.Err(c, "登录名已经存在")
 		return
@@ -67,18 +67,16 @@ func (w *UserApi) AddSave(c *gin.Context) {
 	util.Success(c, uid, "新增用户成功")
 }
 
-// 用户修改页面
+// Edit 用户修改页面
 func (w *UserApi) Edit(c *gin.Context) {
 	id := lv_conv.Int64(c.Query("id"))
 	var userService service2.UserService
 	user, err := userService.SelectRecordById(id)
 	lv_err.HasErrAndPanic(err)
-	//获取部门信息
 	deptName := ""
 	if user.DeptId > 0 {
-		var deptServic service2.DeptService
-		dept := deptServic.SelectDeptById(user.DeptId)
-		if dept != nil {
+		dept, err := service2.GetDeptServiceInstance().FindById(user.DeptId)
+		if err == nil {
 			deptName = dept.DeptName
 		}
 	}
@@ -91,21 +89,5 @@ func (w *UserApi) Edit(c *gin.Context) {
 		"deptName": deptName,
 		"roles":    rolesP,
 		"posts":    postP,
-	})
-}
-
-// 重置密码
-func (w *UserApi) ResetPwd(c *gin.Context) {
-	id := lv_conv.Int64(c.Query("userId"))
-	var userService service2.UserService
-	user, err := userService.SelectRecordById(id)
-	if err != nil || user == nil {
-		util.WriteErrorTPL(c, gin.H{
-			"desc": "用户不存在",
-		})
-		return
-	}
-	util.WriteTpl(c, "system/user/resetPwd", gin.H{
-		"user": user,
 	})
 }

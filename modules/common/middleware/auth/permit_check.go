@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"common/myconf"
 	"github.com/gin-gonic/gin"
 	"github.com/lostvip-com/lv_framework/web/lv_dto"
 	"github.com/lostvip-com/lv_framework/web/router"
@@ -20,9 +19,11 @@ func PermitCheck(c *gin.Context) {
 		url = strings.TrimRight(url, "/")
 	}
 	//获取用户信息
-	var userService service.UserService
-	user := userService.GetProfile(c)
-	if userService.IsAdmin(user.UserId) {
+	userSvc := service.GetUserService()
+	userPtr := userSvc.GetProfile(c)
+	c.Set("userId", userPtr.UserId) //供api使用
+	c.Set("user", userPtr)          //供api使用
+	if userSvc.IsAdmin(userPtr.UserId) {
 		c.Next()
 		return
 	}
@@ -33,26 +34,21 @@ func PermitCheck(c *gin.Context) {
 		return
 	}
 	//获取用户菜单列表
-	service := service.MenuService{}
-	hasPermission, err := service.IsRolePermited(user.RoleKeys, permission)
+	menuSvc := service.GetMenuServiceInstance()
+	hasPermission, err := menuSvc.IsRolePermited(userPtr.GetRoleKeys(), permission)
 	if err != nil {
-		c.Redirect(http.StatusFound, myconf.GetConfigInstance().GetContextPath()+"/500")
-		c.Abort()
+		c.AbortWithStatusJSON(http.StatusForbidden, lv_dto.CommonRes{
+			Code: http.StatusForbidden,
+			Msg:  "Operate Forbidden",
+		})
 		return
 	}
 	//fmt.Println("url:" + url + "---permission:" + permission)
 	if !hasPermission {
-		ajaxString := c.Request.Header.Get("X-Requested-With")
-		if strings.EqualFold(ajaxString, "XMLHttpRequest") {
-			c.JSON(http.StatusOK, lv_dto.CommonRes{
-				Code: 403,
-				Msg:  "您没有操作权限",
-			})
-			c.Abort()
-		} else {
-			c.Redirect(http.StatusFound, myconf.GetConfigInstance().GetContextPath()+"/403")
-			c.Abort()
-		}
+		c.AbortWithStatusJSON(http.StatusForbidden, lv_dto.CommonRes{
+			Code: http.StatusForbidden,
+			Msg:  "Operate Forbidden",
+		})
 	}
 	c.Next()
 }

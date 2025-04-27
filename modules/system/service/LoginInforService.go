@@ -25,8 +25,8 @@ func (svc LoginInforService) SelectPageList(param *vo.LoginInfoPageReq) (*[]mode
 	db := lv_db.GetMasterGorm()
 	tb := db.Table("sys_logininfor")
 	if param != nil {
-		if param.LoginName != "" {
-			tb.Where("login_name like ?", "%"+param.LoginName+"%")
+		if param.UserName != "" {
+			tb.Where("user_name like ?", "%"+param.UserName+"%")
 		}
 		if param.Ipaddr != "" {
 			tb.Where("ipaddr like ?", "%"+param.Ipaddr+"%")
@@ -87,12 +87,12 @@ func (svc LoginInforService) DeleteRecordAll() error {
 // 导出excel
 func (svc LoginInforService) Export(param *vo.LoginInfoPageReq) (string, error) {
 	head := []string{"访问编号", "登录名称", "登录地址", "登录地点", "浏览器", "操作系统", "登录状态", "操作信息", "登录时间"}
-	col := []string{"info_id", "login_name", "ipaddr", "login_location", "browser", "os", "status", "msg", "login_time"}
+	col := []string{"info_id", "user_name", "ipaddr", "login_location", "browser", "os", "status", "msg", "login_time"}
 	db := lv_db.GetMasterGorm()
 	build := builder.Select(col...).From(" sys_logininfor ", "t")
 	if param != nil {
-		if param.LoginName != "" {
-			build.Where(builder.Like{"t.login_name", param.LoginName})
+		if param.UserName != "" {
+			build.Where(builder.Like{"t.user_name", param.UserName})
 		}
 
 		if param.Ipaddr != "" {
@@ -118,25 +118,25 @@ func (svc LoginInforService) Export(param *vo.LoginInfoPageReq) (string, error) 
 }
 
 // 记录密码尝试次数
-func (svc LoginInforService) SetPasswordCounts(loginName string) int {
+func (svc LoginInforService) SetPasswordCounts(UserName string) int {
 	curTimes := 0
-	curTimeObj, err := lv_cache.GetCacheClient().Get(USER_NOPASS_TIME + loginName)
+	curTimeObj, err := lv_cache.GetCacheClient().Get(USER_NOPASS_TIME + UserName)
 	if err == nil {
 		curTimes = cast.ToInt(curTimeObj)
 	}
 	curTimes = curTimes + 1
-	lv_cache.GetCacheClient().Set(USER_NOPASS_TIME+loginName, curTimes, 1*time.Minute)
+	lv_cache.GetCacheClient().Set(USER_NOPASS_TIME+UserName, curTimes, 1*time.Minute)
 
 	if curTimes >= global.ErrTimes2Lock {
-		svc.Lock(loginName)
+		svc.Lock(UserName)
 	}
 	return curTimes
 }
 
 // 记录密码尝试次数
-func (svc LoginInforService) GetPasswordCounts(loginName string) int {
+func (svc LoginInforService) GetPasswordCounts(UserName string) int {
 	curTimes := 0
-	curTimeObj, err := lv_cache.GetCacheClient().Get(USER_NOPASS_TIME + loginName)
+	curTimeObj, err := lv_cache.GetCacheClient().Get(USER_NOPASS_TIME + UserName)
 	if err != nil {
 		curTimes = cast.ToInt(curTimeObj)
 	}
@@ -144,24 +144,24 @@ func (svc LoginInforService) GetPasswordCounts(loginName string) int {
 }
 
 // 移除密码错误次数
-func (svc LoginInforService) RemovePasswordCounts(loginName string) {
-	lv_cache.GetCacheClient().Del(USER_NOPASS_TIME + loginName)
+func (svc LoginInforService) RemovePasswordCounts(UserName string) {
+	lv_cache.GetCacheClient().Del(USER_NOPASS_TIME + UserName)
 }
 
 // 锁定账号
-func (svc LoginInforService) Lock(loginName string) {
-	lv_cache.GetCacheClient().Set(USER_LOCK+loginName, true, 30*time.Minute)
+func (svc LoginInforService) Lock(UserName string) {
+	lv_cache.GetCacheClient().Set(USER_LOCK+UserName, true, 30*time.Minute)
 }
 
 // 解除锁定
-func (svc LoginInforService) Unlock(loginName string) {
-	lv_cache.GetCacheClient().Del(USER_LOCK + loginName)
+func (svc LoginInforService) Unlock(UserName string) {
+	lv_cache.GetCacheClient().Del(USER_LOCK + UserName)
 }
 
 // 检查账号是否锁定
-func (svc LoginInforService) CheckLock(loginName string) bool {
+func (svc LoginInforService) CheckLock(UserName string) bool {
 	result := false
-	rs, _ := lv_cache.GetCacheClient().Get(USER_LOCK + loginName)
+	rs, _ := lv_cache.GetCacheClient().Get(USER_LOCK + UserName)
 	if rs != "" {
 		result = true
 	}

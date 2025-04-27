@@ -274,9 +274,8 @@ func (svc *MenuService) transMenuName(menuName string, permsFlag bool) string {
 	}
 }
 
-func (svc *MenuService) IsRolePermited(roleKeys string, perms string) (bool, interface{}) {
-	roles := strings.Split(roleKeys, ",")
-	sql := "SELECT count(*) from sys_menu m,sys_role_menu rm,sys_role r where m.menu_id=rm.menu_id and rm.role_id = r.role_id and r.role_key in @Roles and m.perms=@Perms"
-	count, err := lv_dao.CountByNamedSql(sql, map[string]interface{}{"Roles": roles, "Perms": perms})
+func (svc *MenuService) IsRolePermited(roles []string, perm string) (bool, interface{}) {
+	sql := "SELECT count(*) from sys_menu m,sys_role_menu rm,sys_role r where m.menu_id=rm.menu_id and rm.role_id = r.role_id and r.role_key in @roles and m.perms=@perm"
+	count, err := lv_dao.CountByNamedSql(sql, map[string]interface{}{"roles": roles, "perm": perm})
 	return count > 0, err
 }

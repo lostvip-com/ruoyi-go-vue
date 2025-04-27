@@ -286,7 +286,7 @@ func (w *GenController) ImportTableSave(c *gin.Context) {
 		util2.ErrorResp(c).SetBtype(lv_dto.Buniss_Add).SetMsg("登录超时").Log("生成代码", gin.H{"tables": tables}).WriteJsonExit()
 	}
 
-	operName := user.LoginName
+	operName := user.UserName
 	tableService := service.TableService{}
 	tableArr := strings.Split(tables, ",")
 	tableList, err := tableService.SelectDbTableListByNames(tableArr)

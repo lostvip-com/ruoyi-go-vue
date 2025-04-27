@@ -31,19 +31,6 @@ func (w *DeptController) ListAjax(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
-// Add 新增页面
-func (w *DeptController) Add(c *gin.Context) {
-	pid := lv_conv.Int64(c.Query("pid"))
-
-	if pid == 0 {
-		pid = 100
-	}
-	service := service.DeptService{}
-	tmp := service.SelectDeptById(pid)
-
-	util2.BuildTpl(c, "system/dept/add").WriteTpl(gin.H{"dept": tmp})
-}
-
 // AddSave 新增页面保存
 func (w *DeptController) AddSave(c *gin.Context) {
 	var req *common_vo.AddDeptReq
@@ -59,30 +46,6 @@ func (w *DeptController) AddSave(c *gin.Context) {
 		return
 	}
 	util2.SucessResp(c).SetBtype(lv_dto.Buniss_Add).WriteJsonExit()
-}
-
-// Edit 修改页面
-func (w *DeptController) Edit(c *gin.Context) {
-	id := lv_conv.Int64(c.Query("id"))
-	if id <= 0 {
-		util2.BuildTpl(c, lv_dto.ERROR_PAGE).WriteTpl(gin.H{
-			"desc": "参数错误",
-		})
-		return
-	}
-	service := service.DeptService{}
-	dept := service.SelectDeptById(id)
-
-	if dept == nil || dept.DeptId <= 0 {
-		util2.BuildTpl(c, lv_dto.ERROR_PAGE).WriteTpl(gin.H{
-			"desc": "部门不存在",
-		})
-		return
-	}
-
-	util2.BuildTpl(c, "system/dept/edit").WriteTpl(gin.H{
-		"dept": dept,
-	})
 }
 
 // EditSave 修改页面保存
@@ -123,21 +86,6 @@ func (w *DeptController) TreeData(c *gin.Context) {
 	tenantId := session.GetTenantId(c)
 	result, _ := service.SelectDeptTree(0, "", "", tenantId)
 	c.JSON(http.StatusOK, result)
-}
-
-// 加载部门列表树选择页面
-func (w *DeptController) SelectDeptTree(c *gin.Context) {
-	deptId := lv_conv.Int64(c.Query("deptId"))
-	service := service.DeptService{}
-	deptPoint := service.SelectDeptById(deptId)
-
-	if deptPoint != nil {
-		util2.BuildTpl(c, "system/dept/tree").WriteTpl(gin.H{
-			"dept": *deptPoint,
-		})
-	} else {
-		util2.BuildTpl(c, "system/dept/tree").WriteTpl()
-	}
 }
 
 // 加载角色部门（数据权限）列表树

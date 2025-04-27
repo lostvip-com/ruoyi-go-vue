@@ -75,7 +75,7 @@ func (w *LoginApi) Login(c *gin.Context) {
 		return
 	}
 	//保存在线状态
-	token := lv_secret.Md5(user.LoginName + time.UnixDate)
+	token := lv_secret.Md5(user.UserName + time.UnixDate)
 	// 生成token
 	ua := c.Request.Header.Get("User-Agent")
 	roles, err := userService.GetRoleKeys(user.UserId)
@@ -101,7 +101,7 @@ func (w *LoginApi) Login(c *gin.Context) {
 
 func (w *LoginApi) SaveLogs(c *gin.Context, req *RegisterReq, msg string) {
 	var logininfor model.SysLoginInfo
-	logininfor.LoginName = req.UserName
+	logininfor.UserName = req.UserName
 	logininfor.Ipaddr = c.ClientIP()
 	userAgent := c.Request.Header.Get("User-Agent")
 	ua := user_agent.New(userAgent)

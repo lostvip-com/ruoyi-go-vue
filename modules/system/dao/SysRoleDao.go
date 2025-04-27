@@ -10,6 +10,15 @@ import (
 type SysRoleDao struct {
 }
 
+var roleDao *SysRoleDao
+
+func GetSysRoleDao() *SysRoleDao {
+	if roleDao == nil {
+		roleDao = &SysRoleDao{}
+	}
+	return roleDao
+}
+
 // 根据条件分页查询角色数据
 func (dao *SysRoleDao) SelectListPage(param *common_vo.RolePageReq) (result []model.SysRole, total int64, err error) {
 	db := lv_db.GetMasterGorm()
@@ -88,7 +97,7 @@ func (dao *SysRoleDao) SelectListAll(param *common_vo.RolePageReq) ([]common_vo.
 }
 
 // 根据用户ID查询角色
-func (dao *SysRoleDao) SelectRoleContactVo(userId int64) ([]model.SysRole, error) {
+func (dao *SysRoleDao) FindRoles(userId int64) ([]model.SysRole, error) {
 	db := lv_db.GetMasterGorm()
 
 	if db == nil {
@@ -97,13 +106,12 @@ func (dao *SysRoleDao) SelectRoleContactVo(userId int64) ([]model.SysRole, error
 	tb := db.Table("sys_role as r")
 	tb.Joins("Left join sys_user_role as ur on ur.role_id = r.role_id")
 	tb.Joins("Left join sys_user as u on u.user_id = ur.user_id")
-	tb.Joins("Left join sys_dept as d on u.dept_id = d.dept_id")
+	//tb.Joins("Left join sys_dept as d on u.dept_id = d.dept_id")
 	tb.Where("r.del_flag = '0'")
 	tb.Where("ur.user_id = ?", userId)
 	tb.Select("distinct r.role_id, r.role_name, r.role_key, r.role_sort, r.data_scope,r.status, r.del_flag, r.create_time, r.remark")
 
-	var result []model.SysRole
-
+	var result = make([]model.SysRole, 0)
 	err := tb.Find(&result).Error
 	return result, err
 }
