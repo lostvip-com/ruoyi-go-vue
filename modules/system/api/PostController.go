@@ -13,12 +13,7 @@ import (
 type PostController struct {
 }
 
-// 列表页
-func (w *PostController) List(c *gin.Context) {
-	util2.BuildTpl(c, "system/post/list").WriteTpl()
-}
-
-// 列表分页数据
+// ListAjax 列表分页数据
 func (w *PostController) ListAjax(c *gin.Context) {
 	var req *vo.SelectPostPageReq
 	//获取参数

@@ -12,10 +12,6 @@ func init() {
 	common := api.CommonController{}
 	gcommon.GET("/download", "", common.DownloadTmp)
 	gcommon.GET("/downloadUpload", "", common.DownloadUpload)
-	// 加载框架路由
-	group_home := router.New("/system", auth2.TokenCheck(), auth2.PermitCheck)
-	home := api.HomeApi{}
-	group_home.GET("/home", "", home.Home)
 	//系统配置
 	g1 := router.New("/system/config", auth2.TokenCheck(), auth2.PermitCheck)
 	config := api.ConfigController{}
@@ -58,7 +54,6 @@ func init() {
 	//dept
 	groupDept := router.New("/system/dept", auth2.TokenCheck(), auth2.PermitCheck)
 	deptContr := api.DeptController{}
-	groupDept.GET("/", "system:dept:view", deptContr.List)
 	groupDept.POST("/list", "system:dept:list", deptContr.ListAjax)
 	groupDept.GET("/add", "system:dept:add", deptContr.Add)
 	groupDept.POST("/add", "system:dept:add", deptContr.AddSave)
@@ -101,19 +96,13 @@ func init() {
 	// 角色路由
 	groupRole := router.New("/system/role", auth2.TokenCheck(), auth2.PermitCheck)
 	roleController := api.RoleController{}
-	groupRole.GET("/", "system:role:view", roleController.List)
 	groupRole.POST("/list", "system:role:list", roleController.ListAjax)
-	groupRole.GET("/add", "system:role:add", roleController.Add)
 	groupRole.POST("/add", "system:role:add", roleController.AddSave)
 	groupRole.POST("/remove", "system:role:remove", roleController.Remove)
-	groupRole.GET("/edit", "system:role:edit", roleController.Edit)
 	groupRole.POST("/edit", "system:role:edit", roleController.EditSave)
 	groupRole.POST("/changeStatus", "system:role:edit", roleController.ChangeStatus)
-	groupRole.GET("/authDataScope", "system:role:view", roleController.AuthDataScope)
 	groupRole.POST("/authDataScope", "system:role:view", roleController.AuthDataScopeSave)
-	groupRole.GET("/authUser", "system:role:view", roleController.AuthUser)
 	groupRole.POST("/allocatedList", "system:role:view", roleController.AllocatedList)
-	groupRole.GET("/selectUser", "system:role:view", roleController.SelectUser)
 	groupRole.POST("/unallocatedList", "system:role:view", roleController.UnallocatedList)
 	groupRole.POST("/selectAll", "system:role:view", roleController.SelectAll)
 	groupRole.POST("/cancel", "system:role:view", roleController.Cancel)
@@ -121,24 +110,18 @@ func init() {
 
 	// 菜单路由
 	groupMenu := router.New("/system/menu", auth2.TokenCheck(), auth2.PermitCheck)
-	menuController := api.MenuController{}
-	groupMenu.GET("/", "system:menu:view", menuController.List)
+	menuController := api.MenuApi{}
 	groupMenu.POST("/list", "system:menu:list", menuController.ListAjax)
-	groupMenu.GET("/add", "system:menu:add", menuController.Add)
 
 	groupMenu.POST("/add", "system:menu:add", menuController.AddSave)
 	groupMenu.GET("/remove", "system:menu:remove", menuController.Remove)
 	groupMenu.POST("/remove", "system:menu:remove", menuController.Remove)
-	groupMenu.GET("/edit", "system:menu:edit", menuController.Edit)
 	groupMenu.POST("/edit", "system:menu:edit", menuController.EditSave)
-	groupMenu.GET("/icon", "system:menu:view", menuController.Icon)
-	groupMenu.GET("/selectMenuTree", "system:menu:view", menuController.SelectMenuTree)
 	groupMenu.GET("/roleMenuTreeData", "system:menu:view", menuController.RoleMenuTreeData)
 	groupMenu.GET("/menuTreeData", "system:menu:view", menuController.MenuTreeData)
 	// 岗位路由
 	groupPost := router.New("/system/post", auth2.TokenCheck(), auth2.PermitCheck)
 	postController := api.PostController{}
-	groupPost.GET("/", "system:post:view", postController.List)
 	groupPost.POST("/list", "system:post:list", postController.ListAjax)
 	groupPost.GET("/add", "system:post:add", postController.Add)
 	groupPost.POST("/add", "system:post:add", postController.AddSave)

@@ -9,8 +9,17 @@ import (
 	"system/vo"
 )
 
+var menuDao *MenuDao
+
 // 修改页面请求参数
 type MenuDao struct {
+}
+
+func GetMenuDaoInstance() *MenuDao {
+	if menuDao == nil {
+		menuDao = &MenuDao{}
+	}
+	return menuDao
 }
 
 // 批量删除

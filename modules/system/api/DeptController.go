@@ -14,11 +14,6 @@ import (
 type DeptController struct {
 }
 
-// List 列表页
-func (w *DeptController) List(c *gin.Context) {
-	util2.BuildTpl(c, "system/dept/list").WriteTpl()
-}
-
 // ListAjax 列表分页数据
 func (w *DeptController) ListAjax(c *gin.Context) {
 	var service service.DeptService

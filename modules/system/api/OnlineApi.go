@@ -11,16 +11,11 @@ import (
 	"system/vo"
 )
 
-type OnlineController struct {
+type OnlineApi struct {
 }
 
-// 列表页
-func (w *OnlineController) List(c *gin.Context) {
-	util.WriteTpl(c, "monitor/list_online")
-}
-
-// 列表分页数据
-func (w *OnlineController) ListAjax(c *gin.Context) {
+// ListAjax 列表分页数据
+func (w *OnlineApi) ListAjax(c *gin.Context) {
 	var param vo.OnlinePageReq
 	//获取参数
 	err := c.ShouldBind(&param)
@@ -76,7 +71,7 @@ func (w *OnlineController) ListAjax(c *gin.Context) {
 }
 
 // 用户强退
-func (w *OnlineController) ForceLogout(c *gin.Context) {
+func (w *OnlineApi) ForceLogout(c *gin.Context) {
 	sessionId := c.PostForm("sessionId")
 	var userService service.SessionService
 	err := userService.ForceLogout(sessionId)
@@ -85,7 +80,7 @@ func (w *OnlineController) ForceLogout(c *gin.Context) {
 }
 
 // 批量强退
-func (w *OnlineController) BatchForceLogout(c *gin.Context) {
+func (w *OnlineApi) BatchForceLogout(c *gin.Context) {
 	var userService service.SessionService
 	ids := c.Query("ids")
 	if ids == "" {

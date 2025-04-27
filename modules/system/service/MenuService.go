@@ -1,7 +1,6 @@
 package service
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/lostvip-com/lv_framework/lv_db"
 	"github.com/lostvip-com/lv_framework/lv_db/lv_dao"
 	"github.com/lostvip-com/lv_framework/utils/lv_conv"
@@ -16,6 +15,15 @@ import (
 )
 
 type MenuService struct {
+}
+
+var menuService *MenuService
+
+func GetMenuServiceInstance() *MenuService {
+	if menuService == nil {
+		menuService = &MenuService{}
+	}
+	return menuService
 }
 
 // 根据主键查询数据
@@ -34,29 +42,23 @@ func (svc *MenuService) SelectListPage(params *vo.SelectMenuPageReq) (*[]model.S
 }
 
 // 根据主键删除数据
-func (svc *MenuService) DeleteRecordById(id int64) bool {
+func (svc *MenuService) DeleteRecordById(id int64) error {
 	err := (&model.SysMenu{MenuId: id}).Delete()
 	if err == nil {
 		lv_db.GetMasterGorm().Exec("delete from sys_menu where parent_id=?", id)
-		return true
 	}
-	return false
+	return err
 }
 
 // 添加数据
-func (svc *MenuService) AddSave(req *model.SysMenu, c *gin.Context) (int64, error) {
+func (svc *MenuService) AddSave(req *model.SysMenu) (int64, error) {
 	req.CreateTime = time.Now()
-	var userService UserService
-	user := userService.GetProfile(c)
-	if user == nil {
-		req.CreateBy = user.LoginName
-	}
-	err := req.Insert()
+	err := req.Save()
 	return req.MenuId, err
 }
 
 // 修改数据
-func (svc *MenuService) EditSave(req *model.SysMenu, c *gin.Context) (int64, error) {
+func (svc *MenuService) Edit(req *model.SysMenu) (int64, error) {
 	entity := &model.SysMenu{MenuId: req.MenuId}
 	err := entity.FindOne()
 	if err != nil {
@@ -74,11 +76,8 @@ func (svc *MenuService) EditSave(req *model.SysMenu, c *gin.Context) (int64, err
 	entity.IsCache = req.IsCache
 	entity.OrderNum = req.OrderNum
 	entity.UpdateTime = time.Now()
-	user := GetUserService().GetProfile(c)
-	if user == nil {
-		req.UpdateBy = user.LoginName
-	}
-	return entity.MenuId, entity.Update()
+	err = entity.Update()
+	return entity.MenuId, err
 }
 
 // 批量删除数据记录
@@ -134,14 +133,14 @@ func (svc *MenuService) ListMenuNormalByUser(userId int64, menuType string) (*[]
 }
 
 // SelectMenuNormalAll 获取管理员菜单数据,不区分资源类型传空即可
-func (svc *MenuService) SelectMenuNormalAll(userId int64, menuType string) (*[]vo.RouterVO, error) {
+func (svc *MenuService) SelectMenuNormalAll(userId int64, menuType string) ([]vo.RouterVO, error) {
 	var menus []model.SysMenu
-	var dao dao.MenuDao
+	menuDao := dao.GetMenuDaoInstance()
 	var err error
 	if userId == 0 {
-		menus, err = dao.SelectMenuNormalAll(menuType)
+		menus, err = menuDao.SelectMenuNormalAll(menuType)
 	} else {
-		menus, err = dao.SelectMenusByUserId(userId, menuType)
+		menus, err = menuDao.SelectMenusByUserId(userId, menuType)
 	}
 	lv_err.HasErrAndPanic(err)
 	arr := make([]vo.RouterVO, 0)
@@ -151,7 +150,7 @@ func (svc *MenuService) SelectMenuNormalAll(userId int64, menuType string) (*[]v
 		fillChildrenTree(&list0[i], pcMap)
 	}
 	//存入缓存
-	return &arr, nil
+	return arr, nil
 }
 
 func fillChildrenTree(v *vo.RouterVO, pcFlatMap map[int64][]vo.RouterVO) {

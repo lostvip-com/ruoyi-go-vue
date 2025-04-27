@@ -36,7 +36,7 @@ func (e *SysMenu) TableName() string {
 }
 
 // 增
-func (e *SysMenu) Insert() error {
+func (e *SysMenu) Save() error {
 	return lv_db.GetMasterGorm().Save(e).Error
 }
 

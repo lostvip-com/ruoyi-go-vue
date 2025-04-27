@@ -8,7 +8,7 @@ import (
 
 // 加载路由
 func init() {
-	serverController := api.ServiceController{}
+	serverController := api.ServiceApi{}
 	g0 := router.New("/health")
 	g0.GET("/", "", serverController.Health)
 	// 服务监控
@@ -26,17 +26,14 @@ func init() {
 
 	//操作日志
 	g3 := router.New("/monitor/operlog", auth2.TokenCheck(), auth2.PermitCheck)
-	operController := api.OperlogController{}
-	g3.GET("/", "monitor:operlog:view", operController.List)
+	operController := api.OperateLogApi{}
 	g3.POST("/list", "monitor:operlog:list", operController.ListAjax)
 	g3.POST("/remove", "monitor:operlog:export", operController.Remove)
 	g3.POST("/clean", "monitor:operlog:export", operController.Clean)
-	g3.GET("/detail", "monitor:operlog:detail", operController.Detail)
 
 	//在线用户
 	g4 := router.New("/monitor/online", auth2.TokenCheck(), auth2.PermitCheck)
-	onlineController := api.OnlineController{}
-	g4.GET("/", "monitor:online:view", onlineController.List)
+	onlineController := api.OnlineApi{}
 	g4.POST("/list", "monitor:online:list", onlineController.ListAjax)
 	g4.POST("/forceLogout", "monitor:online:forceLogout", onlineController.ForceLogout)
 	g4.POST("/batchForceLogout", "monitor:online:batchForceLogout", onlineController.BatchForceLogout)

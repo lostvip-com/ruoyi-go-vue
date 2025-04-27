@@ -20,10 +20,10 @@ import (
 
 var StartTime = time.Now()
 
-type ServiceController struct {
+type ServiceApi struct {
 }
 
-func (w *ServiceController) Server(c *gin.Context) {
+func (w *ServiceApi) Server(c *gin.Context) {
 	cpuNum := runtime.NumCPU() //核心数
 
 	var cpuUsed float64 = 0  //用户使用率
@@ -142,7 +142,7 @@ func (w *ServiceController) Server(c *gin.Context) {
 /**
  * 健康监测端点
  */
-func (w *ServiceController) Health(c *gin.Context) {
+func (w *ServiceApi) Health(c *gin.Context) {
 	ret := map[string]string{
 		"status": "UP",
 	}
