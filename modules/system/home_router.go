@@ -17,7 +17,7 @@ func init() {
 	//下在要检测是否登录
 	g1 := router.New("/", auth.TokenCheck(), auth.PermitCheck)
 	home := api.HomeApi{}
-	g1.GET("/logout", "", login.Logout)
+	g1.POST("/logout", "", login.Logout)
 	g1.GET("/getInfo", "system:user:view", home.GetUserInfo)
 	g1.GET("/getRouters", "system:user:view", home.GetRouters)
 }

@@ -2,23 +2,27 @@ package service
 
 import (
 	"common/global"
-	"common/util"
 	"errors"
 	"github.com/lostvip-com/lv_framework/lv_cache"
 	"github.com/lostvip-com/lv_framework/utils/lv_secret"
-	"github.com/lostvip-com/lv_framework/utils/lv_time"
-	"github.com/mssola/user_agent"
 	"strings"
 	"system/model"
-	"system/vo"
 	"time"
 )
 
 type SessionService struct{}
 
-func (svc *SessionService) IsSignedIn(tokenStr string) bool {
-	key := "login:" + tokenStr
-	num, err := lv_cache.GetCacheClient().Exists(key)
+var sessionService *SessionService
+
+func GetSessionServiceInstance() *SessionService {
+	if sessionService == nil {
+		sessionService = &SessionService{}
+	}
+	return sessionService
+}
+func (svc *SessionService) IsSignedIn(uuid string) bool {
+	loginKey := global.LOGIN_TOKEN_KEY + uuid
+	num, err := lv_cache.GetCacheClient().Exists(loginKey)
 	return err == nil && num > 0
 }
 
@@ -53,7 +57,7 @@ func (svc *SessionService) ForceLogout(token string) error {
 	return svc.SignOut(token)
 }
 
-func (svc *SessionService) SaveUserToSession(token string, user *model.SysUser, roleKeys string) error {
+func (svc *SessionService) SaveUserToSession(tokenId string, user *model.SysUser, roleKeys string) error {
 	//记录到redis
 	fieldMap := make(map[string]interface{})
 	fieldMap["userName"] = user.UserName
@@ -64,50 +68,50 @@ func (svc *SessionService) SaveUserToSession(token string, user *model.SysUser, 
 	fieldMap["deptId"] = user.DeptId
 	fieldMap["tenantId"] = user.TenantId //租户ID
 	//其它
-	key := "login:" + token
+	key := global.LOGIN_TOKEN_KEY + tokenId
 	err := lv_cache.GetCacheClient().HSet(key, fieldMap)
 	if err != nil {
-		return errors.New("redis 故障！" + err.Error())
+		panic("redis 故障！" + err.Error())
 	}
 	err = lv_cache.GetCacheClient().Expire(key, time.Hour)
 	if err != nil {
-		return errors.New("redis 故障！" + err.Error())
+		panic("redis 故障！" + err.Error())
 	}
 	return err
 }
 
 func (svc *SessionService) SaveLoginLog2DB(token string, user *model.SysUser, userAgent string, ip string) error {
 	//save to lv_db
-	ua := user_agent.New(userAgent)
-	os := ua.OS()
-	browser, _ := ua.Browser()
-	//移除登录次数记录
-	var logininforService LoginInforService
-	logininforService.RemovePasswordCounts(user.UserName)
+	//ua := user_agent.New(userAgent)
+	//os := ua.OS()
+	//browser, _ := ua.Browser()
+	////移除登录次数记录
+	//var logininforService LoginInforService
+	//logininforService.RemovePasswordCounts(user.UserName)
 	//
-	var userOnline vo.OnlineVo
-	// 保存用户信息到session
-	loginLocation := util.GetCityByIp(ip)
-	userOnline.UserName = user.UserName
-	userOnline.Browser = browser
-	userOnline.Os = os
-	userOnline.DeptName = ""
-	userOnline.Ipaddr = ip
-	userOnline.StartTimestamp = lv_time.GetCurrentTimeStr()
-	userOnline.LastAccessTime = lv_time.GetCurrentTimeStr()
-	userOnline.CreateTime = userOnline.StartTimestamp
-	userOnline.Status = "on_line"
-	userOnline.LoginLocation = loginLocation
-	userOnline.SessionId = token
-	err := userOnline.Delete()
-	if err != nil {
-		return err
-	}
-	err = userOnline.Save()
-	if err != nil {
-		return err
-	}
-	return err
+	//var userOnline vo.OnlineVo
+	//// 保存用户信息到session
+	//loginLocation := util.GetCityByIp(ip)
+	//userOnline.UserName = user.UserName
+	//userOnline.Browser = browser
+	//userOnline.Os = os
+	//userOnline.DeptName = ""
+	//userOnline.Ipaddr = ip
+	//userOnline.StartTimestamp = lv_time.GetCurrentTimeStr()
+	//userOnline.LastAccessTime = lv_time.GetCurrentTimeStr()
+	//userOnline.CreateTime = userOnline.StartTimestamp
+	//userOnline.Status = "on_line"
+	//userOnline.LoginLocation = loginLocation
+	//userOnline.SessionId = token
+	//err := userOnline.Delete()
+	//if err != nil {
+	//	return err
+	//}
+	//err = userOnline.Save()
+	//if err != nil {
+	//	return err
+	//}
+	return nil
 }
 
 func (svc *SessionService) Refresh(token string) {

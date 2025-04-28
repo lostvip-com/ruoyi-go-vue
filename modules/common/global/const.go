@@ -16,7 +16,7 @@ const DIR_TPL_CODE_GEN = "resources" + string(os.PathSeparator) + "tpl_gen"
 
 // 登录
 const SYS_DICT_KEY = "sys_dict:"
-const LOGIN_TOKEN_KEY = "login_tokens:"
+const LOGIN_TOKEN_KEY = "login:"
 const CAPTCHA_CODE_KEY = "captcha_codes:"
 const REPEAT_SUBMIT_KEY = "repeat_submit:" //防重提交 redis key
 const RATE_LIMIT_KEY = "rate_limit:"

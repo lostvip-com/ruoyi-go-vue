@@ -2,13 +2,13 @@ package api
 
 import (
 	global2 "common/global"
+	"common/middleware/auth"
 	util2 "common/util"
 	"github.com/gin-gonic/gin"
-	"github.com/lostvip-com/lv_framework/lv_log"
+	"github.com/google/uuid"
 	"github.com/lostvip-com/lv_framework/utils/lv_conv"
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
 	"github.com/lostvip-com/lv_framework/utils/lv_net"
-	"github.com/lostvip-com/lv_framework/utils/lv_secret"
 	"github.com/lostvip-com/lv_framework/utils/lv_try"
 	"github.com/mssola/user_agent"
 	"system/model"
@@ -75,21 +75,16 @@ func (w *LoginApi) Login(c *gin.Context) {
 		return
 	}
 	//保存在线状态
-	token := lv_secret.Md5(user.UserName + time.UnixDate)
+	newUUID, _ := uuid.NewUUID()
+	tokenId := newUUID.String()
+	token := auth.CreateToken(user.UserName, user.UserId, user.DeptId, tokenId)
 	// 生成token
 	ua := c.Request.Header.Get("User-Agent")
 	roles, err := userService.GetRoleKeys(user.UserId)
 	lv_err.HasErrAndPanic(err)
 	var svc service.SessionService
 	ip := lv_net.GetClientRealIP(c)
-	err = svc.SaveUserToSession(token, user, roles)
-	if err != nil {
-		lv_log.Error(err)
-		lv_err.PrintStackTrace(err)
-		w.SaveLogs(c, &req, "登录失败！"+err.Error()) //记录日志
-		util2.Fail(c, "登录失败")
-		return
-	}
+	err = svc.SaveUserToSession(tokenId, user, roles)
 	go func() {
 		lv_try.Catch(func() {
 			w.SaveLogs(c, &req, "login success") //记录日志

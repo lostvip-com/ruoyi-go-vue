@@ -50,5 +50,6 @@ func PermitCheck(c *gin.Context) {
 			Msg:  "Operate Forbidden",
 		})
 	}
+
 	c.Next()
 }
