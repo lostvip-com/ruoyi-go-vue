@@ -3,18 +3,24 @@ package model
 import (
 	"common/models"
 	"github.com/lostvip-com/lv_framework/lv_db"
+	"time"
 )
 
 type SysRole struct {
-	RoleId    int64  `gorm:"size:20;primary_key;auto_increment;角色ID;" json:"roleId"`
-	RoleName  string `gorm:"type:varchar(30);comment:角色名称;" json:"roleName"`
-	RoleKey   string `gorm:"type:varchar(100);comment:角色权限字符串;uniqueIndex:idx_roleKey" json:"roleKey"`
-	RoleSort  int    `gorm:"type:int(11);comment:显示顺序;" json:"roleSort"`
-	DataScope string `gorm:"type:char(1);comment:数据范围（1：全部数据权限 2：自定数据权限 3：本部门数据权限 4：本部门及以下数据权限）;" json:"dataScope"`
-	Status    string `gorm:"type:char(1);comment:角色状态（0正常 1停用）;" json:"status"`
-	UpdateBy  string `gorm:"type:varchar(64);comment:更新者;" json:"updateBy"`
-	CreateBy  string `gorm:"type:varchar(64);comment:创建者;" json:"updateBy"`
-	Remark    string `gorm:"type:varchar(500);comment:备注;" json:"remark"`
+	RoleId            int64     `json:"roleId" gorm:"column:role_id;primaryKey"` //表示主键
+	RoleName          string    `json:"roleName" gorm:"role_name"`
+	RoleKey           string    `json:"roleKey" gorm:"role_key"`
+	RoleSort          int       `json:"roleSort" gorm:"role_sort"`
+	DataScope         string    `json:"dataScope" gorm:"data_scope"`
+	Status            string    `json:"status" gorm:"status"`
+	MenuCheckStrictly bool      `json:"menuCheckStrictly" gorm:"menu_check_strictly"`
+	DeptCheckStrictly bool      `json:"deptCheckStrictly" gorm:"dept_check_strictly"`
+	DelFlag           string    `json:"delFlag" gorm:"del_flag"`
+	CreateBy          string    `json:"createBy" gorm:"create_by"`
+	CreateTime        time.Time `json:"createTime" gorm:"column:create_time;type:datetime;autoCreateTime"`
+	UpdateBy          string    `json:"updateBy" gorm:"update_by"`
+	UpdateTime        time.Time `json:"updateTime" gorm:"column:update_time;type:datetime;autoCreateTime"`
+	Remark            string    `json:"remark" gorm:"remark"`
 	models.BaseModel
 }
 
