@@ -19,7 +19,7 @@ npm run dev
 
 浏览器访问 http://localhost:80
 
-## 发布
+## 发布npm
 
 ```bash
 # 构建测试环境
