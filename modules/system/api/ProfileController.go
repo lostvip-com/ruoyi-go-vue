@@ -23,9 +23,7 @@ type ProfileController struct {
 func (w *ProfileController) Profile(c *gin.Context) {
 	var userService service.UserService
 	user := userService.GetProfile(c)
-	util.BuildTpl(c, "system/user/profile/profile").WriteTpl(gin.H{
-		"user": user,
-	})
+	util.SuccessData(c, user)
 }
 
 // 修改用户信息
@@ -55,24 +53,6 @@ func (w *ProfileController) UpdatePassword(c *gin.Context) {
 	err = userService.UpdatePassword(&req, c)
 	lv_err.HasErrAndPanic(err)
 	util.SuccessData(c, nil)
-}
-
-// 修改头像页面
-func (w *ProfileController) Avatar(c *gin.Context) {
-	var userService service.UserService
-	user := userService.GetProfile(c)
-	util.BuildTpl(c, "system/user/profile/avatar").WriteTpl(gin.H{
-		"user": user,
-	})
-}
-
-// 修改密码页面
-func (w *ProfileController) EditPwd(c *gin.Context) {
-	var userService service.UserService
-	user := userService.GetProfile(c)
-	util.BuildTpl(c, "system/user/profile/resetPwd").WriteTpl(gin.H{
-		"user": user,
-	})
 }
 
 // 检查登录名是否存在

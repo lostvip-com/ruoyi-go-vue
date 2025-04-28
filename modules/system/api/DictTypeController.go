@@ -4,7 +4,6 @@ import (
 	"common/common_vo"
 	util2 "common/util"
 	"github.com/gin-gonic/gin"
-	"github.com/lostvip-com/lv_framework/utils/lv_conv"
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
 	"github.com/lostvip-com/lv_framework/web/lv_dto"
 	"net/http"
@@ -15,12 +14,7 @@ import (
 type DictTypeController struct {
 }
 
-// 列表页
-func (w *DictTypeController) List(c *gin.Context) {
-	util2.BuildTpl(c, "system/dict/type/list").WriteTpl()
-}
-
-// 列表分页数据
+// ListAjax 列表分页数据
 func (w *DictTypeController) ListAjax(c *gin.Context) {
 	var req *common_vo.DictTypePageReq
 	//获取参数
@@ -37,11 +31,6 @@ func (w *DictTypeController) ListAjax(c *gin.Context) {
 	}
 
 	util2.BuildTable(c, total, rows).WriteJsonExit()
-}
-
-// 新增页面
-func (w *DictTypeController) Add(c *gin.Context) {
-	util2.BuildTpl(c, "system/dict/type/add").WriteTpl()
 }
 
 // 新增页面保存
@@ -69,31 +58,7 @@ func (w *DictTypeController) AddSave(c *gin.Context) {
 	util2.SucessResp(c).SetData(rid).Log("字典管理", req).WriteJsonExit()
 }
 
-// 修改页面
-func (w *DictTypeController) Edit(c *gin.Context) {
-	id := lv_conv.Int64(c.Query("id"))
-	if id <= 0 {
-		util2.BuildTpl(c, lv_dto.ERROR_PAGE).WriteTpl(gin.H{
-			"desc": "字典类型错误",
-		})
-		return
-	}
-	var dictTypeService service.DictTypeService
-	entity, err := dictTypeService.SelectRecordById(id)
-
-	if err != nil || entity == nil {
-		util2.BuildTpl(c, lv_dto.ERROR_PAGE).WriteTpl(gin.H{
-			"desc": "字典类型不存在",
-		})
-		return
-	}
-
-	util2.BuildTpl(c, "system/dict/type/edit").WriteTpl(gin.H{
-		"dict": entity,
-	})
-}
-
-// 修改页面保存
+// EditSave 修改页面保存
 func (w *DictTypeController) EditSave(c *gin.Context) {
 	var req *common_vo.EditDictTypeReq
 	//获取参数
@@ -116,7 +81,7 @@ func (w *DictTypeController) EditSave(c *gin.Context) {
 	util2.SucessResp(c).Log("字典类型管理", req).WriteJsonExit()
 }
 
-// 删除数据
+// Remove 删除数据
 func (w *DictTypeController) Remove(c *gin.Context) {
 	var req *lv_dto.IdsReq
 	//获取参数
@@ -132,67 +97,6 @@ func (w *DictTypeController) Remove(c *gin.Context) {
 	} else {
 		util2.ErrorResp(c).SetBtype(lv_dto.Buniss_Del).Log("字典管理", req).WriteJsonExit()
 	}
-}
-
-// 数据详情
-func (w *DictTypeController) Detail(c *gin.Context) {
-	dictId := lv_conv.Int64(c.Query("dictId"))
-	if dictId <= 0 {
-		util2.BuildTpl(c, lv_dto.ERROR_PAGE).WriteTpl(gin.H{
-			"desc": "参数错误",
-		})
-		return
-	}
-	var dictTypeService service.DictTypeService
-	dict, _ := dictTypeService.SelectRecordById(dictId)
-
-	if dict == nil {
-		util2.BuildTpl(c, lv_dto.ERROR_PAGE).WriteTpl(gin.H{
-			"desc": "字典类别不存在",
-		})
-		return
-	}
-
-	dictList, _ := dictTypeService.SelectListAll(nil)
-	if dictList == nil {
-		util2.BuildTpl(c, lv_dto.ERROR_PAGE).WriteTpl(gin.H{
-			"desc": "参数错误2",
-		})
-		return
-	}
-
-	util2.BuildTpl(c, "system/dict/data/list").WriteTpl(gin.H{
-		"dict":     dict,
-		"dictList": dictList,
-	})
-}
-
-// 选择字典树
-func (w *DictTypeController) SelectDictTree(c *gin.Context) {
-	columnId := lv_conv.Int64(c.Query("columnId"))
-	dictType := c.Query("dictType")
-	if columnId <= 0 || dictType == "" {
-		util2.BuildTpl(c, lv_dto.ERROR_PAGE).WriteTpl(gin.H{
-			"desc": "参数错误",
-		})
-
-		return
-	}
-
-	if dictType == "-" {
-		dictType = "-"
-	}
-	var dictTypeService service.DictTypeService
-	var dict model.SysDictType
-	rs := dictTypeService.SelectDictTypeByType(dictType)
-	if rs != nil {
-		dict = *rs
-	}
-
-	util2.BuildTpl(c, "system/dict/type/tree").WriteTpl(gin.H{
-		"columnId": columnId,
-		"dict":     dict,
-	})
 }
 
 // 导出

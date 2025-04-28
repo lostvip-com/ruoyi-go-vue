@@ -4,18 +4,12 @@ import (
 	userModel "common/common_vo"
 	"common/util"
 	"github.com/gin-gonic/gin"
-	"github.com/lostvip-com/lv_framework/utils/lv_conv"
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
 	"github.com/lostvip-com/lv_framework/web/lv_dto"
 	service2 "system/service"
 )
 
-// 用户列表页
-func (w *UserApi) List(c *gin.Context) {
-	util.BuildTpl(c, "system/user/list").WriteTpl()
-}
-
-// 用户列表分页数据
+// ListAjax 用户列表分页数据
 func (w *UserApi) ListAjax(c *gin.Context) {
 	var req *userModel.SelectUserPageReq
 	//获取参数
@@ -27,18 +21,6 @@ func (w *UserApi) ListAjax(c *gin.Context) {
 	result, total, err := userService.SelectRecordList(req)
 	lv_err.HasErrAndPanic(err)
 	util.BuildTable(c, total, result).WriteJsonExit()
-}
-
-// 用户新增页面
-func (w *UserApi) Add(c *gin.Context) {
-	var roleService service2.RoleService
-	rolesP, _ := roleService.SelectRecordAll(nil)
-	var postService service2.SysPostService
-	postP, _ := postService.SelectListAll(nil)
-	util.BuildTpl(c, "system/user/add").WriteTpl(gin.H{
-		"roles": rolesP,
-		"posts": postP,
-	})
 }
 
 // 保存新增用户数据
@@ -65,29 +47,4 @@ func (w *UserApi) AddSave(c *gin.Context) {
 	uid, err := userService.AddSave(req, c)
 	lv_err.HasErrAndPanic(err)
 	util.Success(c, uid, "新增用户成功")
-}
-
-// Edit 用户修改页面
-func (w *UserApi) Edit(c *gin.Context) {
-	id := lv_conv.Int64(c.Query("id"))
-	var userService service2.UserService
-	user, err := userService.SelectRecordById(id)
-	lv_err.HasErrAndPanic(err)
-	deptName := ""
-	if user.DeptId > 0 {
-		dept, err := service2.GetDeptServiceInstance().FindById(user.DeptId)
-		if err == nil {
-			deptName = dept.DeptName
-		}
-	}
-	var roleService service2.RoleService
-	rolesP, _ := roleService.SelectRoleContactVo(id)
-	var postService service2.SysPostService
-	postP, _ := postService.SelectPostsByUserId(id)
-	util.WriteTpl(c, "system/user/edit", gin.H{
-		"user":     user,
-		"deptName": deptName,
-		"roles":    rolesP,
-		"posts":    postP,
-	})
 }

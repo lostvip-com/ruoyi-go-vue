@@ -5,7 +5,6 @@ import (
 	"common/models"
 	"common/util"
 	"github.com/gin-gonic/gin"
-	"github.com/lostvip-com/lv_framework/utils/lv_conv"
 	"github.com/lostvip-com/lv_framework/web/lv_dto"
 	"system/service"
 )
@@ -54,30 +53,6 @@ func (w *DictDataController) AddSave(c *gin.Context) {
 		return
 	}
 	util.SucessResp(c).SetData(rid).SetBtype(lv_dto.Buniss_Add).Log("字典数据管理", req).WriteJsonExit()
-}
-
-// 修改页面
-func (w *DictDataController) Edit(c *gin.Context) {
-	id := lv_conv.Int64(c.Query("id"))
-	if id <= 0 {
-		util.BuildTpl(c, lv_dto.ERROR_PAGE).WriteTpl(gin.H{
-			"desc": "字典数据错误",
-		})
-		return
-	}
-	var dictService service.DictDataService
-	entity, err := dictService.SelectRecordById(id)
-
-	if err != nil || entity == nil {
-		util.BuildTpl(c, lv_dto.ERROR_PAGE).WriteTpl(gin.H{
-			"desc": "字典数据不存在",
-		})
-		return
-	}
-
-	util.BuildTpl(c, "system/dict/data/edit").WriteTpl(gin.H{
-		"dict": entity,
-	})
 }
 
 // 修改页面保存
