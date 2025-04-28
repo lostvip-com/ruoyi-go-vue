@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"github.com/lostvip-com/lv_framework/lv_db"
 	"github.com/lostvip-com/lv_framework/lv_db/lv_dao"
 	"github.com/lostvip-com/lv_framework/lv_log"
@@ -8,6 +9,7 @@ import (
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
 	"github.com/lostvip-com/lv_framework/web/lv_dto"
 	"github.com/spf13/cast"
+	"strconv"
 	"strings"
 	"system/dao"
 	"system/model"
@@ -147,7 +149,7 @@ func (svc *MenuService) SelectMenuNormalAll(userId int64, menuType string) ([]vo
 	arr := make([]vo.RouterVO, 0)
 	pcMap := svc.InitParentChildMap(menus)
 	list0 := pcMap[0]
-	for i := 1; i < len(list0); i++ {
+	for i := 0; i < len(list0); i++ {
 		it := &list0[i]
 		lv_log.Info(i, "#########################", lv_conv.ToJsonStr(it))
 		fillChildrenTree(it, pcMap)
@@ -160,14 +162,14 @@ func (svc *MenuService) SelectMenuNormalAll(userId int64, menuType string) ([]vo
 func fillChildrenTree(parent *vo.RouterVO, pcFlatMap map[int64][]vo.RouterVO) {
 	children := pcFlatMap[parent.MenuId] // 获取本节点的子节点
 	parent.Children = children
-	lv_log.Info("当前节点:", parent.MenuId, "children: ", len(children)) // 调试日志
+	//lv_log.Info("当前节点:", parent.MenuId, "children: ", len(children)) // 调试日志
 	if parent.Children == nil || len(parent.Children) == 0 {
 		return
 	}
 	for i := 0; i < len(parent.Children); i++ {
-		child := &parent.Children[i]                                         // 明确引用子节点
-		lv_log.Info("子节点:", i, " menuId:", child.MenuId, "child:", child) // 打印子节点详细信息
-		fillChildrenTree(child, pcFlatMap)                                   // 递归处理子节点
+		child := &parent.Children[i] // 明确引用子节点
+		//lv_log.Info("子节点:", i, " menuId:", child.MenuId, "child:", child) // 打印子节点详细信息
+		fillChildrenTree(child, pcFlatMap) // 递归处理子节点
 	}
 }
 
@@ -190,21 +192,16 @@ func (svc *MenuService) GenMenus(parent *model.SysMenu, allMenus []model.SysMenu
 }
 func (svc *MenuService) InitParentChildMap(menus []model.SysMenu) map[int64][]vo.RouterVO {
 	childrenMap := make(map[int64][]vo.RouterVO)
-	len := len(menus)
-	for i := 0; i < len; i++ {
-		if menus[i].MenuType == "F" { //忽略按钮
-			continue
-		}
-		childrenMap[menus[i].MenuId] = make([]vo.RouterVO, 0) //每个menu都预设子菜单项
-	}
-
-	for i := 0; i < len; i++ {
+	num := len(menus)
+	for i := 0; i < num; i++ {
 		menu := menus[i]
-		if menu.MenuType == "F" { //忽略按钮
-			continue
-		}
 		router := svc.menu2RouteVo(&menu) //格式变化
 		pid := menu.ParentId
+
+		if childrenMap[pid] == nil {
+			list := make([]vo.RouterVO, 0)
+			childrenMap[pid] = list
+		}
 		childrenMap[pid] = append(childrenMap[pid], router) //组织父子关系
 	}
 	return childrenMap
@@ -218,11 +215,17 @@ func (svc *MenuService) menu2RouteVo(menu *model.SysMenu) vo.RouterVO {
 	router := vo.RouterVO{
 		MenuId:    menu.MenuId,
 		ParentId:  menu.ParentId,
-		Name:      menu.RouteName,
-		Path:      menu.Path,
+		Name:      getRouteName(menu),
+		Path:      getRouterPath(menu),
+		Component: getComponent(menu),
 		Hidden:    menu.Visible == "1",
-		Component: menu.Component,
 		Meta:      meta}
+	if "M" == menu.MenuType {
+		if !isInnerLink(menu.Path) {
+			router.AlwaysShow = true
+			router.Redirect = "noRedirect"
+		}
+	}
 	return router
 }
 
@@ -291,4 +294,204 @@ func (svc *MenuService) IsRolePermited(roles []string, perm string) (bool, inter
 	sql := "SELECT count(*) from sys_menu m,sys_role_menu rm,sys_role r where m.menu_id=rm.menu_id and rm.role_id = r.role_id and r.role_key in @roles and m.perms=@perm"
 	count, err := lv_dao.CountByNamedSql(sql, map[string]interface{}{"roles": roles, "perm": perm})
 	return count > 0, err
+}
+
+func SelectMenuTreeByUserId(userId int) []model.SysMenu {
+	var menu []model.SysMenu
+	if userId == 1 { //超级管理
+		err := lv_db.GetMasterGorm().Where("menu_type in (?) ", []string{"M", "C"}).Where("status", "0").Order("parent_id").Order("order_num").Find(&menu).Error
+		if err != nil {
+			panic(errors.New("查询错误"))
+		}
+	} else {
+		err := lv_db.GetMasterGorm().Raw("select distinct m.* from sys_menu m left join sys_role_menu rm on m.menu_id = rm.menu_id left join sys_user_role ur on rm.role_id = ur.role_id left join sys_role ro on ur.role_id = ro.role_id left join sys_user u on ur.user_id = u.user_id where u.user_id = ? and m.menu_type in ('M', 'C') and m.status = 0  AND ro.status = 0 order by m.parent_id, m.order_num", userId).Scan(&menu).Error
+		if err != nil {
+			panic(errors.New("查询错误"))
+		}
+	}
+	return menu
+}
+
+func SelectMenuTree(userId int, menu *model.SysMenu) []model.SysMenu {
+	var menus []model.SysMenu
+	sql := "select distinct m.menu_id, m.parent_id, m.menu_name, m.path, m.component, m.`query`, m.visible, m.status, ifnull(m.perms,'') as perms, m.is_frame, m.is_cache, m.menu_type, m.icon, m.order_num, m.create_time "
+	sql += "from sys_menu m "
+	if IsAdmin(userId) {
+		var menuName = menu.MenuName
+		if menuName != "" {
+			sql += "AND m.menu_name like concat('%', " + menuName + ", '%')"
+		}
+		var visible = menu.Visible
+		if visible != "" {
+			sql += "AND m.visible = " + visible
+		}
+		var status = menu.Status
+		if status != "" {
+			sql += "AND m.status = " + status
+		}
+		err := lv_db.GetMasterGorm().Raw(sql).Scan(&menus).Error
+		if err != nil {
+			panic(errors.New(err.Error()))
+		}
+	} else {
+		sql += "left join sys_role_menu rm on m.menu_id = rm.menu_id "
+		sql += "left join sys_user_role ur on rm.role_id = ur.role_id "
+		sql += "left join sys_role ro on ur.role_id = ro.role_id "
+		sql += "where ur.user_id = " + strconv.Itoa(userId)
+		var menuName = menu.MenuName
+		if menuName != "" {
+			sql += "AND m.menu_name like concat('%', " + menuName + ", '%')"
+		}
+		var visible = menu.Visible
+		if visible != "" {
+			sql += "AND m.visible = " + visible
+		}
+		var status = menu.Status
+		if status != "" {
+			sql += "AND m.status = " + status
+		}
+		err := lv_db.GetMasterGorm().Raw(sql).Scan(&menus).Error
+		if err != nil {
+			panic(errors.New(err.Error()))
+		}
+	}
+	return menus
+}
+
+func IsAdmin(id int) bool {
+	return id == 1
+}
+
+func getRouteName(menu *model.SysMenu) string {
+	var name = FirstUpper(menu.Path)
+	if isMenuFrame(menu) {
+		return ""
+	}
+	return name
+}
+
+func getRouterPath(menu *model.SysMenu) string {
+	var routerPath = menu.Path
+	if isInnerLink(routerPath) {
+		return routerPath
+	}
+	// 非外链并且是一级目录（类型为目录）
+	if 0 == menu.ParentId && "M" == menu.MenuType && "1" == menu.IsFrame {
+		routerPath = "/" + menu.Path
+	} else if isMenuFrame(menu) {
+		routerPath = "/"
+	}
+	return routerPath
+}
+
+func getComponent(menu *model.SysMenu) string {
+	var component = "Layout"
+	if "" != menu.Component && !isMenuFrame(menu) {
+		component = menu.Component
+	} else if "" == menu.Component && isInnerLink(menu.Path) {
+		component = "InnerLink"
+	} else if "" == menu.Component && isParentView(menu) {
+		component = "ParentView"
+	}
+	return component
+}
+
+func isParentView(menu *model.SysMenu) bool {
+	return menu.ParentId != 0 && "M" == menu.MenuType
+}
+
+// 是否为外链
+func isInnerLink(path string) bool {
+	return strings.Contains(path, "http://") || strings.Contains(path, "https://")
+}
+
+func isMenuFrame(menu *model.SysMenu) bool {
+	return menu.ParentId == 0 && "C" == menu.MenuType && menu.IsFrame == "1"
+}
+
+/*首字母大写*/
+func FirstUpper(s string) string {
+	if s == "" {
+		return ""
+	}
+	return strings.ToUpper(s[:1]) + s[1:]
+}
+
+func SelectMenuListByRoleId(roleId string, menuCheckStrictly bool) []int {
+	var sql = "select m.menu_id from sys_menu m " +
+		"left join sys_role_menu rm on m.menu_id = rm.menu_id " +
+		"where rm.role_id = " + roleId + " "
+	if menuCheckStrictly {
+		sql += "and m.menu_id not in (select m.parent_id from sys_menu m inner join sys_role_menu rm on m.menu_id = rm.menu_id and rm.role_id = " + roleId + ")"
+	}
+	sql += "order by m.parent_id, m.order_num"
+	var menuIds []int
+	err := lv_db.GetMasterGorm().Raw(sql).Scan(&menuIds).Error
+	if err != nil {
+		panic(errors.New(err.Error()))
+	}
+	return menuIds
+}
+func FindMenuInfoById(menuId string) model.SysMenu {
+	sql := "select menu_id, menu_name, parent_id, order_num, path, " +
+		"component, `query`, is_frame, is_cache, menu_type, visible, status, ifnull(perms,'') as perms, icon, create_time " +
+		"from sys_menu "
+	sql = sql + "where menu_id = " + menuId
+	var list model.SysMenu
+	err := lv_db.GetMasterGorm().Raw(sql).First(&list).Error
+	if err != nil {
+		panic(errors.New(err.Error()))
+	}
+	return list
+}
+
+func hasChildByMenuId(menuId string) model.SysMenu {
+	var menu model.SysMenu
+	lv_db.GetMasterGorm().Where("parent_id = ? ", menuId).First(&menu)
+	return menu
+}
+
+func hasChildCountByMenuId(menuId string) int {
+	var menuCount int
+	err := lv_db.GetMasterGorm().Where("parent_id = ? ", menuId).Scan(&menuCount).Error
+	if err != nil {
+		panic(errors.New(err.Error()))
+	}
+	return menuCount
+}
+
+func checkMenuExistRole(menuId string) int {
+	var menuCount int
+	err := lv_db.GetMasterGorm().Raw("select count(1) from sys_role_menu where menu_id = " + menuId).Scan(&menuCount).Error
+	if err != nil {
+		panic(errors.New(err.Error()))
+	}
+	return menuCount
+}
+
+func DeleteMenu(menuIds string) error {
+	menu := hasChildByMenuId(menuIds)
+	if menu.MenuId != 0 {
+		return errors.New("存在子菜单,不允许删除")
+	}
+
+	menuCount := checkMenuExistRole(menuIds)
+	if menuCount > 0 {
+		return errors.New("菜单已分配,不允许删除")
+	}
+
+	err := lv_db.GetMasterGorm().Exec("delete from sys_menu where menu_id in (?) ", menuIds).Error
+	if err == nil {
+		errors.New("删除部门关联用户失败")
+	}
+	return err
+}
+
+func checkMenuNameUnique(parentId int, menuName string) int {
+	var menuCount int
+	err := lv_db.GetMasterGorm().Raw("select count(1) from sys_menu where menu_name = "+menuName+" and parent_id = "+strconv.Itoa(parentId), &menuCount).Error
+	if err != nil {
+		panic(errors.New(err.Error()))
+	}
+	return menuCount
 }

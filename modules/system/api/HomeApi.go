@@ -25,7 +25,6 @@ func (w *HomeApi) GetUserInfo(c *gin.Context) {
 	} else {
 		permissions = service.GetPermissionServiceInstance().FindPerms(roles)
 	}
-
 	//获取参数
 	c.AbortWithStatusJSON(http.StatusOK, gin.H{"code": 200, "msg": "success", "user": user, "roles": roles, "permissions": permissions})
 }

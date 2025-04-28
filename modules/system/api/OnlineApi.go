@@ -6,7 +6,6 @@ import (
 	"github.com/lostvip-com/lv_framework/lv_db"
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
 	"strings"
-	"system/model"
 	"system/service"
 	"system/vo"
 )
@@ -20,7 +19,7 @@ func (w *OnlineApi) ListAjax(c *gin.Context) {
 	//获取参数
 	err := c.ShouldBind(&param)
 	lv_err.HasErrAndPanic(err)
-	rows := make([]model.SysUserOnline, 0)
+	rows := make([]vo.OnlineVo, 0)
 	db := lv_db.GetMasterGorm()
 	tb := db.Table("sys_user_online t")
 	if param.SessionId != "" {

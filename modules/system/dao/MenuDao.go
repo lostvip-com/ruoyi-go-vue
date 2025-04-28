@@ -147,7 +147,7 @@ func (dao *MenuDao) SelectMenusByUserId(userId int64, menuType string) ([]model.
 	tb.Joins("LEFT join sys_role_menu as rm on m.menu_id = rm.menu_id")
 	tb.Joins("LEFT join sys_user_role as ur on rm.role_id = ur.role_id")
 	tb.Joins("LEFT join sys_role as ro on ur.role_id = ro.role_id")
-	//tb.Select("distinct m.*")
+	tb.Select("m.*")
 	tb.Where("ur.user_id = ? and  m.visible = 0  AND ro.status = 0", userId)
 	if lv_logic.IsNotEmpty(menuType) {
 		tb.Where("m.menu_type=?", menuType)

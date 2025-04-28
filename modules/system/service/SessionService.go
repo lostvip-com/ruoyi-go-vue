@@ -1,13 +1,16 @@
 package service
 
 import (
+	"common/global"
 	"common/util"
 	"errors"
 	"github.com/lostvip-com/lv_framework/lv_cache"
 	"github.com/lostvip-com/lv_framework/utils/lv_secret"
+	"github.com/lostvip-com/lv_framework/utils/lv_time"
 	"github.com/mssola/user_agent"
 	"strings"
 	"system/model"
+	"system/vo"
 	"time"
 )
 
@@ -40,22 +43,14 @@ func (svc *SessionService) SignIn(loginnName, password string) (*model.SysUser, 
 	return &user, nil
 }
 
-// 清空用户菜单缓存
-
-// 用户注销
+// SignOut 用户注销
 func (svc *SessionService) SignOut(tokenStr string) error {
-	lv_cache.GetCacheClient().Del("login:" + tokenStr)
-	entity := model.SysUserOnline{SessionId: "login:" + tokenStr}
-	entity.Delete()
-	return nil
+	return lv_cache.GetCacheClient().Del(global.LOGIN_TOKEN_KEY + tokenStr)
 }
 
-// 强退用户
+// ForceLogout 强退用户
 func (svc *SessionService) ForceLogout(token string) error {
-	svc.SignOut(token)
-	entity := model.SysUserOnline{SessionId: token}
-	entity.Delete()
-	return nil
+	return svc.SignOut(token)
 }
 
 func (svc *SessionService) SaveUserToSession(token string, user *model.SysUser, roleKeys string) error {
@@ -90,7 +85,7 @@ func (svc *SessionService) SaveLoginLog2DB(token string, user *model.SysUser, us
 	var logininforService LoginInforService
 	logininforService.RemovePasswordCounts(user.UserName)
 	//
-	var userOnline model.SysUserOnline
+	var userOnline vo.OnlineVo
 	// 保存用户信息到session
 	loginLocation := util.GetCityByIp(ip)
 	userOnline.UserName = user.UserName
@@ -98,9 +93,8 @@ func (svc *SessionService) SaveLoginLog2DB(token string, user *model.SysUser, us
 	userOnline.Os = os
 	userOnline.DeptName = ""
 	userOnline.Ipaddr = ip
-	userOnline.ExpireTime = 1440
-	userOnline.StartTimestamp = time.Now()
-	userOnline.LastAccessTime = time.Now()
+	userOnline.StartTimestamp = lv_time.GetCurrentTimeStr()
+	userOnline.LastAccessTime = lv_time.GetCurrentTimeStr()
 	userOnline.CreateTime = userOnline.StartTimestamp
 	userOnline.Status = "on_line"
 	userOnline.LoginLocation = loginLocation

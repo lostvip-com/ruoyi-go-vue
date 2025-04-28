@@ -1,9 +1,10 @@
 package api
 
 import (
+	"common/myconf"
 	"common/util"
 	"github.com/gin-gonic/gin"
-	"github.com/lostvip-com/lv_framework/lv_global"
+	"github.com/lostvip-com/lv_framework/lv_log"
 	"github.com/lostvip-com/lv_framework/utils/lv_conv"
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
 	"github.com/lostvip-com/lv_framework/utils/lv_net"
@@ -62,20 +63,17 @@ func (w *IndexApi) CaptchaImage(c *gin.Context) {
 	//返回值
 	params := url.Values{}
 	params.Set("uuid", clientId)
-	url_captcha := lv_global.Config().GetValueStr("url_captcha")
-	if url_captcha == "" {
-		util.Err(c, "请配置验证码地址url_captcha")
-		return
+
+	captcha := lv_dto.CaptchaRes{Code: 200, Uuid: clientId}
+	captcha.CaptchaEnabled = myconf.GetConfigInstance().GetBool("sys.account.captchaEnabled")
+	url_captcha := myconf.GetConfigInstance().GetValueStr("sys.url.captcha")
+	if !captcha.CaptchaEnabled || url_captcha == "" {
+		lv_log.Warn("未配置验证码地址url-captcha 或 未启用开关")
+	} else {
+		json, err := lv_net.Get(url_captcha)
+		lv_err.HasErrAndPanic(err)
+		dataMap := lv_conv.ToMap(json)
+		captcha.Img = dataMap["img"]
 	}
-	json, err := lv_net.PostForm(url_captcha, params)
-	lv_err.HasErrAndPanic(err)
-	dataMap := lv_conv.ToMap(json)
-	base64stringC := dataMap["data"]
-	c.JSON(http.StatusOK, lv_dto.CaptchaRes{
-		Code:           200,
-		CaptchaEnabled: true,
-		Uuid:           clientId,
-		Img:            base64stringC,
-		Msg:            "操作成功",
-	})
+	c.JSON(http.StatusOK, captcha)
 }

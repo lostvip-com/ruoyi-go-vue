@@ -56,3 +56,28 @@ type EditMenuReq struct {
 	Perms    string `form:"perms""`
 	Visible  string `form:"visible"`
 }
+
+type MenuVo struct {
+	Name       string   `json:"name"`
+	Path       string   `json:"path,omitempty"`
+	Hidden     bool     `json:"hidden" `
+	Redirect   string   `json:"redirect,omitempty"`
+	Component  string   `json:"component,omitempty" `
+	Query      string   `json:"query,omitempty"`
+	AlwaysShow bool     `json:"alwaysShow,omitempty" `
+	MetaVo     MetaVo   `json:"meta" `
+	Children   []MenuVo `json:"children,omitempty"`
+}
+
+type MetaVo struct {
+	Title   string `json:"title"`
+	Icon    string `json:"icon" `
+	NoCache bool   `json:"noCache" `
+	Link    string `json:"link,omitempty" `
+}
+
+type MenuTreeSelect struct {
+	Id       int              `json:"id"`
+	Label    string           `json:"label"`
+	Children []MenuTreeSelect `json:"children,omitempty"`
+}

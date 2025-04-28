@@ -7,7 +7,7 @@ type RouterVO struct {
 	Hidden     bool       `json:"hidden"`
 	Redirect   string     `json:"redirect"`
 	Component  string     `json:"component"`
-	AlwaysShow string     `json:"alwaysShow"`
+	AlwaysShow bool       `json:"alwaysShow"`
 	Children   []RouterVO `json:"children"`
 	Meta       Meta       `json:"meta"`
 
