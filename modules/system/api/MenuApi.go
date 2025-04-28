@@ -87,14 +87,12 @@ func (w *MenuApi) Remove(c *gin.Context) {
 
 // MenuTreeData 加载所有菜单列表树
 func (w *MenuApi) MenuTreeData(c *gin.Context) {
-	var userService service.UserService
-	user := userService.GetProfile(c)
+	user := service.GetUserService().GetProfile(c)
 	if user == nil {
 		util.ErrorResp(c).SetMsg("登录超时").Log("菜单管理", gin.H{"userId": user.UserId}).WriteJsonExit()
 		return
 	}
-	var service service.MenuService
-	ztrees, err := service.MenuTreeData(user.UserId)
+	ztrees, err := service.GetMenuServiceInstance().MenuTreeData(user.UserId)
 	if err != nil {
 		util.ErrorResp(c).SetMsg(err.Error()).Log("菜单管理", gin.H{"userId": user.UserId}).WriteJsonExit()
 		return
