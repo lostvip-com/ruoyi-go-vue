@@ -20,7 +20,6 @@ router.beforeEach((to, from, next) => {
   if (getToken()) {
     to.meta.title && store.dispatch('settings/setTitle', to.meta.title)
     /* has token*/
-    debugger
     if (to.path === '/login') {
       next({ path: '/' })
       NProgress.done()

@@ -61,7 +61,6 @@ const user = {
           if (!isHttp(avatar)) {
             avatar = (isEmpty(avatar)) ? defAva : process.env.VUE_APP_BASE_API + avatar
           }
-          debugger
           if (res.roles && res.roles.length > 0) { // 验证返回的roles是否是一个非空数组
             commit('SET_ROLES', res.roles)
             commit('SET_PERMISSIONS', res.permissions)
