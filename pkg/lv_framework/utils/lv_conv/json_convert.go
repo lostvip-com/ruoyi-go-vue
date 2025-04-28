@@ -5,14 +5,14 @@ import (
 	"github.com/spf13/cast"
 )
 
-func ToJsonStr(e interface{}) (string, error) {
+func ToJsonStr(e interface{}) string {
 	//格式化
 	//b, err := json.MarshalIndent(user, "", "  ")
 	b, err := json.Marshal(e)
 	if err == nil {
-		return string(b), err
+		return string(b)
 	} else {
-		return "", err
+		return "{}"
 	}
 }
 
@@ -31,23 +31,17 @@ func ToMap(jsonStr string) map[string]any {
 }
 
 func StructToMap(entity any) map[string]any {
-	jsonStr, err := ToJsonStr(entity)
-	if err != nil {
-		return nil
-	}
+	jsonStr := ToJsonStr(entity)
 	return ToMap(jsonStr)
 }
 
-func StructToMapStr(entity any) (map[string]string, error) {
-	jsonStr, err := ToJsonStr(entity)
-	if err != nil {
-		return nil, err
-	}
+func StructToMapStr(entity any) map[string]string {
+	jsonStr := ToJsonStr(entity)
 	mp := ToMap(jsonStr)
 	//值全转转为字符串格式
 	result := make(map[string]string)
 	for k, v := range mp {
 		result[k] = cast.ToString(v)
 	}
-	return result, err
+	return result
 }

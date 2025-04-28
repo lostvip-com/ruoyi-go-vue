@@ -26,7 +26,7 @@ func Assert1(conditionYes bool, msg string) {
 		var res lv_dto.Resp
 		res.Msg = msg
 		res.Code = 1
-		json, _ := lv_conv.ToJsonStr(res)
+		json := lv_conv.ToJsonStr(res)
 		panic(json)
 	}
 }
