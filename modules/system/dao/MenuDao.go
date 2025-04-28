@@ -4,7 +4,6 @@ import (
 	"errors"
 	"github.com/lostvip-com/lv_framework/lv_db"
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
-	"github.com/lostvip-com/lv_framework/utils/lv_logic"
 	"system/model"
 	"system/vo"
 )
@@ -116,14 +115,14 @@ func (dao *MenuDao) SelectListAll(param *vo.SelectMenuPageReq) ([]model.SysMenu,
 }
 
 // 获取管理员菜单数据
-func (dao *MenuDao) SelectMenuNormalAll(menuType string) ([]model.SysMenu, error) {
+func (dao *MenuDao) SelectMenuNormalAll(noF bool) ([]model.SysMenu, error) {
 	var result []model.SysMenu
 
 	tb := lv_db.GetMasterGorm()
 	tb = tb.Table("sys_menu as m")
 	tb.Where(" m.visible = 0")
-	if lv_logic.IsNotEmpty(menuType) {
-		tb.Where("m.menu_type=?", menuType)
+	if noF == true {
+		tb.Where(" m.menu_type!='F' ")
 	}
 	tb.Order("m.parent_id, m.order_num")
 	err := tb.Find(&result).Error
@@ -136,7 +135,7 @@ func (dao *MenuDao) SelectMenuNormalAll(menuType string) ([]model.SysMenu, error
 }
 
 // SelectMenusByUserId 根据用户ID读取菜单数据
-func (dao *MenuDao) SelectMenusByUserId(userId int64, menuType string) ([]model.SysMenu, error) {
+func (dao *MenuDao) SelectMenusByUserId(userId int64, noF bool) ([]model.SysMenu, error) {
 	var result []model.SysMenu
 
 	db := lv_db.GetMasterGorm()
@@ -149,8 +148,8 @@ func (dao *MenuDao) SelectMenusByUserId(userId int64, menuType string) ([]model.
 	tb.Joins("LEFT join sys_role as ro on ur.role_id = ro.role_id")
 	tb.Select("m.*")
 	tb.Where("ur.user_id = ? and  m.visible = 0  AND ro.status = 0", userId)
-	if lv_logic.IsNotEmpty(menuType) {
-		tb.Where("m.menu_type=?", menuType)
+	if noF == true {
+		tb.Where(" m.menu_type!='F' ")
 	}
 	tb.Order("m.parent_id, m.order_num")
 	err := tb.Find(&result).Error

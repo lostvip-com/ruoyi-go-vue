@@ -95,9 +95,9 @@ func (svc *MenuService) DeleteRecordByIds(ids string) int64 {
 }
 
 // MenuTreeData 加载所有菜单列表树
-func (svc *MenuService) MenuTreeData(userId int64, menuType string) (*[]lv_dto.Ztree, error) {
+func (svc *MenuService) MenuTreeData(userId int64) (*[]lv_dto.Ztree, error) {
 	var result *[]lv_dto.Ztree
-	menuList, err := svc.SelectMenuNormalByUser(userId, menuType)
+	menuList, err := svc.SelectMenuNormalByUser(userId)
 	if err != nil {
 		return nil, err
 	}
@@ -109,15 +109,15 @@ func (svc *MenuService) MenuTreeData(userId int64, menuType string) (*[]lv_dto.Z
 }
 
 // 获取用户的菜单数据
-func (svc *MenuService) SelectMenuNormalByUser(userId int64, menuType string) (*[]model.SysMenu, error) {
+func (svc *MenuService) SelectMenuNormalByUser(userId int64) (*[]model.SysMenu, error) {
 	var userService UserService
 	//从数据库中读取
 	var dao dao.MenuDao
 	if userService.IsAdmin(userId) {
-		menus, err := dao.SelectMenuNormalAll(menuType)
+		menus, err := dao.SelectMenuNormalAll(true)
 		return &menus, err
 	} else {
-		menus, err := dao.SelectMenusByUserId(userId, menuType)
+		menus, err := dao.SelectMenusByUserId(userId, true)
 		return &menus, err
 	}
 }
@@ -127,23 +127,23 @@ func (svc *MenuService) ListMenuNormalByUser(userId int64, menuType string) (*[]
 	var dao dao.MenuDao
 	var userService UserService
 	if userService.IsAdmin(userId) {
-		menus, err := dao.SelectMenuNormalAll(menuType)
+		menus, err := dao.SelectMenuNormalAll(true)
 		return &menus, err
 	} else {
-		menus, err := dao.SelectMenusByUserId(userId, menuType)
+		menus, err := dao.SelectMenusByUserId(userId, true)
 		return &menus, err
 	}
 }
 
 // SelectMenuNormalAll 获取管理员菜单数据,不区分资源类型传空即可
-func (svc *MenuService) SelectMenuNormalAll(userId int64, menuType string) ([]vo.RouterVO, error) {
+func (svc *MenuService) SelectMenuNormalAll(userId int64) ([]vo.RouterVO, error) {
 	var menus []model.SysMenu
 	menuDao := dao.GetMenuDaoInstance()
 	var err error
 	if userId == 0 {
-		menus, err = menuDao.SelectMenuNormalAll(menuType)
+		menus, err = menuDao.SelectMenuNormalAll(true)
 	} else {
-		menus, err = menuDao.SelectMenusByUserId(userId, menuType)
+		menus, err = menuDao.SelectMenusByUserId(userId, true)
 	}
 	lv_err.HasErrAndPanic(err)
 	arr := make([]vo.RouterVO, 0)

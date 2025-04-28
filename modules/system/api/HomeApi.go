@@ -36,9 +36,9 @@ func (w *HomeApi) GetRouters(c *gin.Context) {
 	var menus []vo.RouterVO
 	menuService := service.MenuService{}
 	if userService.IsAdmin(user.UserId) {
-		menus, _ = menuService.SelectMenuNormalAll(0, "")
+		menus, _ = menuService.SelectMenuNormalAll(0)
 	} else {
-		menus, _ = menuService.SelectMenuNormalAll(user.UserId, "")
+		menus, _ = menuService.SelectMenuNormalAll(user.UserId)
 	}
 	//获取配置数
 	util.Success(c, menus, "success")

@@ -94,7 +94,7 @@ func (w *MenuApi) MenuTreeData(c *gin.Context) {
 		return
 	}
 	var service service.MenuService
-	ztrees, err := service.MenuTreeData(user.UserId, "M")
+	ztrees, err := service.MenuTreeData(user.UserId)
 	if err != nil {
 		util.ErrorResp(c).SetMsg(err.Error()).Log("菜单管理", gin.H{"userId": user.UserId}).WriteJsonExit()
 		return

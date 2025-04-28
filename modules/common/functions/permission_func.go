@@ -39,9 +39,9 @@ func HasPermi(u interface{}, permission string) string {
 	var menuDao dao.MenuDao
 	var menus []model.SysMenu
 	if userService.IsAdmin(uid) {
-		menus, _ = menuDao.SelectMenuNormalAll("")
+		menus, _ = menuDao.SelectMenuNormalAll(false)
 	} else {
-		menus, _ = menuDao.SelectMenusByUserId(uid, "")
+		menus, _ = menuDao.SelectMenusByUserId(uid, false)
 	}
 
 	if menus != nil && len(menus) > 0 {
