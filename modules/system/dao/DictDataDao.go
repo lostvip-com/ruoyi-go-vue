@@ -84,9 +84,9 @@ func (dao *DictDataDao) SelectListAll(param *common_vo.SelectDictDataPageReq) ([
 	return result, err
 }
 
-// 批量删除
-func (d *DictDataDao) DeleteBatch(ids ...int64) error {
-	err := lv_db.GetMasterGorm().Delete(&models.SysDictData{}, ids).Error
+// DeleteBatch 批量删除
+func (d *DictDataDao) DeleteBatch(codes ...int64) error {
+	err := lv_db.GetMasterGorm().Where("dict_code in ?").Delete(codes).Error
 	return err
 }
 

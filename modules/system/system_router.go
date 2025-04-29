@@ -8,10 +8,10 @@ import (
 
 func init() {
 
-	gcommon := router.New("/common", auth2.TokenCheck(), auth2.PermitCheck)
-	common := api.CommonController{}
-	gcommon.GET("/download", "", common.DownloadTmp)
-	gcommon.GET("/downloadUpload", "", common.DownloadUpload)
+	common := router.New("/common", auth2.TokenCheck(), auth2.PermitCheck)
+	commonApi := api.CommonApi{}
+	common.GET("/download", "", commonApi.DownloadTmp)
+	common.GET("/downloadUpload", "", commonApi.DownloadUpload)
 	//系统配置
 	system := router.New("/system", auth2.TokenCheck(), auth2.PermitCheck)
 	config := api.ConfigController{}
@@ -25,23 +25,22 @@ func init() {
 	system.POST("/config/export", "system:config:export", config.Export)
 	system.POST("/config/checkConfigKeyUnique", "system:config:view", config.CheckConfigKeyUnique)
 	// 字典类型参数路由
-	dictType := api.DictTypeController{}
-	system.POST("/dict/type/list", "system:dict:list", dictType.ListAjax)
-	system.POST("/dict/type/add", "system:dict:add", dictType.AddSave)
-	system.POST("/dict/type/remove", "system:dict:remove", dictType.Remove)
-	system.GET("/dict/type/remove", "system:dict:remove", dictType.Remove)
-	system.POST("/dict/type/edit", "system:dict:edit", dictType.EditSave)
+	dictType := api.DictTypeApi{}
+	system.GET("/dict/type/list", "system:dict:list", dictType.ListAjax)
+	system.GET("/type/:dictId", dictType.GetTypeDict)
+	system.POST("/dict/type", "system:dict:add", dictType.AddSave)
+	system.PUT("/dict/type", "system:dict:edit", dictType.EditSave)
+	system.DELETE("/dict/type/:dictId", "system:dict:remove", dictType.Remove)
 	system.POST("/dict/type/export", "system:dict:export", dictType.Export)
-	system.POST("/dict/type/checkDictTypeUniqueAll", "system:dict:view", dictType.CheckDictTypeUniqueAll)
-	system.POST("/dict/type/checkDictTypeUnique", "system:dict:view", dictType.CheckDictTypeUnique)
+	//system.POST("/dict/type/checkDictTypeUniqueAll", "system:dict:view", dictType.CheckDictTypeUniqueAll)
+	//system.POST("/dict/type/checkDictTypeUnique", "system:dict:view", dictType.CheckDictTypeUnique)
 	system.GET("/dict/type/treeData", "system:dict:view", dictType.TreeData)
 	// 字典内容参数路由
 	dictData := api.DictDataController{}
-	system.POST("/dict/data/list", "system:dict:view", dictData.ListAjax)
-	system.GET("/dict/data/add", "system:dict:add", dictData.Add)
-	system.POST("/dict/data/add", "system:dict:add", dictData.AddSave)
-	system.POST("/dict/data/remove", "system:dict:remove", dictData.Remove)
-	system.POST("/dict/data/edit", "system:dict:edit", dictData.EditSave)
+	system.GET("/dict/data/list", "system:dict:view", dictData.ListAjax)
+	system.POST("/dict/data", "system:dict:add", dictData.AddSave)
+	system.PUT("/dict/data", "system:dict:edit", dictData.EditSave)
+	system.DELETE("/dict/data/:dictCodes", "system:dict:remove", dictData.Remove)
 	system.POST("/dict/data/export", "system:dict:export", dictData.Export)
 	//dept
 	deptContr := api.DeptController{}

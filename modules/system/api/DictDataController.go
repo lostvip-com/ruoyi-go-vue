@@ -31,12 +31,6 @@ func (w *DictDataController) ListAjax(c *gin.Context) {
 	util.BuildTable(c, total, rows).WriteJsonExit()
 }
 
-// 新增页面
-func (w *DictDataController) Add(c *gin.Context) {
-	dictType := c.Query("dictType")
-	util.BuildTpl(c, "system/dict/data/add").WriteTpl(gin.H{"dictType": dictType})
-}
-
 // 新增页面保存
 func (w *DictDataController) AddSave(c *gin.Context) {
 	var req *common_vo.AddDictDataReq
@@ -58,40 +52,32 @@ func (w *DictDataController) AddSave(c *gin.Context) {
 // 修改页面保存
 func (w *DictDataController) EditSave(c *gin.Context) {
 	var req *common_vo.EditDictDataReq
-	//获取参数
 	if err := c.ShouldBind(&req); err != nil {
-		util.ErrorResp(c).SetBtype(lv_dto.Buniss_Edit).SetMsg(err.Error()).Log("字典数据管理", req).WriteJsonExit()
+		util.Fail(c, err.Error())
 		return
 	}
 	var dictService service.DictDataService
 	err := dictService.EditSave(req, c)
-
-	if err != nil {
-		util.ErrorResp(c).SetBtype(lv_dto.Buniss_Edit).WriteJsonExit()
-		return
-	}
-	util.SucessResp(c).SetBtype(lv_dto.Buniss_Edit).WriteJsonExit()
-}
-
-// 删除数据
-func (w *DictDataController) Remove(c *gin.Context) {
-	var req *lv_dto.IdsReq
-	//获取参数
-	if err := c.ShouldBind(&req); err != nil {
-		util.ErrorResp(c).SetBtype(lv_dto.Buniss_Del).SetMsg(err.Error()).Log("字典数据管理", req).WriteJsonExit()
-		return
-	}
-	var dictService service.DictDataService
-	err := dictService.DeleteRecordByIds(req.Ids)
-
 	if err == nil {
-		util.SucessResp(c).SetBtype(lv_dto.Buniss_Del).WriteJsonExit()
+		util.SuccessData(c, "success")
 	} else {
-		util.ErrorResp(c).SetBtype(lv_dto.Buniss_Del).WriteJsonExit()
+		util.Fail(c, err.Error())
 	}
 }
 
-// 导出
+// Remove 删除数据
+func (w *DictDataController) Remove(c *gin.Context) {
+	var dictCodes = c.Param("dictCodes")
+	var dictService service.DictDataService
+	err := dictService.DeleteRecordByIds(dictCodes)
+	if err == nil {
+		util.Success(c, nil, "success")
+	} else {
+		util.Fail(c, err.Error())
+	}
+}
+
+// Export 导出
 func (w *DictDataController) Export(c *gin.Context) {
 	var req *common_vo.SelectDictDataPageReq
 	//获取参数
@@ -101,10 +87,9 @@ func (w *DictDataController) Export(c *gin.Context) {
 	}
 	var dictService service.DictDataService
 	url, err := dictService.Export(req)
-
-	if err != nil {
-		util.ErrorResp(c).SetMsg(err.Error()).Log("字典数据导出", req).WriteJsonExit()
-		return
+	if err == nil {
+		util.Success(c, url, "success")
+	} else {
+		util.Fail(c, err.Error())
 	}
-	util.SucessResp(c).SetMsg(url).Log("导出Excel", req).WriteJsonExit()
 }

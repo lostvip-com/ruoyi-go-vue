@@ -10,10 +10,10 @@ import (
 	"os"
 )
 
-type CommonController struct{}
+type CommonApi struct{}
 
 // DownloadTmp 从临时目录下载，如excell等动态生成的数据（默认下载）
-func (w *CommonController) DownloadTmp(c *gin.Context) {
+func (w *CommonApi) DownloadTmp(c *gin.Context) {
 	fileName := c.Query("fileName")
 	filepath := lv_global.Config().GetTmpPath() + "/" + fileName
 	file, err := os.Open(filepath)
@@ -33,7 +33,7 @@ func (w *CommonController) DownloadTmp(c *gin.Context) {
 }
 
 // DownloadUpload 从upload目录下载,下载 public/upload 文件头像之类
-func (w *CommonController) DownloadUpload(c *gin.Context) {
+func (w *CommonApi) DownloadUpload(c *gin.Context) {
 	fileName := c.Query("fileName")
 	filepath := lv_global.Config().GetUploadPath() + "/" + fileName
 	file, err := os.Open(filepath)

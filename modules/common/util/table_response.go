@@ -13,7 +13,6 @@ type TableResp struct {
 }
 
 // BuildTable 返回一个成功的消息体
-// Deprecated
 func BuildTable(c *gin.Context, total any, rows interface{}) *TableResp {
 	msg := lv_dto.TableDataInfo{
 		Code:  lv_dto.SUCCESS,
