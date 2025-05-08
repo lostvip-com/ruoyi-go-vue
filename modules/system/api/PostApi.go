@@ -25,19 +25,19 @@ func (w *PostApi) GetPostInfo(c *gin.Context) {
 	util.Success(c, post)
 }
 
-// ListAjax 列表分页数据
+// GetPostOptionSelect 列表分页数据
 func (w *PostApi) GetPostOptionSelect(c *gin.Context) {
 	var req *vo.SelectPostPageReq
 	if err := c.ShouldBind(&req); err != nil {
 		util.ErrorResp(c).SetMsg(err.Error()).Log("岗位管理", req).WriteJsonExit()
 		return
 	}
-	result, total, err := dao.GetSysPostDaoInstance().SelectPageList(req)
+	result, err := dao.GetSysPostDaoInstance().ListAll(req)
 	if err != nil {
 		util.Fail(c, err.Error())
 		return
 	}
-	util.SuccessPage(c, result, total)
+	util.Success(c, result)
 }
 
 // ListAjax 列表分页数据
@@ -93,13 +93,8 @@ func (w *PostApi) EditSave(c *gin.Context) {
 
 // Remove 删除数据
 func (w *PostApi) Remove(c *gin.Context) {
-	var req *lv_dto.IdsReq
-	if err := c.ShouldBind(&req); err != nil {
-		util.Fail(c, err.Error())
-		return
-	}
-	var postService = service.GetSysPostServiceInstance()
-	err := postService.DeleteRecordByIds(req.Ids)
+	var postIds = c.Param("postIds")
+	err := service.GetSysPostServiceInstance().DeleteRecordByIds(postIds)
 	if err != nil {
 		util.Fail(c, err.Error())
 		return

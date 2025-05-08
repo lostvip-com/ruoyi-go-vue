@@ -92,11 +92,12 @@ func init() {
 	system.GET("/menu/roleMenuTreeData", "", menuController.RoleMenuTreeData)
 	system.GET("/menu/treeData", "", menuController.MenuTreeData)
 	// 岗位路由
-	postController := api.PostApi{}
-	system.POST("/post/post/list", "system:post:list", postController.ListAjax)
-	system.POST("/post/add", "system:post:add", postController.AddSave)
-	system.POST("/post/remove", "system:post:remove", postController.Remove)
-	system.POST("/post/edit", "system:post:edit", postController.EditSave)
-	system.POST("/post/export", "system:post:export", postController.Export)
-	system.GET("/optionselect", "system:post:list", postController.GetPostOptionSelect)
+	postApi := api.PostApi{}
+	system.GET("/:postId", "", postApi.GetPostInfo)
+	system.GET("/post/list", "system:post:list", postApi.ListAjax)
+	system.POST("/post", "system:post:add", postApi.AddSave)
+	system.PUT("/post", "system:post:edit", postApi.EditSave)
+	system.DELETE("/post/:postIds", "system:post:remove", postApi.Remove)
+	system.POST("/post/export", "system:post:export", postApi.Export)
+	system.GET("/optionselect", "system:post:list", postApi.GetPostOptionSelect)
 }
