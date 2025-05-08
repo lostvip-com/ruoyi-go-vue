@@ -82,15 +82,15 @@ func init() {
 	system.POST("/role/cancelAll", "system:role:view", roleController.CancelAll)
 
 	// 菜单路由
-	menuController := api.MenuApi{}
-	system.POST("/menu/list", "system:menu:list", menuController.ListAjax)
-
-	system.POST("/menu/add", "system:menu:add", menuController.AddSave)
-	system.GET("/menu/remove", "", menuController.Remove)
-	system.POST("/menu/remove", "system:menu:remove", menuController.Remove)
-	system.POST("/menu/edit", "system:menu:edit", menuController.EditSave)
-	system.GET("/menu/roleMenuTreeData", "", menuController.RoleMenuTreeData)
-	system.GET("/menu/treeData", "", menuController.MenuTreeData)
+	menuApi := api.MenuApi{}
+	system.GET("/menu/:menuId", "system:menu:detail", menuApi.GetMenuInfo)
+	system.GET("/menu/list", "system:menu:list", menuApi.ListMenu)
+	system.GET("/menu/treeselect", "system:menu:list", menuApi.GetTreeSelect)
+	system.GET("/menu/roleMenuTreeselect/:roleId", "system:menu:list", menuApi.TreeSelectByRole)
+	system.POST("/menu", "system:menu:add", menuApi.AddSave)
+	system.PUT("/menu", "system:menu:edit", menuApi.EditSave)
+	system.DELETE("/menu", "system:menu:remove", menuApi.Remove)
+	//system.GET("/menu/treeData", "", menuApi.MenuTreeData)
 	// 岗位路由
 	postApi := api.PostApi{}
 	system.GET("/:postId", "", postApi.GetPostInfo)

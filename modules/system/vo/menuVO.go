@@ -20,13 +20,14 @@ type CheckMenuNameALLReq struct {
 // 分页请求参数
 type SelectMenuPageReq struct {
 	MenuName  string `form:"menuName"`  //菜单名称
-	Visible   string `form:"visible"`   //状态
+	Visible   string `form:"visible"`   //可见
 	BeginTime string `form:"beginTime"` //开始时间
 	EndTime   string `form:"endTime"`   //结束时间
 	PageNum   int    `form:"pageNum"`   //当前页码
 	PageSize  int    `form:"pageSize"`  //每页数
 	SortName  string `form:"sortName"`  //排序字段
 	SortOrder string `form:"sortOrder"` //排序方式
+	Status    string `form:"status"`    //状态
 	lv_dto.Paging
 }
 
@@ -77,7 +78,7 @@ type MetaVo struct {
 }
 
 type MenuTreeSelect struct {
-	Id       int              `json:"id"`
+	Id       int64            `json:"id"`
 	Label    string           `json:"label"`
 	Children []MenuTreeSelect `json:"children,omitempty"`
 }

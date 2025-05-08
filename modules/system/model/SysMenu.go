@@ -40,9 +40,9 @@ func (e *SysMenu) Save() error {
 }
 
 // 查
-func (e *SysMenu) FindById() error {
-	err := lv_db.GetMasterGorm().Take(e, e.MenuId).Error
-	return err
+func (e *SysMenu) FindById(id int64) (*SysMenu, error) {
+	err := lv_db.GetMasterGorm().Take(e, id).Error
+	return e, err
 }
 
 // 查第一条

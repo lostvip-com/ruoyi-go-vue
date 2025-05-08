@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/lostvip-com/lv_framework/lv_db"
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
+	"github.com/spf13/cast"
 	"system/model"
 	"system/vo"
 )
@@ -80,42 +81,30 @@ func (dao *MenuDao) SelectListPage(param *vo.SelectMenuPageReq) (*[]model.SysMen
 }
 
 // 获取所有数据
-func (dao *MenuDao) SelectListAll(param *vo.SelectMenuPageReq) ([]model.SysMenu, error) {
+func (dao *MenuDao) SelectListAll(sysMenu *vo.SelectMenuPageReq) ([]model.SysMenu, error) {
 	tb := lv_db.GetMasterGorm()
-	tb = tb.Table("sys_menu as t")
-
-	if param != nil {
-
-		if param.MenuName != "" {
-			tb.Where("t.menu_name like ?", "%"+param.MenuName+"%")
-		}
-
-		if param.Visible != "" {
-			tb.Where("t.visible = ?", param.Visible)
-		}
-
-		if param.BeginTime != "" {
-			tb.Where("date_format(t.create_time,'%y%m%d') >= date_format(?,'%y%m%d') ", param.BeginTime)
-		}
-
-		if param.EndTime != "" {
-			tb.Where("date_format(t.create_time,'%y%m%d') <= date_format(?,'%y%m%d') ", param.EndTime)
-		}
+	var rows []model.SysMenu
+	var sql = `select menu_id, menu_name, parent_id, order_num, path, component, query, is_frame, is_cache, menu_type, 
+                      visible,status, ifnull(perms,'') as perms, icon, create_time 
+               from sys_menu where 1 = 1 `
+	var name = sysMenu.MenuName
+	if name != "" {
+		sql += " AND menu_name LIKE CONCAT('%', '" + name + "', '%')"
 	}
-	tb.Order("t.parent_id,t.order_num desc")
-	var result []model.SysMenu
-
-	err := tb.Find(&result).Error
-
-	if err != nil {
-		return nil, err
-	} else {
-		return result, err
+	var visible = sysMenu.Visible
+	if visible != "" {
+		sql += " AND visible = " + visible
 	}
+	var status = sysMenu.Status
+	if status != "" {
+		sql += " AND status = " + status
+	}
+	err := tb.Raw(sql).Find(&rows).Error
+	return rows, err
 }
 
-// 获取管理员菜单数据
-func (dao *MenuDao) SelectMenuNormalAll(noF bool) ([]model.SysMenu, error) {
+// FindMenuNormalAll 获取管理员菜单数据
+func (dao *MenuDao) FindMenuNormalAll(noF bool) ([]model.SysMenu, error) {
 	var result []model.SysMenu
 
 	tb := lv_db.GetMasterGorm()
@@ -133,21 +122,56 @@ func (dao *MenuDao) SelectMenuNormalAll(noF bool) ([]model.SysMenu, error) {
 		return result, err
 	}
 }
-
-// SelectMenusByUserId 根据用户ID读取菜单数据
-func (dao *MenuDao) SelectMenusByUserId(userId int64, noF bool) ([]model.SysMenu, error) {
-	var result []model.SysMenu
-
-	db := lv_db.GetMasterGorm()
-	if db == nil {
-		return nil, errors.New("获取数据库连接失败")
+func (dao *MenuDao) FindMenusByUserId(userId int64, sysMenu *vo.SelectMenuPageReq) ([]model.SysMenu, error) {
+	var sql = "select distinct m.menu_id, m.parent_id, m.menu_name, m.path, m.component, m.`query`, m.visible," +
+		" m.status, ifnull(m.perms,'') as perms, m.is_frame, m.is_cache, m.menu_type, m.icon, m.order_num, m.create_time " +
+		"from sys_menu m left join sys_role_menu rm on m.menu_id = rm.menu_id " +
+		"left join sys_user_role ur on rm.role_id = ur.role_id " +
+		"left join sys_role ro on ur.role_id = ro.role_id "
+	sql += "where ur.user_id = " + cast.ToString(userId) + " "
+	var menuName = sysMenu.MenuName
+	if menuName != "" {
+		sql += "AND m.menu_name like concat(%" + menuName + "%) "
 	}
+	var visible = sysMenu.Visible
+
+	if visible != "" {
+		sql += "AND m.visible = " + visible + " "
+	}
+	var status = sysMenu.Status
+	if status != "" {
+		sql += "AND m.status = " + status + " "
+	}
+	sql += "order by m.parent_id, m.order_num"
+	var list []model.SysMenu
+	err := lv_db.GetMasterGorm().Raw(sql).Scan(&list).Error
+	return list, err
+}
+
+// FindMenus 根据用户ID读取菜单数据， noF 非按钮
+func (dao *MenuDao) FindMenus(userId int64, noF bool, params *model.SysMenu) ([]model.SysMenu, error) {
+	var result []model.SysMenu
+	db := lv_db.GetMasterGorm()
 	tb := db.Table("sys_menu as m")
 	tb.Joins("LEFT join sys_role_menu as rm on m.menu_id = rm.menu_id")
 	tb.Joins("LEFT join sys_user_role as ur on rm.role_id = ur.role_id")
 	tb.Joins("LEFT join sys_role as ro on ur.role_id = ro.role_id")
 	tb.Select("m.*")
 	tb.Where("ur.user_id = ? and  m.visible = 0  AND ro.status = 0", userId)
+	if params != nil {
+		tb.Where("m.menu_id = ?", params.MenuId)
+		if params.MenuName != "" {
+			tb.Where("AND m.menu_name like concat('%', " + params.MenuName + ", '%')")
+		}
+		var visible = params.Visible
+		if visible != "" {
+			tb.Where("AND m.visible =? ", visible)
+		}
+		var status = params.Status
+		if status != "" {
+			tb.Where("AND m.status = ", status)
+		}
+	}
 	if noF == true {
 		tb.Where(" m.menu_type!='F' ")
 	}

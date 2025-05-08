@@ -4,9 +4,7 @@ import (
 	"errors"
 	"github.com/lostvip-com/lv_framework/lv_db"
 	"github.com/lostvip-com/lv_framework/lv_db/lv_dao"
-	"github.com/lostvip-com/lv_framework/lv_log"
 	"github.com/lostvip-com/lv_framework/utils/lv_conv"
-	"github.com/lostvip-com/lv_framework/utils/lv_err"
 	"github.com/lostvip-com/lv_framework/web/lv_dto"
 	"github.com/spf13/cast"
 	"strconv"
@@ -18,6 +16,7 @@ import (
 )
 
 type MenuService struct {
+	BaseService
 }
 
 var menuService *MenuService
@@ -94,69 +93,36 @@ func (svc *MenuService) DeleteRecordByIds(ids string) int64 {
 	return result
 }
 
-// MenuTreeData 加载所有菜单列表树
-func (svc *MenuService) MenuTreeData(userId int64) (*[]lv_dto.Ztree, error) {
-	var result *[]lv_dto.Ztree
-	menuList, err := svc.SelectMenuNormalByUser(userId)
-	if err != nil {
-		return nil, err
-	}
-	result, err = svc.InitZtree(menuList, nil, false)
-	if err != nil {
-		return nil, err
-	}
-	return result, nil
-}
-
-// 获取用户的菜单数据
-func (svc *MenuService) SelectMenuNormalByUser(userId int64) (*[]model.SysMenu, error) {
-	var userService UserService
-	//从数据库中读取
-	var dao dao.MenuDao
-	if userService.IsAdmin(userId) {
-		menus, err := dao.SelectMenuNormalAll(true)
-		return &menus, err
-	} else {
-		menus, err := dao.SelectMenusByUserId(userId, true)
-		return &menus, err
-	}
-}
-
-// 获取用户的菜单数据
-func (svc *MenuService) ListMenuNormalByUser(userId int64, menuType string) (*[]model.SysMenu, error) {
-	var dao dao.MenuDao
-	var userService UserService
-	if userService.IsAdmin(userId) {
-		menus, err := dao.SelectMenuNormalAll(true)
-		return &menus, err
-	} else {
-		menus, err := dao.SelectMenusByUserId(userId, true)
-		return &menus, err
-	}
-}
-
-// SelectMenuNormalAll 获取管理员菜单数据,不区分资源类型传空即可
-func (svc *MenuService) SelectMenuNormalAll(userId int64) ([]vo.RouterVO, error) {
+// SelectMenuTree 加载所有菜单列表树
+func (svc *MenuService) SelectMenuTree(userId int64, menu *model.SysMenu) ([]model.SysMenu, error) {
 	var menus []model.SysMenu
-	menuDao := dao.GetMenuDaoInstance()
-	var err error
-	if userId == 0 {
-		menus, err = menuDao.SelectMenuNormalAll(true)
+	sql := "select distinct m.menu_id, m.parent_id, m.menu_name, m.path, m.component, m.`query`, m.visible, m.status, ifnull(m.perms,'') as perms, m.is_frame, m.is_cache, m.menu_type, m.icon, m.order_num, m.create_time "
+	sql += "from sys_menu m "
+	if svc.IsAdmin(userId) {
+		sql += "where 1=1 "
 	} else {
-		menus, err = menuDao.SelectMenusByUserId(userId, true)
+		sql += "left join sys_role_menu rm on m.menu_id = rm.menu_id "
+		sql += "left join sys_user_role ur on rm.role_id = ur.role_id "
+		sql += "left join sys_role ro on ur.role_id = ro.role_id "
+		sql += "where ur.user_id = " + cast.ToString(userId)
 	}
-	lv_err.HasErrAndPanic(err)
-	arr := make([]vo.RouterVO, 0)
-	pcMap := svc.InitParentChildMap(menus)
-	list0 := pcMap[0]
-	for i := 0; i < len(list0); i++ {
-		it := &list0[i]
-		lv_log.Info(i, "#########################", lv_conv.ToJsonStr(it))
-		fillChildrenTree(it, pcMap)
-		arr = append(arr, *it)
+	if menu != nil {
+		var menuName = menu.MenuName
+		if menuName != "" {
+			sql += "AND m.menu_name like concat('%', " + menuName + ", '%')"
+		}
+		var visible = menu.Visible
+		if visible != "" {
+			sql += "AND m.visible = " + visible
+		}
+		var status = menu.Status
+		if status != "" {
+			sql += "AND m.status = " + status
+		}
 	}
-	//存入缓存
-	return arr, nil
+
+	err := lv_db.GetMasterGorm().Raw(sql).Scan(&menus).Error
+	return menus, err
 }
 
 func fillChildrenTree(parent *vo.RouterVO, pcFlatMap map[int64][]vo.RouterVO) {
@@ -229,137 +195,59 @@ func (svc *MenuService) menu2RouteVo(menu *model.SysMenu) vo.RouterVO {
 	return router
 }
 
-// 根据角色ID查询菜单
-func (svc *MenuService) RoleMenuTreeData(roleId, userId int64, menuType string) (*[]lv_dto.Ztree, error) {
-	var result *[]lv_dto.Ztree
-	menuList, err := svc.ListMenuNormalByUser(userId, menuType)
-	if err != nil {
-		return nil, err
-	}
-	var dao dao.MenuDao
-	if roleId > 0 {
-		roleMenuList, err := dao.SelectMenuTree(roleId)
-		if err != nil || roleMenuList == nil {
-			result, err = svc.InitZtree(menuList, nil, true)
-		} else {
-			result, err = svc.InitZtree(menuList, &roleMenuList, true)
-		}
-	} else {
-		result, err = svc.InitZtree(menuList, nil, true)
-	}
-
-	return result, nil
-}
-
-// 对象转菜单树
-func (svc *MenuService) InitZtree(menuList *[]model.SysMenu, roleMenuList *[]string, permsFlag bool) (*[]lv_dto.Ztree, error) {
-	var result []lv_dto.Ztree
-	isCheck := false
-	if roleMenuList != nil && len(*roleMenuList) > 0 {
-		isCheck = true
-	}
-
-	for _, obj := range *menuList {
-		var ztree lv_dto.Ztree
-		ztree.Title = obj.MenuName
-		ztree.Id = obj.MenuId
-		ztree.Name = svc.transMenuName(obj.MenuName, permsFlag)
-		ztree.Pid = obj.ParentId
-		if isCheck {
-			tmp := cast.ToString(obj.MenuId) + obj.Perms
-			tmpcheck := false
-			for j := range *roleMenuList {
-				if strings.Compare((*roleMenuList)[j], tmp) == 0 {
-					tmpcheck = true
-					break
-				}
-			}
-			ztree.Checked = tmpcheck
-		}
-		result = append(result, ztree)
-	}
-
-	return &result, nil
-}
-
-func (svc *MenuService) transMenuName(menuName string, permsFlag bool) string {
-	if permsFlag {
-		return "<font color=\"#888\">&nbsp;&nbsp;&nbsp;" + menuName + "</font>"
-	} else {
-		return menuName
-	}
-}
-
 func (svc *MenuService) IsRolePermited(roles []string, perm string) (bool, interface{}) {
 	sql := "SELECT count(*) from sys_menu m,sys_role_menu rm,sys_role r where m.menu_id=rm.menu_id and rm.role_id = r.role_id and r.role_key in @roles and m.perms=@perm"
 	count, err := lv_dao.CountByNamedSql(sql, map[string]interface{}{"roles": roles, "perm": perm})
 	return count > 0, err
 }
 
-func SelectMenuTreeByUserId(userId int) []model.SysMenu {
-	var menu []model.SysMenu
-	if userId == 1 { //超级管理
-		err := lv_db.GetMasterGorm().Where("menu_type in (?) ", []string{"M", "C"}).Where("status", "0").Order("parent_id").Order("order_num").Find(&menu).Error
-		if err != nil {
-			panic(errors.New("查询错误"))
-		}
-	} else {
-		err := lv_db.GetMasterGorm().Raw("select distinct m.* from sys_menu m left join sys_role_menu rm on m.menu_id = rm.menu_id left join sys_user_role ur on rm.role_id = ur.role_id left join sys_role ro on ur.role_id = ro.role_id left join sys_user u on ur.user_id = u.user_id where u.user_id = ? and m.menu_type in ('M', 'C') and m.status = 0  AND ro.status = 0 order by m.parent_id, m.order_num", userId).Scan(&menu).Error
-		if err != nil {
-			panic(errors.New("查询错误"))
-		}
-	}
-	return menu
-}
-
-func SelectMenuTree(userId int, menu *model.SysMenu) []model.SysMenu {
-	var menus []model.SysMenu
-	sql := "select distinct m.menu_id, m.parent_id, m.menu_name, m.path, m.component, m.`query`, m.visible, m.status, ifnull(m.perms,'') as perms, m.is_frame, m.is_cache, m.menu_type, m.icon, m.order_num, m.create_time "
-	sql += "from sys_menu m "
-	if IsAdmin(userId) {
-		var menuName = menu.MenuName
-		if menuName != "" {
-			sql += "AND m.menu_name like concat('%', " + menuName + ", '%')"
-		}
-		var visible = menu.Visible
-		if visible != "" {
-			sql += "AND m.visible = " + visible
-		}
-		var status = menu.Status
-		if status != "" {
-			sql += "AND m.status = " + status
-		}
-		err := lv_db.GetMasterGorm().Raw(sql).Scan(&menus).Error
-		if err != nil {
-			panic(errors.New(err.Error()))
-		}
-	} else {
-		sql += "left join sys_role_menu rm on m.menu_id = rm.menu_id "
-		sql += "left join sys_user_role ur on rm.role_id = ur.role_id "
-		sql += "left join sys_role ro on ur.role_id = ro.role_id "
-		sql += "where ur.user_id = " + strconv.Itoa(userId)
-		var menuName = menu.MenuName
-		if menuName != "" {
-			sql += "AND m.menu_name like concat('%', " + menuName + ", '%')"
-		}
-		var visible = menu.Visible
-		if visible != "" {
-			sql += "AND m.visible = " + visible
-		}
-		var status = menu.Status
-		if status != "" {
-			sql += "AND m.status = " + status
-		}
-		err := lv_db.GetMasterGorm().Raw(sql).Scan(&menus).Error
-		if err != nil {
-			panic(errors.New(err.Error()))
+func (svc *MenuService) BuildMenuTreeSelect(lists []model.SysMenu) []vo.MenuTreeSelect {
+	var menuTreeSelect []vo.MenuTreeSelect
+	for i := 0; i < len(lists); i++ {
+		var menu = lists[i]
+		menuId := menu.MenuId
+		parentId := menu.ParentId
+		if 0 == parentId {
+			var menuVo = vo.MenuTreeSelect{
+				Id:    menuId,
+				Label: menu.MenuName,
+			}
+			menuVo.Children = svc.BuildChildMenusTreeSelect(menuId, lists)
+			menuTreeSelect = append(menuTreeSelect, menuVo)
 		}
 	}
-	return menus
+	return menuTreeSelect
 }
 
-func IsAdmin(id int) bool {
-	return id == 1
+func (svc *MenuService) BuildChildMenusTreeSelect(parentId int64, menus []model.SysMenu) []vo.MenuTreeSelect {
+	var List []vo.MenuTreeSelect
+	for i := 0; i < len(menus); i++ {
+		var menu = menus[i]
+		var menuId = menu.MenuId
+		var pId = menu.ParentId
+		if pId == parentId {
+			var menuVo = vo.MenuTreeSelect{
+				Id:    menuId,
+				Label: menu.MenuName,
+			}
+			menuVo.Children = svc.BuildChildMenusTreeSelect(menuId, menus)
+			List = append(List, menuVo)
+		}
+	}
+	return List
+}
+
+func (svc *MenuService) SelectMenuListByRoleId(roleId string, menuCheckStrictly bool) ([]int, error) {
+	var sql = "select m.menu_id from sys_menu m " +
+		"left join sys_role_menu rm on m.menu_id = rm.menu_id " +
+		"where rm.role_id = " + roleId + " "
+	if menuCheckStrictly {
+		sql += "and m.menu_id not in (select m.parent_id from sys_menu m inner join sys_role_menu rm on m.menu_id = rm.menu_id and rm.role_id = " + roleId + ")"
+	}
+	sql += "order by m.parent_id, m.order_num"
+	var menuIds []int
+	err := lv_db.GetMasterGorm().Raw(sql).Scan(&menuIds).Error
+	return menuIds, err
 }
 
 func getRouteName(menu *model.SysMenu) string {

@@ -56,3 +56,7 @@ func (e *SysRole) FindOne() error {
 	err := tb.First(e).Error
 	return err
 }
+func (e *SysRole) FindById(id int64) (*SysRole, error) {
+	err := lv_db.GetMasterGorm().Take(e, id).Error
+	return e, err
+}

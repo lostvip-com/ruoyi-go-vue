@@ -50,9 +50,9 @@ func (svc *PermissionService) HasPermi(u interface{}, permission string) string 
 	var menus []model.SysMenu
 	var dao dao2.MenuDao
 	if userService.IsAdmin(uid) {
-		menus, _ = dao.SelectMenuNormalAll(false)
+		menus, _ = dao.FindMenuNormalAll(false)
 	} else {
-		menus, _ = dao.SelectMenusByUserId(uid, false)
+		menus, _ = dao.FindMenusByUserId(uid, nil)
 	}
 
 	if menus != nil && len(menus) > 0 {

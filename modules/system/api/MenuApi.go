@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/lostvip-com/lv_framework/utils/lv_conv"
 	"github.com/lostvip-com/lv_framework/web/lv_dto"
+	"github.com/spf13/cast"
 	"net/http"
 	"system/dao"
 	"system/model"
@@ -13,23 +14,39 @@ import (
 )
 
 type MenuApi struct {
+	BaseApi
 }
 
-// ListAjax 列表分页数据
-func (w *MenuApi) ListAjax(c *gin.Context) {
-	var req = new(vo.SelectMenuPageReq)
-
-	if err := c.ShouldBind(&req); err != nil {
-		util.ErrorResp(c).SetMsg(err.Error()).Log("菜单管理", req).WriteJsonExit()
+func (w *MenuApi) GetMenuInfo(c *gin.Context) {
+	var menuId = c.Param("menuId")
+	menu := new(model.SysMenu)
+	menu, err := menu.FindById(cast.ToInt64(menuId))
+	if err != nil {
+		util.Fail(c, err.Error())
 		return
 	}
-	rows := make([]model.SysMenu, 0)
-	result, err := dao.GetMenuDaoInstance().SelectListAll(req)
+	util.Success(c, menu)
+}
 
-	if err == nil && len(result) > 0 {
-		rows = result
+// ListMenu 列表分页数据
+func (w *MenuApi) ListMenu(c *gin.Context) {
+	var req = new(vo.SelectMenuPageReq)
+	if err := c.ShouldBind(&req); err != nil {
+		util.Fail(c, err.Error())
+		return
 	}
-	c.JSON(http.StatusOK, rows)
+	userId := w.GetCurrUserId(c)
+	rows := make([]model.SysMenu, 0)
+	var err error
+	if w.IsAdmin(userId) {
+		rows, err = dao.GetMenuDaoInstance().SelectListAll(req)
+	} else {
+		rows, err = dao.GetMenuDaoInstance().FindMenusByUserId(userId, req)
+	}
+	if err != nil {
+		util.Fail(c, err.Error())
+	}
+	util.Success(c, rows)
 }
 
 // AddSave 新增页面保存
@@ -76,7 +93,7 @@ func (w *MenuApi) EditSave(c *gin.Context) {
 
 // Remove 删除数据
 func (w *MenuApi) Remove(c *gin.Context) {
-	id := lv_conv.Int64(c.Query("id"))
+	id := lv_conv.Int64(c.Query("menuId"))
 	err := service.GetMenuServiceInstance().DeleteRecordById(id)
 	if err == nil {
 		util.Success(c, gin.H{"id": id})
@@ -85,37 +102,49 @@ func (w *MenuApi) Remove(c *gin.Context) {
 	}
 }
 
-// MenuTreeData 加载所有菜单列表树
-func (w *MenuApi) MenuTreeData(c *gin.Context) {
-	user := service.GetUserService().GetProfile(c)
-	if user == nil {
-		util.ErrorResp(c).SetMsg("登录超时").Log("菜单管理", gin.H{"userId": user.UserId}).WriteJsonExit()
+func (w *MenuApi) GetTreeSelect(c *gin.Context) {
+	userId := w.GetCurrUserId(c)
+	var menuParm model.SysMenu
+	if err := c.ShouldBind(&menuParm); err != nil {
+		c.JSON(http.StatusOK, err.Error())
 		return
 	}
-	ztrees, err := service.GetMenuServiceInstance().MenuTreeData(user.UserId)
+	svc := service.GetMenuServiceInstance()
+	menus, err := svc.SelectMenuTree(userId, &menuParm)
 	if err != nil {
-		util.ErrorResp(c).SetMsg(err.Error()).Log("菜单管理", gin.H{"userId": user.UserId}).WriteJsonExit()
+		util.Fail(c, err.Error())
 		return
 	}
-	c.JSON(http.StatusOK, ztrees)
+	var arrTree = svc.BuildMenuTreeSelect(menus)
+	c.JSON(http.StatusOK, gin.H{
+		"msg":   "操作成功",
+		"code":  http.StatusOK,
+		"menus": arrTree,
+	})
 }
 
-// RoleMenuTreeData 加载角色菜单列表树
-func (w *MenuApi) RoleMenuTreeData(c *gin.Context) {
-	var userService service.UserService
-	roleId := lv_conv.Int64(c.Query("roleId"))
-	user := userService.GetProfile(c)
-	if user == nil || user.UserId <= 0 {
-		util.ErrorResp(c).SetMsg("登录超时").Log("菜单管理", gin.H{"roleId": roleId}).WriteJsonExit()
+func (w *MenuApi) TreeSelectByRole(c *gin.Context) {
+	userId := w.GetCurrUserId(c)
+	var roleId = c.Param("roleId")
+	var menuParm model.SysMenu
+	if err := c.ShouldBind(&menuParm); err != nil {
+		c.JSON(http.StatusOK, err.Error())
 		return
 	}
-	var service service.MenuService
-	result, err := service.RoleMenuTreeData(roleId, user.UserId, "")
-
+	svc := service.GetMenuServiceInstance()
+	menus, err := svc.SelectMenuTree(userId, &menuParm)
 	if err != nil {
-		util.ErrorResp(c).SetMsg(err.Error()).Log("菜单管理", gin.H{"roleId": roleId}).WriteJsonExit()
+		util.Fail(c, err.Error())
 		return
 	}
-
-	c.JSON(http.StatusOK, result)
+	role := new(model.SysRole)
+	role, err = role.FindById(cast.ToInt64(roleId))
+	checkedKeys, _ := svc.SelectMenuListByRoleId(roleId, role.MenuCheckStrictly)
+	var arrTree = svc.BuildMenuTreeSelect(menus)
+	c.JSON(http.StatusOK, gin.H{
+		"msg":         "操作成功",
+		"code":        http.StatusOK,
+		"menus":       arrTree,
+		"checkedKeys": checkedKeys,
+	})
 }
