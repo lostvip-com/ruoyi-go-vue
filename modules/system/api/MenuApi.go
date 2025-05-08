@@ -18,7 +18,7 @@ type MenuApi struct {
 // ListAjax 列表分页数据
 func (w *MenuApi) ListAjax(c *gin.Context) {
 	var req = new(vo.SelectMenuPageReq)
-	//获取参数
+
 	if err := c.ShouldBind(&req); err != nil {
 		util.ErrorResp(c).SetMsg(err.Error()).Log("菜单管理", req).WriteJsonExit()
 		return
@@ -35,7 +35,7 @@ func (w *MenuApi) ListAjax(c *gin.Context) {
 // AddSave 新增页面保存
 func (w *MenuApi) AddSave(c *gin.Context) {
 	var req = new(model.SysMenu)
-	//获取参数
+
 	if err := c.ShouldBind(&req); err != nil {
 		util.ErrorResp(c).SetBtype(lv_dto.Buniss_Add).SetMsg(err.Error()).Log("菜单管理", req).WriteJsonExit()
 		return
@@ -56,7 +56,7 @@ func (w *MenuApi) AddSave(c *gin.Context) {
 // EditSave 修改页面保存
 func (w *MenuApi) EditSave(c *gin.Context) {
 	var req = new(model.SysMenu)
-	//获取参数
+
 	if err := c.ShouldBind(&req); err != nil {
 		util.ErrorResp(c).SetBtype(lv_dto.Buniss_Edit).SetMsg(err.Error()).Log("菜单管理", req).WriteJsonExit()
 		return
@@ -71,7 +71,7 @@ func (w *MenuApi) EditSave(c *gin.Context) {
 		util.ErrorResp(c).SetBtype(lv_dto.Buniss_Edit).Log("菜单管理", req).WriteJsonExit()
 		return
 	}
-	util.SuccessData(c, req)
+	util.Success(c, req)
 }
 
 // Remove 删除数据
@@ -79,7 +79,7 @@ func (w *MenuApi) Remove(c *gin.Context) {
 	id := lv_conv.Int64(c.Query("id"))
 	err := service.GetMenuServiceInstance().DeleteRecordById(id)
 	if err == nil {
-		util.SuccessData(c, gin.H{"id": id})
+		util.Success(c, gin.H{"id": id})
 	} else {
 		util.Fail(c, err.Error())
 	}

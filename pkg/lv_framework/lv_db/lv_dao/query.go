@@ -6,7 +6,6 @@ import (
 	"github.com/lostvip-com/lv_framework/lv_db/namedsql"
 	"github.com/lostvip-com/lv_framework/lv_global"
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
-	"github.com/lostvip-com/lv_framework/web/lv_dto"
 )
 
 func CountCol(table, column, value string) (int64, error) {
@@ -53,7 +52,7 @@ func CountByNamedSql(sql string, params any) (int64, error) {
 /**
  * 通用泛型查询
  */
-func GetPageByNamedSql[T any](sqlfile string, sqlTag string, req any) lv_dto.RespPage {
+func GetPageByNamedSql[T any](sqlfile string, sqlTag string, req any) (*[]T, int64, error) {
 	//解析sql
 	ibatis := lv_batis.NewInstance(sqlfile)
 	sql, err := ibatis.GetLimitSql(sqlTag, req)
@@ -62,8 +61,7 @@ func GetPageByNamedSql[T any](sqlfile string, sqlTag string, req any) lv_dto.Res
 	rows, err := namedsql.ListData[T](lv_db.GetMasterGorm(), sql, req)
 	lv_err.HasErrAndPanic(err)
 	count, err := namedsql.Count(lv_db.GetMasterGorm(), sql, req)
-	lv_err.HasErrAndPanic(err)
-	return lv_dto.SuccessPage[T](rows, count)
+	return rows, count, err
 }
 
 func DeleteByIds(tableName string, ids []int64) error {

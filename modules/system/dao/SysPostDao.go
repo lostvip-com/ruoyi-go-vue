@@ -12,6 +12,15 @@ import (
 type SysPostDao struct {
 }
 
+var sysPostDao *SysPostDao
+
+func GetSysPostDaoInstance() *SysPostDao {
+	if sysPostDao == nil {
+		sysPostDao = new(SysPostDao)
+	}
+	return sysPostDao
+}
+
 func (e SysPostDao) DeleteByIds(ida []int64) (int64, error) {
 	db := lv_db.GetMasterGorm().Table("sys_post").Where("post_id in ? ", ida).Update("del_flag", 1)
 	return db.RowsAffected, db.Error

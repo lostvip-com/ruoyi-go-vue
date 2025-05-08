@@ -19,7 +19,7 @@ type RoleController struct {
 // 列表分页数据
 func (w *RoleController) ListAjax(c *gin.Context) {
 	var req *common_vo.RolePageReq
-	//获取参数
+
 	if err := c.ShouldBind(&req); err != nil {
 		util2.ErrorResp(c).SetMsg(err.Error()).Log("角色管理", req).WriteJsonExit()
 		return
@@ -37,7 +37,7 @@ func (w *RoleController) ListAjax(c *gin.Context) {
 // 新增页面保存
 func (w *RoleController) AddSave(c *gin.Context) {
 	var req *common_vo.AddRoleReq
-	//获取参数
+
 	if err := c.ShouldBind(&req); err != nil {
 		util2.ErrorResp(c).SetBtype(lv_dto.Buniss_Add).SetMsg(err.Error()).Log("角色管理", req).WriteJsonExit()
 		return
@@ -67,7 +67,7 @@ func (w *RoleController) AddSave(c *gin.Context) {
 // 修改页面保存
 func (w *RoleController) EditSave(c *gin.Context) {
 	var req *common_vo.EditRoleReq
-	//获取参数
+
 	if err := c.ShouldBind(&req); err != nil {
 		util2.ErrorResp(c).SetBtype(lv_dto.Buniss_Edit).SetMsg(err.Error()).Log("角色管理", req).WriteJsonExit()
 		return
@@ -87,7 +87,7 @@ func (w *RoleController) ChangeStatus(c *gin.Context) {
 	status := c.PostForm("status")
 	sql := " update sys_role set status=? where role_id = ? "
 	rows := db2.GetMasterGorm().Exec(sql, status, roleId).RowsAffected
-	util2.SuccessData(c, rows)
+	util2.Success(c, rows)
 }
 
 // 获取用户列表
@@ -114,7 +114,7 @@ func (w *RoleController) UnallocatedList(c *gin.Context) {
 // 删除数据
 func (w *RoleController) Remove(c *gin.Context) {
 	var req *lv_dto.IdsReq
-	//获取参数
+
 	if err := c.ShouldBind(&req); err != nil {
 		util2.ErrorResp(c).SetBtype(lv_dto.Buniss_Del).SetMsg(err.Error()).WriteJsonExit()
 		return
@@ -132,7 +132,7 @@ func (w *RoleController) Remove(c *gin.Context) {
 // 数据权限保存
 func (w *RoleController) AuthDataScopeSave(c *gin.Context) {
 	var req *common_vo.DataScopeReq
-	//获取参数
+
 	if err := c.ShouldBind(&req); err != nil {
 		util2.ErrorResp(c).SetMsg(err.Error()).WriteJsonExit()
 		return

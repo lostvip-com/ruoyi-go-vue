@@ -20,7 +20,7 @@ func (w *LoginInforController) List(c *gin.Context) {
 // 用户列表分页数据
 func (w *LoginInforController) ListAjax(c *gin.Context) {
 	var req *vo.LoginInfoPageReq
-	//获取参数
+
 	if err := c.ShouldBind(&req); err != nil {
 		util.ErrorResp(c).SetMsg(err.Error()).WriteJsonExit()
 		return
@@ -39,7 +39,7 @@ func (w *LoginInforController) ListAjax(c *gin.Context) {
 // 删除数据
 func (w *LoginInforController) Remove(c *gin.Context) {
 	var req *lv_dto.IdsReq
-	//获取参数
+
 	if err := c.ShouldBind(&req); err != nil {
 		util.ErrorResp(c).Log("登录日志管理", req).WriteJsonExit()
 		return
@@ -69,7 +69,7 @@ func (w *LoginInforController) Clean(c *gin.Context) {
 // 导出
 func (w *LoginInforController) Export(c *gin.Context) {
 	var req *vo.LoginInfoPageReq
-	//获取参数
+
 	if err := c.ShouldBind(&req); err != nil {
 		util.ErrorResp(c).SetMsg(err.Error()).Log("导出登录日志", req).WriteJsonExit()
 		return

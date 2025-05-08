@@ -13,6 +13,15 @@ import (
 type DictTypeDao struct {
 }
 
+var dictTypeDao *DictTypeDao
+
+func GetSysDictTypeDaoInstance() *DictTypeDao {
+	if dictTypeDao == nil {
+		dictTypeDao = new(DictTypeDao)
+	}
+	return dictTypeDao
+}
+
 // 根据条件分页查询数据
 func (dao *DictTypeDao) SelectListByPage(param *common_vo.DictTypePageReq) ([]model.SysDictType, int64, error) {
 	db := lv_db.GetMasterGorm()

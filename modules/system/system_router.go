@@ -27,14 +27,14 @@ func init() {
 	// 字典类型参数路由
 	dictType := api.DictTypeApi{}
 	system.GET("/dict/type/list", "system:dict:list", dictType.ListAjax)
-	system.GET("/type/:dictId", dictType.GetTypeDict)
+	system.GET("/dict/type/:dictId", "", dictType.GetTypeDict)
 	system.POST("/dict/type", "system:dict:add", dictType.AddSave)
 	system.PUT("/dict/type", "system:dict:edit", dictType.EditSave)
-	system.DELETE("/dict/type/:dictId", "system:dict:remove", dictType.Remove)
+	system.DELETE("/dict/type/:dictIds", "system:dict:remove", dictType.Remove)
 	system.POST("/dict/type/export", "system:dict:export", dictType.Export)
 	//system.POST("/dict/type/checkDictTypeUniqueAll", "system:dict:view", dictType.CheckDictTypeUniqueAll)
 	//system.POST("/dict/type/checkDictTypeUnique", "system:dict:view", dictType.CheckDictTypeUnique)
-	system.GET("/dict/type/treeData", "system:dict:view", dictType.TreeData)
+	system.GET("/dict/type/optionselect", "system:dict:view", dictType.GetOptionSelect)
 	// 字典内容参数路由
 	dictData := api.DictDataController{}
 	system.GET("/dict/data/list", "system:dict:view", dictData.ListAjax)
@@ -95,12 +95,11 @@ func init() {
 	system.GET("/menu/treeData", "system:menu:view", menuController.MenuTreeData)
 	// 岗位路由
 	postController := api.PostController{}
-	system.POST("/post/post/list", "system:post:list", postController.ListAjax)
-	system.GET("/post/add", "system:post:add", postController.Add)
-	system.POST("/post/add", "system:post:add", postController.AddSave)
-	system.POST("/post/remove", "system:post:remove", postController.Remove)
-	system.GET("/post/edit", "system:post:edit", postController.Edit)
-	system.POST("/post/edit", "system:post:edit", postController.EditSave)
+	system.GET("/post/list", "system:post:list", postController.ListAjax)
+	system.GET("/post/:postId", "system:post:list", postController.GetPostInfo)
+	system.POST("/post", "system:post:add", postController.AddSave)
+	system.PUT("/post", "system:post:edit", postController.EditSave)
+	system.DELETE("/post/remove", "system:post:remove", postController.Remove)
 	system.POST("/post/export", "system:post:export", postController.Export)
-	system.POST("/post/isPostCodeExist", "system:post:add", postController.IsPostCodeExist)
+	system.GET("/optionselect", "system:post:list", postController.GetPostOptionSelect)
 }

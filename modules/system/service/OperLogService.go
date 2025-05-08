@@ -16,6 +16,15 @@ import (
 type OperLogService struct {
 }
 
+var operLogService *OperLogService
+
+func GetOperLogServiceInstance() *OperLogService {
+	if operLogService == nil {
+		operLogService = &OperLogService{}
+	}
+	return operLogService
+}
+
 // Add  新增记录
 func (svc OperLogService) Add(c *gin.Context, title, inContent string, outContent *lv_dto.CommonRes) error {
 	var userService UserService

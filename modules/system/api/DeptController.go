@@ -18,7 +18,7 @@ type DeptController struct {
 func (w *DeptController) ListAjax(c *gin.Context) {
 	var service service.DeptService
 	var req = common_vo.DeptPageReq{}
-	//获取参数
+
 	if err := c.ShouldBind(&req); err != nil {
 		util2.ErrorResp(c).SetMsg(err.Error()).Log("部门管理", req).WriteJsonExit()
 		return
@@ -35,7 +35,7 @@ func (w *DeptController) ListAjax(c *gin.Context) {
 func (w *DeptController) AddSave(c *gin.Context) {
 	var req *common_vo.AddDeptReq
 	var service service.DeptService
-	//获取参数
+
 	if err := c.ShouldBind(&req); err != nil {
 		util2.ErrorResp(c).SetBtype(lv_dto.Buniss_Add).SetMsg(err.Error()).WriteJsonExit()
 		return
@@ -53,7 +53,7 @@ func (w *DeptController) EditSave(c *gin.Context) {
 	var service service.DeptService
 
 	var req *common_vo.EditDeptReq
-	//获取参数
+
 	if err := c.ShouldBind(&req); err != nil {
 		util2.ErrorResp(c).SetBtype(lv_dto.Buniss_Edit).SetMsg(err.Error()).Log("部门管理", req).WriteJsonExit()
 		return
@@ -76,7 +76,7 @@ func (w *DeptController) Remove(c *gin.Context) {
 	if err != nil {
 		util2.Fail(c, err.Error())
 	} else {
-		util2.Success(c, id, "success")
+		util2.Success(c, id)
 	}
 }
 

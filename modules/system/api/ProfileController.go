@@ -23,13 +23,13 @@ type ProfileController struct {
 func (w *ProfileController) Profile(c *gin.Context) {
 	var userService service.UserService
 	user := userService.GetProfile(c)
-	util.SuccessData(c, user)
+	util.Success(c, user)
 }
 
 // 修改用户信息
 func (w *ProfileController) Update(c *gin.Context) {
 	var req userModel.ProfileReq
-	//获取参数
+
 	if err := c.ShouldBind(&req); err != nil {
 		lv_log.Error(err)
 		util.Fail(c, "参数错误！")
@@ -38,9 +38,9 @@ func (w *ProfileController) Update(c *gin.Context) {
 	var userService service.UserService
 	err := userService.UpdateProfile(&req, c)
 	if err != nil {
-		util.Err(c, err.Error())
+		util.Fail(c, err.Error())
 	} else {
-		util.Success(c, "", "success")
+		util.Success(c, "")
 	}
 }
 
@@ -52,7 +52,7 @@ func (w *ProfileController) UpdatePassword(c *gin.Context) {
 	var userService service.UserService
 	err = userService.UpdatePassword(&req, c)
 	lv_err.HasErrAndPanic(err)
-	util.SuccessData(c, nil)
+	util.Success(c, nil)
 }
 
 // 检查登录名是否存在

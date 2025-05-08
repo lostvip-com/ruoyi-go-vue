@@ -12,7 +12,7 @@ import (
 // ListAjax 用户列表分页数据
 func (w *UserApi) ListAjax(c *gin.Context) {
 	var req *userModel.SelectUserPageReq
-	//获取参数
+
 	if err := c.ShouldBind(&req); err != nil {
 		util.ErrorResp(c).SetMsg(err.Error()).Log("用户管理", req).WriteJsonExit()
 		return
@@ -26,7 +26,7 @@ func (w *UserApi) ListAjax(c *gin.Context) {
 // 保存新增用户数据
 func (w *UserApi) AddSave(c *gin.Context) {
 	var req *userModel.AddUserReq
-	//获取参数
+
 	if err := c.ShouldBind(&req); err != nil {
 		util.ErrorResp(c).SetBtype(lv_dto.Buniss_Add).SetMsg(err.Error()).Log("新增用户", req).WriteJsonExit()
 		return
@@ -35,7 +35,7 @@ func (w *UserApi) AddSave(c *gin.Context) {
 	//判断登录名是否已注册
 	count, err := userService.CountCol("username", req.UserName)
 	if count > 0 {
-		util.Err(c, "登录名已经存在")
+		util.Fail(c, "登录名已经存在")
 		return
 	}
 	//判断手机号码是否已注册
@@ -46,5 +46,5 @@ func (w *UserApi) AddSave(c *gin.Context) {
 	}
 	uid, err := userService.AddSave(req, c)
 	lv_err.HasErrAndPanic(err)
-	util.Success(c, uid, "新增用户成功")
+	util.Success(c, uid)
 }

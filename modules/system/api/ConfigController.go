@@ -23,7 +23,7 @@ func (w *ConfigController) List(c *gin.Context) {
 func (w *ConfigController) ListAjax(c *gin.Context) {
 	req := new(common_vo.SelectConfigPageReq)
 	var configService service.ConfigService
-	//获取参数
+
 	if err := c.ShouldBind(req); err != nil {
 		util.ErrorResp(c).SetMsg(err.Error()).Log("参数管理", req).WriteJsonExit()
 		return
@@ -41,16 +41,16 @@ func (w *ConfigController) Add(c *gin.Context) {
 // 新增页面保存
 func (w *ConfigController) AddSave(c *gin.Context) {
 	req := new(common_vo.AddConfigReq)
-	//获取参数
+
 	err := c.ShouldBind(req)
 	lv_err.HasErrAndPanic(err)
 	var config dao2.ConfigDao
 	count, err := config.Count(req.ConfigKey)
 	lv_err.HasErrAndPanic(err)
 	if count > 0 {
-		util.Err(c, "此编号已经存在！请更换编号")
+		util.Fail(c, "此编号已经存在！请更换编号")
 	} else {
-		util.Success(c, "", "操作成功！")
+		util.Success(c, "")
 	}
 }
 
@@ -68,23 +68,23 @@ func (w *ConfigController) Edit(c *gin.Context) {
 // 修改页面保存
 func (w *ConfigController) EditSave(c *gin.Context) {
 	req := new(common_vo.EditConfigReq)
-	//获取参数
+
 	err := c.ShouldBind(req)
 	lv_err.HasErrAndPanic(err)
 	var configService service.ConfigService
 	configService.EditSave(req, c)
-	util.Success(c, "", "操作成功！")
+	util.Success(c, "")
 }
 
 // 删除数据
 func (w *ConfigController) Remove(c *gin.Context) {
 	req := new(lv_dto.IdsReq)
-	//获取参数
+
 	err := c.ShouldBind(req)
 	lv_err.HasErrAndPanic(err)
 	var configService service.ConfigService
 	configService.DeleteRecordByIds(req.Ids)
-	util.Success(c, "", "删除成功！")
+	util.Success(c, "")
 }
 
 // 导出
@@ -96,7 +96,7 @@ func (w *ConfigController) Export(c *gin.Context) {
 	url, err := configService.Export(req)
 	lv_err.HasErrAndPanic(err)
 
-	util.Success(c, url, "success!")
+	util.Success(c, url)
 }
 
 // CheckConfigKeyUnique 检查参数键名是否已经存在不包括本参数,使用jquery validator 默认1 存在，0 不存在

@@ -26,13 +26,12 @@ func (w *IndexApi) Index(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	util.Success(c, nil, "welcome!")
+	util.Success(c, nil)
 }
 
 // 下载 public/upload 文件头像之类
 func (w *IndexApi) Download(c *gin.Context) {
 	fileName := c.Query("fileName")
-	//delete := c.Query("delete")
 	if fileName == "" {
 		util.BuildTpl(c, lv_dto.ERROR_PAGE).WriteTpl(gin.H{
 			"desc": "参数错误",

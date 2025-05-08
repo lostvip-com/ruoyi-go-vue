@@ -32,7 +32,7 @@ func (w *GenController) Build(c *gin.Context) {
 // swagger文档
 func (w *GenController) ExecSqlFile(c *gin.Context) {
 	tableId := lv_conv.Int64(c.Query("tableId"))
-	//获取参数
+
 	if tableId <= 0 {
 		util2.ErrorResp(c).SetBtype(lv_dto.Buniss_Add).SetMsg("参数错误").Log("执行SQL文件错误", gin.H{"tableId": tableId})
 	}
@@ -63,7 +63,7 @@ func (w *GenController) ExecSqlFile(c *gin.Context) {
 	if err != nil {
 		panic(err)
 	}
-	util2.SucessData(c, nil)
+	util2.Success(c, nil)
 }
 
 // swagger文档
@@ -112,7 +112,7 @@ func (w *GenController) Gen(c *gin.Context) {
 func (w *GenController) GenList(c *gin.Context) {
 	var req *vo.GenTablePageReq
 	tableService := service.TableService{}
-	//获取参数
+
 	if err := c.ShouldBind(&req); err != nil {
 		util2.ErrorResp(c).SetMsg(err.Error()).Log("生成代码", req).WriteJsonExit()
 		return
@@ -123,7 +123,7 @@ func (w *GenController) GenList(c *gin.Context) {
 	if err == nil && len(result) > 0 {
 		rows = result
 	}
-	util2.SucessPage(c, rows, total)
+	util2.SuccessPage(c, rows, total)
 }
 
 // 导入数据表
@@ -134,7 +134,7 @@ func (w *GenController) ImportTable(c *gin.Context) {
 // 删除数据
 func (w *GenController) Remove(c *gin.Context) {
 	var req *lv_dto.IdsReq
-	//获取参数
+
 	if err := c.ShouldBind(&req); err != nil {
 		util2.ErrorResp(c).SetBtype(lv_dto.Buniss_Del).Log("生成代码", req).WriteJsonExit()
 		return
@@ -170,7 +170,7 @@ func (w *GenController) Edit(c *gin.Context) {
 // EditSave 修改数据保存
 func (w *GenController) EditSave(c *gin.Context) {
 	var req vo.GenTableEditReq
-	//获取参数
+
 	if err := c.ShouldBind(&req); err != nil {
 		util2.ErrorResp(c).SetMsg(err.Error()).SetBtype(lv_dto.Buniss_Edit).Log("生成代码", gin.H{"tableName": req.TableName}).WriteJsonExit()
 		return
@@ -236,7 +236,7 @@ func (w *GenController) GenCode(c *gin.Context) {
 	var codeGenService service.CodeGenService
 	codeGenService.GenCode(entity, overwrite)
 	//(genService)
-	util2.Success(c, gin.H{"tableId": tableId}, "生成代码")
+	util2.Success(c, gin.H{"tableId": tableId})
 }
 
 func canGenIt(overwrite bool, file string) bool {
@@ -256,7 +256,7 @@ func canGenIt(overwrite bool, file string) bool {
 // 查询数据库列表
 func (w *GenController) DataList(c *gin.Context) {
 	var req *vo.GenTablePageReq
-	//获取参数
+
 	err := c.ShouldBind(&req)
 	lv_err.HasErrAndPanic(err)
 	tableService := service.TableService{}

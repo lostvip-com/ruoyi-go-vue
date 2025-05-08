@@ -15,7 +15,7 @@ type DictDataController struct {
 // 列表分页数据
 func (w *DictDataController) ListAjax(c *gin.Context) {
 	var req *common_vo.SelectDictDataPageReq
-	//获取参数
+
 	if err := c.ShouldBind(&req); err != nil {
 		util.ErrorResp(c).SetMsg(err.Error()).Log("字典数据管理", req).WriteJsonExit()
 		return
@@ -34,7 +34,7 @@ func (w *DictDataController) ListAjax(c *gin.Context) {
 // 新增页面保存
 func (w *DictDataController) AddSave(c *gin.Context) {
 	var req *common_vo.AddDictDataReq
-	//获取参数
+
 	if err := c.ShouldBind(&req); err != nil {
 		util.ErrorResp(c).SetBtype(lv_dto.Buniss_Add).SetMsg(err.Error()).Log("字典数据管理", req).WriteJsonExit()
 		return
@@ -59,7 +59,7 @@ func (w *DictDataController) EditSave(c *gin.Context) {
 	var dictService service.DictDataService
 	err := dictService.EditSave(req, c)
 	if err == nil {
-		util.SuccessData(c, "success")
+		util.Success(c, nil)
 	} else {
 		util.Fail(c, err.Error())
 	}
@@ -71,7 +71,7 @@ func (w *DictDataController) Remove(c *gin.Context) {
 	var dictService service.DictDataService
 	err := dictService.DeleteRecordByIds(dictCodes)
 	if err == nil {
-		util.Success(c, nil, "success")
+		util.Success(c, nil)
 	} else {
 		util.Fail(c, err.Error())
 	}
@@ -80,7 +80,7 @@ func (w *DictDataController) Remove(c *gin.Context) {
 // Export 导出
 func (w *DictDataController) Export(c *gin.Context) {
 	var req *common_vo.SelectDictDataPageReq
-	//获取参数
+
 	if err := c.ShouldBind(&req); err != nil {
 		util.ErrorResp(c).SetMsg(err.Error()).Log("字典数据导出", req).WriteJsonExit()
 		return
@@ -88,7 +88,7 @@ func (w *DictDataController) Export(c *gin.Context) {
 	var dictService service.DictDataService
 	url, err := dictService.Export(req)
 	if err == nil {
-		util.Success(c, url, "success")
+		util.Success(c, url)
 	} else {
 		util.Fail(c, err.Error())
 	}

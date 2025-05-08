@@ -20,7 +20,7 @@ var SQL_FILE_POST = "sys_post/sys_post_mapper.sql"
 
 func (w DemoController) MybatisMap(c *gin.Context) {
 	req := vo.SelectPostPageReq{}
-	if err := c.ShouldBind(&req); err != nil { //获取参数
+	if err := c.ShouldBind(&req); err != nil {
 		util2.ErrorResp(c).SetMsg(err.Error()).WriteJsonExit()
 		return
 	}
@@ -32,12 +32,12 @@ func (w DemoController) MybatisMap(c *gin.Context) {
 	lv_err.HasErrAndPanic(err)
 	count, err := lv_dao.CountByNamedSql(ibatis.GetCountSql(), &req)
 	lv_err.HasErrAndPanic(err)
-	util2.PageOK2(c, listMap, count)
+	util2.SuccessPage(c, listMap, count)
 }
 
 func (w DemoController) MybatisStruct(c *gin.Context) {
 	req := vo.SelectPostPageReq{}
-	if err := c.ShouldBind(&req); err != nil { //获取参数
+	if err := c.ShouldBind(&req); err != nil {
 		util2.ErrorResp(c).SetMsg(err.Error()).WriteJsonExit()
 		return
 	}
@@ -48,7 +48,7 @@ func (w DemoController) MybatisStruct(c *gin.Context) {
 	lv_err.HasErrAndPanic(err)
 	count, err := lv_dao.CountByNamedSql(ibatis.GetCountSql(), &req)
 	lv_err.HasErrAndPanic(err)
-	util2.PageOK2(c, list, count)
+	util2.SuccessPage(c, list, count)
 }
 
 /**
@@ -56,12 +56,15 @@ func (w DemoController) MybatisStruct(c *gin.Context) {
  */
 func (w DemoController) MybatisStructPage(c *gin.Context) {
 	req := vo.SelectPostPageReq{}
-	if err := c.ShouldBind(&req); err != nil { //获取参数
+	if err := c.ShouldBind(&req); err != nil {
 		util2.ErrorResp(c).SetMsg(err.Error()).WriteJsonExit()
 		return
 	}
-	resp := lv_dao.GetPageByNamedSql[model.SysPost](SQL_FILE_POST, "listSql", &req)
-	util2.PageOK(c, resp)
+	rows, total, err := lv_dao.GetPageByNamedSql[model.SysPost](SQL_FILE_POST, "listSql", &req)
+	if err != nil {
+		util2.Fail(c, err.Error())
+	}
+	util2.SuccessPage(c, rows, total)
 }
 
 func (w DemoController) TestRedis(c *gin.Context) {
@@ -78,5 +81,5 @@ func (w DemoController) TestRedis(c *gin.Context) {
 	fmt.Println("------------myredis----------------------123")
 	data1, _ := redis.HGet("mapKey1", "test")
 	fmt.Println(data1)
-	util2.SucessData(c, data1)
+	util2.Success(c, data1)
 }

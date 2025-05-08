@@ -16,7 +16,7 @@ type OnlineApi struct {
 // ListAjax 列表分页数据
 func (w *OnlineApi) ListAjax(c *gin.Context) {
 	var param vo.OnlinePageReq
-	//获取参数
+
 	err := c.ShouldBind(&param)
 	lv_err.HasErrAndPanic(err)
 	rows := make([]vo.OnlineVo, 0)
@@ -66,7 +66,7 @@ func (w *OnlineApi) ListAjax(c *gin.Context) {
 	tb.Order("t.last_access_time desc").Offset((param.PageNum - 1) * param.PageSize).Limit(param.PageSize).Find(&rows)
 	err = tb.Error
 	lv_err.HasErrAndPanic(err)
-	util.SucessPage(c, rows, total)
+	util.SuccessPage(c, rows, total)
 }
 
 // 用户强退
@@ -75,7 +75,7 @@ func (w *OnlineApi) ForceLogout(c *gin.Context) {
 	var userService service.SessionService
 	err := userService.ForceLogout(sessionId)
 	lv_err.HasErrAndPanic(err)
-	util.Success(c, gin.H{"sessionId": sessionId}, "success")
+	util.Success(c, gin.H{"sessionId": sessionId})
 }
 
 // 批量强退

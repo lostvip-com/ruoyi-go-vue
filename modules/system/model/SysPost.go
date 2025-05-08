@@ -33,13 +33,13 @@ func (e *SysPost) Save() error {
 }
 
 // 查
-func (e *SysPost) FindById() error {
-	err := lv_db.GetMasterGorm().Take(e, e.PostId).Error
-	return err
+func (e *SysPost) FindById(id int64) (*SysPost, error) {
+	err := lv_db.GetMasterGorm().Take(e, id).Error
+	return e, err
 }
 
-// 查第一条
-func (e *SysPost) FindOne() error {
+// FindOne 查第一条
+func (e *SysPost) FindOne() (*SysPost, error) {
 	tb := lv_db.GetMasterGorm()
 	if e.PostId != 0 {
 		tb = tb.Where("post_id=?", e.PostId)
@@ -48,7 +48,7 @@ func (e *SysPost) FindOne() error {
 		tb = tb.Where("post_code=?", e.PostCode)
 	}
 	err := tb.First(e).Error
-	return err
+	return e, err
 }
 
 // 改

@@ -21,7 +21,7 @@ func RecoverError(c *gin.Context) {
 					c.String(http.StatusOK, errTypeObj)
 					c.Abort()
 				} else {
-					util.Err(c, errTypeObj)
+					util.Fail(c, errTypeObj)
 				}
 			case lv_dto.Resp: //封装过的
 				c.AbortWithStatusJSON(http.StatusOK, errTypeObj)
@@ -34,7 +34,7 @@ func RecoverError(c *gin.Context) {
 				util.Error(c, errTypeObj)
 			default:
 				lv_log.Error(c, "default CustomErrorXXXXXXXXXX: ", errTypeObj)
-				util.Err(c, "未知错误!")
+				util.Fail(c, "未知错误!")
 			}
 		} else {
 			lv_log.Info(c, "-----------request over----------")

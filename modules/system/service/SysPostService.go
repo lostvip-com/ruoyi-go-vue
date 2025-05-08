@@ -16,28 +16,21 @@ import (
 type SysPostService struct {
 }
 
-// 根据主键查询数据
-func (svc SysPostService) SelectRecordById(id int64) (*model.SysPost, error) {
-	entity := &model.SysPost{PostId: id}
-	err := entity.FindOne()
-	return entity, err
-}
+var postService *SysPostService
 
-// 根据主键删除数据
-func (svc SysPostService) DeleteRecordById(id int64) bool {
-	err := (&model.SysPost{PostId: id}).Delete()
-	if err == nil {
-		return true
+func GetSysPostServiceInstance() *SysPostService {
+	if postService == nil {
+		postService = &SysPostService{}
 	}
-	return false
+	return postService
 }
 
 // 批量删除数据记录
-func (svc SysPostService) DeleteRecordByIds(ids string) int64 {
+func (svc SysPostService) DeleteRecordByIds(ids string) error {
 	ida := lv_conv.ToInt64Array(ids, ",")
 	var d dao.SysPostDao
-	num, _ := d.DeleteByIds(ida)
-	return num
+	_, err := d.DeleteByIds(ida)
+	return err
 }
 
 // 添加数据
@@ -63,7 +56,7 @@ func (svc SysPostService) AddSave(req *vo.AddPostReq, c *gin.Context) (int64, er
 // 修改数据
 func (svc SysPostService) EditSave(req *vo.EditSysPostReq, c *gin.Context) error {
 	entity := &model.SysPost{PostId: req.PostId}
-	err := entity.FindOne()
+	entity, err := entity.FindOne()
 	if err != nil {
 		return err
 	}
@@ -82,19 +75,6 @@ func (svc SysPostService) EditSave(req *vo.EditSysPostReq, c *gin.Context) error
 	}
 
 	return entity.Updates()
-}
-
-// 根据条件分页查询角色数据
-func (svc SysPostService) SelectListAll(params *vo.SelectPostPageReq) (*[]model.SysPost, error) {
-	var d dao.SysPostDao
-	ret, err := d.ListAll(params)
-	return ret, err
-}
-
-// 根据条件分页查询角色数据
-func (svc SysPostService) SelectListByPage(params *vo.SelectPostPageReq) (*[]map[string]string, int64, error) {
-	var d dao.SysPostDao
-	return d.SelectPageList(params)
 }
 
 // 导出excel

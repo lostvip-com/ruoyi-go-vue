@@ -7,44 +7,6 @@ import (
 	"net/http"
 )
 
-// 返回一个成功的消息体
-func SucessData(c *gin.Context, data any) {
-	msg := lv_dto.CommonRes{
-		Code: 200,
-		Data: data,
-		Msg:  "操作成功",
-	}
-	c.AbortWithStatusJSON(http.StatusOK, &msg)
-}
-
-// 返回一个成功的消息体
-func SucessDataMsg(c *gin.Context, data any, msg string) {
-	c.AbortWithStatusJSON(http.StatusOK, &lv_dto.CommonRes{
-		Code: 200,
-		Data: data,
-		Msg:  msg,
-	})
-}
-
-// SucessPage 返回一个成功的消息体
-func SucessPage(c *gin.Context, rows any, total int64) {
-	msg := lv_dto.TableDataInfo{
-		Code:  200,
-		Rows:  rows,
-		Total: total,
-		Msg:   "Success!",
-	}
-	c.AbortWithStatusJSON(http.StatusOK, &msg)
-}
-
-// 返回一个成功的消息体
-func Fail(c *gin.Context, msg string) {
-	ret := lv_dto.CommonRes{
-		Code: 500,
-		Msg:  msg,
-	}
-	c.AbortWithStatusJSON(http.StatusOK, &ret)
-}
 func WriteTpl(c *gin.Context, tpl string, params ...gin.H) {
 	var data gin.H
 	login := session.GetLoginInfo(c)
@@ -61,59 +23,45 @@ func WriteTpl(c *gin.Context, tpl string, params ...gin.H) {
 	c.Abort()
 }
 
-// WriteErrorTPL 返回一个错误的tpl响应
-func WriteErrorTPL(c *gin.Context, params ...gin.H) {
-	WriteTpl(c, "error/error.html", params...)
+// Fail 返回一个成功的消息体
+func Fail(c *gin.Context, msg string) {
+	ret := lv_dto.CommonRes{
+		Code: 500,
+		Msg:  msg,
+	}
+	c.AbortWithStatusJSON(http.StatusOK, &ret)
 }
 
-// ///////////////////////////////////////////////////////////////////////////////////////////////////////
-func Err(c *gin.Context, msg string) {
-	c.AbortWithStatusJSON(http.StatusOK, gin.H{"code": 500, "msg": msg, "data": ""})
-}
-
-// 通常成功数据处理
-func Success(c *gin.Context, data interface{}, msg string) {
-	//如果传进来的是指针就对其进行翻译，不是指针保持原来的内容不变
+// Success 通常成功数据处理
+func Success(c *gin.Context, data any) {
 	//if data!=nil{
 	//	if reflect.TypeOf(data).Kind() == reflect.Ptr {
 	//		util.TranslateByTag(data)
 	//	}
 	//}
-	//msg = global.GetTextLocale(msg)
-	c.AbortWithStatusJSON(http.StatusOK, gin.H{"code": 200, "msg": msg, "data": data})
+	msg := lv_dto.CommonRes{
+		Code: 200,
+		Data: data,
+		Msg:  "Success",
+	}
+	c.AbortWithStatusJSON(http.StatusOK, &msg)
+	//c.AbortWithStatusJSON(http.StatusOK, gin.H{"code": 200, "data": data, "msg": "success"})
 }
 
-// 通常成功数据处理
-func SuccessData(c *gin.Context, data interface{}) {
-	//如果传进来的是指针就对其进行翻译，不是指针保持原来的内容不变
-	//if data!=nil{
-	//	if reflect.TypeOf(data).Kind() == reflect.Ptr {
-	//		util.TranslateByTag(data)
-	//	}
-	//}
-	//msg = global.GetTextLocale(msg)
-	c.AbortWithStatusJSON(http.StatusOK, gin.H{"code": 200, "msg": "success", "data": data})
-}
-
-// 失败数据处理
+// Error 失败数据处理
 func Error(c *gin.Context, err error) {
 	var msg string
 	if err != nil {
 		msg = err.Error()
 	}
-	Err(c, msg)
+	Fail(c, msg)
 }
 func ErrResp(c *gin.Context, res lv_dto.Resp) {
 	c.AbortWithStatusJSON(http.StatusOK, res)
 }
 
-// PageOK 分页数据处理 ， 自动翻译 Tag locale标记的字段
-func PageOK(c *gin.Context, result lv_dto.RespPage) {
-	c.AbortWithStatusJSON(http.StatusOK, result)
-}
-
-// PageOK2 分页数据处理 ， 自动翻译 Tag locale标记的字段
-func PageOK2(c *gin.Context, rows any, total int64) {
+// SuccessPage 分页数据处理 ， 自动翻译 Tag locale标记的字段
+func SuccessPage(c *gin.Context, rows any, total int64) {
 	c.AbortWithStatusJSON(http.StatusOK, gin.H{"code": 200, "msg": "success", "rows": rows, "total": total})
 }
 

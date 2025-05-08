@@ -38,7 +38,7 @@ func (w *LoginApi) VerifyCaptcha(IdKey string, ValidateCode string) (string, err
 // 验证登录
 func (w *LoginApi) Login(c *gin.Context) {
 	var req = RegisterReq{}
-	//获取参数
+
 	if err := c.ShouldBind(&req); err != nil {
 		util2.ErrorResp(c).SetMsg(err.Error()).WriteJsonExit()
 		return
@@ -117,5 +117,5 @@ func (w *LoginApi) Logout(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	util2.Success(c, nil, "success")
+	util2.Success(c, nil)
 }

@@ -25,7 +25,7 @@ func (w *HomeApi) GetUserInfo(c *gin.Context) {
 	} else {
 		permissions = service.GetPermissionServiceInstance().FindPerms(roles)
 	}
-	//获取参数
+
 	c.AbortWithStatusJSON(http.StatusOK, gin.H{"code": 200, "msg": "success", "user": user, "roles": roles, "permissions": permissions})
 }
 
@@ -41,5 +41,5 @@ func (w *HomeApi) GetRouters(c *gin.Context) {
 		menus, _ = menuService.SelectMenuNormalAll(user.UserId)
 	}
 	//获取配置数
-	util.Success(c, menus, "success")
+	util.Success(c, menus)
 }

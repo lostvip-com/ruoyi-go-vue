@@ -18,7 +18,7 @@ func (w *UserApi) ChangeStatus(c *gin.Context) {
 	status := c.PostForm("status")
 	sql := " update sys_user set status=? where user_id = ? "
 	rows := db2.GetMasterGorm().Exec(sql, status, userId).RowsAffected
-	util2.SuccessData(c, rows)
+	util2.Success(c, rows)
 }
 
 // 重置密码保存
@@ -56,7 +56,7 @@ func (w *UserApi) EditSave(c *gin.Context) {
 // 删除数据
 func (w *UserApi) Remove(c *gin.Context) {
 	var req *lv_dto.IdsReq
-	//获取参数
+
 	if err := c.ShouldBind(&req); err != nil {
 		util2.ErrorResp(c).SetBtype(lv_dto.Buniss_Del).SetMsg(err.Error()).WriteJsonExit()
 	}
@@ -72,7 +72,7 @@ func (w *UserApi) Remove(c *gin.Context) {
 // 导出
 func (w *UserApi) Export(c *gin.Context) {
 	var req *userModel.SelectUserPageReq
-	//获取参数
+
 	if err := c.ShouldBind(&req); err != nil {
 		util2.ErrorResp(c).SetMsg(err.Error()).Log("导出Excel", req).WriteJsonExit()
 	}
