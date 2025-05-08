@@ -13,16 +13,15 @@ func init() {
 	g0.GET("/", "", serverController.Health)
 	// 服务监控
 	g1 := router.New("/monitor/server", auth2.TokenCheck(), auth2.PermitCheck)
-	g1.GET("/", "monitor:server:view", serverController.Server)
+	g1.GET("/", "", serverController.Server)
 	//登录日志
 	g2 := router.New("/monitor/logininfor", auth2.TokenCheck(), auth2.PermitCheck)
-	loginInforController := api.LoginInforController{}
-	g2.GET("/", "monitor:logininfor:view", loginInforController.List)
-	g2.POST("/list", "monitor:logininfor:list", loginInforController.ListAjax)
-	g2.POST("/export", "monitor:logininfor:export", loginInforController.Export)
-	g2.POST("/clean", "monitor:logininfor:remove", loginInforController.Clean)
-	g2.POST("/remove", "monitor:logininfor:remove", loginInforController.Remove)
-	g2.POST("/unlock", "monitor:logininfor:unlock", loginInforController.Unlock)
+	loginInfoApi := api.LogininfoApi{}
+	g2.GET("/list", "monitor:logininfor:list", loginInfoApi.ListAjax)
+	g2.POST("/export", "monitor:logininfor:export", loginInfoApi.Export)
+	g2.POST("/clean", "monitor:logininfor:remove", loginInfoApi.Clean)
+	g2.DELETE("/:infoIds", "monitor:logininfor:remove", loginInfoApi.Remove)
+	g2.POST("/unlock", "monitor:logininfor:unlock", loginInfoApi.Unlock)
 
 	//操作日志
 	g3 := router.New("/monitor/operlog", auth2.TokenCheck(), auth2.PermitCheck)

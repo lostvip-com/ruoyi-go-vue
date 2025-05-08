@@ -16,18 +16,18 @@ import (
 	"time"
 )
 
-type ProfileController struct {
+type ProfileApi struct {
 }
 
 // 用户资料页面
-func (w *ProfileController) Profile(c *gin.Context) {
+func (w *ProfileApi) Profile(c *gin.Context) {
 	var userService service.UserService
 	user := userService.GetProfile(c)
 	util.Success(c, user)
 }
 
 // 修改用户信息
-func (w *ProfileController) Update(c *gin.Context) {
+func (w *ProfileApi) Update(c *gin.Context) {
 	var req userModel.ProfileReq
 
 	if err := c.ShouldBind(&req); err != nil {
@@ -45,7 +45,7 @@ func (w *ProfileController) Update(c *gin.Context) {
 }
 
 // 修改用户密码
-func (w *ProfileController) UpdatePassword(c *gin.Context) {
+func (w *ProfileApi) UpdatePassword(c *gin.Context) {
 	var req userModel.PasswordReq
 	err := c.ShouldBind(&req)
 	lv_err.HasErrAndPanic(err)
@@ -56,7 +56,7 @@ func (w *ProfileController) UpdatePassword(c *gin.Context) {
 }
 
 // 检查登录名是否存在
-func (w *ProfileController) CheckUserNameOK(c *gin.Context) {
+func (w *ProfileApi) CheckUserNameOK(c *gin.Context) {
 	var req userModel.CheckUserNameReq
 	if err := c.ShouldBind(&req); err != nil {
 		c.Writer.WriteString("1")
@@ -72,7 +72,7 @@ func (w *ProfileController) CheckUserNameOK(c *gin.Context) {
 }
 
 // CheckPhoneOK 检查手机号是否存在 1 存在，0不存在
-func (w *ProfileController) CheckPhoneOK(c *gin.Context) {
+func (w *ProfileApi) CheckPhoneOK(c *gin.Context) {
 	var req userModel.CheckPhoneAllReq
 	err := c.ShouldBind(&req)
 	lv_err.HasErrAndPanic(err)
@@ -87,7 +87,7 @@ func (w *ProfileController) CheckPhoneOK(c *gin.Context) {
 }
 
 // 检查手机号是否存在 1 存在，0不存在
-func (w *ProfileController) CheckEmailOK(c *gin.Context) {
+func (w *ProfileApi) CheckEmailOK(c *gin.Context) {
 	email := c.PostForm("email")
 	var userService service.UserService
 	count, err := userService.CountCol("email", email)
@@ -100,7 +100,7 @@ func (w *ProfileController) CheckEmailOK(c *gin.Context) {
 }
 
 // 校验密码是否正确
-func (w *ProfileController) CheckPassword(c *gin.Context) {
+func (w *ProfileApi) CheckPassword(c *gin.Context) {
 	var req userModel.CheckPasswordReq
 	if err := c.ShouldBind(&req); err != nil {
 		c.JSON(http.StatusOK, lv_dto.CommonRes{
@@ -121,7 +121,7 @@ func (w *ProfileController) CheckPassword(c *gin.Context) {
 }
 
 // 保存头像
-func (w *ProfileController) UpdateAvatar(c *gin.Context) {
+func (w *ProfileApi) UpdateAvatar(c *gin.Context) {
 	var userService service.UserService
 	user := userService.GetProfile(c)
 	curDir, err := os.Getwd()

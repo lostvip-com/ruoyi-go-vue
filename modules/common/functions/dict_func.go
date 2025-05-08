@@ -1,7 +1,6 @@
 package functions
 
 import (
-	"common/common_vo"
 	dictDataModel "common/models"
 	"encoding/json"
 	"github.com/lostvip-com/lv_framework/utils/lv_conv"
@@ -27,7 +26,7 @@ func DictLabel(dictType string, dictValue interface{}) template.HTML {
 
 // 通用的字典单选框控件  dictType 字典类别  value 默认值
 func DictRadio(dictType, name string, value interface{}) template.HTML {
-	result, err := SelectDictDataByType(dictType)
+	result, err := FindDictDataByType(dictType)
 	if err != nil {
 		return ""
 	}
@@ -58,7 +57,7 @@ func DictRadio(dictType, name string, value interface{}) template.HTML {
 // GetDictTypeSelect 通用的字典下拉框控件  字典类别   html控件id  html控件name html控件class  html控件value  html控件空值标签 是否可以多选
 func GetDictTypeSelect(dictType, id, name, className, value, emptyLabel, multiple string) template.HTML {
 
-	result, err := SelectDictDataByType(dictType)
+	result, err := FindDictDataByType(dictType)
 	if err != nil {
 		return ""
 	}
@@ -89,7 +88,7 @@ func GetDictTypeSelect(dictType, id, name, className, value, emptyLabel, multipl
 // DictSelect Select 为GetDictTypeSelect 的简化版，只支持单选下拉，不支持指定样式
 func DictSelect(dictType, htmlField, selectedVal string) template.HTML {
 
-	result, err := SelectDictDataByType(dictType)
+	result, err := FindDictDataByType(dictType)
 	if err != nil {
 		return ""
 	}
@@ -117,7 +116,7 @@ func DictSelect(dictType, htmlField, selectedVal string) template.HTML {
 // 通用的字典下拉框控件
 func DictType(dictType string) template.JS {
 	result := make([]dictDataModel.SysDictData, 0)
-	rs, err := SelectDictDataByType(dictType)
+	rs, err := FindDictDataByType(dictType)
 	if err == nil || len(rs) > 0 {
 		result = rs
 	}
@@ -133,9 +132,7 @@ func DictType(dictType string) template.JS {
 	return template.JS(jsonstr)
 }
 
-// 根据字典类型查询字典数据
-func SelectDictDataByType(dictType string) ([]dictDataModel.SysDictData, error) {
-	var dictDataModel dao.DictDataDao
-	var req = common_vo.SelectDictDataPageReq{DictType: dictType, Status: "0"}
-	return dictDataModel.SelectListAll(&req)
+// FindDictDataByType 根据字典类型查询字典数据
+func FindDictDataByType(dictType string) ([]dictDataModel.SysDictData, error) {
+	return dao.GetDictDataDaoInstance().FindAll("", dictType)
 }

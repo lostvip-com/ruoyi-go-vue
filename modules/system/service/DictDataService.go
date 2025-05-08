@@ -25,6 +25,13 @@ func GetDictDataServiceInstance() *DictDataService {
 }
 
 // 根据主键查询数据
+func (svc *DictDataService) SeById(id int64) (*models.SysDictData, error) {
+	entity := &models.SysDictData{DictCode: id}
+	_, err := entity.FindOne()
+	return entity, err
+}
+
+// 根据主键查询数据
 func (svc *DictDataService) SelectRecordById(id int64) (*models.SysDictData, error) {
 	entity := &models.SysDictData{DictCode: id}
 	_, err := entity.FindOne()
@@ -93,22 +100,22 @@ func (svc *DictDataService) EditSave(req *common_vo.EditDictDataReq, c *gin.Cont
 	return entity.Updates()
 }
 
-// 根据条件分页查询角色数据
+// SelectListAll 根据条件分页查询角色数据
 func (svc *DictDataService) SelectListAll(params *common_vo.SelectDictDataPageReq) ([]models.SysDictData, error) {
 	var dao dao2.DictDataDao
-	return dao.SelectListAll(params)
+	return dao.FindAll(params.DictLabel, params.DictType)
 }
 
-// 根据条件分页查询角色数据
-func (svc *DictDataService) SelectListByPage(params *common_vo.SelectDictDataPageReq) (*[]models.SysDictData, int64, error) {
+// FindPage 根据条件分页查询角色数据
+func (svc *DictDataService) FindPage(params *common_vo.SelectDictDataPageReq) (*[]models.SysDictData, int64, error) {
 	var dao dao2.DictDataDao
-	return dao.SelectListByPage(params)
+	return dao.FindPage(params)
 }
 
-// 导出excel
+// Export 导出excel
 func (svc *DictDataService) Export(param *common_vo.SelectDictDataPageReq) (string, error) {
 	head := []string{"字典编码", "字典排序", "字典标签", "字典键值", "字典类型", "样式属性", "表格回显样式", "是否默认", "状态", "创建者", "创建时间", "更新者", "更新时间", "备注"}
 	col := []string{"dict_code", "dict_sort", "dict_label", "dict_value", "dict_type", "css_class", "list_class", "is_default", "status", "create_by", "create_time", "update_by", "update_time", "remark"}
 	var dao dao2.DictDataDao
-	return dao.SelectListExport(param, head, col)
+	return dao.FindListExport(param, head, col)
 }

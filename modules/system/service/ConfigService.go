@@ -18,6 +18,15 @@ import (
 type ConfigService struct {
 }
 
+var configService *ConfigService
+
+func GetConfigServiceInstance() *ConfigService {
+	if configService == nil {
+		configService = &ConfigService{}
+	}
+	return configService
+}
+
 // 根据键获取值
 func (svc *ConfigService) GetValueFromCache(key string) string {
 	//从缓存读取
@@ -71,11 +80,11 @@ func (svc *ConfigService) DeleteRecordById(id int64) bool {
 	return false
 }
 
-// 批量删除数据记录
+// DeleteRecordByIds 批量删除数据记录
 func (svc *ConfigService) DeleteRecordByIds(ids string) {
-	idarr := lv_conv.ToInt64Array(ids, ",")
+	idArr := lv_conv.ToInt64Array(ids, ",")
 	cfg := new(model.SysConfig)
-	for _, id := range idarr {
+	for _, id := range idArr {
 		cfg, err := cfg.FindById(cast.ToInt64(id))
 		lv_err.HasErrAndPanic(err)
 		cfg.Delete()
@@ -137,7 +146,7 @@ func (svc *ConfigService) SelectListAll(params *common_vo.SelectConfigPageReq) (
 }
 
 // 根据条件分页查询角色数据
-func (svc *ConfigService) SelectListByPage(params *common_vo.SelectConfigPageReq) (*[]map[string]string, int64, error) {
+func (svc *ConfigService) FindPage(params *common_vo.SelectConfigPageReq) (*[]map[string]string, int64, error) {
 	var config dao2.ConfigDao
 	return config.SelectPageList(params)
 }

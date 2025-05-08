@@ -17,11 +17,20 @@ import (
 const USER_NOPASS_TIME string = "user_nopass_"
 const USER_LOCK string = "user_lock_"
 
-type LoginInforService struct {
+type LoginService struct {
+}
+
+var loginService *LoginService
+
+func GetLoginServiceInstance() *LoginService {
+	if loginService == nil {
+		loginService = &LoginService{}
+	}
+	return loginService
 }
 
 // SelectPageList 根据条件分页查询用户列表
-func (svc LoginInforService) SelectPageList(param *vo.LoginInfoPageReq) (*[]model.SysLoginInfo, int64, error) {
+func (svc LoginService) SelectPageList(param *vo.LoginInfoPageReq) (*[]model.SysLoginInfo, int64, error) {
 	db := lv_db.GetMasterGorm()
 	tb := db.Table("sys_logininfor")
 	if param != nil {
@@ -53,14 +62,14 @@ func (svc LoginInforService) SelectPageList(param *vo.LoginInfoPageReq) (*[]mode
 }
 
 // SelectRecordById 根据主键查询用户信息
-func (svc LoginInforService) SelectRecordById(id int64) (*model.SysLoginInfo, error) {
+func (svc LoginService) SelectRecordById(id int64) (*model.SysLoginInfo, error) {
 	entity := &model.SysLoginInfo{InfoId: id}
 	err := entity.FindById()
 	return entity, err
 }
 
 // DeleteRecordById 根据主键删除用户信息
-func (svc LoginInforService) DeleteRecordById(id int64) bool {
+func (svc LoginService) DeleteRecordById(id int64) bool {
 	entity := &model.SysLoginInfo{InfoId: id}
 	err := entity.Delete()
 	if err == nil {
@@ -71,21 +80,21 @@ func (svc LoginInforService) DeleteRecordById(id int64) bool {
 }
 
 // DeleteRecordByIds 批量删除记录
-func (svc LoginInforService) DeleteRecordByIds(ids string) error {
+func (svc LoginService) DeleteRecordByIds(ids string) error {
 	idarr := lv_conv.ToInt64Array(ids, ",")
 	err := lv_db.GetMasterGorm().Exec("delete from sys_logininfor where info_id in ? ", idarr).Error
 	return err
 }
 
 // 清空记录
-func (svc LoginInforService) DeleteRecordAll() error {
+func (svc LoginService) DeleteRecordAll() error {
 	db := lv_db.GetMasterGorm()
 	err := db.Exec("delete from sys_logininfor").Error
 	return err
 }
 
 // 导出excel
-func (svc LoginInforService) Export(param *vo.LoginInfoPageReq) (string, error) {
+func (svc LoginService) Export(param *vo.LoginInfoPageReq) (string, error) {
 	head := []string{"访问编号", "登录名称", "登录地址", "登录地点", "浏览器", "操作系统", "登录状态", "操作信息", "登录时间"}
 	col := []string{"info_id", "user_name", "ipaddr", "login_location", "browser", "os", "status", "msg", "login_time"}
 	db := lv_db.GetMasterGorm()
@@ -118,7 +127,7 @@ func (svc LoginInforService) Export(param *vo.LoginInfoPageReq) (string, error) 
 }
 
 // 记录密码尝试次数
-func (svc LoginInforService) SetPasswordCounts(UserName string) int {
+func (svc LoginService) SetPasswordCounts(UserName string) int {
 	curTimes := 0
 	curTimeObj, err := lv_cache.GetCacheClient().Get(USER_NOPASS_TIME + UserName)
 	if err == nil {
@@ -134,7 +143,7 @@ func (svc LoginInforService) SetPasswordCounts(UserName string) int {
 }
 
 // 记录密码尝试次数
-func (svc LoginInforService) GetPasswordCounts(UserName string) int {
+func (svc LoginService) GetPasswordCounts(UserName string) int {
 	curTimes := 0
 	curTimeObj, err := lv_cache.GetCacheClient().Get(USER_NOPASS_TIME + UserName)
 	if err != nil {
@@ -144,22 +153,22 @@ func (svc LoginInforService) GetPasswordCounts(UserName string) int {
 }
 
 // 移除密码错误次数
-func (svc LoginInforService) RemovePasswordCounts(UserName string) {
+func (svc LoginService) RemovePasswordCounts(UserName string) {
 	lv_cache.GetCacheClient().Del(USER_NOPASS_TIME + UserName)
 }
 
 // 锁定账号
-func (svc LoginInforService) Lock(UserName string) {
+func (svc LoginService) Lock(UserName string) {
 	lv_cache.GetCacheClient().Set(USER_LOCK+UserName, true, 30*time.Minute)
 }
 
 // 解除锁定
-func (svc LoginInforService) Unlock(UserName string) {
+func (svc LoginService) Unlock(UserName string) {
 	lv_cache.GetCacheClient().Del(USER_LOCK + UserName)
 }
 
 // 检查账号是否锁定
-func (svc LoginInforService) CheckLock(UserName string) bool {
+func (svc LoginService) CheckLock(UserName string) bool {
 	result := false
 	rs, _ := lv_cache.GetCacheClient().Get(USER_LOCK + UserName)
 	if rs != "" {

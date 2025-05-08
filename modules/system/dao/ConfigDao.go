@@ -72,7 +72,7 @@ func (d ConfigDao) GetSql(param *common_vo.SelectConfigPageReq) (map[string]inte
 
 //
 //// 根据条件分页查询数据
-//func (dao *ConfigDao) SelectListByPage(param *vo.SelectConfigPageReq) ([]model.SysConfig, *lv_web.Paging, error) {
+//func (dao *ConfigDao) FindPage(param *vo.SelectConfigPageReq) ([]model.SysConfig, *lv_web.Paging, error) {
 //	lv_db := lv_db.GetInstance().Engine()
 //	p := new(lv_web.Paging)
 //	if lv_db == nil {

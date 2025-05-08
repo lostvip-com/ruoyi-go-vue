@@ -86,7 +86,7 @@ func (svc *SessionService) SaveLoginLog2DB(token string, user *model.SysUser, us
 	//os := ua.OS()
 	//browser, _ := ua.Browser()
 	////移除登录次数记录
-	//var logininforService LoginInforService
+	//var logininforService LoginService
 	//logininforService.RemovePasswordCounts(user.UserName)
 	//
 	//var userOnline vo.OnlineVo

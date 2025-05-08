@@ -96,9 +96,9 @@ func (svc *DictTypeService) SelectListAll(params *common_vo.DictTypePageReq) ([]
 }
 
 // 根据条件分页查询角色数据
-func (svc *DictTypeService) SelectListByPage(params *common_vo.DictTypePageReq) ([]model.SysDictType, int64, error) {
+func (svc *DictTypeService) FindPage(params *common_vo.DictTypePageReq) ([]model.SysDictType, int64, error) {
 	var dao dao2.DictTypeDao
-	return dao.SelectListByPage(params)
+	return dao.FindPage(params)
 }
 
 // 根据字典类型查询信息

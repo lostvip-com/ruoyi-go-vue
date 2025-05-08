@@ -31,7 +31,7 @@ func (r *GenTableDao) ListColumn(tableId int64) (*vo.GenTableVO, error) {
 }
 
 // 根据条件分页查询数据
-func (r *GenTableDao) SelectListByPage(param *vo.GenTablePageReq) ([]model.GenTable, int64, error) {
+func (r *GenTableDao) FindPage(param *vo.GenTablePageReq) ([]model.GenTable, int64, error) {
 	db := lv_db.GetMasterGorm()
 	tb := db.Table(" gen_table t")
 

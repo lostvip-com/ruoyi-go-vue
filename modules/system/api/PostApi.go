@@ -11,10 +11,10 @@ import (
 	"system/vo"
 )
 
-type PostController struct {
+type PostApi struct {
 }
 
-func (w *PostController) GetPostInfo(c *gin.Context) {
+func (w *PostApi) GetPostInfo(c *gin.Context) {
 	var postId = c.Param("postId")
 	post := new(model.SysPost)
 	post, err := post.FindById(cast.ToInt64(postId))
@@ -26,7 +26,7 @@ func (w *PostController) GetPostInfo(c *gin.Context) {
 }
 
 // ListAjax 列表分页数据
-func (w *PostController) GetPostOptionSelect(c *gin.Context) {
+func (w *PostApi) GetPostOptionSelect(c *gin.Context) {
 	var req *vo.SelectPostPageReq
 	if err := c.ShouldBind(&req); err != nil {
 		util.ErrorResp(c).SetMsg(err.Error()).Log("岗位管理", req).WriteJsonExit()
@@ -41,7 +41,7 @@ func (w *PostController) GetPostOptionSelect(c *gin.Context) {
 }
 
 // ListAjax 列表分页数据
-func (w *PostController) ListAjax(c *gin.Context) {
+func (w *PostApi) ListAjax(c *gin.Context) {
 	var req *vo.SelectPostPageReq
 	if err := c.ShouldBind(&req); err != nil {
 		util.ErrorResp(c).SetMsg(err.Error()).Log("岗位管理", req).WriteJsonExit()
@@ -55,10 +55,9 @@ func (w *PostController) ListAjax(c *gin.Context) {
 	util.SuccessPage(c, result, total)
 }
 
-// AddSave 新增页面保存
-func (w *PostController) AddSave(c *gin.Context) {
+// 新增页面保存
+func (w *PostApi) AddSave(c *gin.Context) {
 	var req *vo.AddPostReq
-
 	if err := c.ShouldBind(&req); err != nil {
 		util.ErrorResp(c).SetBtype(lv_dto.Buniss_Add).SetMsg(err.Error()).Log("岗位管理", req).WriteJsonExit()
 		return
@@ -77,7 +76,7 @@ func (w *PostController) AddSave(c *gin.Context) {
 }
 
 // EditSave 修改页面保存
-func (w *PostController) EditSave(c *gin.Context) {
+func (w *PostApi) EditSave(c *gin.Context) {
 	var req *vo.EditSysPostReq
 	if err := c.ShouldBind(&req); err != nil {
 		util.ErrorResp(c).SetBtype(lv_dto.Buniss_Edit).SetMsg(err.Error()).Log("岗位管理", req).WriteJsonExit()
@@ -93,7 +92,7 @@ func (w *PostController) EditSave(c *gin.Context) {
 }
 
 // Remove 删除数据
-func (w *PostController) Remove(c *gin.Context) {
+func (w *PostApi) Remove(c *gin.Context) {
 	var req *lv_dto.IdsReq
 	if err := c.ShouldBind(&req); err != nil {
 		util.Fail(c, err.Error())
@@ -108,8 +107,7 @@ func (w *PostController) Remove(c *gin.Context) {
 	util.Success(c, nil)
 }
 
-// Export 导出
-func (w *PostController) Export(c *gin.Context) {
+func (w *PostApi) Export(c *gin.Context) {
 	var req *vo.SelectPostPageReq
 	if err := c.ShouldBind(&req); err != nil {
 		util.ErrorResp(c).SetMsg(err.Error()).Log("岗位管理", req).WriteJsonExit()

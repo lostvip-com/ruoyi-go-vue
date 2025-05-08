@@ -22,15 +22,15 @@ import (
 	"system/vo"
 )
 
-type GenController struct{}
+type GenApi struct{}
 
 // 表单构建
-func (w *GenController) Build(c *gin.Context) {
+func (w *GenApi) Build(c *gin.Context) {
 	util2.BuildTpl(c, "tool/build").WriteTpl()
 }
 
 // swagger文档
-func (w *GenController) ExecSqlFile(c *gin.Context) {
+func (w *GenApi) ExecSqlFile(c *gin.Context) {
 	tableId := lv_conv.Int64(c.Query("tableId"))
 
 	if tableId <= 0 {
@@ -67,7 +67,7 @@ func (w *GenController) ExecSqlFile(c *gin.Context) {
 }
 
 // swagger文档
-func (w *GenController) Swagger(c *gin.Context) {
+func (w *GenApi) Swagger(c *gin.Context) {
 	a := c.Query("a")
 	if a == "r" {
 		//重新生成文档
@@ -93,7 +93,7 @@ func (w *GenController) Swagger(c *gin.Context) {
 }
 
 // 自动生成文档 swag init -o static/swagger
-func (w *GenController) generateSwaggerFiles(output string) error {
+func (w *GenApi) generateSwaggerFiles(output string) error {
 
 	cmd := exec.Command("swag", "init -o "+output)
 	// 保证关闭输出流
@@ -105,11 +105,11 @@ func (w *GenController) generateSwaggerFiles(output string) error {
 }
 
 // 生成代码列表页面
-func (w *GenController) Gen(c *gin.Context) {
+func (w *GenApi) Gen(c *gin.Context) {
 	util2.BuildTpl(c, "tool/gen_list_tables").WriteTpl()
 }
 
-func (w *GenController) GenList(c *gin.Context) {
+func (w *GenApi) GenList(c *gin.Context) {
 	var req *vo.GenTablePageReq
 	tableService := service.TableService{}
 
@@ -118,7 +118,7 @@ func (w *GenController) GenList(c *gin.Context) {
 		return
 	}
 	rows := make([]menuModel.GenTable, 0)
-	result, total, err := tableService.SelectListByPage(req)
+	result, total, err := tableService.FindPage(req)
 
 	if err == nil && len(result) > 0 {
 		rows = result
@@ -127,12 +127,12 @@ func (w *GenController) GenList(c *gin.Context) {
 }
 
 // 导入数据表
-func (w *GenController) ImportTable(c *gin.Context) {
+func (w *GenApi) ImportTable(c *gin.Context) {
 	util2.WriteTpl(c, "tool/gen_import_table")
 }
 
 // 删除数据
-func (w *GenController) Remove(c *gin.Context) {
+func (w *GenApi) Remove(c *gin.Context) {
 	var req *lv_dto.IdsReq
 
 	if err := c.ShouldBind(&req); err != nil {
@@ -150,7 +150,7 @@ func (w *GenController) Remove(c *gin.Context) {
 }
 
 // Edit 修改数据
-func (w *GenController) Edit(c *gin.Context) {
+func (w *GenApi) Edit(c *gin.Context) {
 	id := lv_conv.Int64(c.Query("id"))
 	tableService := service.TableService{}
 	entity, err := tableService.SelectRecordById(id)
@@ -168,7 +168,7 @@ func (w *GenController) Edit(c *gin.Context) {
 }
 
 // EditSave 修改数据保存
-func (w *GenController) EditSave(c *gin.Context) {
+func (w *GenApi) EditSave(c *gin.Context) {
 	var req vo.GenTableEditReq
 
 	if err := c.ShouldBind(&req); err != nil {
@@ -185,7 +185,7 @@ func (w *GenController) EditSave(c *gin.Context) {
 }
 
 // Preview 预览代码
-func (w *GenController) Preview(c *gin.Context) {
+func (w *GenApi) Preview(c *gin.Context) {
 	tableId := lv_conv.Int64(c.Query("tableId"))
 	if tableId <= 0 {
 		c.JSON(http.StatusOK, lv_dto.CommonRes{
@@ -220,7 +220,7 @@ func (w *GenController) Preview(c *gin.Context) {
 }
 
 // 生成代码
-func (w *GenController) GenCode(c *gin.Context) {
+func (w *GenApi) GenCode(c *gin.Context) {
 	overwrite := myconf.GetConfigInstance().GetBool("gen.overwrite")
 	tableId := lv_conv.Int64(c.Query("tableId"))
 	tableService := service.TableService{}
@@ -254,7 +254,7 @@ func canGenIt(overwrite bool, file string) bool {
 }
 
 // 查询数据库列表
-func (w *GenController) DataList(c *gin.Context) {
+func (w *GenApi) DataList(c *gin.Context) {
 	var req *vo.GenTablePageReq
 
 	err := c.ShouldBind(&req)
@@ -275,7 +275,7 @@ func (w *GenController) DataList(c *gin.Context) {
 }
 
 // 导入表结构（保存）
-func (w *GenController) ImportTableSave(c *gin.Context) {
+func (w *GenApi) ImportTableSave(c *gin.Context) {
 	tables := c.PostForm("tables")
 	if tables == "" {
 		util2.ErrorResp(c).SetBtype(lv_dto.Buniss_Add).SetMsg("参数错误tables未选中").Log("生成代码", gin.H{"tables": tables}).WriteJsonExit()
@@ -304,7 +304,7 @@ func (w *GenController) ImportTableSave(c *gin.Context) {
 }
 
 // 根据table_id查询表列数据
-func (w *GenController) ColumnList(c *gin.Context) {
+func (w *GenApi) ColumnList(c *gin.Context) {
 	tableId := lv_conv.Int64(c.PostForm("tableId"))
 	rows := make([]menuModel.GenTableColumn, 0)
 	tableService := service.TableColumnService{}

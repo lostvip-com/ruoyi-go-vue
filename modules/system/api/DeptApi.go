@@ -11,11 +11,11 @@ import (
 	"system/service"
 )
 
-type DeptController struct {
+type DeptApi struct {
 }
 
 // ListAjax 列表分页数据
-func (w *DeptController) ListAjax(c *gin.Context) {
+func (w *DeptApi) ListAjax(c *gin.Context) {
 	var service service.DeptService
 	var req = common_vo.DeptPageReq{}
 
@@ -32,7 +32,7 @@ func (w *DeptController) ListAjax(c *gin.Context) {
 }
 
 // AddSave 新增页面保存
-func (w *DeptController) AddSave(c *gin.Context) {
+func (w *DeptApi) AddSave(c *gin.Context) {
 	var req *common_vo.AddDeptReq
 	var service service.DeptService
 
@@ -49,7 +49,7 @@ func (w *DeptController) AddSave(c *gin.Context) {
 }
 
 // EditSave 修改页面保存
-func (w *DeptController) EditSave(c *gin.Context) {
+func (w *DeptApi) EditSave(c *gin.Context) {
 	var service service.DeptService
 
 	var req *common_vo.EditDeptReq
@@ -69,7 +69,7 @@ func (w *DeptController) EditSave(c *gin.Context) {
 }
 
 // 删除数据
-func (w *DeptController) Remove(c *gin.Context) {
+func (w *DeptApi) Remove(c *gin.Context) {
 	id := lv_conv.Int64(c.Query("id"))
 	service := service.DeptService{}
 	err := service.DeleteDeptById(id)
@@ -81,7 +81,7 @@ func (w *DeptController) Remove(c *gin.Context) {
 }
 
 // 加载部门列表树结构的数据
-func (w *DeptController) TreeData(c *gin.Context) {
+func (w *DeptApi) TreeData(c *gin.Context) {
 	var service service.DeptService
 	tenantId := session.GetTenantId(c)
 	result, _ := service.SelectDeptTree(0, "", "", tenantId)
@@ -89,7 +89,7 @@ func (w *DeptController) TreeData(c *gin.Context) {
 }
 
 // 加载角色部门（数据权限）列表树
-func (w *DeptController) RoleDeptTreeData(c *gin.Context) {
+func (w *DeptApi) RoleDeptTreeData(c *gin.Context) {
 	var service service.DeptService
 	tenantId := session.GetTenantId(c)
 	roleId := lv_conv.Int64(c.Query("roleId"))

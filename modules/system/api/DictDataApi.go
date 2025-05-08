@@ -6,14 +6,27 @@ import (
 	"common/util"
 	"github.com/gin-gonic/gin"
 	"github.com/lostvip-com/lv_framework/web/lv_dto"
+	"github.com/spf13/cast"
+	"system/dao"
 	"system/service"
 )
 
-type DictDataController struct {
+type DictDataApi struct {
+}
+
+func (w *DictDataApi) GetDictDataByDictType(c *gin.Context) {
+	dictType := cast.ToString(c.Param("dictType"))
+	list, err := dao.GetDictDataDaoInstance().FindAll("", dictType)
+	if err != nil {
+		util.Fail(c, err.Error())
+		return
+	} else {
+		util.Success(c, list)
+	}
 }
 
 // 列表分页数据
-func (w *DictDataController) ListAjax(c *gin.Context) {
+func (w *DictDataApi) ListAjax(c *gin.Context) {
 	var req *common_vo.SelectDictDataPageReq
 
 	if err := c.ShouldBind(&req); err != nil {
@@ -22,7 +35,7 @@ func (w *DictDataController) ListAjax(c *gin.Context) {
 	}
 	rows := make([]models.SysDictData, 0)
 	var dictService service.DictDataService
-	result, total, err := dictService.SelectListByPage(req)
+	result, total, err := dictService.FindPage(req)
 
 	if err == nil && len(*result) > 0 {
 		rows = *result
@@ -32,7 +45,7 @@ func (w *DictDataController) ListAjax(c *gin.Context) {
 }
 
 // 新增页面保存
-func (w *DictDataController) AddSave(c *gin.Context) {
+func (w *DictDataApi) AddSave(c *gin.Context) {
 	var req *common_vo.AddDictDataReq
 
 	if err := c.ShouldBind(&req); err != nil {
@@ -50,7 +63,7 @@ func (w *DictDataController) AddSave(c *gin.Context) {
 }
 
 // 修改页面保存
-func (w *DictDataController) EditSave(c *gin.Context) {
+func (w *DictDataApi) EditSave(c *gin.Context) {
 	var req *common_vo.EditDictDataReq
 	if err := c.ShouldBind(&req); err != nil {
 		util.Fail(c, err.Error())
@@ -66,7 +79,7 @@ func (w *DictDataController) EditSave(c *gin.Context) {
 }
 
 // Remove 删除数据
-func (w *DictDataController) Remove(c *gin.Context) {
+func (w *DictDataApi) Remove(c *gin.Context) {
 	var dictCodes = c.Param("dictCodes")
 	var dictService service.DictDataService
 	err := dictService.DeleteRecordByIds(dictCodes)
@@ -78,7 +91,7 @@ func (w *DictDataController) Remove(c *gin.Context) {
 }
 
 // Export 导出
-func (w *DictDataController) Export(c *gin.Context) {
+func (w *DictDataApi) Export(c *gin.Context) {
 	var req *common_vo.SelectDictDataPageReq
 
 	if err := c.ShouldBind(&req); err != nil {

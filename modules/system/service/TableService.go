@@ -125,9 +125,9 @@ func (svc TableService) SetPkColumn(table *vo.GenTableVO, columns []model.GenTab
 }
 
 // 根据条件分页查询数据
-func (svc TableService) SelectListByPage(param *vo.GenTablePageReq) ([]model.GenTable, int64, error) {
+func (svc TableService) FindPage(param *vo.GenTablePageReq) ([]model.GenTable, int64, error) {
 	var table dao.GenTableDao
-	return table.SelectListByPage(param)
+	return table.FindPage(param)
 }
 
 // 查询据库列表

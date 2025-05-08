@@ -13,8 +13,17 @@ import (
 type DictDataDao struct {
 }
 
+var dictDataDao *DictDataDao
+
+func GetDictDataDaoInstance() *DictDataDao {
+	if dictDataDao == nil {
+		dictDataDao = &DictDataDao{}
+	}
+	return dictDataDao
+}
+
 // 根据条件分页查询数据
-func (dao *DictDataDao) SelectListByPage(param *common_vo.SelectDictDataPageReq) (*[]models.SysDictData, int64, error) {
+func (dao *DictDataDao) FindPage(param *common_vo.SelectDictDataPageReq) (*[]models.SysDictData, int64, error) {
 	db := lv_db.GetMasterGorm()
 	tb := db.Table("sys_dict_data t")
 	if param != nil {
@@ -37,7 +46,7 @@ func (dao *DictDataDao) SelectListByPage(param *common_vo.SelectDictDataPageReq)
 }
 
 // 导出excel
-func (dao *DictDataDao) SelectListExport(param *common_vo.SelectDictDataPageReq, head, col []string) (string, error) {
+func (dao *DictDataDao) FindListExport(param *common_vo.SelectDictDataPageReq, head, col []string) (string, error) {
 	db := lv_db.GetMasterGorm()
 	build := builder.Select(col...).From("sys_dict_data", "t")
 	if param != nil {
@@ -57,28 +66,23 @@ func (dao *DictDataDao) SelectListExport(param *common_vo.SelectDictDataPageReq,
 	return path, err
 }
 
-// 获取所有数据
-func (dao *DictDataDao) SelectListAll(param *common_vo.SelectDictDataPageReq) ([]models.SysDictData, error) {
+// FindAll 获取所有数据
+func (dao *DictDataDao) FindAll(dictLabel, dictType string) ([]models.SysDictData, error) {
 	db := lv_db.GetMasterGorm()
 	if db == nil {
 		return nil, errors.New("获取数据库连接失败")
 	}
 	tb := db.Table("sys_dict_data t ")
 
-	if param != nil {
-		if param.DictLabel != "" {
-			tb.Where("t.dict_label like ?", "%"+param.DictLabel+"%")
-		}
-
-		if param.Status != "" {
-			tb.Where("t.status =? ", param.Status)
-		}
-
-		if param.DictType != "" {
-			tb.Where("t.dict_type =?", param.DictType)
-		}
-		tb.Order("dict_sort asc")
+	if dictLabel != "" {
+		tb.Where("t.dict_label like ?", "%"+dictLabel+"%")
 	}
+	tb.Where("t.status =? ", 0)
+
+	if dictType != "" {
+		tb.Where("t.dict_type =?", dictType)
+	}
+	tb.Order("dict_sort asc")
 	var result []models.SysDictData
 	err := tb.Find(&result).Error
 	return result, err

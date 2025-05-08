@@ -77,6 +77,19 @@ func (svc SysPostService) EditSave(req *vo.EditSysPostReq, c *gin.Context) error
 	return entity.Updates()
 }
 
+// 根据条件分页查询角色数据
+func (svc SysPostService) SelectListAll(params *vo.SelectPostPageReq) (*[]model.SysPost, error) {
+	var d dao.SysPostDao
+	ret, err := d.ListAll(params)
+	return ret, err
+}
+
+// 根据条件分页查询角色数据
+func (svc SysPostService) FindPage(params *vo.SelectPostPageReq) (*[]map[string]string, int64, error) {
+	var d dao.SysPostDao
+	return d.SelectPageList(params)
+}
+
 // 导出excel
 func (svc SysPostService) Export(param *vo.SelectPostPageReq) (string, error) {
 	head := []string{"岗位序号", "岗位名称", "岗位编码", "岗位排序", "状态"}

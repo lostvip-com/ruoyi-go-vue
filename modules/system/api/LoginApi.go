@@ -44,7 +44,7 @@ func (w *LoginApi) Login(c *gin.Context) {
 		return
 	}
 	clientIp := lv_net.GetClientRealIP(c)
-	var logininforService service.LoginInforService
+	var logininforService service.LoginService
 	errTimes4Ip := logininforService.GetPasswordCounts(clientIp)
 	if errTimes4Ip > 5 { //超过5次错误开始校验验证码
 		//比对验证码

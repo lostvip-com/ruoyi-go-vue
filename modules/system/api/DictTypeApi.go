@@ -7,7 +7,6 @@ import (
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
 	"github.com/lostvip-com/lv_framework/web/lv_dto"
 	"github.com/spf13/cast"
-	"net/http"
 	"system/dao"
 	"system/model"
 	"system/service"
@@ -34,7 +33,7 @@ func (w *DictTypeApi) ListAjax(c *gin.Context) {
 	}
 	rows := make([]model.SysDictType, 0)
 	var dictTypeService service.DictTypeService
-	result, total, err := dictTypeService.SelectListByPage(req)
+	result, total, err := dictTypeService.FindPage(req)
 
 	if err == nil && len(result) > 0 {
 		rows = result
@@ -103,6 +102,13 @@ func (w *DictTypeApi) Remove(c *gin.Context) {
 	}
 }
 
+// GetOptionSelect 加载部门列表树结构的数据
+//func (w *DictTypeApi) GetOptionSelect(c *gin.Context) {
+//	var dictTypeService service.DictTypeService
+//	result := dictTypeService.SelectDictTree(nil)
+//	c.JSON(http.StatusOK, result)
+//}
+
 // 导出
 func (w *DictTypeApi) Export(c *gin.Context) {
 	var req *common_vo.DictTypePageReq
@@ -127,5 +133,5 @@ func (w *DictTypeApi) GetOptionSelect(c *gin.Context) {
 		util.Fail(c, err.Error())
 		return
 	}
-	c.JSON(http.StatusOK, result)
+	util.Success(c, result)
 }

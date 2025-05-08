@@ -23,7 +23,7 @@ func GetSysDictTypeDaoInstance() *DictTypeDao {
 }
 
 // 根据条件分页查询数据
-func (dao *DictTypeDao) SelectListByPage(param *common_vo.DictTypePageReq) ([]model.SysDictType, int64, error) {
+func (dao *DictTypeDao) FindPage(param *common_vo.DictTypePageReq) ([]model.SysDictType, int64, error) {
 	db := lv_db.GetMasterGorm()
 	if db == nil {
 		return nil, 0, errors.New("获取数据库连接失败")

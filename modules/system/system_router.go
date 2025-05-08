@@ -14,16 +14,13 @@ func init() {
 	common.GET("/downloadUpload", "", commonApi.DownloadUpload)
 	//系统配置
 	system := router.New("/system", auth2.TokenCheck(), auth2.PermitCheck)
-	config := api.ConfigController{}
-	system.GET("/config", "system:config:view", config.List)
-	system.POST("/config/list", "system:config:list", config.ListAjax)
-	system.GET("/config/add", "system:config:add", config.Add)
-	system.POST("/config/add", "system:config:add", config.AddSave)
-	system.POST("/config/remove", "system:config:remove", config.Remove)
-	system.GET("/config/edit", "system:config:edit", config.Edit)
-	system.POST("/config/edit", "system:config:edit", config.EditSave)
+	config := api.ConfigApi{}
+	system.GET("/config/list", "system:config:list", config.ListAjax)
+	system.GET("/config/configKey/:configKey", "", config.GetConfigKey)
+	system.POST("/config", "system:config:add", config.AddSave)
+	system.PUT("/config", "system:config:edit", config.EditSave)
+	system.DELETE("/config/:configIds", "system:config:remove", config.Remove)
 	system.POST("/config/export", "system:config:export", config.Export)
-	system.POST("/config/checkConfigKeyUnique", "system:config:view", config.CheckConfigKeyUnique)
 	// 字典类型参数路由
 	dictType := api.DictTypeApi{}
 	system.GET("/dict/type/list", "system:dict:list", dictType.ListAjax)
@@ -36,20 +33,21 @@ func init() {
 	//system.POST("/dict/type/checkDictTypeUnique", "system:dict:view", dictType.CheckDictTypeUnique)
 	system.GET("/dict/type/optionselect", "system:dict:view", dictType.GetOptionSelect)
 	// 字典内容参数路由
-	dictData := api.DictDataController{}
-	system.GET("/dict/data/list", "system:dict:view", dictData.ListAjax)
+	dictData := api.DictDataApi{}
+	system.GET("/dict/data/list", "", dictData.ListAjax)
+	system.GET("/dict/data/type/:dictType", "", dictData.GetDictDataByDictType)
 	system.POST("/dict/data", "system:dict:add", dictData.AddSave)
 	system.PUT("/dict/data", "system:dict:edit", dictData.EditSave)
 	system.DELETE("/dict/data/:dictCodes", "system:dict:remove", dictData.Remove)
 	system.POST("/dict/data/export", "system:dict:export", dictData.Export)
 	//dept
-	deptContr := api.DeptController{}
+	deptContr := api.DeptApi{}
 	system.POST("/dept/list", "system:dept:list", deptContr.ListAjax)
 	system.POST("/dept/add", "system:dept:add", deptContr.AddSave)
 	system.POST("/dept/remove", "system:dept:remove", deptContr.Remove)
 	system.POST("/dept/edit", "system:dept:edit", deptContr.EditSave)
-	system.GET("/dept/treeData", "system:dept:view", deptContr.TreeData)
-	system.GET("/dept/roleDeptTreeData", "system:dept:view", deptContr.RoleDeptTreeData)
+	system.GET("/dept/treeData", "", deptContr.TreeData)
+	system.GET("/dept/roleDeptTreeData", "", deptContr.RoleDeptTreeData)
 	// 用户管理路由
 	user := api.UserApi{}
 	system.POST("/user/list", "system:user:list", user.ListAjax)
@@ -60,7 +58,7 @@ func init() {
 	system.POST("/user/resetPwd", "system:user:resetPwd", user.ResetPwdSave)
 	system.POST("/user/changeStatus", "system:user:edit", user.ChangeStatus)
 	// 个人中心路由
-	profile := api.ProfileController{}
+	profile := api.ProfileApi{}
 	system.GET("user/profile", "", profile.Profile)
 	system.POST("/profile/update", "", profile.Update)
 	system.POST("/profile/resetSavePwd", "", profile.UpdatePassword)
@@ -88,18 +86,17 @@ func init() {
 	system.POST("/menu/list", "system:menu:list", menuController.ListAjax)
 
 	system.POST("/menu/add", "system:menu:add", menuController.AddSave)
-	system.GET("/menu/remove", "system:menu:remove", menuController.Remove)
+	system.GET("/menu/remove", "", menuController.Remove)
 	system.POST("/menu/remove", "system:menu:remove", menuController.Remove)
 	system.POST("/menu/edit", "system:menu:edit", menuController.EditSave)
-	system.GET("/menu/roleMenuTreeData", "system:menu:view", menuController.RoleMenuTreeData)
-	system.GET("/menu/treeData", "system:menu:view", menuController.MenuTreeData)
+	system.GET("/menu/roleMenuTreeData", "", menuController.RoleMenuTreeData)
+	system.GET("/menu/treeData", "", menuController.MenuTreeData)
 	// 岗位路由
-	postController := api.PostController{}
-	system.GET("/post/list", "system:post:list", postController.ListAjax)
-	system.GET("/post/:postId", "system:post:list", postController.GetPostInfo)
-	system.POST("/post", "system:post:add", postController.AddSave)
-	system.PUT("/post", "system:post:edit", postController.EditSave)
-	system.DELETE("/post/remove", "system:post:remove", postController.Remove)
+	postController := api.PostApi{}
+	system.POST("/post/post/list", "system:post:list", postController.ListAjax)
+	system.POST("/post/add", "system:post:add", postController.AddSave)
+	system.POST("/post/remove", "system:post:remove", postController.Remove)
+	system.POST("/post/edit", "system:post:edit", postController.EditSave)
 	system.POST("/post/export", "system:post:export", postController.Export)
 	system.GET("/optionselect", "system:post:list", postController.GetPostOptionSelect)
 }
