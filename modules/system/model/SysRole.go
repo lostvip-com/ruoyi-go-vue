@@ -15,12 +15,12 @@ type SysRole struct {
 	Status            string    `json:"status" gorm:"status"`
 	MenuCheckStrictly bool      `json:"menuCheckStrictly" gorm:"menu_check_strictly"`
 	DeptCheckStrictly bool      `json:"deptCheckStrictly" gorm:"dept_check_strictly"`
-	DelFlag           string    `json:"delFlag" gorm:"del_flag"`
 	CreateBy          string    `json:"createBy" gorm:"create_by"`
 	CreateTime        time.Time `json:"createTime" gorm:"column:create_time;type:datetime;autoCreateTime"`
 	UpdateBy          string    `json:"updateBy" gorm:"update_by"`
 	UpdateTime        time.Time `json:"updateTime" gorm:"column:update_time;type:datetime;autoCreateTime"`
 	Remark            string    `json:"remark" gorm:"remark"`
+	DelFlag           string    `gorm:"type:string;size:1;default:0;comment:删除标记;column:del_flag;" json:"delFlag"`
 	models.BaseModel
 }
 

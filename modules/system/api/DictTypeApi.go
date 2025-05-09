@@ -26,11 +26,15 @@ func (w *DictTypeApi) GetTypeDict(c *gin.Context) {
 // ListAjax 列表分页数据
 func (w *DictTypeApi) ListAjax(c *gin.Context) {
 	var req *common_vo.DictTypePageReq
-
 	if err := c.ShouldBind(&req); err != nil {
-		util.ErrorResp(c).SetMsg(err.Error()).Log("字典类型管理", req).WriteJsonExit()
+		util.Fail(c, err.Error())
 		return
 	}
+	beginTime := c.DefaultQuery("params[beginTime]", "")
+	endTime := c.DefaultQuery("params[endTime]", "")
+	req.BeginTime = beginTime
+	req.EndTime = endTime
+
 	rows := make([]model.SysDictType, 0)
 	var dictTypeService service.DictTypeService
 	result, total, err := dictTypeService.FindPage(req)

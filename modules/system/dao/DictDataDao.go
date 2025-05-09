@@ -41,7 +41,7 @@ func (dao *DictDataDao) FindPage(param *common_vo.SelectDictDataPageReq) (*[]mod
 	}
 	var total int64
 	var result []models.SysDictData
-	tb.Count(&total).Offset(param.GetStartNum()).Limit(param.GetPageSize()).Order(param.SortName + " " + param.SortOrder).Find(&result)
+	tb.Count(&total).Offset(param.GetStartNum()).Limit(param.GetPageSize()).Order("dict_sort asc").Find(&result)
 	return &result, total, nil
 }
 

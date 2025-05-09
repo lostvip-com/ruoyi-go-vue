@@ -54,7 +54,7 @@ func (r *GenTableDao) FindPage(param *vo.GenTablePageReq) ([]model.GenTable, int
 	}
 	var total int64
 	tb = tb.Count(&total)
-	tb.Limit(param.GetPageSize()).Offset(param.GetStartNum()).Order(param.SortName + " " + param.SortOrder)
+	tb.Limit(param.GetPageSize()).Offset(param.GetStartNum()).Order(param.OrderByColumn + " " + param.IsAsc)
 	var result []model.GenTable
 	err := tb.Find(&result).Error
 

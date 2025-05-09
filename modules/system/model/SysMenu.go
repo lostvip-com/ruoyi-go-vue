@@ -25,6 +25,7 @@ type SysMenu struct {
 	UpdateBy   string    `json:"updateBy" gorm:"update_by"`
 	UpdateTime time.Time `json:"updateTime" gorm:"column:update_time;type:datetime;autoCreateTime"`
 	Remark     string    `json:"remark" gorm:"remark"` // 备注
+	DelFlag    string    `json:"delFlag" gorm:"del_flag"`
 	//
 	Children   []SysMenu `gorm:"-" json:"children"`
 	ParentName string    `gorm:"-" json:"parentName"`

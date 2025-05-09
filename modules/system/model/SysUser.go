@@ -31,6 +31,7 @@ type SysUser struct {
 	UpdateBy    string     `gorm:"size:64;comment:更新者;" json:"updateBy" form:"updateBy"`
 	Remark      string     `gorm:"size:500;comment:备注;" json:"remark"   form:"remark"`
 	CreateBy    string     `gorm:"size:32;comment:创建人;column:create_by;"  json:"createBy"`
+	DelFlag     string     `gorm:"type:string;size:1;default:0;comment:删除标记;column:del_flag;" json:"delFlag"`
 	models.BaseModel
 	//临时属性
 	Dept  *models.SysDept `gorm:"-"  json:"dept"`

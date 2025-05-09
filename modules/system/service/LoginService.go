@@ -53,8 +53,8 @@ func (svc LoginService) SelectPageList(param *vo.LoginInfoPageReq) (*[]model.Sys
 	}
 	var total int64
 	tb = tb.Count(&total).Offset(param.GetStartNum()).Limit(param.GetPageSize())
-	if param.SortName != "" {
-		tb.Order("info_id " + param.SortOrder)
+	if param.OrderByColumn != "" {
+		tb.Order("info_id " + param.IsAsc)
 	}
 	var result []model.SysLoginInfo
 	err := tb.Find(&result).Error

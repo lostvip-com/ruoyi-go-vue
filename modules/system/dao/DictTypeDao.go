@@ -49,7 +49,7 @@ func (dao *DictTypeDao) FindPage(param *common_vo.DictTypePageReq) ([]model.SysD
 	var total int64
 	tb = tb.Count(&total)
 	var result []model.SysDictType
-	tb = tb.Order(param.SortName + " " + param.SortOrder).Offset(param.GetStartNum()).Limit(param.GetPageSize())
+	tb = tb.Order("dict_id desc").Offset(param.GetStartNum()).Limit(param.GetPageSize())
 	tb = tb.Find(&result)
 	return result, total, tb.Error
 }

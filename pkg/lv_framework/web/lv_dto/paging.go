@@ -5,16 +5,15 @@ import (
 )
 
 const PageSize int = 15
+const ORDER_ASC = "ascending"
+const ORDER_DESC = "descending"
 
 type Paging struct {
-	PageNum  int   `form:"pageNum"  json:"pageNum"`  //当前页
-	PageSize int   `form:"pageSize" json:"pageSize"` //每页条数
-	Total    int64 `form:"total"    json:"total"`    //每页条数//总条数
-	//SortOrder string `form:"sortOrder"    json:"sortOrder"` //排序
-	//SortName  string `form:"sortName"    json:"sortName"`   //每页条数//总条数
-	// 注意这里的注解，前端传过来的是 isAsc
-	SortOrder string `form:"isAsc"          json:"sortOrder"` //排序
-	SortName  string `form:"orderByColumn"  json:"sortName"`  //每页条数//总条数
+	PageNum       int    `form:"pageNum"  json:"pageNum"`  //当前页
+	PageSize      int    `form:"pageSize" json:"pageSize"` //每页条数
+	Total         int64  `form:"total"    json:"total"`    //每页条数//总条数
+	OrderByColumn string `json:"orderByColumn,omitempty"`
+	IsAsc         string `json:"isAsc,omitempty"` //
 
 	PageCount int //总页数
 	StartNum  int //起始行

@@ -31,18 +31,17 @@ func (svc *DictTypeService) DeleteRecordById(id int64) bool {
 	return false
 }
 
-// 批量删除数据记录
 func (svc *DictTypeService) DeleteRecordByIds(ids string) error {
 	ida := lv_conv.ToInt64Array(ids, ",")
-	data := new(dao2.DictDataDao)
+	data := dao2.GetDictDataDaoInstance()
 	//data.DeleteBatch()
 	tp := new(model.SysDictType)
 	for _, id := range ida {
 		tp.DictId = cast.ToInt64(id)
 		_, err := tp.FindOne()
 		lv_err.HasErrAndPanic(err)
-		//
-		data.DeleteByType(tp.DictType)
+		//delete dictType and dictData
+		err = data.DeleteByType(tp.DictType)
 		err = tp.Delete()
 		lv_err.HasErrAndPanic(err)
 	}
@@ -91,13 +90,13 @@ func (svc *DictTypeService) EditSave(req *common_vo.EditDictTypeReq, c *gin.Cont
 
 // 根据条件分页查询角色数据
 func (svc *DictTypeService) SelectListAll(params *common_vo.DictTypePageReq) ([]model.SysDictType, error) {
-	var dao dao2.DictTypeDao
+	var dao = dao2.GetSysDictTypeDaoInstance()
 	return dao.SelectListAll(params)
 }
 
 // 根据条件分页查询角色数据
 func (svc *DictTypeService) FindPage(params *common_vo.DictTypePageReq) ([]model.SysDictType, int64, error) {
-	var dao dao2.DictTypeDao
+	var dao = dao2.GetSysDictTypeDaoInstance()
 	return dao.FindPage(params)
 }
 
@@ -115,7 +114,7 @@ func (svc *DictTypeService) SelectDictTypeByType(dictType string) *model.SysDict
 func (svc *DictTypeService) Export(param *common_vo.DictTypePageReq) (string, error) {
 	head := []string{"字典主键", "字典名称", "字典类型", "状态", "创建者", "创建时间", "更新者", "更新时间", "备注"}
 	col := []string{"dict_id", "dict_name", "dict_type", "status", "create_by", "create_time", "update_by", "update_time", "remark"}
-	var dao dao2.DictTypeDao
+	var dao = dao2.GetSysDictTypeDaoInstance()
 	return dao.SelectListExport(param, head, col)
 }
 
@@ -140,7 +139,7 @@ func (svc *DictTypeService) IsDictTypeExist(configKey string) bool {
 // 查询字典类型树
 func (svc *DictTypeService) SelectDictTree(params *common_vo.DictTypePageReq) *[]lv_dto.Ztree {
 	var result []lv_dto.Ztree
-	var dao dao2.DictTypeDao
+	var dao = dao2.GetSysDictTypeDaoInstance()
 	dictList, err := dao.SelectListAll(params)
 	if err == nil && dictList != nil {
 		for _, item := range dictList {
