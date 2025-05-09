@@ -108,6 +108,6 @@ func (dao SysPostDao) SelectPostsByUserId(userId int64) (*[]model.SysPost, error
 
 // CountCol 按字段值统计数量
 func (dao SysPostDao) CountCol(column, value string) (total int64, err error) {
-	err = lv_db.GetMasterGorm().Table("sys_post").Where("del_flag=0 and "+column+"=?", value).Count(&total).Error
+	err = lv_db.GetMasterGorm().Table("sys_post").Where(column+"=?", value).Count(&total).Error
 	return
 }
