@@ -22,6 +22,9 @@ type SysRole struct {
 	Remark            string    `json:"remark" gorm:"remark"`
 	DelFlag           string    `gorm:"type:string;size:1;default:0;comment:删除标记;column:del_flag;" json:"delFlag"`
 	models.BaseModel
+	//临时属性
+	MenuIds []int64 `gorm:"-" json:"menuIds"`
+	DeptIds []int64 `gorm:"-" json:"deptIds"`
 }
 
 // 映射数据表

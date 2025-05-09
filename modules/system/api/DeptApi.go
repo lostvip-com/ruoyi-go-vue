@@ -2,7 +2,6 @@ package api
 
 import (
 	"common/common_vo"
-	"common/session"
 	util2 "common/util"
 	"github.com/gin-gonic/gin"
 	"github.com/lostvip-com/lv_framework/utils/lv_conv"
@@ -80,25 +79,26 @@ func (w *DeptApi) Remove(c *gin.Context) {
 	}
 }
 
-// 加载部门列表树结构的数据
-func (w *DeptApi) TreeData(c *gin.Context) {
-	var service service.DeptService
-	tenantId := session.GetTenantId(c)
-	result, _ := service.SelectDeptTree(0, "", "", tenantId)
-	c.JSON(http.StatusOK, result)
-}
-
-// 加载角色部门（数据权限）列表树
-func (w *DeptApi) RoleDeptTreeData(c *gin.Context) {
-	var service service.DeptService
-	tenantId := session.GetTenantId(c)
-	roleId := lv_conv.Int64(c.Query("roleId"))
-	result, err := service.RoleDeptTreeData(roleId, tenantId)
-
-	if err != nil {
-		util2.ErrorResp(c).SetMsg(err.Error()).Log("菜单树", gin.H{"roleId": roleId})
-		return
-	}
-
-	c.JSON(http.StatusOK, result)
-}
+//
+//// 加载部门列表树结构的数据
+//func (w *DeptApi) TreeData(c *gin.Context) {
+//	var service service.DeptService
+//	tenantId := session.GetTenantId(c)
+//	result, _ := service.SelectDeptTree(0, "", "", tenantId)
+//	c.JSON(http.StatusOK, result)
+//}
+//
+//// 加载角色部门（数据权限）列表树
+//func (w *DeptApi) RoleDeptTreeData(c *gin.Context) {
+//	var service service.DeptService
+//	tenantId := session.GetTenantId(c)
+//	roleId := lv_conv.Int64(c.Query("roleId"))
+//	result, err := service.RoleDeptTreeData(roleId, tenantId)
+//
+//	if err != nil {
+//		util2.ErrorResp(c).SetMsg(err.Error()).Log("菜单树", gin.H{"roleId": roleId})
+//		return
+//	}
+//
+//	c.JSON(http.StatusOK, result)
+//}

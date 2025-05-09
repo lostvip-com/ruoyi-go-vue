@@ -46,8 +46,8 @@ func init() {
 	system.POST("/dept/add", "system:dept:add", deptContr.AddSave)
 	system.POST("/dept/remove", "system:dept:remove", deptContr.Remove)
 	system.POST("/dept/edit", "system:dept:edit", deptContr.EditSave)
-	system.GET("/dept/treeData", "", deptContr.TreeData)
-	system.GET("/dept/roleDeptTreeData", "", deptContr.RoleDeptTreeData)
+	//system.GET("/dept/treeData", "", deptContr.TreeData)
+	//system.GET("/dept/roleDeptTreeData", "", deptContr.RoleDeptTreeData)
 	// 用户管理路由
 	user := api.UserApi{}
 	system.POST("/user/list", "system:user:list", user.ListAjax)
@@ -68,19 +68,22 @@ func init() {
 	system.POST("/profile/checkPassword", "", profile.CheckPassword)
 	system.POST("/profile/updateAvatar", "", profile.UpdateAvatar)
 	// 角色路由
-	roleController := api.RoleController{}
-	system.POST("/role/list", "system:role:list", roleController.ListAjax)
-	system.POST("/role/add", "system:role:add", roleController.AddSave)
-	system.POST("/role/remove", "system:role:remove", roleController.Remove)
-	system.POST("/role/edit", "system:role:edit", roleController.EditSave)
-	system.POST("/role/changeStatus", "system:role:edit", roleController.ChangeStatus)
-	system.POST("/role/authDataScope", "system:role:view", roleController.AuthDataScopeSave)
-	system.POST("/role/allocatedList", "system:role:view", roleController.AllocatedList)
-	system.POST("/role/unallocatedList", "system:role:view", roleController.UnallocatedList)
-	system.POST("/role/selectAll", "system:role:view", roleController.SelectAll)
-	system.POST("/role/cancel", "system:role:view", roleController.Cancel)
-	system.POST("/role/cancelAll", "system:role:view", roleController.CancelAll)
+	roleApi := api.RoleApi{}
+	system.GET("/role/list", "system:role:list", roleApi.ListAjax)
+	system.GET("/role/:roleId", "system:role:detail", roleApi.GetRoleInfo)
+	system.GET("/role/optionselect", "system:role:view", roleApi.GetRoleOptionSelect)
+	system.POST("/role", "system:role:add", roleApi.AddSave)
+	system.PUT("/role", "system:role:edit", roleApi.EditSave)
+	system.POST("/role/changeStatus", "system:role:edit", roleApi.ChangeStatus)
+	system.PUT("/role/dataScope", "system:role:edit", roleApi.PutDataScope)
+	system.DELETE("/role/:roleIds", "system:role:remove", roleApi.Remove)
 
+	system.PUT("/role/authUser/cancel", "system:role:view", roleApi.Cancel)
+	system.PUT("/role/authUser/cancelAll", "system:role:view", roleApi.CancelAll)
+	system.PUT("/role/authUser/selectAll", "system:role:view", roleApi.AuthRoleToUsers)
+	system.GET("/role/authUser/allocatedList", "system:role:view", roleApi.AllocatedList)
+	system.GET("/role/authUser/unallocatedList", "system:role:view", roleApi.GetUnAllocatedList)
+	system.GET("/role/deptTree/:roleId", "system:role:view", roleApi.GetDeptTreeRole)
 	// 菜单路由
 	menuApi := api.MenuApi{}
 	system.GET("/menu/:menuId", "system:menu:detail", menuApi.GetMenuInfo)

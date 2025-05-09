@@ -32,6 +32,14 @@ func Fail(c *gin.Context, msg string) {
 	c.AbortWithStatusJSON(http.StatusOK, &ret)
 }
 
+func FailNoAuth(c *gin.Context, msg string) {
+	ret := lv_dto.CommonRes{
+		Code: http.StatusUnauthorized,
+		Msg:  msg,
+	}
+	c.AbortWithStatusJSON(http.StatusOK, &ret)
+}
+
 // Success 通常成功数据处理
 func Success(c *gin.Context, data any) {
 	//if data!=nil{

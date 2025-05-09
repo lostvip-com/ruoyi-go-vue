@@ -12,7 +12,7 @@ type SysRoleDao struct {
 
 var roleDao *SysRoleDao
 
-func GetSysRoleDao() *SysRoleDao {
+func GetRoleDaoInstance() *SysRoleDao {
 	if roleDao == nil {
 		roleDao = &SysRoleDao{}
 	}
@@ -80,14 +80,6 @@ func (dao *SysRoleDao) SelectListAll(param *common_vo.RolePageReq) ([]common_vo.
 
 		if param.DataScope != "" {
 			model.Where("r.data_scope = ", param.DataScope)
-		}
-
-		if param.BeginTime != "" {
-			model.Where("date_format(r.create_time,'%y%m%d') >= date_format(?,'%y%m%d') ", param.BeginTime)
-		}
-
-		if param.EndTime != "" {
-			model.Where("date_format(r.create_time,'%y%m%d') <= date_format(?,'%y%m%d') ", param.EndTime)
 		}
 	}
 	var result []common_vo.SysRoleFlag

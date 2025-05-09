@@ -98,23 +98,6 @@ func (dao SysDeptDao) SelectRoleDeptTree(roleId int64) ([]string, error) {
 	return result, nil
 }
 
-// 查询部门是否存在用户
-func (dao SysDeptDao) CheckDeptExistUser(deptId int64) bool {
-	sql := " select count(*) from sys_user where del_flag = 0 "
-	param := map[string]any{}
-	param["deptId"] = deptId
-	sql += " and dept_id= @deptId "
-	count, err := lv_dao.CountByNamedSql(sql, param)
-	if err != nil {
-		panic(err)
-	}
-	if count > 0 {
-		return true
-	} else {
-		return false
-	}
-}
-
 // 查询部门人数
 func (dao SysDeptDao) SelectDeptCount(deptId, parentId int64) int64 {
 	sql := " select count(*) from sys_dept where del_flag = 0 "

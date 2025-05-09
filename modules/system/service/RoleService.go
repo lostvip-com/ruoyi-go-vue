@@ -7,6 +7,7 @@ import (
 	"github.com/lostvip-com/lv_framework/lv_db"
 	"github.com/lostvip-com/lv_framework/utils/lv_conv"
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
+	"github.com/spf13/cast"
 	"gorm.io/gorm"
 	"system/dao"
 	"system/model"
@@ -37,25 +38,19 @@ func (svc *RoleService) SelectRecordPage(params *common_vo.RolePageReq) ([]model
 	return d.SelectListPage(params)
 }
 
-// 根据条件查询数据
-func (svc *RoleService) SelectRecordAll(params *common_vo.RolePageReq) ([]common_vo.SysRoleFlag, error) {
-	var dao dao.SysRoleDao
-	return dao.SelectListAll(params)
-}
-
 // 添加数据
-func (svc *RoleService) AddSave(req *common_vo.AddRoleReq, c *gin.Context) (int64, error) {
-
+func (svc *RoleService) AddSave(req *model.SysRole, c *gin.Context) (int64, error) {
 	role := new(model.SysRole)
 	role.RoleName = req.RoleName
 	role.RoleKey = req.RoleKey
 	role.Status = req.Status
 	role.Remark = req.Remark
 	role.CreateTime = time.Now()
-	role.DataScope = "1"
+	//数据范围（1：全部数据权限 2：自定数据权限 3：本部门数据权限 4：本部门及以下数据权限）
+	role.DataScope = "2"
+	role.DelFlag = "0"
 	var userService UserService
 	user := userService.GetProfile(c)
-
 	if user != nil {
 		role.CreateBy = user.UserName
 	}
@@ -66,34 +61,15 @@ func (svc *RoleService) AddSave(req *common_vo.AddRoleReq, c *gin.Context) (int6
 		session.Rollback()
 		return 0, err
 	}
-
-	if req.MenuIds != "" {
-		menus := lv_conv.ToInt64Array(req.MenuIds, ",")
-		if len(menus) > 0 {
-			roleMenus := make([]model.SysRoleMenu, 0)
-			for i := range menus {
-				if menus[i] > 0 {
-					var tmp model.SysRoleMenu
-					tmp.RoleId = role.RoleId
-					tmp.MenuId = menus[i]
-					roleMenus = append(roleMenus, tmp)
-				}
-			}
-			if len(roleMenus) > 0 {
-				err := session.Save(roleMenus).Error
-				if err != nil {
-					session.Rollback()
-					return 0, err
-				}
-			}
-		}
+	if req.MenuIds != nil {
+		err = svc.saveRoleMenu(session, req, role)
 	}
 	err = session.Commit().Error
 	return role.RoleId, err
 }
 
 // 修改数据
-func (svc *RoleService) EditSave(req *common_vo.EditRoleReq, c *gin.Context) (int64, error) {
+func (svc *RoleService) EditSave(req *model.SysRole, user *model.SysUser) error {
 	r := &model.SysRole{RoleId: req.RoleId}
 	err := r.FindOne()
 	lv_err.HasErrAndPanic(err)
@@ -102,12 +78,8 @@ func (svc *RoleService) EditSave(req *common_vo.EditRoleReq, c *gin.Context) (in
 	r.Status = req.Status
 	r.Remark = req.Remark
 	r.UpdateTime = time.Now()
-	r.UpdateBy = ""
-	var userService UserService
-	user := userService.GetProfile(c)
-	if user == nil {
-		r.CreateBy = user.UserName
-	}
+	r.UpdateBy = user.UserName
+	r.RoleSort = req.RoleSort
 	db := lv_db.GetMasterGorm()
 	err = db.Transaction(func(tx *gorm.DB) error {
 		//更新role表
@@ -115,35 +87,34 @@ func (svc *RoleService) EditSave(req *common_vo.EditRoleReq, c *gin.Context) (in
 			return err
 		}
 		//删除旧的功能权限授权，中间表
-		if req.MenuIds != "" {
-			menus := lv_conv.ToInt64Array(req.MenuIds, ",")
-			if len(menus) > 0 {
-				roleMenus := make([]model.SysRoleMenu, 0)
-				for i := range menus {
-					if menus[i] > 0 {
-						var tmp model.SysRoleMenu
-						tmp.RoleId = r.RoleId
-						tmp.MenuId = menus[i]
-						roleMenus = append(roleMenus, tmp)
-					}
-				}
-				if len(roleMenus) > 0 {
-					err = tx.Exec("delete from sys_role_menu where role_id=?", r.RoleId).Error
-					if err != nil {
-						return err
-					}
-					//插入新的功能权限授权，中间表
-					err = tx.CreateInBatches(roleMenus, len(roleMenus)).Error
-					if err != nil {
-						return err
-					}
-				}
-			}
+		if req.MenuIds != nil {
+			err = svc.saveRoleMenu(tx, req, r)
 		}
 		return err
 	})
 
-	return 1, err
+	return err
+}
+
+func (svc *RoleService) saveRoleMenu(tx *gorm.DB, req *model.SysRole, r *model.SysRole) (err error) {
+	roleMenus := make([]model.SysRoleMenu, 0)
+	for i := range req.MenuIds {
+		if req.MenuIds[i] > 0 {
+			var tmp model.SysRoleMenu
+			tmp.RoleId = r.RoleId
+			tmp.MenuId = req.MenuIds[i]
+			roleMenus = append(roleMenus, tmp)
+		}
+	}
+	if len(roleMenus) > 0 {
+		err = tx.Exec(" delete from sys_role_menu where role_id=? ", r.RoleId).Error
+		if err != nil {
+			return err
+		}
+		//插入新的功能权限授权，中间表
+		err = tx.CreateInBatches(roleMenus, len(roleMenus)).Error
+	}
+	return err
 }
 
 // 保存数据权限
@@ -168,15 +139,14 @@ func (svc *RoleService) AuthDataScope(req *common_vo.DataScopeReq, c *gin.Contex
 			return err
 		}
 		//删除旧的功能权限授权，中间表
-		if req.DeptIds != "" {
-			deptids := lv_conv.ToInt64Array(req.DeptIds, ",")
-			if len(deptids) > 0 {
+		if req.DeptIds != nil {
+			if len(req.DeptIds) > 0 {
 				roleDepts := make([]model.SysRoleDept, 0)
-				for i := range deptids {
-					if deptids[i] > 0 {
+				for i := range req.DeptIds {
+					if req.DeptIds[i] > 0 {
 						var tmp model.SysRoleDept
 						tmp.RoleId = entity.RoleId
-						tmp.DeptId = deptids[i]
+						tmp.DeptId = req.DeptIds[i]
 						roleDepts = append(roleDepts, tmp)
 					}
 				}
@@ -194,7 +164,7 @@ func (svc *RoleService) AuthDataScope(req *common_vo.DataScopeReq, c *gin.Contex
 
 }
 
-// 批量删除数据记录
+// DeleteRecordByIds 批量删除数据记录
 func (svc *RoleService) DeleteRecordByIds(ids string) error {
 	idArr := lv_conv.ToInt64Array(ids, ",")
 	idsDel := make([]int64, 0)
@@ -207,15 +177,15 @@ func (svc *RoleService) DeleteRecordByIds(ids string) error {
 	return err
 }
 
-// 根据用户ID查询角色
+// SelectRoleContactVo 根据用户ID查询角色
 func (svc *RoleService) SelectRoleContactVo(userId int64) ([]common_vo.SysRoleFlag, error) {
 	var paramsPost *common_vo.RolePageReq
-	var dao dao.SysRoleDao
-	roleAll, err := dao.SelectListAll(paramsPost)
+	var roleDao = dao.GetRoleDaoInstance()
+	roleAll, err := roleDao.SelectListAll(paramsPost)
 	if err != nil || roleAll == nil {
 		return nil, errors.New("未查询到角色数据")
 	}
-	userRole, err := dao.FindRoles(userId)
+	userRole, err := roleDao.FindRoles(userId)
 	if userRole != nil {
 		for i := range userRole {
 			for j := range roleAll {
@@ -229,7 +199,7 @@ func (svc *RoleService) SelectRoleContactVo(userId int64) ([]common_vo.SysRoleFl
 	return roleAll, nil
 }
 
-// 批量选择用户授权
+// InsertAuthUsers 批量选择用户授权
 func (svc *RoleService) InsertAuthUsers(roleId int64, userIds string) error {
 	idarr := lv_conv.ToInt64Array(userIds, ",")
 	var roleUserList []model.SysUserRole
@@ -243,7 +213,7 @@ func (svc *RoleService) InsertAuthUsers(roleId int64, userIds string) error {
 	return err
 }
 
-// 取消授权用户角色
+// DeleteUserRoleInfo 取消授权用户角色
 func (svc *RoleService) DeleteUserRoleInfo(userId, roleId int64) error {
 	entity := &model.SysUserRole{UserId: userId, RoleId: roleId}
 	if entity.RoleId == 1 {
@@ -253,7 +223,7 @@ func (svc *RoleService) DeleteUserRoleInfo(userId, roleId int64) error {
 	return err
 }
 
-// 批量取消授权用户角色
+// DeleteUserRoleInfos 批量取消授权用户角色
 func (svc *RoleService) DeleteUserRoleInfos(roleId int64, ids string) error {
 	idarr := lv_conv.ToInt64Array(ids, ",")
 
@@ -274,10 +244,10 @@ func (svc *RoleService) DeleteUserRoleInfos(roleId int64, ids string) error {
 	return err
 }
 
-// 检查角色名是否唯一
+// IsRoleNameExist 检查角色名是否唯一
 func (svc *RoleService) IsRoleNameExist(roleName string) (bool, error) {
-	var dao dao.SysRoleDao
-	_, err := dao.FindRoleByName(roleName)
+	var roleDao = dao.GetRoleDaoInstance()
+	_, err := roleDao.FindRoleByName(roleName)
 	if err == nil {
 		return true, err
 	}
@@ -286,16 +256,15 @@ func (svc *RoleService) IsRoleNameExist(roleName string) (bool, error) {
 
 // 检查角色键是否唯一
 func (svc *RoleService) IsRoleKeyExist(roleKey string) (bool, error) {
-	var dao dao.SysRoleDao
-	_, err := dao.FindRoleByRoleKey(roleKey)
+	var roleDao = dao.GetRoleDaoInstance()
+	_, err := roleDao.FindRoleByRoleKey(roleKey)
 	if err == nil {
 		return true, err
 	}
 	return false, err
 }
 
-// 判断是否是管理员
-func (svc *RoleService) IsAdmin(id int64) bool {
+func (svc *RoleService) IsAdminRoleId(id int64) bool {
 	if id == 1 {
 		return true
 	} else {
@@ -304,10 +273,43 @@ func (svc *RoleService) IsAdmin(id int64) bool {
 }
 
 // 校验角色是否允许操作
-func (svc *RoleService) CheckRoleAllowed(id int64) bool {
-	if svc.IsAdmin(id) {
+func (svc *RoleService) CheckRoleAllowed(roleId int64) bool {
+	if svc.IsAdminRoleId(roleId) {
 		return false
 	} else {
 		return true
 	}
+}
+
+func (svc *RoleService) CheckRoleDataScope(roleId int64) bool {
+	const baseSql = `
+         select distinct r.role_id, r.role_name, r.role_key, r.role_sort, r.data_scope, r.menu_check_strictly, r.dept_check_strictly,
+		 r.status, r.del_flag, r.create_time, r.remark 
+		 from sys_role r 
+		 left join sys_user_role ur on ur.role_id = r.role_id 
+		 left join sys_user u on u.user_id = ur.user_id 
+		 left join sys_dept d on u.dept_id = d.dept_id 
+        `
+	var sql = baseSql + " where r.del_flag = '0' AND r.role_id = " + cast.ToString(roleId)
+	var count int64
+	err := lv_db.GetMasterGorm().Raw(sql).Count(&count).Error
+	lv_err.HasErrAndPanic(err)
+	return count < 1
+}
+
+func (svc *RoleService) GetDeptTreeRole(roleId int64) []int64 {
+	role := new(model.SysRole)
+	role, err := role.FindById(roleId)
+	deptCheckStrictly := role.DeptCheckStrictly
+	sql := ` select d.dept_id from sys_dept d
+             left join sys_role_dept rd on d.dept_id = rd.dept_id 
+             where rd.role_id = ` + cast.ToString(roleId)
+	if deptCheckStrictly {
+		sql += " and d.dept_id not in (select d.parent_id from sys_dept d inner join sys_role_dept rd on d.dept_id = rd.dept_id and rd.role_id = " + cast.ToString(roleId) + " ) "
+	}
+	sql += " order by d.parent_id, d.order_num "
+	var count []int64
+	err = lv_db.GetMasterGorm().Raw(sql).Find(&count).Error
+	lv_err.HasErrAndPanic(err)
+	return count
 }

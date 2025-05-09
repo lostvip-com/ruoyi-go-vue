@@ -23,11 +23,11 @@ type SysRoleFlag struct {
 
 // DataScopeReq 数据权限保存请求参数
 type DataScopeReq struct {
-	RoleId    int64  `form:"roleId"  binding:"required"`
-	RoleName  string `form:"roleName"  binding:"required"`
-	RoleKey   string `form:"roleKey"  binding:"required"`
-	DataScope string `form:"dataScope"  binding:"required"`
-	DeptIds   string `form:"deptIds"`
+	RoleId    int64   `form:"roleId"  binding:"required"`
+	RoleName  string  `form:"roleName"  binding:"required"`
+	RoleKey   string  `form:"roleKey"  binding:"required"`
+	DataScope string  `form:"dataScope"  binding:"required"`
+	DeptIds   []int64 `json:"deptIds"`
 }
 
 // RolePageReq 分页请求参数
@@ -45,25 +45,4 @@ type RolePageReq struct {
 	//
 	TenantId int64 `form:"tenantId"`
 	lv_dto.Paging
-}
-
-// AddRoleReq 新增页面请求参数
-type AddRoleReq struct {
-	RoleName string `form:"roleName"  binding:"required"`
-	RoleKey  string `form:"roleKey"  binding:"required"`
-	RoleSort string `form:"roleSort"  binding:"required"`
-	Status   string `form:"status"`
-	Remark   string `form:"remark"`
-	MenuIds  string `form:"menuIds""`
-}
-
-// EditRoleReq 修改页面请求参数
-type EditRoleReq struct {
-	RoleId   int64  `form:"roleId" binding:"required"`
-	RoleName string `form:"roleName"  binding:"required"`
-	RoleKey  string `form:"roleKey"  binding:"required"`
-	RoleSort string `form:"roleSort"  binding:"required"`
-	Status   string `form:"status"`
-	Remark   string `form:"remark"`
-	MenuIds  string `form:"menuIds"`
 }

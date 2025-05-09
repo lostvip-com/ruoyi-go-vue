@@ -309,7 +309,7 @@ func (svc UserService) GetProfile(c *gin.Context) *model.SysUser {
 	}
 	// 部门
 	u.Dept, _ = GetDeptServiceInstance().FindById(u.DeptId)
-	u.Roles, _ = dao.GetSysRoleDao().FindRoles(u.UserId)
+	u.Roles, _ = dao.GetRoleDaoInstance().FindRoles(u.UserId)
 	return u
 }
 

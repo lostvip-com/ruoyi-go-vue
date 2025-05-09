@@ -2,26 +2,47 @@ package api
 
 import (
 	"common/common_vo"
-	util2 "common/util"
+	"common/util"
 	"github.com/gin-gonic/gin"
 	db2 "github.com/lostvip-com/lv_framework/lv_db"
 	"github.com/lostvip-com/lv_framework/utils/lv_conv"
 	"github.com/lostvip-com/lv_framework/web/lv_dto"
+	"github.com/spf13/cast"
 	"net/http"
 	"system/dao"
 	"system/model"
 	"system/service"
 )
 
-type RoleController struct {
+type RoleApi struct {
+	BaseApi
+}
+
+func (w *RoleApi) GetRoleOptionSelect(c *gin.Context) {
+	arr, err := dao.GetRoleDaoInstance().SelectListAll(nil)
+	if err != nil {
+		util.Fail(c, err.Error())
+		return
+	}
+	util.Success(c, arr)
+}
+func (w *RoleApi) GetRoleInfo(c *gin.Context) {
+	roleId := c.Param("roleId")
+	role := new(model.SysRole)
+	role, err := role.FindById(cast.ToInt64(roleId))
+	if err != nil {
+		util.Fail(c, err.Error())
+		return
+	}
+	util.Success(c, role)
 }
 
 // 列表分页数据
-func (w *RoleController) ListAjax(c *gin.Context) {
+func (w *RoleApi) ListAjax(c *gin.Context) {
 	var req *common_vo.RolePageReq
 
 	if err := c.ShouldBind(&req); err != nil {
-		util2.ErrorResp(c).SetMsg(err.Error()).Log("角色管理", req).WriteJsonExit()
+		util.ErrorResp(c).SetMsg(err.Error()).Log("角色管理", req).WriteJsonExit()
 		return
 	}
 	rows := make([]model.SysRole, 0)
@@ -31,67 +52,62 @@ func (w *RoleController) ListAjax(c *gin.Context) {
 	if err == nil && len(result) > 0 {
 		rows = result
 	}
-	util2.BuildTable(c, total, rows).WriteJsonExit()
+	util.BuildTable(c, total, rows).WriteJsonExit()
 }
 
 // 新增页面保存
-func (w *RoleController) AddSave(c *gin.Context) {
-	var req *common_vo.AddRoleReq
-
+func (w *RoleApi) AddSave(c *gin.Context) {
+	var req *model.SysRole
 	if err := c.ShouldBind(&req); err != nil {
-		util2.ErrorResp(c).SetBtype(lv_dto.Buniss_Add).SetMsg(err.Error()).Log("角色管理", req).WriteJsonExit()
+		util.ErrorResp(c).SetBtype(lv_dto.Buniss_Add).SetMsg(err.Error()).Log("角色管理", req).WriteJsonExit()
 		return
 	}
 	roleDao := dao.SysRoleDao{}
-
 	count, err := roleDao.FindCount("", req.RoleName)
 	if count >= 1 {
-		util2.ErrorResp(c).SetBtype(lv_dto.Buniss_Add).SetMsg("角色名称已存在").Log("角色管理", req).WriteJsonExit()
+		util.ErrorResp(c).SetBtype(lv_dto.Buniss_Add).SetMsg("角色名称已存在").Log("角色管理", req).WriteJsonExit()
 		return
 	}
 	count, err = roleDao.FindCount(req.RoleKey, "")
 	if count >= 1 {
-		util2.ErrorResp(c).SetBtype(lv_dto.Buniss_Add).SetMsg("角色权限已存在").Log("角色管理", req).WriteJsonExit()
+		util.ErrorResp(c).SetBtype(lv_dto.Buniss_Add).SetMsg("角色权限已存在").Log("角色管理", req).WriteJsonExit()
 		return
 	}
 	roleService := service.RoleService{}
 	rid, err := roleService.AddSave(req, c)
 
 	if err != nil || rid <= 0 {
-		util2.ErrorResp(c).SetBtype(lv_dto.Buniss_Add).Log("角色管理", req).WriteJsonExit()
+		util.ErrorResp(c).SetBtype(lv_dto.Buniss_Add).Log("角色管理", req).WriteJsonExit()
 		return
 	}
-	util2.SucessResp(c).SetData(rid).SetBtype(lv_dto.Buniss_Add).Log("角色管理", req).WriteJsonExit()
+	util.SucessResp(c).SetData(rid).SetBtype(lv_dto.Buniss_Add).Log("角色管理", req).WriteJsonExit()
 }
 
-// 修改页面保存
-func (w *RoleController) EditSave(c *gin.Context) {
-	var req *common_vo.EditRoleReq
-
+func (w *RoleApi) EditSave(c *gin.Context) {
+	var req *model.SysRole
 	if err := c.ShouldBind(&req); err != nil {
-		util2.ErrorResp(c).SetBtype(lv_dto.Buniss_Edit).SetMsg(err.Error()).Log("角色管理", req).WriteJsonExit()
+		util.Fail(c, err.Error())
 		return
 	}
-	roleService := service.RoleService{}
-	rs, err := roleService.EditSave(req, c)
-	if err != nil || rs <= 0 {
-		util2.ErrorResp(c).SetBtype(lv_dto.Buniss_Edit).Log("角色管理", req).WriteJsonExit()
+	roleService := service.GetRoleServiceInstance()
+	user := w.GetCurrUser(c)
+	err := roleService.EditSave(req, user)
+	if err != nil {
+		util.Fail(c, err.Error())
 		return
 	}
-	util2.SucessResp(c).SetBtype(lv_dto.Buniss_Edit).SetData(rs).Log("角色管理", req).WriteJsonExit()
+	util.Success(c, nil)
 }
 
-// 修改页面保存
-func (w *RoleController) ChangeStatus(c *gin.Context) {
+func (w *RoleApi) ChangeStatus(c *gin.Context) {
 	roleId := c.PostForm("roleId")
 	status := c.PostForm("status")
 	sql := " update sys_role set status=? where role_id = ? "
 	rows := db2.GetMasterGorm().Exec(sql, status, roleId).RowsAffected
-	util2.Success(c, rows)
+	util.Success(c, rows)
 }
 
-// 获取用户列表
-func (w *RoleController) UnallocatedList(c *gin.Context) {
+func (w *RoleApi) GetUnAllocatedList(c *gin.Context) {
 	roleId := lv_conv.Int64(c.PostForm("roleId"))
 	UserName := c.PostForm("UserName")
 	phonenumber := c.PostForm("phonenumber")
@@ -111,51 +127,42 @@ func (w *RoleController) UnallocatedList(c *gin.Context) {
 	})
 }
 
-// 删除数据
-func (w *RoleController) Remove(c *gin.Context) {
-	var req *lv_dto.IdsReq
+func (w *RoleApi) Remove(c *gin.Context) {
+	var roleIds = c.Param("roleIds")
+	roleService := service.GetRoleServiceInstance()
+	err := roleService.DeleteRecordByIds(roleIds)
 
-	if err := c.ShouldBind(&req); err != nil {
-		util2.ErrorResp(c).SetBtype(lv_dto.Buniss_Del).SetMsg(err.Error()).WriteJsonExit()
-		return
-	}
-	roleService := service.RoleService{}
-	err := roleService.DeleteRecordByIds(req.Ids)
-
-	if err == nil {
-		util2.SucessResp(c).SetBtype(lv_dto.Buniss_Del).WriteJsonExit()
+	if err != nil {
+		util.Fail(c, err.Error())
 	} else {
-		util2.ErrorResp(c).SetBtype(lv_dto.Buniss_Del).WriteJsonExit()
+		util.Success(c, nil)
 	}
 }
 
-// 数据权限保存
-func (w *RoleController) AuthDataScopeSave(c *gin.Context) {
+func (w *RoleApi) PutDataScope(c *gin.Context) {
 	var req *common_vo.DataScopeReq
-
 	if err := c.ShouldBind(&req); err != nil {
-		util2.ErrorResp(c).SetMsg(err.Error()).WriteJsonExit()
+		util.ErrorResp(c).SetMsg(err.Error()).WriteJsonExit()
 		return
 	}
 	roleService := service.RoleService{}
 	if !roleService.CheckRoleAllowed(req.RoleId) {
-		util2.ErrorResp(c).SetMsg("不允许操作超级管理员角色").WriteJsonExit()
+		util.ErrorResp(c).SetMsg("不允许操作超级管理员角色").WriteJsonExit()
 		return
 	}
-
-	rs, err := roleService.AuthDataScope(req, c)
-	if err != nil || rs <= 0 {
-		util2.ErrorResp(c).SetMsg("保存数据失败").SetMsg(err.Error()).Log("角色管理", req).WriteJsonExit()
-	} else {
-		util2.SucessResp(c).Log("角色管理", req).WriteJsonExit()
+	_, err := roleService.AuthDataScope(req, c)
+	if err != nil {
+		util.Fail(c, err.Error())
+		return
 	}
+	util.Success(c, nil)
 }
 
 // 查询已分配用户角色列表
-func (w *RoleController) AllocatedList(c *gin.Context) {
-	roleId := lv_conv.Int64(c.PostForm("roleId"))
-	UserName := c.PostForm("UserName")
-	phonenumber := c.PostForm("phonenumber")
+func (w *RoleApi) AllocatedList(c *gin.Context) {
+	roleId := lv_conv.Int64(c.Query("roleId"))
+	UserName := c.Query("UserName")
+	phonenumber := c.Query("phonenumber")
 	var rows []map[string]string
 
 	var userService service.UserService
@@ -173,56 +180,59 @@ func (w *RoleController) AllocatedList(c *gin.Context) {
 	})
 }
 
-// 保存角色选择
-func (w *RoleController) SelectAll(c *gin.Context) {
+func (w *RoleApi) AuthRoleToUsers(c *gin.Context) {
 	roleId := lv_conv.Int64(c.PostForm("roleId"))
 	userIds := c.PostForm("userIds")
 
 	if roleId <= 0 {
-		util2.ErrorResp(c).SetMsg("参数错误1").SetBtype(lv_dto.Buniss_Add).WriteJsonExit()
+		util.ErrorResp(c).SetMsg("参数错误1").SetBtype(lv_dto.Buniss_Add).WriteJsonExit()
 		return
 	}
 	if userIds == "" {
-		util2.ErrorResp(c).SetMsg("参数错误2").SetBtype(lv_dto.Buniss_Add).WriteJsonExit()
+		util.ErrorResp(c).SetMsg("参数错误2").SetBtype(lv_dto.Buniss_Add).WriteJsonExit()
 		return
 	}
 	roleService := service.RoleService{}
 	err := roleService.InsertAuthUsers(roleId, userIds)
-	if err == nil {
-		util2.SucessResp(c).SetBtype(lv_dto.Buniss_Add).WriteJsonExit()
-	} else {
-		util2.ErrorResp(c).SetBtype(lv_dto.Buniss_Add).WriteJsonExit()
+	if err != nil {
+		util.Fail(c, err.Error())
+		return
 	}
+	util.Success(c, nil)
 }
-
-// 取消用户角色授权
-func (w *RoleController) CancelAll(c *gin.Context) {
+func (w *RoleApi) CancelAll(c *gin.Context) {
 	roleId := lv_conv.Int64(c.PostForm("roleId"))
 	userIds := c.PostForm("userIds")
-	roleService := service.RoleService{}
-	if roleId > 0 && userIds != "" {
-		roleService.DeleteUserRoleInfos(roleId, userIds)
-		util2.SucessResp(c).SetBtype(lv_dto.Buniss_Del).Log("角色管理", gin.H{
-			"roleId":  roleId,
-			"userIds": userIds,
-		}).WriteJsonExit()
-	} else {
-		util2.ErrorResp(c).SetBtype(lv_dto.Buniss_Del).SetMsg("参数错误").WriteJsonExit()
+	roleService := service.GetRoleServiceInstance()
+	err := roleService.DeleteUserRoleInfos(roleId, userIds)
+	if err != nil {
+		util.Fail(c, err.Error())
+		return
 	}
+	util.Success(c, nil)
 }
 
-// 批量取消用户角色授权
-func (w *RoleController) Cancel(c *gin.Context) {
+func (w *RoleApi) Cancel(c *gin.Context) {
 	roleId := lv_conv.Int64(c.PostForm("roleId"))
 	userId := lv_conv.Int64(c.PostForm("userId"))
-	roleService := service.RoleService{}
-	if roleId > 0 && userId > 0 {
-		roleService.DeleteUserRoleInfo(userId, roleId)
-		util2.SucessResp(c).SetBtype(lv_dto.Buniss_Del).Log("角色管理", gin.H{
-			"roleId": roleId,
-			"userId": userId,
-		}).WriteJsonExit()
-	} else {
-		util2.ErrorResp(c).SetBtype(lv_dto.Buniss_Del).SetMsg("参数错误").WriteJsonExit()
+	roleService := service.GetRoleServiceInstance()
+	err := roleService.DeleteUserRoleInfo(userId, roleId)
+	if err != nil {
+		util.Fail(c, err.Error())
+		return
 	}
+	util.Success(c, nil)
+}
+
+func (w *RoleApi) GetDeptTreeRole(c *gin.Context) {
+	roleId := c.Param("roleId")
+	roleSvc := service.GetRoleServiceInstance()
+	checkedKeys := roleSvc.GetDeptTreeRole(cast.ToInt64(roleId))
+	depts := service.GetDeptServiceInstance().SelectDeptTreeList()
+	c.AbortWithStatusJSON(http.StatusOK, gin.H{
+		"msg":         "操作成功",
+		"code":        http.StatusOK,
+		"checkedKeys": checkedKeys,
+		"depts":       depts,
+	})
 }
