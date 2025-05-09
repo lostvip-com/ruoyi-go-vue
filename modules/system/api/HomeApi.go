@@ -3,13 +3,15 @@ package api
 import (
 	"common/util"
 	"github.com/gin-gonic/gin"
+	"github.com/lostvip-com/lv_framework/utils/lv_err"
 	"net/http"
 	"system/model"
 	"system/service"
-	"system/vo"
 )
 
-type HomeApi struct{}
+type HomeApi struct {
+	BaseApi
+}
 
 func (w *HomeApi) GetUserInfo(c *gin.Context) {
 	u, ok := c.Get("user")
@@ -31,15 +33,16 @@ func (w *HomeApi) GetUserInfo(c *gin.Context) {
 
 // GetRouters 后台框架菜单
 func (w *HomeApi) GetRouters(c *gin.Context) {
-	userService := service.GetUserService()
-	user := userService.GetProfile(c)
-	var menus []vo.RouterVO
-	menuService := service.MenuService{}
-	if userService.IsAdmin(user.UserId) {
-		menus, _ = menuService.SelectMenuNormalAll(0)
+	userId := w.GetCurrUserId(c)
+	var menus []model.SysMenu
+	var err error
+	menuService := service.GetMenuServiceInstance()
+	if w.IsAdmin(userId) {
+		menus, err = menuService.FindRouterTreeAll()
 	} else {
-		menus, _ = menuService.SelectMenuNormalAll(user.UserId)
+		menus, err = menuService.FindRouterTreeAllByUserId(userId)
 	}
-	//获取配置数
-	util.Success(c, menus)
+	lv_err.HasErrAndPanic(err)
+	var data = menuService.BuildMenus(menus) //获取配置数
+	util.Success(c, data)
 }

@@ -60,11 +60,11 @@ func (svc *MenuService) AddSave(req *model.SysMenu) (int64, error) {
 }
 
 // 修改数据
-func (svc *MenuService) Edit(req *model.SysMenu) (int64, error) {
+func (svc *MenuService) Edit(req *model.SysMenu) error {
 	entity := &model.SysMenu{MenuId: req.MenuId}
 	err := entity.FindOne()
 	if err != nil {
-		return 0, err
+		return err
 	}
 	entity.MenuName = req.MenuName
 	entity.Visible = req.Visible
@@ -79,7 +79,7 @@ func (svc *MenuService) Edit(req *model.SysMenu) (int64, error) {
 	entity.OrderNum = req.OrderNum
 	entity.UpdateTime = time.Now()
 	err = entity.Update()
-	return entity.MenuId, err
+	return err
 }
 
 // 批量删除数据记录
@@ -248,6 +248,107 @@ func (svc *MenuService) SelectMenuListByRoleId(roleId string, menuCheckStrictly 
 	var menuIds []int
 	err := lv_db.GetMasterGorm().Raw(sql).Scan(&menuIds).Error
 	return menuIds, err
+}
+
+// FindRouterTreeAll 获取所有菜单（管理员不授权直接加载所有）
+func (svc *MenuService) FindRouterTreeAll() ([]model.SysMenu, error) {
+	var menus []model.SysMenu
+	sql := ` select distinct m.* from sys_menu m 
+             where m.menu_type in ('M', 'C') and m.status = 0 
+             order by m.parent_id, m.order_num
+           `
+	err := lv_db.GetMasterGorm().Raw(sql).Scan(&menus).Error
+	return menus, err
+}
+
+// FindRouterTreeAllByUserId 获取所有菜单（非管理员获取已经授权的菜单）
+func (svc *MenuService) FindRouterTreeAllByUserId(id int64) ([]model.SysMenu, error) {
+	var menus []model.SysMenu
+	sql := ` select distinct m.* from sys_menu m 
+             left join sys_role_menu rm on m.menu_id = rm.menu_id 
+             left join sys_user_role ur on rm.role_id = ur.role_id 
+             left join sys_role ro on ur.role_id = ro.role_id 
+             left join sys_user u on ur.user_id = u.user_id 
+             where u.user_id = ? and m.menu_type in ('M', 'C') and m.status = 0  AND ro.status = 0
+             order by m.parent_id, m.order_num
+           `
+	err := lv_db.GetMasterGorm().Raw(sql, id).Scan(&menus).Error
+	return menus, err
+}
+
+func (svc *MenuService) BuildMenus(lists []model.SysMenu) []vo.MenuVo {
+	var menuVos []vo.MenuVo
+	for i := 0; i < len(lists); i++ {
+		var menu = &lists[i]
+		MenuId := menu.MenuId
+		parentId := menu.ParentId
+		if 0 == parentId {
+			var path = ""
+			if isInnerLink(menu.Path) {
+				path = menu.Path
+			}
+			var menuVo = vo.MenuVo{
+				Hidden: "1" == menu.Visible,
+				Query:  menu.Query,
+				MetaVo: vo.MetaVo{
+					Title:   menu.MenuName,
+					Icon:    menu.Icon,
+					NoCache: "1" == menu.IsCache,
+					Link:    path,
+				},
+				Name:      getRouteName(menu),
+				Path:      getRouterPath(menu),
+				Component: getComponent(menu),
+			}
+			if "M" == menu.MenuType {
+				if !isInnerLink(menu.Path) {
+					menuVo.AlwaysShow = true
+					menuVo.Redirect = "noRedirect"
+					menuVo.Children = svc.BuildChildMenus(MenuId, lists)
+				}
+			}
+			menuVos = append(menuVos, menuVo)
+		}
+
+	}
+	return menuVos
+}
+
+func (svc *MenuService) BuildChildMenus(ParentId int64, lists []model.SysMenu) []vo.MenuVo {
+	var List []vo.MenuVo
+	for i := 0; i < len(lists); i++ {
+		var menu = &lists[i]
+		var menuId = menu.MenuId
+		var pId = menu.ParentId
+		if pId == ParentId {
+			var path = ""
+			if isInnerLink(menu.Path) {
+				path = menu.Path
+			}
+			var menuVo = vo.MenuVo{
+				Hidden: "1" == menu.Visible,
+				Query:  menu.Query,
+				MetaVo: vo.MetaVo{
+					Title:   menu.MenuName,
+					Icon:    menu.Icon,
+					NoCache: "1" == menu.IsCache,
+					Link:    path,
+				},
+				Name:      getRouteName(menu),
+				Path:      getRouterPath(menu),
+				Component: getComponent(menu),
+			}
+			if "M" == menu.MenuType {
+				if !isInnerLink(menu.Path) {
+					menuVo.AlwaysShow = true
+					menuVo.Redirect = "noRedirect"
+					menuVo.Children = svc.BuildChildMenus(menuId, lists)
+				}
+			}
+			List = append(List, menuVo)
+		}
+	}
+	return List
 }
 
 func getRouteName(menu *model.SysMenu) string {

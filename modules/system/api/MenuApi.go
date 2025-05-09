@@ -73,19 +73,14 @@ func (w *MenuApi) AddSave(c *gin.Context) {
 // EditSave 修改页面保存
 func (w *MenuApi) EditSave(c *gin.Context) {
 	var req = new(model.SysMenu)
-
 	if err := c.ShouldBind(&req); err != nil {
 		util.ErrorResp(c).SetBtype(lv_dto.Buniss_Edit).SetMsg(err.Error()).Log("菜单管理", req).WriteJsonExit()
 		return
 	}
-	user := service.GetUserService().GetProfile(c)
-	if user != nil {
-		req.UpdateBy = user.UserName
-	}
-	rs, err := service.GetMenuServiceInstance().Edit(req)
-
-	if err != nil || rs <= 0 {
-		util.ErrorResp(c).SetBtype(lv_dto.Buniss_Edit).Log("菜单管理", req).WriteJsonExit()
+	req.UpdateBy = w.GetCurrUser(c).UserName
+	err := service.GetMenuServiceInstance().Edit(req)
+	if err != nil {
+		util.Fail(c, err.Error())
 		return
 	}
 	util.Success(c, req)

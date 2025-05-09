@@ -41,7 +41,7 @@ func HasPermi(u interface{}, permission string) string {
 	if userService.IsAdmin(uid) {
 		menus, _ = menuDao.FindMenuNormalAll(false)
 	} else {
-		menus, _ = menuDao.FindMenusByUserId(uid, false)
+		menus, _ = menuDao.FindMenusByUserId(uid, nil)
 	}
 
 	if menus != nil && len(menus) > 0 {

@@ -133,10 +133,8 @@ func (dao *MenuDao) FindMenusByUserId(userId int64, sysMenu *vo.SelectMenuPageRe
 	if menuName != "" {
 		sql += "AND m.menu_name like concat(%" + menuName + "%) "
 	}
-	var visible = sysMenu.Visible
-
-	if visible != "" {
-		sql += "AND m.visible = " + visible + " "
+	if sysMenu.Visible != "" {
+		sql += "AND m.visible = " + sysMenu.Visible + " "
 	}
 	var status = sysMenu.Status
 	if status != "" {
