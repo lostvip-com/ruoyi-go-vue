@@ -25,7 +25,7 @@ var httpSvr *server.MyHttpServer
 // @host localhost
 // @BasePath /
 func main() {
-	fmt.Println(lv_conv.ToJsonStr(new(models.BaseModel)))
+	fmt.Println("---------test--->" + lv_conv.ToJsonStr(new(models.BaseModel)))
 
 	cfg := myconf.GetConfigInstance()
 	log := lv_log_impl.InitLog(cfg.GetAppName() + ".log")

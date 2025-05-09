@@ -27,7 +27,7 @@ type SysUser struct {
 	Salt        string     `gorm:"size:20;comment:盐加密;" json:"salt" form:"salt"`
 	Status      string     `gorm:"size:char(1;comment:帐号状态（0正常 1停用）;" json:"status" form:"status"`
 	LoginIp     string     `gorm:"size:50;comment:最后登陆IP;" json:"loginIp" form:"loginIp"`
-	LoginDate   *time.Time `gorm:"size:datetime;comment:最后登陆时间;" json:"loginDate" form:"loginDate" time_format:"2006-01-02 15:04:05"`
+	LoginDate   *time.Time `gorm:"size:datetime;comment:最后登陆时间;autoCreateTime" json:"loginDate" form:"loginDate" time_format:"2006-01-02 15:04:05"`
 	UpdateBy    string     `gorm:"size:64;comment:更新者;" json:"updateBy" form:"updateBy"`
 	Remark      string     `gorm:"size:500;comment:备注;" json:"remark"   form:"remark"`
 	CreateBy    string     `gorm:"size:32;comment:创建人;column:create_by;"  json:"createBy"`
