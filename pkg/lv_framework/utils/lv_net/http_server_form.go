@@ -7,7 +7,7 @@ import (
 func GetParam(c *gin.Context, key string) string {
 	v := c.Query(key)
 	if v == "" {
-		v = c.PostForm(key)
+		v = c.Query(key)
 		if v == "" {
 			v = c.GetHeader(key)
 			if v == "" {

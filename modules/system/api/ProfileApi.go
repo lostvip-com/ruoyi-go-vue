@@ -88,7 +88,7 @@ func (w *ProfileApi) CheckPhoneOK(c *gin.Context) {
 
 // 检查手机号是否存在 1 存在，0不存在
 func (w *ProfileApi) CheckEmailOK(c *gin.Context) {
-	email := c.PostForm("email")
+	email := c.Query("email")
 	var userService service.UserService
 	count, err := userService.CountCol("email", email)
 	lv_err.HasError1(err)

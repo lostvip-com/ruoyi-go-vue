@@ -26,22 +26,16 @@ func (e *SysUserRole) FindById() error {
 }
 
 // 查第一条
-func (e *SysUserRole) FindOne() error {
+func (e *SysUserRole) FindOne() (*SysUserRole, error) {
 	tb := lv_db.GetMasterGorm().Table(e.TableName())
 	if e.UserId != 0 && e.RoleId != 0 {
 		tb = tb.Table(e.TableName()).Where("role_id=? and user_id=?", e.RoleId, e.UserId)
 	}
 	err := tb.First(e).Error
-	return err
+	return e, err
 }
 
 // 删
 func (e *SysUserRole) Delete() error {
-	err := e.FindOne()
-	if e == nil {
-		return lv_db.GetMasterGorm().Delete(e).Error
-	} else {
-		return err
-	}
-
+	return lv_db.GetMasterGorm().Delete(e).Error
 }

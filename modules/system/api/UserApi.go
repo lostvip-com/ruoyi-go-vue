@@ -55,8 +55,8 @@ func (w *UserApi) AddSave(c *gin.Context) {
 
 // 修改页面保存
 func (w *UserApi) ChangeStatus(c *gin.Context) {
-	userId := c.PostForm("userId")
-	status := c.PostForm("status")
+	userId := c.Query("userId")
+	status := c.Query("status")
 	sql := " update sys_user set status=? where user_id = ? "
 	rows := db2.GetMasterGorm().Exec(sql, status, userId).RowsAffected
 	util2.Success(c, rows)

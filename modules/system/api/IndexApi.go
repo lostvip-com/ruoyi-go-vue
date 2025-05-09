@@ -58,7 +58,7 @@ func (w *IndexApi) Download(c *gin.Context) {
 // CaptchaImage 图形验证码生成逻辑,使用其它服务的公共接口生成，不再单独维护
 func (w *IndexApi) CaptchaImage(c *gin.Context) {
 	//传参数
-	clientId := c.PostForm("uuid")
+	clientId := c.Query("uuid")
 	//返回值
 	params := url.Values{}
 	params.Set("uuid", clientId)

@@ -71,7 +71,7 @@ func (w *OnlineApi) ListAjax(c *gin.Context) {
 
 // 用户强退
 func (w *OnlineApi) ForceLogout(c *gin.Context) {
-	sessionId := c.PostForm("sessionId")
+	sessionId := c.Query("sessionId")
 	var userService service.SessionService
 	err := userService.ForceLogout(sessionId)
 	lv_err.HasErrAndPanic(err)

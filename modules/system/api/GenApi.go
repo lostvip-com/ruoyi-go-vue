@@ -276,7 +276,7 @@ func (w *GenApi) DataList(c *gin.Context) {
 
 // 导入表结构（保存）
 func (w *GenApi) ImportTableSave(c *gin.Context) {
-	tables := c.PostForm("tables")
+	tables := c.Query("tables")
 	if tables == "" {
 		util2.ErrorResp(c).SetBtype(lv_dto.Buniss_Add).SetMsg("参数错误tables未选中").Log("生成代码", gin.H{"tables": tables}).WriteJsonExit()
 	}
@@ -305,7 +305,7 @@ func (w *GenApi) ImportTableSave(c *gin.Context) {
 
 // 根据table_id查询表列数据
 func (w *GenApi) ColumnList(c *gin.Context) {
-	tableId := lv_conv.Int64(c.PostForm("tableId"))
+	tableId := lv_conv.Int64(c.Query("tableId"))
 	rows := make([]menuModel.GenTableColumn, 0)
 	tableService := service.TableColumnService{}
 	result, err := tableService.SelectGenTableColumnListByTableId(tableId)

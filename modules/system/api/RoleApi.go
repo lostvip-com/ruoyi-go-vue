@@ -12,6 +12,7 @@ import (
 	"system/dao"
 	"system/model"
 	"system/service"
+	"system/vo"
 )
 
 type RoleApi struct {
@@ -100,17 +101,17 @@ func (w *RoleApi) EditSave(c *gin.Context) {
 }
 
 func (w *RoleApi) ChangeStatus(c *gin.Context) {
-	roleId := c.PostForm("roleId")
-	status := c.PostForm("status")
+	roleId := c.Query("roleId")
+	status := c.Query("status")
 	sql := " update sys_role set status=? where role_id = ? "
 	rows := db2.GetMasterGorm().Exec(sql, status, roleId).RowsAffected
 	util.Success(c, rows)
 }
 
 func (w *RoleApi) GetUnAllocatedList(c *gin.Context) {
-	roleId := lv_conv.Int64(c.PostForm("roleId"))
-	UserName := c.PostForm("UserName")
-	phonenumber := c.PostForm("phonenumber")
+	roleId := lv_conv.Int64(c.Query("roleId"))
+	UserName := c.Query("UserName")
+	phonenumber := c.Query("phonenumber")
 	var rows []map[string]string
 	var userService service.UserService
 	userList, err := userService.SelectUnallocatedList(roleId, UserName, phonenumber)
@@ -181,15 +182,14 @@ func (w *RoleApi) AllocatedList(c *gin.Context) {
 }
 
 func (w *RoleApi) AuthRoleToUsers(c *gin.Context) {
-	roleId := lv_conv.Int64(c.PostForm("roleId"))
-	userIds := c.PostForm("userIds")
-
+	roleId := lv_conv.Int64(c.Query("roleId"))
+	userIds := c.Query("userIds")
 	if roleId <= 0 {
-		util.ErrorResp(c).SetMsg("参数错误1").SetBtype(lv_dto.Buniss_Add).WriteJsonExit()
+		util.Fail(c, "roleId can not be empty")
 		return
 	}
 	if userIds == "" {
-		util.ErrorResp(c).SetMsg("参数错误2").SetBtype(lv_dto.Buniss_Add).WriteJsonExit()
+		util.Fail(c, "userIds can not be empty")
 		return
 	}
 	roleService := service.RoleService{}
@@ -201,8 +201,8 @@ func (w *RoleApi) AuthRoleToUsers(c *gin.Context) {
 	util.Success(c, nil)
 }
 func (w *RoleApi) CancelAll(c *gin.Context) {
-	roleId := lv_conv.Int64(c.PostForm("roleId"))
-	userIds := c.PostForm("userIds")
+	roleId := lv_conv.Int64(c.Query("roleId"))
+	userIds := c.Query("userIds")
 	roleService := service.GetRoleServiceInstance()
 	err := roleService.DeleteUserRoleInfos(roleId, userIds)
 	if err != nil {
@@ -213,10 +213,13 @@ func (w *RoleApi) CancelAll(c *gin.Context) {
 }
 
 func (w *RoleApi) Cancel(c *gin.Context) {
-	roleId := lv_conv.Int64(c.PostForm("roleId"))
-	userId := lv_conv.Int64(c.PostForm("userId"))
+	var req vo.UserRoleReq
+	if err := c.ShouldBind(&req); err != nil {
+		util.Fail(c, err.Error())
+		return
+	}
 	roleService := service.GetRoleServiceInstance()
-	err := roleService.DeleteUserRoleInfo(userId, roleId)
+	err := roleService.DeleteUserRoleInfo(cast.ToInt64(req.UserId), cast.ToInt64(req.RoleId))
 	if err != nil {
 		util.Fail(c, err.Error())
 		return

@@ -66,7 +66,7 @@ func (svc *SessionService) SaveUserToSession(tokenId string, user *model.SysUser
 	fieldMap["avatar"] = user.Avatar
 	fieldMap["roleKeys"] = roleKeys
 	fieldMap["deptId"] = user.DeptId
-	fieldMap["tenantId"] = user.TenantId //租户ID
+	//fieldMap["tenantId"] = user.TenantId //租户ID
 	//其它
 	key := global.LOGIN_TOKEN_KEY + tokenId
 	err := lv_cache.GetCacheClient().HSet(key, fieldMap)

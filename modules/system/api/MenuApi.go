@@ -111,11 +111,7 @@ func (w *MenuApi) GetTreeSelect(c *gin.Context) {
 		return
 	}
 	var arrTree = svc.BuildMenuTreeSelect(menus)
-	c.JSON(http.StatusOK, gin.H{
-		"msg":   "操作成功",
-		"code":  http.StatusOK,
-		"menus": arrTree,
-	})
+	util.Success(c, arrTree)
 }
 
 func (w *MenuApi) TreeSelectByRole(c *gin.Context) {

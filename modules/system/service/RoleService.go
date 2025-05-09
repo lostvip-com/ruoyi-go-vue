@@ -217,10 +217,13 @@ func (svc *RoleService) InsertAuthUsers(roleId int64, userIds string) error {
 func (svc *RoleService) DeleteUserRoleInfo(userId, roleId int64) error {
 	entity := &model.SysUserRole{UserId: userId, RoleId: roleId}
 	if entity.RoleId == 1 {
-		panic("禁止取消超级管理员权限")
+		return errors.New("Not Allowed!")
 	}
-	err := entity.Delete()
-	return err
+	entity, err := entity.FindOne()
+	if err != nil {
+		return err
+	}
+	return entity.Delete()
 }
 
 // DeleteUserRoleInfos 批量取消授权用户角色
