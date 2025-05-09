@@ -93,7 +93,7 @@ func init() {
 	//system.GET("/menu/treeData", "", menuApi.MenuTreeData)
 	// 岗位路由
 	postApi := api.PostApi{}
-	system.GET("/:postId", "", postApi.GetPostInfo)
+	system.GET("/post/:postId", "", postApi.GetPostInfo)
 	system.GET("/post/list", "system:post:list", postApi.ListAjax)
 	system.POST("/post", "system:post:add", postApi.AddSave)
 	system.PUT("/post", "system:post:edit", postApi.EditSave)

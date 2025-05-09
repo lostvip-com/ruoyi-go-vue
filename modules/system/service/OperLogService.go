@@ -71,7 +71,7 @@ func (svc OperLogService) Add(c *gin.Context, title, inContent string, outConten
 }
 
 // 根据条件分页查询用户列表
-func (svc OperLogService) SelectPageList(param *vo.OperLogPageReq) (*[]model.SysOperLog, int64, error) {
+func (svc OperLogService) FindPage(param *vo.OperLogPageReq) (*[]model.SysOperLog, int64, error) {
 	db := lv_db.GetMasterGorm()
 	tb := db.Table("sys_oper_log")
 	if param != nil {

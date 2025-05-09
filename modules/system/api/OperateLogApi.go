@@ -19,7 +19,7 @@ func (w *OperateLogApi) ListAjax(c *gin.Context) {
 	err := c.ShouldBind(&req)
 	lv_err.HasErrAndPanic(err)
 	var operlogService service.OperLogService
-	rows, total, err := operlogService.SelectPageList(&req)
+	rows, total, err := operlogService.FindPage(&req)
 	lv_err.HasErrAndPanic(err)
 	util.SuccessPage(c, rows, total)
 }

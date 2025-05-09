@@ -47,7 +47,7 @@ func (svc UserService) SelectRecordList(param *common_vo.SelectUserPageReq) (*[]
 		param.Ancestors = dept.Ancestors
 	}
 	var d dao.SysUserDao
-	return d.SelectPageList(param)
+	return d.FindPage(param)
 }
 
 // 导出excel

@@ -24,7 +24,7 @@ func (e SysUserDao) DeleteByIds(ida []int64) int64 {
 }
 
 // 根据条件分页查询用户列表
-func (d SysUserDao) SelectPageList(param *common_vo.SelectUserPageReq) (*[]map[string]string, int64, error) {
+func (d SysUserDao) FindPage(param *common_vo.SelectUserPageReq) (*[]map[string]string, int64, error) {
 	db := lv_db.GetMasterGorm()
 	sqlParams, sql := d.GetSql(param)
 	lv_log.Info("============sqlParams:", sqlParams)

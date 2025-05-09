@@ -148,7 +148,7 @@ func (svc *ConfigService) SelectListAll(params *common_vo.SelectConfigPageReq) (
 // 根据条件分页查询角色数据
 func (svc *ConfigService) FindPage(params *common_vo.SelectConfigPageReq) (*[]map[string]string, int64, error) {
 	var config dao2.ConfigDao
-	return config.SelectPageList(params)
+	return config.FindPage(params)
 }
 
 // 导出excel

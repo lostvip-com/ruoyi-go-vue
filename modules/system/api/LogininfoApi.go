@@ -21,7 +21,7 @@ func (w *LogininfoApi) ListAjax(c *gin.Context) {
 	}
 
 	rows := make([]model.SysLoginInfo, 0)
-	result, total, err := service.GetLoginServiceInstance().SelectPageList(req)
+	result, total, err := service.GetLoginServiceInstance().FindPage(req)
 
 	if err == nil && len(*result) > 0 {
 		rows = *result

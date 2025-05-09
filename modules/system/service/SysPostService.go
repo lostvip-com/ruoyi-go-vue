@@ -78,20 +78,20 @@ func (svc SysPostService) EditSave(req *vo.EditSysPostReq, c *gin.Context) error
 }
 
 // 根据条件分页查询角色数据
-func (svc SysPostService) SelectListAll(params *vo.SelectPostPageReq) (*[]model.SysPost, error) {
+func (svc SysPostService) SelectListAll(params *vo.PostPageReq) (*[]model.SysPost, error) {
 	var d dao.SysPostDao
 	ret, err := d.ListAll(params)
 	return ret, err
 }
 
 // 根据条件分页查询角色数据
-func (svc SysPostService) FindPage(params *vo.SelectPostPageReq) (*[]map[string]string, int64, error) {
+func (svc SysPostService) FindPage(params *vo.PostPageReq) (*[]map[string]string, int64, error) {
 	var d dao.SysPostDao
-	return d.SelectPageList(params)
+	return d.FindPage(params)
 }
 
 // 导出excel
-func (svc SysPostService) Export(param *vo.SelectPostPageReq) (string, error) {
+func (svc SysPostService) Export(param *vo.PostPageReq) (string, error) {
 	head := []string{"岗位序号", "岗位名称", "岗位编码", "岗位排序", "状态"}
 	col := []string{"post_id", "post_name", "post_code", "post_sort", "status"}
 	var d dao.SysPostDao
@@ -102,14 +102,14 @@ func (svc SysPostService) Export(param *vo.SelectPostPageReq) (string, error) {
 
 // 根据用户ID查询岗位
 func (svc SysPostService) SelectPostsByUserId(userId int64) (*[]model.SysPost, error) {
-	var paramsPost *vo.SelectPostPageReq
+	var paramsPost *vo.PostPageReq
 	var d dao.SysPostDao
 	postAll, err := d.ListAll(paramsPost)
 
 	if err != nil || postAll == nil {
 		return nil, errors.New("未查询到岗位数据")
 	}
-	userPost, err := d.SelectPostsByUserId(userId)
+	userPost, err := d.FindPostsByUserId(userId)
 
 	for i := range *postAll {
 		if userPost == nil {

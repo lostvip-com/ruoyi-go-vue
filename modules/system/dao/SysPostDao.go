@@ -22,12 +22,12 @@ func GetSysPostDaoInstance() *SysPostDao {
 }
 
 func (e SysPostDao) DeleteByIds(ida []int64) (int64, error) {
-	db := lv_db.GetMasterGorm().Table("sys_post").Where("post_id in ? ", ida).Update("del_flag", 1)
+	db := lv_db.GetMasterGorm().Table("sys_post").Delete("post_id in ? ", ida)
 	return db.RowsAffected, db.Error
 }
 
 // 根据条件分页查询用户列表
-func (d SysPostDao) SelectPageList(param *vo.SelectPostPageReq) (*[]map[string]string, int64, error) {
+func (d SysPostDao) FindPage(param *vo.PostPageReq) (*[]map[string]string, int64, error) {
 	db := lv_db.GetMasterGorm()
 	sqlParams, sql := d.GetSql(param)
 	limitSql := sql + " order by u.post_id desc "
@@ -41,10 +41,10 @@ func (d SysPostDao) SelectPageList(param *vo.SelectPostPageReq) (*[]map[string]s
 	return result, total, err
 }
 
-func (d SysPostDao) GetSql(param *vo.SelectPostPageReq) (map[string]interface{}, string) {
+func (d SysPostDao) GetSql(param *vo.PostPageReq) (map[string]interface{}, string) {
 	sqlParams := make(map[string]interface{})
 	sql := `
-            select * from sys_post u where u.del_flag =0 
+            select * from sys_post u where 1=1
            `
 	if param != nil {
 		if param.PostName != "" {
@@ -71,7 +71,7 @@ func (d SysPostDao) GetSql(param *vo.SelectPostPageReq) (map[string]interface{},
 }
 
 // 导出excel
-func (d SysPostDao) ListAll(param *vo.SelectPostPageReq) (*[]model.SysPost, error) {
+func (d SysPostDao) ListAll(param *vo.PostPageReq) (*[]model.SysPost, error) {
 	db := lv_db.GetMasterGorm()
 	sqlParams, sql := d.GetSql(param)
 	allSql := sql + " order by u.post_id desc "
@@ -80,7 +80,7 @@ func (d SysPostDao) ListAll(param *vo.SelectPostPageReq) (*[]model.SysPost, erro
 }
 
 // 导出excel
-func (d SysPostDao) ListAllMap(param *vo.SelectPostPageReq, camel bool) (*[]map[string]string, error) {
+func (d SysPostDao) ListAllMap(param *vo.PostPageReq, camel bool) (*[]map[string]string, error) {
 	db := lv_db.GetMasterGorm()
 	sqlParams, sql := d.GetSql(param)
 	allSql := sql + " order by u.post_id desc "
@@ -89,7 +89,7 @@ func (d SysPostDao) ListAllMap(param *vo.SelectPostPageReq, camel bool) (*[]map[
 }
 
 // 根据用户ID查询岗位
-func (dao SysPostDao) SelectPostsByUserId(userId int64) (*[]model.SysPost, error) {
+func (dao SysPostDao) FindPostsByUserId(userId int64) (*[]model.SysPost, error) {
 	db := lv_db.GetMasterGorm()
 	if db == nil {
 		return nil, errors.New("获取数据库连接失败")
@@ -97,7 +97,7 @@ func (dao SysPostDao) SelectPostsByUserId(userId int64) (*[]model.SysPost, error
 	sql := `
             select p.post_id, p.post_name, p.post_code,false as selected 
             from sys_post p,sys_user_post up 
-            where p.del_flag =0 and p.post_id = up.post_id
+            where  p.post_id = up.post_id
                   and up.user_id = @UserId
            `
 	sqlParams := map[string]any{"UserId": 2}

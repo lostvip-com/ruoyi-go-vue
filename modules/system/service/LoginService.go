@@ -29,8 +29,8 @@ func GetLoginServiceInstance() *LoginService {
 	return loginService
 }
 
-// SelectPageList 根据条件分页查询用户列表
-func (svc LoginService) SelectPageList(param *vo.LoginInfoPageReq) (*[]model.SysLoginInfo, int64, error) {
+// FindPage 根据条件分页查询用户列表
+func (svc LoginService) FindPage(param *vo.LoginInfoPageReq) (*[]model.SysLoginInfo, int64, error) {
 	db := lv_db.GetMasterGorm()
 	tb := db.Table("sys_logininfor")
 	if param != nil {

@@ -25,7 +25,7 @@ func (d *ConfigDao) DeleteBatch(ids ...int64) error {
 }
 
 // 根据条件分页查询用户列表
-func (d ConfigDao) SelectPageList(param *common_vo.SelectConfigPageReq) (*[]map[string]string, int64, error) {
+func (d ConfigDao) FindPage(param *common_vo.SelectConfigPageReq) (*[]map[string]string, int64, error) {
 	db := lv_db.GetMasterGorm()
 	sqlParams, sql := d.GetSql(param)
 	countSql := "select count(*) from (" + sql + ") t "

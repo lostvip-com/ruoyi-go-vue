@@ -27,7 +27,7 @@ func (w *PostApi) GetPostInfo(c *gin.Context) {
 
 // GetPostOptionSelect 列表分页数据
 func (w *PostApi) GetPostOptionSelect(c *gin.Context) {
-	var req *vo.SelectPostPageReq
+	var req *vo.PostPageReq
 	if err := c.ShouldBind(&req); err != nil {
 		util.ErrorResp(c).SetMsg(err.Error()).Log("岗位管理", req).WriteJsonExit()
 		return
@@ -42,12 +42,12 @@ func (w *PostApi) GetPostOptionSelect(c *gin.Context) {
 
 // ListAjax 列表分页数据
 func (w *PostApi) ListAjax(c *gin.Context) {
-	var req *vo.SelectPostPageReq
+	var req *vo.PostPageReq
 	if err := c.ShouldBind(&req); err != nil {
 		util.ErrorResp(c).SetMsg(err.Error()).Log("岗位管理", req).WriteJsonExit()
 		return
 	}
-	result, total, err := dao.GetSysPostDaoInstance().SelectPageList(req)
+	result, total, err := dao.GetSysPostDaoInstance().FindPage(req)
 	if err != nil {
 		util.Fail(c, err.Error())
 		return
@@ -103,7 +103,7 @@ func (w *PostApi) Remove(c *gin.Context) {
 }
 
 func (w *PostApi) Export(c *gin.Context) {
-	var req *vo.SelectPostPageReq
+	var req *vo.PostPageReq
 	if err := c.ShouldBind(&req); err != nil {
 		util.ErrorResp(c).SetMsg(err.Error()).Log("岗位管理", req).WriteJsonExit()
 		return

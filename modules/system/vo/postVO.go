@@ -24,7 +24,7 @@ type EditSysPostReq struct {
 }
 
 // 分页请求参数
-type SelectPostPageReq struct {
+type PostPageReq struct {
 	PostCode  string `form:"postCode"`  //岗位编码
 	Status    string `form:"status"`    //状态
 	PostName  string `form:"postName"`  //岗位名称

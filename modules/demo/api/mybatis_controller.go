@@ -19,7 +19,7 @@ type DemoController struct{}
 var SQL_FILE_POST = "sys_post/sys_post_mapper.sql"
 
 func (w DemoController) MybatisMap(c *gin.Context) {
-	req := vo.SelectPostPageReq{}
+	req := vo.PostPageReq{}
 	if err := c.ShouldBind(&req); err != nil {
 		util2.ErrorResp(c).SetMsg(err.Error()).WriteJsonExit()
 		return
@@ -36,7 +36,7 @@ func (w DemoController) MybatisMap(c *gin.Context) {
 }
 
 func (w DemoController) MybatisStruct(c *gin.Context) {
-	req := vo.SelectPostPageReq{}
+	req := vo.PostPageReq{}
 	if err := c.ShouldBind(&req); err != nil {
 		util2.ErrorResp(c).SetMsg(err.Error()).WriteJsonExit()
 		return
@@ -55,7 +55,7 @@ func (w DemoController) MybatisStruct(c *gin.Context) {
  * 基于ibatis 的分页查询演示
  */
 func (w DemoController) MybatisStructPage(c *gin.Context) {
-	req := vo.SelectPostPageReq{}
+	req := vo.PostPageReq{}
 	if err := c.ShouldBind(&req); err != nil {
 		util2.ErrorResp(c).SetMsg(err.Error()).WriteJsonExit()
 		return
