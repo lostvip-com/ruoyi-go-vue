@@ -5,7 +5,6 @@ require (
 	github.com/lostvip-com/lv_framework v1.1.7
 	github.com/spf13/cast v1.7.0
 	google.golang.org/grpc v1.64.0
-	github.com/jinzhu/copier v0.3.5
 )
 
 require (
