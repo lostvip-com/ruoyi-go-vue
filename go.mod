@@ -5,6 +5,7 @@ require (
 	github.com/lostvip-com/lv_framework v1.1.7
 	github.com/spf13/cast v1.7.0
 	google.golang.org/grpc v1.64.0
+	github.com/jinzhu/copier v0.3.5
 )
 
 require (
@@ -60,7 +61,6 @@ require (
 	golang.org/x/net v0.25.0 // indirect
 	golang.org/x/sys v0.20.0 // indirect
 	golang.org/x/text v0.15.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240318140521-94a12d6c2237 // indirect
 	google.golang.org/protobuf v1.34.1 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
