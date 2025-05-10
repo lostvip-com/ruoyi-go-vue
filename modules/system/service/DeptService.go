@@ -27,19 +27,18 @@ func GetDeptServiceInstance() *DeptService {
 }
 
 // 新增保存信息
-func (svc *DeptService) AddSave(req *common_vo.AddDeptReq, c *gin.Context) (int64, error) {
+func (svc *DeptService) AddSave(req *common_vo.AddDeptReq, c *gin.Context) (*models.SysDept, error) {
 	if req.OrderNum == 0 {
 		req.OrderNum = 100
 	}
-
 	parent := new(models.SysDept)
 	parent, err := parent.FindById(req.ParentId)
 	if err == nil {
 		if parent.Status != "0" {
-			return 0, errors.New("部门停用，不允许新增")
+			return nil, errors.New("部门停用，不允许新增")
 		}
 	} else {
-		return 0, errors.New("父部门不能为空")
+		return nil, errors.New("父部门不能为空")
 	}
 	dept0 := new(models.SysDept)
 	var userService UserService
@@ -52,11 +51,11 @@ func (svc *DeptService) AddSave(req *common_vo.AddDeptReq, c *gin.Context) (int6
 	//这里跟原版不一样了，多加了一级自己的ID，以方便数据权限控制
 	err = dept0.Save()
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
 	dept0.Ancestors = parent.Ancestors + "," + cast.ToString(dept0.DeptId)
 	dept0.Update()
-	return dept0.DeptId, err
+	return dept0, err
 }
 
 // 修改保存信息

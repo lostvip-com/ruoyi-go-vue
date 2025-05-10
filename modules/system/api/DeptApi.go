@@ -2,80 +2,104 @@ package api
 
 import (
 	"common/common_vo"
-	util2 "common/util"
+	"common/models"
+	"common/util"
 	"github.com/gin-gonic/gin"
 	"github.com/lostvip-com/lv_framework/utils/lv_conv"
-	"github.com/lostvip-com/lv_framework/web/lv_dto"
-	"net/http"
+	"github.com/spf13/cast"
+	"strings"
 	"system/service"
 )
 
 type DeptApi struct {
 }
 
+/*排除节点*/
+func (w *DeptApi) ExcludeDept(c *gin.Context) {
+	deptId := c.Param("deptId")
+	svc := service.GetDeptServiceInstance()
+	dept, err := svc.FindById(cast.ToInt64(deptId))
+	listPtr, err := svc.SelectListAll(nil)
+	if err != nil {
+		util.Fail(c, err.Error())
+	} else {
+		list := *listPtr
+		dist := make([]models.SysDept, 0)
+		for _, it := range list {
+			if strings.Contains(it.Ancestors, dept.Ancestors) {
+				continue
+			}
+			dist = append(dist, it)
+		}
+		util.Success(c, dist)
+	}
+}
+
 // ListAjax 列表分页数据
 func (w *DeptApi) ListAjax(c *gin.Context) {
-	var service service.DeptService
 	var req = common_vo.DeptPageReq{}
-
 	if err := c.ShouldBind(&req); err != nil {
-		util2.ErrorResp(c).SetMsg(err.Error()).Log("部门管理", req).WriteJsonExit()
+		util.Fail(c, err.Error())
 		return
 	}
-	result, err := service.SelectListAll(&req)
+	result, err := service.GetDeptServiceInstance().SelectListAll(&req)
 	if err != nil {
-		panic(err)
+		util.Fail(c, err.Error())
+		return
 	}
-
-	c.JSON(http.StatusOK, result)
+	util.Success(c, result)
 }
 
 // AddSave 新增页面保存
 func (w *DeptApi) AddSave(c *gin.Context) {
 	var req *common_vo.AddDeptReq
-	var service service.DeptService
-
 	if err := c.ShouldBind(&req); err != nil {
-		util2.ErrorResp(c).SetBtype(lv_dto.Buniss_Add).SetMsg(err.Error()).WriteJsonExit()
+		util.Fail(c, err.Error())
 		return
 	}
-	rid, err := service.AddSave(req, c)
-	if err != nil || rid <= 0 {
-		util2.ErrorResp(c).SetBtype(lv_dto.Buniss_Add).WriteJsonExit()
+	rid, err := service.GetDeptServiceInstance().AddSave(req, c)
+	if err != nil {
+		util.Fail(c, err.Error())
 		return
 	}
-	util2.SucessResp(c).SetBtype(lv_dto.Buniss_Add).WriteJsonExit()
+	util.Success(c, rid)
 }
 
 // EditSave 修改页面保存
 func (w *DeptApi) EditSave(c *gin.Context) {
-	var service service.DeptService
-
 	var req *common_vo.EditDeptReq
-
 	if err := c.ShouldBind(&req); err != nil {
-		util2.ErrorResp(c).SetBtype(lv_dto.Buniss_Edit).SetMsg(err.Error()).Log("部门管理", req).WriteJsonExit()
+		util.Fail(c, err.Error())
 		return
 	}
-
-	rs, err := service.EditSave(req, c)
-
-	if err != nil || rs <= 0 {
-		util2.ErrorResp(c).SetBtype(lv_dto.Buniss_Edit).Log("部门管理", req).WriteJsonExit()
+	rs, err := service.GetDeptServiceInstance().EditSave(req, c)
+	if err != nil {
+		util.Fail(c, err.Error())
 		return
 	}
-	util2.SucessResp(c).SetData(rs).SetBtype(lv_dto.Buniss_Edit).Log("部门管理", req).WriteJsonExit()
+	util.Success(c, rs)
 }
 
 // 删除数据
 func (w *DeptApi) Remove(c *gin.Context) {
-	id := lv_conv.Int64(c.Query("id"))
-	service := service.DeptService{}
-	err := service.DeleteDeptById(id)
+	id := lv_conv.Int64(c.Param("id"))
+	err := service.GetDeptServiceInstance().DeleteDeptById(id)
 	if err != nil {
-		util2.Fail(c, err.Error())
+		util.Fail(c, err.Error())
 	} else {
-		util2.Success(c, id)
+		util.Success(c, id)
+	}
+}
+
+// 删除数据
+func (w *DeptApi) GetDept(c *gin.Context) {
+	id := lv_conv.Int64(c.Param("id"))
+	service := service.GetDeptServiceInstance()
+	dept, err := service.FindById(id)
+	if err != nil {
+		util.Fail(c, err.Error())
+	} else {
+		util.Success(c, dept)
 	}
 }
 
@@ -96,7 +120,7 @@ func (w *DeptApi) Remove(c *gin.Context) {
 //	result, err := service.RoleDeptTreeData(roleId, tenantId)
 //
 //	if err != nil {
-//		util2.ErrorResp(c).SetMsg(err.Error()).Log("菜单树", gin.H{"roleId": roleId})
+//		util.ErrorResp(c).SetMsg(err.Error()).Log("菜单树", gin.H{"roleId": roleId})
 //		return
 //	}
 //

@@ -19,7 +19,8 @@ type SysDept struct {
 	TenantId  int64  `gorm:"size:20;comment:租户id;" json:"tenantId" form:"tenantId"`
 	DelFlag   string `gorm:"type:string;size:1;default:0;comment:删除标记;column:del_flag;" json:"delFlag"`
 	BaseModel
-	ParentName string `gorm:"-" json:"parentName"`
+	ParentName string    `gorm:"-" json:"parentName"`
+	Children   []SysDept `gorm:"-" json:"children"`
 }
 
 // 映射数据表

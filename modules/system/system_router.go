@@ -41,13 +41,13 @@ func init() {
 	system.DELETE("/dict/data/:dictCodes", "system:dict:remove", dictData.Remove)
 	system.POST("/dict/data/export", "system:dict:export", dictData.Export)
 	//dept
-	deptContr := api.DeptApi{}
-	system.POST("/dept/list", "system:dept:list", deptContr.ListAjax)
-	system.POST("/dept/add", "system:dept:add", deptContr.AddSave)
-	system.POST("/dept/remove", "system:dept:remove", deptContr.Remove)
-	system.POST("/dept/edit", "system:dept:edit", deptContr.EditSave)
-	//system.GET("/dept/treeData", "", deptContr.TreeData)
-	//system.GET("/dept/roleDeptTreeData", "", deptContr.RoleDeptTreeData)
+	deptApi := api.DeptApi{}
+	system.GET("/dept/:deptId", "system:dept:list", deptApi.ListAjax)
+	system.GET("/dept/list", "system:dept:list", deptApi.ListAjax)
+	system.GET("dept/list/exclude/:deptId", "system:dept:list", deptApi.ExcludeDept)
+	system.POST("/dept", "system:dept:add", deptApi.AddSave)
+	system.PUT("/dept", "system:dept:edit", deptApi.EditSave)
+	system.DELETE("/dept/:deptId", "system:dept:remove", deptApi.Remove)
 	// 用户管理路由
 	user := api.UserApi{}
 	system.POST("/user/list", "system:user:list", user.ListAjax)
