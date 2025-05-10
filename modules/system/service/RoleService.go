@@ -14,7 +14,9 @@ import (
 	"time"
 )
 
-type RoleService struct{}
+type RoleService struct {
+	BaseService
+}
 
 var roleService *RoleService
 
@@ -177,6 +179,11 @@ func (svc *RoleService) DeleteRecordByIds(ids string) error {
 	return err
 }
 
+func (svc *RoleService) DeleteRolesByUserIds(userIds []int64) {
+	err := svc.GetDb().Exec("delete from sys_user_role where user_id in (?)", userIds).Error
+	lv_err.HasErrAndPanic(err)
+}
+
 // SelectRoleContactVo 根据用户ID查询角色
 func (svc *RoleService) SelectRoleContactVo(userId int64) ([]common_vo.SysRoleFlag, error) {
 	var paramsPost *common_vo.RolePageReq
@@ -199,14 +206,23 @@ func (svc *RoleService) SelectRoleContactVo(userId int64) ([]common_vo.SysRoleFl
 	return roleAll, nil
 }
 
-// InsertAuthUsers 批量选择用户授权
-func (svc *RoleService) InsertAuthUsers(roleId int64, userIds string) error {
-	idarr := lv_conv.ToInt64Array(userIds, ",")
+func (svc *RoleService) InsertRoleUserIds(roleId int64, userIds []string) error {
 	var roleUserList []model.SysUserRole
-	for _, str := range idarr {
+	for _, userId := range userIds {
 		var tmp model.SysUserRole
-		tmp.UserId = str
 		tmp.RoleId = roleId
+		tmp.UserId = cast.ToInt64(userId)
+		roleUserList = append(roleUserList, tmp)
+	}
+	err := lv_db.GetMasterGorm().CreateInBatches(roleUserList, len(roleUserList)).Error
+	return err
+}
+func (svc *RoleService) InsertUserRoleIds(userId int64, arrRoleIds []string) error {
+	var roleUserList []model.SysUserRole
+	for _, roleId := range arrRoleIds {
+		var tmp model.SysUserRole
+		tmp.UserId = userId
+		tmp.RoleId = cast.ToInt64(roleId)
 		roleUserList = append(roleUserList, tmp)
 	}
 	err := lv_db.GetMasterGorm().CreateInBatches(roleUserList, len(roleUserList)).Error

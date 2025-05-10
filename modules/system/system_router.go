@@ -49,17 +49,23 @@ func init() {
 	system.PUT("/dept", "system:dept:edit", deptApi.EditSave)
 	system.DELETE("/dept/:deptId", "system:dept:remove", deptApi.Remove)
 	// 用户管理路由
-	user := api.UserApi{}
-	system.POST("/user/list", "system:user:list", user.ListAjax)
-	system.POST("/user/add", "system:user:add", user.AddSave)
-	system.POST("/user/remove", "system:user:remove", user.Remove)
-	system.POST("/user/edit", "system:user:edit", user.EditSave)
-	system.POST("/user/export", "system:user:export", user.Export)
-	system.POST("/user/resetPwd", "system:user:resetPwd", user.ResetPwdSave)
-	system.POST("/user/changeStatus", "system:user:edit", user.ChangeStatus)
+	userApi := api.UserApi{}
+	system.GET("/user/:userId", "system:user:list", userApi.GetUserInfo)
+	system.GET("/user/list", "system:user:list", userApi.ListAjax)
+	system.POST("/user", "system:user:add", userApi.AddSave)
+	system.PUT("/user", "system:user:edit", userApi.EditSave)
+	system.DELETE("/user/:userIds", "system:user:remove", userApi.Remove)
+	system.PUT("/user/resetPwd", "system:user:resetPwd", userApi.ResetPwdSave)
+	system.PUT("/user/changeStatus", "system:user:edit", userApi.ChangeStatus)
+	system.PUT("/user/authRole", "system:user:edit", userApi.PutAuthUserRoleIds)
+
+	system.GET("/user/deptTree", "", userApi.GetUserDeptTree)
+	system.POST("/user/importData", "system:user:add", userApi.ImportUserData)
+	system.POST("/user/importTemplate", "system:user:add", userApi.ImportTemplate)
+	system.POST("/user/export", "system:userApi:export", userApi.Export)
 	// 个人中心路由
 	profile := api.ProfileApi{}
-	system.GET("user/profile", "", profile.Profile)
+	system.GET("userApi/profile", "", profile.Profile)
 	system.POST("/profile/update", "", profile.Update)
 	system.POST("/profile/resetSavePwd", "", profile.UpdatePassword)
 	system.POST("/profile/checkPhoneOK", "", profile.CheckPhoneOK)

@@ -98,10 +98,9 @@ func (dao SysPostDao) FindPostsByUserId(userId int64) (*[]model.SysPost, error) 
             select p.post_id, p.post_name, p.post_code,false as selected 
             from sys_post p,sys_user_post up 
             where  p.post_id = up.post_id
-                  and up.user_id = @UserId
+                  and up.user_id = @userId
            `
-	sqlParams := map[string]any{"UserId": 2}
-	//sqlParams := model.SysUserPost{UserId: 2}
+	sqlParams := map[string]any{"userId": userId}
 	result, err := namedsql.ListData[model.SysPost](db, sql, sqlParams)
 	return result, err
 }

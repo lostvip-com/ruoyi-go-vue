@@ -4,8 +4,8 @@ import (
 	"common/global"
 	"errors"
 	"github.com/lostvip-com/lv_framework/lv_cache"
+	"github.com/lostvip-com/lv_framework/lv_log"
 	"github.com/lostvip-com/lv_framework/utils/lv_secret"
-	"strings"
 	"system/model"
 	"time"
 )
@@ -35,13 +35,10 @@ func (svc *SessionService) SignIn(loginnName, password string) (*model.SysUser, 
 	if err != nil {
 		return nil, err
 	}
-
+	pwd, _ := lv_secret.PasswordHash(password)
+	lv_log.Error("------------" + pwd)
 	//校验密码
-	pwdNew := user.UserName + password + user.Salt
-
-	pwdNew = lv_secret.MustEncryptString(pwdNew)
-
-	if strings.Compare(user.Password, pwdNew) == -1 {
+	if lv_secret.PasswordVerify(password, user.Password) {
 		return nil, errors.New("密码错误")
 	}
 	return &user, nil

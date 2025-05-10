@@ -17,19 +17,18 @@ type SysUser struct {
 	UserId      int64      `gorm:"size:20;primary_key;auto_increment;用户ID;"     json:"userId"  form:"userId"`
 	DeptId      int64      `gorm:"size:20;comment:部门ID;" json:"deptId" form:"deptId"`
 	UserName    string     `gorm:"size:32;comment:登录账号;" json:"UserName" form:"UserName"`
-	NickName    string     `gorm:"size:32;comment:用户昵称;" json:"userName" form:"userName"`
+	NickName    string     `gorm:"size:32;comment:用户昵称;" json:"nickName" form:"nickName"`
 	UserType    string     `gorm:"size:2;comment:用户类型（00系统用户）;" json:"userType" form:"userType"`
 	Email       string     `gorm:"size:50;comment:用户邮箱;" json:"email" form:"email"`
 	Phonenumber string     `gorm:"size:11;comment:手机号码;" json:"phonenumber" form:"phonenumber"`
 	Sex         string     `gorm:"size:1;comment:用户性别（0男 1女 2未知）;" json:"sex" form:"sex"`
 	Avatar      string     `gorm:"size:100;comment:头像路径;" json:"avatar" form:"avatar"`
 	Password    string     `gorm:"size:50;comment:密码;" json:"password" form:"password"`
-	Salt        string     `gorm:"size:20;comment:盐加密;" json:"salt" form:"salt"`
 	Status      string     `gorm:"size:char(1;comment:帐号状态（0正常 1停用）;" json:"status" form:"status"`
 	LoginIp     string     `gorm:"size:50;comment:最后登陆IP;" json:"loginIp" form:"loginIp"`
 	LoginDate   *time.Time `gorm:"size:datetime;comment:最后登陆时间;autoCreateTime" json:"loginDate" form:"loginDate" time_format:"2006-01-02 15:04:05"`
-	UpdateBy    string     `gorm:"size:64;comment:更新者;" json:"updateBy" form:"updateBy"`
-	Remark      string     `gorm:"size:500;comment:备注;" json:"remark"   form:"remark"`
+	UpdateBy    string     `gorm:"size:32;comment:更新者;" json:"updateBy" form:"updateBy"`
+	Remark      string     `gorm:"size:256;comment:备注;" json:"remark"   form:"remark"`
 	CreateBy    string     `gorm:"size:32;comment:创建人;column:create_by;"  json:"createBy"`
 	DelFlag     string     `gorm:"type:string;size:1;default:0;comment:删除标记;column:del_flag;" json:"delFlag"`
 	models.BaseModel
@@ -55,10 +54,10 @@ func (e *SysUser) GetById() error {
 }
 
 // 查
-func (e *SysUser) FindById() error {
+func (e *SysUser) FindById(uerId int64) (*SysUser, error) {
 	tb := lv_db.GetMasterGorm()
-	err := tb.Take(e, e.UserId).Error
-	return err
+	err := tb.Take(e, uerId).Error
+	return e, err
 }
 
 // 查

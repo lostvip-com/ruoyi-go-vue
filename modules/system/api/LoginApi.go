@@ -59,9 +59,9 @@ func (w *LoginApi) Login(c *gin.Context) {
 		util2.ErrorResp(c).SetMsg("账号已锁定，请30分钟后再试").WriteJsonExit()
 		return
 	}
-	var userService service.UserService
+	var userService = service.GetUserService()
 	//验证账号密码
-	user, err := userService.SignIn(req.UserName, req.Password)
+	user, err := service.GetSessionServiceInstance().SignIn(req.UserName, req.Password)
 	if err != nil {
 		logininforService.SetPasswordCounts(clientIp)
 		errTimes4UserName := logininforService.SetPasswordCounts(req.UserName)

@@ -1,5 +1,10 @@
 package service
 
+import (
+	"github.com/lostvip-com/lv_framework/lv_db"
+	"gorm.io/gorm"
+)
+
 type BaseService struct{}
 
 var baseService *BaseService
@@ -17,4 +22,8 @@ func (svc *BaseService) IsAdmin(userId int64) bool {
 	} else {
 		return false
 	}
+}
+
+func (svc *BaseService) GetDb() *gorm.DB {
+	return lv_db.GetMasterGorm()
 }

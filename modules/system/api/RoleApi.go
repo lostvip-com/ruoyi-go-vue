@@ -9,6 +9,7 @@ import (
 	"github.com/lostvip-com/lv_framework/web/lv_dto"
 	"github.com/spf13/cast"
 	"net/http"
+	"strings"
 	"system/dao"
 	"system/model"
 	"system/service"
@@ -193,7 +194,7 @@ func (w *RoleApi) AuthRoleToUsers(c *gin.Context) {
 		return
 	}
 	roleService := service.RoleService{}
-	err := roleService.InsertAuthUsers(roleId, userIds)
+	err := roleService.InsertRoleUserIds(roleId, strings.Split(userIds, ","))
 	if err != nil {
 		util.Fail(c, err.Error())
 		return

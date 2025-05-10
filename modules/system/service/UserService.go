@@ -3,7 +3,7 @@ package service
 import (
 	"common/common_vo"
 	"errors"
-	"fmt"
+
 	"github.com/gin-gonic/gin"
 	"github.com/lostvip-com/lv_framework/lv_cache"
 	"github.com/lostvip-com/lv_framework/lv_db"
@@ -75,10 +75,7 @@ func (svc UserService) AddSave(req *common_vo.AddUserReq, c *gin.Context) (int64
 	u.LoginDate = &t
 	//生成密码
 	newSalt := lv_gen.GenerateSubId(6)
-	newToken := req.UserName + req.Password + newSalt
-	newToken = lv_secret.MustEncryptString(newToken)
-	u.Salt = newSalt
-	u.Password = newToken
+	u.Password, _ = lv_secret.PasswordHash(newSalt)
 	u.CreateTime = time.Now()
 	createUser := svc.GetProfile(c)
 
@@ -242,50 +239,6 @@ func (svc UserService) IsAdmin(userId int64) bool {
 	}
 }
 
-func (svc UserService) IsSignedIn(tokenStr string) bool {
-	key := "login:" + tokenStr
-	yes, err := lv_cache.GetCacheClient().Exists(key)
-	fmt.Println("===============" + string(yes))
-	return err == nil && yes > 0
-}
-
-// 用户登录，成功返回用户信息，否则返回nil; passport应当会md5值字符串
-func (svc UserService) SignIn(loginnName, password string) (*model.SysUser, error) {
-	//查询用户信息
-	user := model.SysUser{UserName: loginnName}
-	err := user.FindOne()
-
-	if err != nil {
-		return nil, err
-	}
-	//校验密码
-	pwdNew := user.UserName + password + user.Salt
-
-	pwdNew = lv_secret.MustEncryptString(pwdNew)
-
-	if strings.Compare(user.Password, pwdNew) == -1 {
-		return nil, errors.New("密码错误")
-	}
-	return &user, nil
-}
-
-// 清空用户菜单缓存
-
-// 用户注销
-func (svc UserService) SignOut(c *gin.Context) error {
-	//user := svc.GetProfile(c)
-	tokenStr := lv_net.GetParam(c, "token")
-	lv_cache.GetCacheClient().Del("login:" + tokenStr)
-	//userId := c.MustGet("userId").(int64)
-	return nil
-}
-
-// 强退用户
-func (svc UserService) ForceLogout(c *gin.Context) error {
-	svc.SignOut(c)
-	return nil
-}
-
 // 检查账号是否符合规范,存在返回false,否则true
 func (svc UserService) CheckPassport(UserName string) bool {
 	entity := model.SysUser{UserName: UserName}
@@ -384,20 +337,15 @@ func (svc UserService) UpdatePassword(profile *common_vo.PasswordReq, c *gin.Con
 	}
 
 	//校验密码
-	token := user.UserName + profile.OldPassword + user.Salt
-	token = lv_secret.MustEncryptString(token)
-
-	if token != user.Password {
+	oldPwd, _ := lv_secret.PasswordHash(profile.OldPassword)
+	if oldPwd != user.Password {
 		return errors.New("原密码不正确")
 	}
 
 	//新校验密码
-	newSalt := lv_gen.GenerateSubId(6)
-	newToken := user.UserName + profile.NewPassword + newSalt
-	newToken = lv_secret.MustEncryptString(newToken)
-
-	user.Salt = newSalt
-	user.Password = newToken
+	newPwd := lv_gen.GenerateSubId(6)
+	newPwd, _ = lv_secret.PasswordHash(newPwd)
+	user.Password = newPwd
 
 	err := user.Updates()
 	if err != nil {
@@ -408,35 +356,27 @@ func (svc UserService) UpdatePassword(profile *common_vo.PasswordReq, c *gin.Con
 	return nil
 }
 
-// 重置用户密码
-func (svc UserService) ResetPassword(params *common_vo.ResetPwdReq) (bool, error) {
+func (svc UserService) ResetPassword(params *common_vo.ResetPwdReq) error {
 	user := model.SysUser{UserId: params.UserId}
 	if err := user.FindOne(); err != nil {
-		return false, errors.New("用户不存在")
+		return errors.New("用户不存在")
 	}
 	//新校验密码
-	newSalt := lv_gen.GenerateSubId(6)
-	newToken := user.UserName + params.Password + newSalt
-	newToken = lv_secret.MustEncryptString(newToken)
-
-	user.Salt = newSalt
-	user.Password = newToken
-	if err := user.Updates(); err != nil {
-		return false, errors.New("保存数据失败")
-	}
-	return true, nil
+	newPwd := lv_gen.GenerateSubId(6)
+	newPwd, _ = lv_secret.PasswordHash(newPwd)
+	user.Password = newPwd
+	err := user.Updates()
+	return err
 }
 
-// 校验密码是否正确
 func (svc UserService) CheckPassword(user *model.SysUser, password string) bool {
 	if user == nil || user.UserId <= 0 {
 		return false
 	}
 	//校验密码
-	token := user.UserName + password + user.Salt
-	token = lv_secret.MustEncryptString(token)
+	pwd, _ := lv_secret.PasswordHash(password)
 
-	if strings.Compare(token, user.Password) == 0 {
+	if strings.Compare(pwd, user.Password) == 0 {
 		return true
 	} else {
 		return false

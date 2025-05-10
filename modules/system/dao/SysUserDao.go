@@ -39,7 +39,7 @@ func (d SysUserDao) FindPage(param *common_vo.SelectUserPageReq) (*[]map[string]
 func (d SysUserDao) GetSql(param *common_vo.SelectUserPageReq) (map[string]interface{}, string) {
 	sqlParams := make(map[string]interface{})
 	sql := `
-            select u.user_id, u.dept_id, u.user_name, u.user_name, u.email, u.avatar, u.phonenumber, u.password,u.sex, u.salt, u.status, u.del_flag, 
+            select u.user_id, u.dept_id, u.user_name, u.nick_name, u.email, u.avatar, u.phonenumber, u.password,u.sex, u.status, u.del_flag, 
             u.login_ip, u.login_date, u.create_by, u.create_time, u.remark,d.dept_name, d.leader
             from sys_user u left join sys_dept d on  u.dept_id = d.dept_id where u.del_flag =0 
            `
@@ -97,7 +97,7 @@ func (d SysUserDao) SelectAllocatedList(roleId int64, UserName, phonenumber stri
 	db := lv_db.GetMasterGorm()
 	sqlParams := make(map[string]interface{})
 	sql := `
-            select distinct u.user_id, u.dept_id, u.user_name, u.user_name, u.email, u.avatar, u.phonenumber,u.status, u.create_time
+            select distinct u.user_id, u.dept_id, u.user_name, u.nick_name, u.email, u.avatar, u.phonenumber,u.status, u.create_time
             from sys_user u 
             left join sys_dept d on  u.dept_id = d.dept_id 
             left join sys_user_role ur on  u.user_id = ur.user_id
@@ -123,7 +123,7 @@ func (d SysUserDao) SelectUnallocatedList(roleId int64, UserName, phonenumber st
 	db := lv_db.GetMasterGorm()
 	sqlParams := make(map[string]interface{})
 	sql := `
-            select distinct u.user_id, u.dept_id, u.user_name, u.user_name, u.email, u.avatar, u.phonenumber,u.status, u.create_time
+            select distinct u.user_id, u.dept_id, u.user_name, u.nick_name, u.email, u.avatar, u.phonenumber,u.status, u.create_time
             from sys_user u 
             where u.del_flag =0  `
 	sql += " and u.user_id not in (select u.user_id from sys_user u inner join sys_user_role ur on u.user_id = ur.user_id and ur.role_id = " + cast.ToString(roleId) + ") "
