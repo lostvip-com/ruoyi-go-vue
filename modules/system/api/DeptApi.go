@@ -19,7 +19,7 @@ func (w *DeptApi) ExcludeDept(c *gin.Context) {
 	deptId := c.Param("deptId")
 	svc := service.GetDeptServiceInstance()
 	dept, err := svc.FindById(cast.ToInt64(deptId))
-	listPtr, err := svc.SelectListAll(nil)
+	listPtr, err := svc.SelectListAll(&common_vo.DeptPageReq{})
 	if err != nil {
 		util.Fail(c, err.Error())
 	} else {
@@ -82,7 +82,7 @@ func (w *DeptApi) EditSave(c *gin.Context) {
 
 // 删除数据
 func (w *DeptApi) Remove(c *gin.Context) {
-	id := lv_conv.Int64(c.Param("id"))
+	id := lv_conv.Int64(c.Param("deptId"))
 	err := service.GetDeptServiceInstance().DeleteDeptById(id)
 	if err != nil {
 		util.Fail(c, err.Error())
