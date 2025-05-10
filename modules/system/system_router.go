@@ -42,7 +42,7 @@ func init() {
 	system.POST("/dict/data/export", "system:dict:export", dictData.Export)
 	//dept
 	deptApi := api.DeptApi{}
-	system.GET("/dept/:deptId", "system:dept:list", deptApi.ListAjax)
+	system.GET("/dept/:deptId", "system:dept:list", deptApi.GetDept)
 	system.GET("/dept/list", "system:dept:list", deptApi.ListAjax)
 	system.GET("dept/list/exclude/:deptId", "system:dept:list", deptApi.ExcludeDept)
 	system.POST("/dept", "system:dept:add", deptApi.AddSave)
