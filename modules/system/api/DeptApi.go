@@ -93,7 +93,7 @@ func (w *DeptApi) Remove(c *gin.Context) {
 
 // 删除数据
 func (w *DeptApi) GetDept(c *gin.Context) {
-	id := lv_conv.Int64(c.Param("id"))
+	id := lv_conv.Int64(c.Param("deptId"))
 	service := service.GetDeptServiceInstance()
 	dept, err := service.FindById(id)
 	if err != nil {
