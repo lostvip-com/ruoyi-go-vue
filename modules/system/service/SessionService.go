@@ -26,7 +26,6 @@ func (svc *SessionService) IsSignedIn(uuid string) bool {
 	return err == nil && num > 0
 }
 
-// 用户登录，成功返回用户信息，否则返回nil; passport应当会md5值字符串
 func (svc *SessionService) SignIn(loginnName, password string) (*model.SysUser, error) {
 	//查询用户信息
 	user := model.SysUser{UserName: loginnName}
@@ -44,12 +43,10 @@ func (svc *SessionService) SignIn(loginnName, password string) (*model.SysUser, 
 	return &user, nil
 }
 
-// SignOut 用户注销
 func (svc *SessionService) SignOut(tokenStr string) error {
 	return lv_cache.GetCacheClient().Del(global.LOGIN_TOKEN_KEY + tokenStr)
 }
 
-// ForceLogout 强退用户
 func (svc *SessionService) ForceLogout(token string) error {
 	return svc.SignOut(token)
 }
