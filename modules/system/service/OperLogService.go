@@ -6,7 +6,6 @@ import (
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/lostvip-com/lv_framework/lv_db"
-	"github.com/lostvip-com/lv_framework/utils/lv_conv"
 	"github.com/lostvip-com/lv_framework/web/lv_dto"
 	"system/model"
 	"system/vo"
@@ -122,14 +121,6 @@ func (svc OperLogService) DeleteRecordById(id int64) bool {
 	return false
 }
 
-// DeleteRecordByIds 批量删除记录
-func (svc OperLogService) DeleteRecordByIds(ids string) error {
-	idarr := lv_conv.ToInt64Array(ids, ",")
-	err := lv_db.GetMasterGorm().Delete(&model.SysOperLog{}, "oper_id in (?)", idarr).Error
-	return err
-}
-
-// 清空记录
 func (svc OperLogService) DeleteRecordAll() error {
 	err := lv_db.GetMasterGorm().Exec("truncate table sys_oper_log").Error
 	return err
