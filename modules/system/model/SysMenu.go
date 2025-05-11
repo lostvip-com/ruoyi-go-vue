@@ -1,31 +1,31 @@
 package model
 
 import (
+	"common/models"
 	"github.com/lostvip-com/lv_framework/lv_db"
-	"time"
 )
 
 type SysMenu struct {
-	MenuId     int64     `json:"menuId" gorm:"column:menu_id;primaryKey"` //表示主键
-	MenuName   string    `json:"menuName" gorm:"menu_name"`
-	ParentId   int64     `json:"parentId" gorm:"parent_id"`
-	OrderNum   int64     `json:"orderNum" gorm:"order_num"`
-	MenuType   string    `json:"menuType" gorm:"menu_type"`
-	Visible    string    `json:"visible" gorm:"visible"`
-	Perms      string    `json:"perms" gorm:"perms"`
-	Query      string    `json:"query" gorm:"query"`
-	IsFrame    string    `json:"isFrame" gorm:"is_frame"`
-	Icon       string    `json:"icon" gorm:"icon"`
-	Path       string    `json:"path" gorm:"path"`
-	Status     string    `json:"status" gorm:"status"`
-	IsCache    string    `json:"isCache" gorm:"is_cache"`
-	Component  string    `json:"component" gorm:"component"`
-	CreateBy   string    `json:"createBy" gorm:"create_by"`
-	CreateTime time.Time `json:"createTime" gorm:"column:create_time;type:datetime;autoCreateTime"`
-	UpdateBy   string    `json:"updateBy" gorm:"update_by"`
-	UpdateTime time.Time `json:"updateTime" gorm:"column:update_time;type:datetime;autoCreateTime"`
-	Remark     string    `json:"remark" gorm:"remark"` // 备注
-	DelFlag    string    `json:"delFlag" gorm:"del_flag"`
+	MenuId   int64  `json:"menuId" gorm:"column:menu_id;primaryKey"`
+	MenuName string `json:"menuName" gorm:"menu_name"`
+	ParentId int64  `json:"parentId" gorm:"parent_id"`
+	OrderNum int64  `json:"orderNum" gorm:"order_num"`
+	Path     string `json:"path" gorm:"path"`
+
+	Component string `json:"component" gorm:"component"`
+	Query     string `json:"query" gorm:"query"`
+	RouteName string `json:"query" gorm:"route_name"`
+	IsFrame   string `json:"isFrame" gorm:"is_frame"`
+	IsCache   string `json:"isCache" gorm:"is_cache"`
+
+	MenuType string `json:"menuType" gorm:"menu_type"`
+	Visible  string `json:"visible" gorm:"visible"`
+	Status   string `json:"status" gorm:"status"`
+	Perms    string `json:"perms" gorm:"perms"`
+	Icon     string `json:"icon" gorm:"icon"`
+
+	Remark string `json:"remark" gorm:"remark"` // 备注
+	models.BaseModel
 	//
 	Children   []SysMenu `gorm:"-" json:"children"`
 	ParentName string    `gorm:"-" json:"parentName"`

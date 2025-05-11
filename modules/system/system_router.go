@@ -15,6 +15,7 @@ func init() {
 	//系统配置
 	system := router.New("/system", auth2.TokenCheck(), auth2.PermitCheck)
 	config := api.ConfigApi{}
+	system.GET("/config/:configId", "system:config:list", config.GetConfigInfo)
 	system.GET("/config/list", "system:config:list", config.ListAjax)
 	system.GET("/config/configKey/:configKey", "", config.GetConfigKey)
 	system.POST("/config", "system:config:add", config.AddSave)

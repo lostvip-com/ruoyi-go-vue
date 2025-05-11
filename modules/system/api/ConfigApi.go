@@ -5,59 +5,81 @@ import (
 	"common/util"
 	"github.com/gin-gonic/gin"
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
+	"github.com/spf13/cast"
 	dao2 "system/dao"
+	"system/model"
 	"system/service"
 )
 
 type ConfigApi struct {
+	BaseApi
 }
 
-// 修改页面保存
+func (w *ConfigApi) GetConfigInfo(c *gin.Context) {
+	configId := c.Param("configId")
+	var configService = service.GetConfigServiceInstance()
+	value, err := configService.FindConfigById(cast.ToInt64(configId))
+	if err != nil {
+		util.Fail(c, err.Error())
+		return
+	}
+	util.Success(c, value)
+}
+
 func (w *ConfigApi) GetConfigKey(c *gin.Context) {
 	configKey := c.Param("configKey")
-	//获取参数
 	var configService = service.GetConfigServiceInstance()
 	value := configService.GetValueFromCache(configKey)
 	util.Success(c, value)
 }
 
-// 列表分页数据
 func (w *ConfigApi) ListAjax(c *gin.Context) {
 	req := new(common_vo.SelectConfigPageReq)
 	var configService service.ConfigService
-	//获取参数
 	if err := c.ShouldBind(req); err != nil {
-		util.ErrorResp(c).SetMsg(err.Error()).Log("参数管理", req).WriteJsonExit()
+		util.Fail(c, err.Error())
 		return
 	}
-	result, total, err := configService.FindPage(req)
+	rows, total, err := configService.FindPage(req)
 	lv_err.HasErrAndPanic(err)
-	util.BuildTable(c, total, result).WriteJsonExit()
+	if err != nil {
+		util.Fail(c, err.Error())
+		return
+	}
+	util.SuccessPage(c, rows, total)
+
 }
 
-// 新增页面保存
 func (w *ConfigApi) AddSave(c *gin.Context) {
-	req := new(common_vo.AddConfigReq)
+	entity := new(model.SysConfig)
 	//获取参数
-	err := c.ShouldBind(req)
+	err := c.ShouldBind(entity)
 	lv_err.HasErrAndPanic(err)
 	var config dao2.ConfigDao
-	count, err := config.Count(req.ConfigKey)
-	lv_err.HasErrAndPanic(err)
+	count, err := config.Count(entity.ConfigKey)
+	if err != nil {
+		util.Fail(c, err.Error())
+		return
+	}
 	if count > 0 {
 		util.Fail(c, "此编号已经存在！请更换编号")
-	} else {
-		util.Success(c, "")
+		return
 	}
+	entity.CreateBy = w.GetCurrUser(c).UserName
+	err = entity.Save()
+	if err != nil {
+		util.Fail(c, err.Error())
+		return
+	}
+	util.Success(c, "")
 }
 
-// 修改页面保存
 func (w *ConfigApi) EditSave(c *gin.Context) {
 	req := new(common_vo.EditConfigReq)
 	//获取参数
 	err := c.ShouldBind(req)
 	lv_err.HasErrAndPanic(err)
-	var configService service.ConfigService
+	var configService = service.GetConfigServiceInstance()
 	configService.EditSave(req, c)
 	util.Success(c, "")
 }

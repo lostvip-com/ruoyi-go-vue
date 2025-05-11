@@ -59,21 +59,20 @@ func (svc *ConfigService) GetValueFromRam(key string) string {
 	return result
 }
 
-// 根据主键查询数据
-func (svc *ConfigService) SelectRecordById(id int64) (*model.SysConfig, error) {
+// FindConfigById 根据主键查询数据
+func (svc *ConfigService) FindConfigById(id int64) (*model.SysConfig, error) {
 	entity := &model.SysConfig{ConfigId: id}
 	err := entity.FindOne()
 	return entity, err
 }
 
-// 根据主键删除数据
-func (svc *ConfigService) DeleteRecordById(id int64) bool {
+// DeleteConfigById 根据主键删除数据
+func (svc *ConfigService) DeleteConfigById(id int64) bool {
 	entity := &model.SysConfig{ConfigId: id}
 	err := entity.FindOne()
 	lv_err.HasErrAndPanic(err)
 	err = entity.Delete()
 	if err == nil {
-		//从缓存删除
 		lv_cache.GetCacheClient().Del(entity.ConfigKey)
 		return true
 	}
@@ -91,27 +90,6 @@ func (svc *ConfigService) DeleteRecordByIds(ids string) {
 		//从缓存删除
 		lv_cache.GetCacheClient().Del(cfg.ConfigKey)
 	}
-}
-
-// 添加数据
-func (svc *ConfigService) AddSave(req *common_vo.AddConfigReq, c *gin.Context) (int64, error) {
-	var entity model.SysConfig
-	entity.ConfigName = req.ConfigName
-	entity.ConfigKey = req.ConfigKey
-	entity.ConfigType = req.ConfigType
-	entity.ConfigValue = req.ConfigValue
-	entity.Remark = req.Remark
-	entity.CreateTime = time.Now()
-	entity.CreateBy = ""
-	var userService UserService
-	user := userService.GetProfile(c)
-
-	if user != nil {
-		entity.CreateBy = user.UserName
-	}
-
-	err := entity.Save()
-	return entity.ConfigId, err
 }
 
 // 修改数据
