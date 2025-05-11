@@ -131,6 +131,6 @@ func (svc OperLogService) DeleteRecordByIds(ids string) error {
 
 // 清空记录
 func (svc OperLogService) DeleteRecordAll() error {
-	err := lv_db.GetMasterGorm().Exec("delete from sys_oper_log").Error
+	err := lv_db.GetMasterGorm().Exec("truncate table sys_oper_log").Error
 	return err
 }

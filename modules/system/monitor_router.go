@@ -26,9 +26,10 @@ func init() {
 	//操作日志
 	g3 := router.New("/monitor/operlog", auth2.TokenCheck(), auth2.PermitCheck)
 	operController := api.OperateLogApi{}
-	g3.POST("/list", "monitor:operlog:list", operController.ListAjax)
-	g3.POST("/remove", "monitor:operlog:export", operController.Remove)
-	g3.POST("/clean", "monitor:operlog:export", operController.Clean)
+	g3.GET("/list", "monitor:operlog:list", operController.ListAjax)
+	g3.DELETE("/remove", "monitor:operlog:remove", operController.Remove)
+	g3.DELETE("/:operId", "monitor:operlog:Remove", operController.DelectOperlog)
+	g3.DELETE("/clean", "monitor:operlog:export", operController.Clean)
 
 	//在线用户
 	g4 := router.New("/monitor/online", auth2.TokenCheck(), auth2.PermitCheck)

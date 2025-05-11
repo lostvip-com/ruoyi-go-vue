@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
 	"github.com/lostvip-com/lv_framework/web/lv_dto"
+	"github.com/spf13/cast"
 	"system/service"
 	"system/vo"
 )
@@ -40,8 +41,12 @@ func (w *OperateLogApi) Remove(c *gin.Context) {
 		util.Fail(c, err.Error())
 		return
 	}
-	var operlogService service.OperLogService
-	err := operlogService.DeleteRecordByIds(req.Ids)
+	err := service.GetOperLogServiceInstance().DeleteRecordByIds(req.Ids)
 	lv_err.HasErrAndPanic(err)
 	util.Success(c, nil)
+}
+
+func (w *OperateLogApi) DelectOperlog(context *gin.Context) {
+	var operId = context.Param("operId")
+	service.GetOperLogServiceInstance().DeleteRecordById(cast.ToInt64(operId))
 }
