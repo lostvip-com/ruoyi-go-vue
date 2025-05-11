@@ -8,10 +8,12 @@
 ## 框架简介
 摒弃过度封装，代码风格极尽简洁，适合中小项目使用！<br>
 架构思路沿袭着若依的以辅助生成重复代码为主，不过度封装，生成的代码可以快速修改适应不同的需求。
-* 项目结构模仿springboot，简单改造后可注册到nacos中做为springcloud微服务的一员，对java开发人员友好。
-* 支持类mybatis查询，sql与go代码分离（基于gorm + golang的template语法实现,为了idea能识别sql关键字，后缀使用_mapper.sql）。
+* 项目结构模仿springboot，简单改造后可注册到nacos中做为springcloud微服务的一员。
+* 简化项目架构，不使用任何IOC注入框架;远程调用默认使用http协议restful风格接口。
+* 优化内存控制，通过单例模式、指针引用等优化方式减少对象创建，降低内存消耗，减少GC次数，提高性能。
+* 支持sql与go代码分离方便调试，支持类mybatis查询（基于gorm + golang的template语法实现,为了idea能识别sql关键字，后缀使用_mapper.sql）。
 * 提供相关服务配置脚本，可发布到 k8s、docker swarm中做为微服务使用。
-* 支持在yaml文件中使用表达式从环境变量中取值，便于切换生产、开发、测试环境参数（模仿springboot）,如：
+* 配置文件增强，支持在yaml文件中使用表达式从环境变量中取值，便于切换生产、开发、测试环境参数（模仿springboot）,如：
 ~~~
     host: ${REDIS_HOST:lostvip.com}
     如: 环境变量添加 REDIS_HOST=192.168.88.114;REDIS_PORT=6379;REDIS_PWD=dpctest
