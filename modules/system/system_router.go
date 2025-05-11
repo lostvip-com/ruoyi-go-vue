@@ -58,7 +58,7 @@ func init() {
 	system.PUT("/user/resetPwd", "system:user:resetPwd", userApi.ResetPwdSave)
 	system.PUT("/user/changeStatus", "system:user:edit", userApi.ChangeStatus)
 	system.PUT("/user/authRole", "system:user:edit", userApi.PutAuthUserRoleIds)
-
+	system.GET("/user/authRole/:userId", "", userApi.GetAuthUserRole)
 	system.GET("/user/deptTree", "", userApi.GetUserDeptTree)
 	system.POST("/user/importData", "system:user:add", userApi.ImportUserData)
 	system.POST("/user/importTemplate", "system:user:add", userApi.ImportTemplate)

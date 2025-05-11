@@ -332,3 +332,93 @@ func (svc *RoleService) GetDeptTreeRole(roleId int64) []int64 {
 	lv_err.HasErrAndPanic(err)
 	return count
 }
+
+func (svc *RoleService) FindRolePermissionsById(userId int64) []model.SysRole {
+	var roles []model.SysRole
+	var sql = "select distinct r.* " +
+		"from sys_role r " +
+		"left join sys_user_role ur on ur.role_id = r.role_id " +
+		"left join sys_user u on u.user_id = ur.user_id " +
+		"left join sys_dept d on u.dept_id = d.dept_id " +
+		"where r.del_flag = '0'"
+	if !svc.IsAdmin(userId) {
+		sql += " and ur.user_id = " + cast.ToString(userId)
+	}
+	err := lv_db.GetMasterGorm().Raw(sql).Scan(&roles).Error
+	lv_err.HasErrAndPanic(err)
+	return roles
+}
+
+func (svc *RoleService) buildRolePermissionByUserId(roles []model.SysRole) []string {
+
+	var roleNames []string
+	for i := 0; i < len(roles); i++ {
+		var role = roles[i]
+		var roleName = role.RoleName
+		roleNames = append(roleNames, roleName)
+	}
+	return roleNames
+}
+
+func (svc *RoleService) GetRolePermission(user model.SysUser) []string {
+	return svc.GetRolePermissionById(user.UserId)
+}
+
+func (svc *RoleService) GetRolePermissionById(userId int64) []string {
+	if svc.IsAdmin(userId) {
+		return []string{"admin"}
+	} else {
+		var roles = svc.FindRolePermissionsById(userId)
+		return svc.buildRolePermissionByUserId(roles)
+	}
+}
+
+func (svc *RoleService) GetMenuPermission(user *model.SysUser) []string {
+	if svc.IsAdmin(user.UserId) {
+		return []string{"*:*:*"}
+	} else {
+		var permissions []string
+		err := lv_db.GetMasterGorm().Raw("select distinct m.perms "+
+			"from sys_menu m "+
+			"left join sys_role_menu rm on m.menu_id = rm.menu_id "+
+			"left join sys_user_role ur on rm.role_id = ur.role_id "+
+			"left join sys_role r on r.role_id = ur.role_id "+
+			"where m.status = '0' and r.status = '0' and ur.user_id = ?", user.UserId).
+			Scan(&permissions).Error
+		lv_err.HasErrAndPanic(err)
+		return svc.RemoveEmpty(permissions)
+	}
+}
+
+func (svc *RoleService) RemoveEmpty(arr []string) (result []string) {
+	for _, value := range arr {
+		if len(value) > 0 { // 判断字符串长度大于零则添加到结果数组中
+			result = append(result, value)
+		}
+	}
+	return
+}
+
+func (svc *RoleService) SelectRolesByUserName(userName string) string {
+	var roles []model.SysRole
+	var result = ""
+	err := svc.GetDb().Raw("select distinct r.* "+
+		"from sys_role r "+
+		"left join sys_user_role ur on ur.role_id = r.role_id "+
+		"left join sys_user u on u.user_id = ur.user_id "+
+		"left join sys_dept d on u.dept_id = d.dept_id "+
+		"WHERE r.del_flag = '0' and u.user_name = ?", userName).
+		Scan(&roles).Error
+	lv_err.HasErrAndPanic(err)
+	if roles != nil {
+		for i := range roles {
+			sysRoles := roles[i]
+			if i == 0 {
+				result = sysRoles.RoleName
+			} else {
+				result += "," + sysRoles.RoleName
+			}
+		}
+	}
+	return result
+}

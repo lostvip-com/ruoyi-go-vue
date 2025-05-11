@@ -184,6 +184,21 @@ func (w *UserApi) PutAuthUserRoleIds(c *gin.Context) {
 	util.Success(c, nil)
 }
 
+func (w *UserApi) GetAuthUserRole(c *gin.Context) {
+	userIdStr := c.Param("userId")
+	userId := cast.ToInt64(userIdStr)
+	// 登录者的权限
+	roleSvc := service2.GetRoleServiceInstance()
+	var roles []model.SysRole
+	roles = roleSvc.FindRolePermissionsById(userId)
+	user := w.GetCurrUser(c)
+	c.JSON(http.StatusOK, gin.H{
+		"msg":   "操作成功",
+		"code":  http.StatusOK,
+		"user":  user,
+		"roles": roles,
+	})
+}
 func (w *UserApi) GetUserDeptTree(c *gin.Context) {
 	var deptSvc = service2.GetDeptServiceInstance()
 	list := deptSvc.SelectDeptTreeList()
