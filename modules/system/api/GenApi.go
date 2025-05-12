@@ -301,20 +301,3 @@ func (w *GenApi) ImportTableSave(c *gin.Context) {
 	tableService.ImportGenTable(&tableList, operName)
 	util2.SucessResp(c).WriteJsonExit()
 }
-func (w *GenApi) ColumnList(c *gin.Context) {
-	tableId := lv_conv.Int64(c.Query("tableId"))
-	rows := make([]model.GenTableColumn, 0)
-	tableService := service.TableColumnService{}
-	result, err := tableService.SelectGenTableColumnListByTableId(tableId)
-
-	if err == nil && len(result) > 0 {
-		rows = result
-	}
-
-	c.JSON(http.StatusOK, lv_dto.TableDataInfo{
-		Code:  200,
-		Msg:   "操作成功",
-		Total: len(rows),
-		Rows:  rows,
-	})
-}
