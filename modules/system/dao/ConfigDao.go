@@ -94,7 +94,7 @@ func (d ConfigDao) GetSql(param *common_vo.SelectConfigPageReq) (map[string]inte
 //		}
 //
 //		if param.BeginTime != "" {
-//			tb.Where("date_format(t.create_time,'%y%m%d') >= date_format(?,'%y%m%d') ", param.BeginTime)
+//			tb.Where("t.create_time >= ? ", param.BeginTime)
 //		}
 //
 //		if param.EndTime != "" {
@@ -129,9 +129,8 @@ func (d ConfigDao) SelectExportList(param *common_vo.SelectConfigPageReq) (*[]ma
 }
 
 // 获取所有数据
-func (dao *ConfigDao) FindAll(param *common_vo.SelectConfigPageReq) ([]model.SysConfig, error) {
+func (d *ConfigDao) FindAll(param *common_vo.SelectConfigPageReq) ([]model.SysConfig, error) {
 	db := lv_db.GetMasterGorm()
-
 	tb := db.Table("sys_config t")
 
 	if param != nil {
@@ -148,11 +147,11 @@ func (dao *ConfigDao) FindAll(param *common_vo.SelectConfigPageReq) ([]model.Sys
 		}
 
 		if param.BeginTime != "" {
-			tb.Where("date_format(t.create_time,'%y%m%d') >= date_format(?,'%y%m%d') ", param.BeginTime)
+			tb.Where("t.create_time >= ? ", param.BeginTime)
 		}
 
 		if param.EndTime != "" {
-			tb.Where("date_format(t.create_time,'%y%m%d') <= date_format(?,'%y%m%d') ", param.EndTime)
+			tb.Where("t.create_time <= ? ", param.EndTime)
 		}
 	}
 	var result []model.SysConfig

@@ -49,7 +49,7 @@ func (w *RoleApi) ListAjax(c *gin.Context) {
 	}
 	rows := make([]model.SysRole, 0)
 	roleService := service.RoleService{}
-	result, total, err := roleService.SelectRecordPage(req)
+	result, total, err := roleService.FindPage(req)
 
 	if err == nil && len(result) > 0 {
 		rows = result

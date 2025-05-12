@@ -115,7 +115,7 @@ func (dao *DictTypeDao) FindAll(param *common_vo.DictTypePageReq) ([]model.SysDi
 		}
 
 		if param.BeginTime != "" {
-			tb.Where("date_format(t.create_time,'%y%m%d') >= date_format(?,'%y%m%d') ", param.BeginTime)
+			tb.Where("t.create_time >= ? ", param.BeginTime)
 		}
 
 		if param.EndTime != "" {

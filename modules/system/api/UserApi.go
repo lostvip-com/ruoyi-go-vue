@@ -75,7 +75,7 @@ func (w *UserApi) ListAjax(c *gin.Context) {
 		return
 	}
 	var userService = service2.GetUserService()
-	result, total, err := userService.SelectRecordList(req)
+	result, total, err := userService.FindList(req)
 	if err != nil {
 		util.Fail(c, err.Error())
 		return

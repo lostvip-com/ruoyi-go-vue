@@ -15,6 +15,14 @@ import (
 type SysUserDao struct {
 }
 
+var userDao *SysUserDao
+
+func GetUserDaoInstance() *SysUserDao {
+	if userDao == nil {
+		userDao = new(SysUserDao)
+	}
+	return userDao
+}
 func (e SysUserDao) DeleteByIds(ida []int64) int64 {
 	db := lv_db.GetMasterGorm().Table("sys_user").Where("user_id in ? and user_id!=1 ", ida).Update("del_flag", 1)
 	if db.Error != nil {

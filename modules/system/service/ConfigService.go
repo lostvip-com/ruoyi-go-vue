@@ -27,7 +27,6 @@ func GetConfigServiceInstance() *ConfigService {
 	return configService
 }
 
-// 根据键获取值
 func (svc *ConfigService) GetValueFromCache(key string) string {
 	//从缓存读取
 	result, err := lv_cache.GetCacheClient().Get(key)

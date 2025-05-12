@@ -30,7 +30,6 @@ func (svc *DictDataService) GetById(id int64) (*models.SysDictData, error) {
 	return entity, err
 }
 
-// 根据主键查询数据
 func (svc *DictDataService) FindById(id int64) (*models.SysDictData, error) {
 	entity := &models.SysDictData{DictCode: id}
 	_, err := entity.FindOne()

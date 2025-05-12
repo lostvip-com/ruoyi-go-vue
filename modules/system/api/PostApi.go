@@ -62,7 +62,7 @@ func (w *PostApi) AddSave(c *gin.Context) {
 		util.ErrorResp(c).SetBtype(lv_dto.Buniss_Add).SetMsg(err.Error()).Log("岗位管理", req).WriteJsonExit()
 		return
 	}
-	var postService = service.GetSysPostServiceInstance()
+	var postService = service.GetPostServiceInstance()
 	if postService.IsPostCodeExist(req.PostCode) {
 		util.Fail(c, "岗位编码已存在")
 		return
@@ -82,7 +82,7 @@ func (w *PostApi) EditSave(c *gin.Context) {
 		util.ErrorResp(c).SetBtype(lv_dto.Buniss_Edit).SetMsg(err.Error()).Log("岗位管理", req).WriteJsonExit()
 		return
 	}
-	var postService = service.GetSysPostServiceInstance()
+	var postService = service.GetPostServiceInstance()
 	err := postService.EditSave(req, c)
 	if err != nil {
 		util.Fail(c, err.Error())
@@ -94,7 +94,7 @@ func (w *PostApi) EditSave(c *gin.Context) {
 // Remove 删除数据
 func (w *PostApi) Remove(c *gin.Context) {
 	var postIds = c.Param("postIds")
-	err := service.GetSysPostServiceInstance().DeleteByIds(postIds)
+	err := service.GetPostServiceInstance().DeleteByIds(postIds)
 	if err != nil {
 		util.Fail(c, err.Error())
 		return
@@ -108,7 +108,7 @@ func (w *PostApi) Export(c *gin.Context) {
 		util.ErrorResp(c).SetMsg(err.Error()).Log("岗位管理", req).WriteJsonExit()
 		return
 	}
-	var postService = service.GetSysPostServiceInstance()
+	var postService = service.GetPostServiceInstance()
 	url, err := postService.Export(req)
 	if err != nil {
 		util.Fail(c, err.Error())

@@ -13,28 +13,26 @@ import (
 	"time"
 )
 
-type SysPostService struct {
+type PostService struct {
 }
 
-var postService *SysPostService
+var postService *PostService
 
-func GetSysPostServiceInstance() *SysPostService {
+func GetPostServiceInstance() *PostService {
 	if postService == nil {
-		postService = &SysPostService{}
+		postService = &PostService{}
 	}
 	return postService
 }
 
-// 批量删除数据记录
-func (svc SysPostService) DeleteByIds(ids string) error {
+func (svc *PostService) DeleteByIds(ids string) error {
 	ida := lv_conv.ToInt64Array(ids, ",")
 	var d dao.SysPostDao
 	_, err := d.DeleteByIds(ida)
 	return err
 }
 
-// 添加数据
-func (svc SysPostService) AddSave(req *vo.AddPostReq, c *gin.Context) (int64, error) {
+func (svc *PostService) AddSave(req *vo.AddPostReq, c *gin.Context) (int64, error) {
 	var entity model.SysPost
 	entity.PostName = req.PostName
 	entity.PostCode = req.PostCode
@@ -53,8 +51,7 @@ func (svc SysPostService) AddSave(req *vo.AddPostReq, c *gin.Context) (int64, er
 	return entity.PostId, err
 }
 
-// 修改数据
-func (svc SysPostService) EditSave(req *vo.EditSysPostReq, c *gin.Context) error {
+func (svc *PostService) EditSave(req *vo.EditSysPostReq, c *gin.Context) error {
 	entity := &model.SysPost{PostId: req.PostId}
 	entity, err := entity.FindOne()
 	if err != nil {
@@ -77,21 +74,20 @@ func (svc SysPostService) EditSave(req *vo.EditSysPostReq, c *gin.Context) error
 	return entity.Updates()
 }
 
-// 根据条件分页查询角色数据
-func (svc SysPostService) FindAll(params *vo.PostPageReq) (*[]model.SysPost, error) {
+func (svc *PostService) FindAll(params *vo.PostPageReq) (*[]model.SysPost, error) {
 	var d dao.SysPostDao
 	ret, err := d.ListAll(params)
 	return ret, err
 }
 
 // 根据条件分页查询角色数据
-func (svc SysPostService) FindPage(params *vo.PostPageReq) (*[]map[string]string, int64, error) {
+func (svc *PostService) FindPage(params *vo.PostPageReq) (*[]map[string]string, int64, error) {
 	var d dao.SysPostDao
 	return d.FindPage(params)
 }
 
 // 导出excel
-func (svc SysPostService) Export(param *vo.PostPageReq) (string, error) {
+func (svc *PostService) Export(param *vo.PostPageReq) (string, error) {
 	head := []string{"岗位序号", "岗位名称", "岗位编码", "岗位排序", "状态"}
 	col := []string{"post_id", "post_name", "post_code", "post_sort", "status"}
 	var d dao.SysPostDao
@@ -101,7 +97,7 @@ func (svc SysPostService) Export(param *vo.PostPageReq) (string, error) {
 }
 
 // 根据用户ID查询岗位
-func (svc SysPostService) SelectPostsByUserId(userId int64) (*[]model.SysPost, error) {
+func (svc *PostService) SelectPostsByUserId(userId int64) (*[]model.SysPost, error) {
 	var paramsPost *vo.PostPageReq
 	var d dao.SysPostDao
 	postAll, err := d.ListAll(paramsPost)
@@ -127,7 +123,7 @@ func (svc SysPostService) SelectPostsByUserId(userId int64) (*[]model.SysPost, e
 }
 
 // IsPostCodeExist 检查岗位编码是否唯一
-func (svc SysPostService) IsPostCodeExist(postCode string) (exist bool) {
+func (svc *PostService) IsPostCodeExist(postCode string) (exist bool) {
 	//total, err := d.CountCol("post_code", postCode)
 	total, err := lv_dao.CountCol("sys_post", "post_code", postCode)
 	lv_err.HasErrAndPanic(err)

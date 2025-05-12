@@ -32,26 +32,24 @@ func GetUserService() *UserService {
 	return userService
 }
 
-// 根据主键查询用户信息
 func (svc *UserService) FindById(id int64) (*model.SysUser, error) {
 	entity := &model.SysUser{UserId: id}
 	err := entity.FindOne()
 	return entity, err
 }
 
-// 根据条件分页查询用户列表
-func (svc UserService) SelectRecordList(param *common_vo.SelectUserPageReq) (*[]map[string]string, int64, error) {
+func (svc *UserService) FindList(param *common_vo.SelectUserPageReq) (*[]map[string]string, int64, error) {
 	var deptService DeptService
 	var dept, _ = deptService.FindById(param.DeptId)
 	if dept != nil { //数据权限
 		param.Ancestors = dept.Ancestors
 	}
-	var d dao.SysUserDao
+	var d = dao.GetUserDaoInstance()
 	return d.FindPage(param)
 }
 
 // 导出excel
-func (svc UserService) Export(param *common_vo.SelectUserPageReq) (string, error) {
+func (svc *UserService) Export(param *common_vo.SelectUserPageReq) (string, error) {
 	head := []string{"用户名", "呢称", "Email", "电话号码", "性别", "部门", "领导", "状态", "删除标记", "创建人", "创建时间", "备注"}
 	col := []string{"UserName", "userName", "u.email", "phonenumber", "sex", "deptName", "leader", "status", "delFlag", "createBy", "createTime", "Remark"}
 	var d dao.SysUserDao
@@ -61,7 +59,7 @@ func (svc UserService) Export(param *common_vo.SelectUserPageReq) (string, error
 }
 
 // 新增用户
-func (svc UserService) AddSave(req *common_vo.AddUserReq, c *gin.Context) (int64, error) {
+func (svc *UserService) AddSave(req *common_vo.AddUserReq, c *gin.Context) (int64, error) {
 	var u model.SysUser
 	u.UserName = req.UserName
 	u.UserName = req.UserName
@@ -131,7 +129,7 @@ func (svc UserService) AddSave(req *common_vo.AddUserReq, c *gin.Context) (int64
 }
 
 // 新增用户
-func (svc UserService) EditSave(req *common_vo.EditUserReq, c *gin.Context) error {
+func (svc *UserService) EditSave(req *common_vo.EditUserReq, c *gin.Context) error {
 	userPtr := &model.SysUser{UserId: req.UserId}
 	err := userPtr.FindOne()
 	if err != nil {
@@ -199,14 +197,14 @@ func (svc UserService) EditSave(req *common_vo.EditUserReq, c *gin.Context) erro
 }
 
 // 根据主键删除用户信息
-func (svc UserService) DeleteById(id int64) error {
+func (svc *UserService) DeleteById(id int64) error {
 	entity := &model.SysUser{UserId: id}
 	err := entity.Delete()
 	return err
 }
 
 // 批量删除用户记录
-func (svc UserService) DeleteByIds(ids string) error {
+func (svc *UserService) DeleteByIds(ids string) error {
 	idarr := lv_conv.ToInt64Array(ids, ",")
 	idarr = lv_conv.RemoveOne(idarr, 1) //去掉admin的id
 	if len(idarr) == 0 {
@@ -231,7 +229,7 @@ func (svc UserService) DeleteByIds(ids string) error {
 }
 
 // 判断是否是系统管理员
-func (svc UserService) IsAdmin(userId int64) bool {
+func (svc *UserService) IsAdmin(userId int64) bool {
 	if userId == 1 {
 		return true
 	} else {
@@ -240,7 +238,7 @@ func (svc UserService) IsAdmin(userId int64) bool {
 }
 
 // 检查账号是否符合规范,存在返回false,否则true
-func (svc UserService) CheckPassport(UserName string) bool {
+func (svc *UserService) CheckPassport(UserName string) bool {
 	entity := model.SysUser{UserName: UserName}
 	if err := entity.FindOne(); err != nil {
 		return false
@@ -250,7 +248,7 @@ func (svc UserService) CheckPassport(UserName string) bool {
 }
 
 // 获得用户信息详情
-func (svc UserService) GetProfile(c *gin.Context) *model.SysUser {
+func (svc *UserService) GetProfile(c *gin.Context) *model.SysUser {
 	token := lv_net.GetParam(c, "token")
 	key := "login:" + token
 	userId, _ := lv_cache.GetCacheClient().HGet(key, "userId")
@@ -267,7 +265,7 @@ func (svc UserService) GetProfile(c *gin.Context) *model.SysUser {
 }
 
 // 更新用户信息详情
-func (svc UserService) UpdateProfile(profile *common_vo.ProfileReq, c *gin.Context) error {
+func (svc *UserService) UpdateProfile(profile *common_vo.ProfileReq, c *gin.Context) error {
 	user := svc.GetProfile(c)
 
 	if profile.UserName != "" {
@@ -296,7 +294,7 @@ func (svc UserService) UpdateProfile(profile *common_vo.ProfileReq, c *gin.Conte
 }
 
 // 更新用户头像
-func (svc UserService) UpdateAvatar(avatar string, c *gin.Context) error {
+func (svc *UserService) UpdateAvatar(avatar string, c *gin.Context) error {
 	user := svc.GetProfile(c)
 
 	if avatar != "" {
@@ -313,7 +311,7 @@ func (svc UserService) UpdateAvatar(avatar string, c *gin.Context) error {
 }
 
 // 修改用户密码
-func (svc UserService) UpdatePassword(profile *common_vo.PasswordReq, c *gin.Context) error {
+func (svc *UserService) UpdatePassword(profile *common_vo.PasswordReq, c *gin.Context) error {
 	user := svc.GetProfile(c)
 
 	if profile.OldPassword == "" {
@@ -356,7 +354,7 @@ func (svc UserService) UpdatePassword(profile *common_vo.PasswordReq, c *gin.Con
 	return nil
 }
 
-func (svc UserService) ResetPassword(params *common_vo.ResetPwdReq) error {
+func (svc *UserService) ResetPassword(params *common_vo.ResetPwdReq) error {
 	user := model.SysUser{UserId: params.UserId}
 	if err := user.FindOne(); err != nil {
 		return errors.New("用户不存在")
@@ -369,7 +367,7 @@ func (svc UserService) ResetPassword(params *common_vo.ResetPwdReq) error {
 	return err
 }
 
-func (svc UserService) CheckPassword(user *model.SysUser, password string) bool {
+func (svc *UserService) CheckPassword(user *model.SysUser, password string) bool {
 	if user == nil || user.UserId <= 0 {
 		return false
 	}
@@ -384,31 +382,31 @@ func (svc UserService) CheckPassword(user *model.SysUser, password string) bool 
 }
 
 // 根据登录名查询用户信息
-func (svc UserService) SelectUserByUserName(UserName string) (*model.SysUser, error) {
+func (svc *UserService) SelectUserByUserName(UserName string) (*model.SysUser, error) {
 	var vo dao.SysUserDao
 	return vo.SelectUserByUserName(UserName)
 }
 
 // 根据手机号查询用户信息
-func (svc UserService) SelectUserByPhoneNumber(phonenumber string) (*model.SysUser, error) {
+func (svc *UserService) SelectUserByPhoneNumber(phonenumber string) (*model.SysUser, error) {
 	var vo dao.SysUserDao
 	return vo.SelectUserByPhoneNumber(phonenumber)
 }
 
 // 查询已分配用户角色列表
-func (svc UserService) SelectAllocatedList(roleId int64, UserName, phonenumber string) (*[]map[string]string, error) {
+func (svc *UserService) SelectAllocatedList(roleId int64, UserName, phonenumber string) (*[]map[string]string, error) {
 	var vo dao.SysUserDao
 	return vo.SelectAllocatedList(roleId, UserName, phonenumber)
 }
 
 // 查询未分配用户角色列表
-func (svc UserService) SelectUnallocatedList(roleId int64, UserName, phonenumber string) (*[]map[string]string, error) {
+func (svc *UserService) SelectUnallocatedList(roleId int64, UserName, phonenumber string) (*[]map[string]string, error) {
 	var vo dao.SysUserDao
 	return vo.SelectUnallocatedList(roleId, UserName, phonenumber)
 }
 
 // 查询未分配用户角色列表
-func (svc UserService) GetRoleKeys(userId int64) (string, error) {
+func (svc *UserService) GetRoleKeys(userId int64) (string, error) {
 	if userId == 1 {
 		return "admin", nil
 	}
@@ -418,7 +416,7 @@ func (svc UserService) GetRoleKeys(userId int64) (string, error) {
 	return roles, err
 }
 
-func (svc UserService) GetRoles(userId int64) ([]model.SysRole, error) {
+func (svc *UserService) GetRoles(userId int64) ([]model.SysRole, error) {
 	sql := " select r.* from sys_user_role ur,sys_role r where ur.user_id=? and ur.role_id = r.role_id "
 	roles := make([]model.SysRole, 0)
 	err := lv_db.GetMasterGorm().Raw(sql, userId).Scan(&roles).Error

@@ -35,7 +35,7 @@ func (svc *RoleService) FindById(id int64) (*model.SysRole, error) {
 }
 
 // 根据主键查询数据
-func (svc *RoleService) SelectRecordPage(params *common_vo.RolePageReq) ([]model.SysRole, int64, error) {
+func (svc *RoleService) FindPage(params *common_vo.RolePageReq) ([]model.SysRole, int64, error) {
 	var d dao.SysRoleDao
 	return d.SelectListPage(params)
 }
