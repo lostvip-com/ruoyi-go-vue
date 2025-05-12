@@ -63,7 +63,7 @@ func init() {
 	system.GET("/user/deptTree", "", userApi.GetUserDeptTree)
 	system.POST("/user/importData", "system:user:add", userApi.ImportUserData)
 	system.POST("/user/importTemplate", "system:user:add", userApi.ImportTemplate)
-	system.POST("/user/export", "system:userApi:export", userApi.Export)
+	system.POST("/user/export", "system:user:export", userApi.Export)
 	// 个人中心路由
 	profile := api.ProfileApi{}
 	system.GET("userApi/profile", "", profile.Profile)
