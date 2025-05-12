@@ -311,7 +311,6 @@ func (w *GenApi) ColumnList(c *gin.Context) {
 	if err == nil && len(result) > 0 {
 		rows = result
 	}
-
 	c.JSON(http.StatusOK, lv_dto.TableDataInfo{
 		Code:  200,
 		Msg:   "操作成功",
