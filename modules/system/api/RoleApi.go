@@ -114,7 +114,7 @@ func (w *RoleApi) ChangeStatus(c *gin.Context) {
 
 func (w *RoleApi) GetUnAllocatedList(c *gin.Context) {
 	roleId := lv_conv.Int64(c.Query("roleId"))
-	UserName := c.Query("UserName")
+	UserName := c.Query("userName")
 	phonenumber := c.Query("phonenumber")
 	var rows []map[string]string
 	var userService service.UserService
