@@ -60,7 +60,7 @@ type CheckPasswordReq struct {
 }
 
 // 查询用户列表请求参数
-type SelectUserPageReq struct {
+type UserPageReq struct {
 	UserName    string `form:"UserName"`    //登录名
 	Status      string `form:"status"`      //状态
 	Phonenumber string `form:"phonenumber"` //手机号码

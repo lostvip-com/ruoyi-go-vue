@@ -1,7 +1,7 @@
 package service
 
 import (
-	dictDataModel "common/models"
+	"common/models"
 	db2 "github.com/lostvip-com/lv_framework/lv_db"
 	"github.com/lostvip-com/lv_framework/utils/lv_conv"
 )
@@ -20,7 +20,7 @@ func GetDictServiceInstance() *DictService {
 
 // 根据字典类型和字典键值查询字典数据信息
 func (svc *DictService) DictLabel(dictType string, dictValue string) string {
-	dictData := &dictDataModel.SysDictData{DictType: dictType, DictValue: lv_conv.String(dictValue)}
+	dictData := &models.SysDictData{DictType: dictType, DictValue: lv_conv.String(dictValue)}
 	dictData, err := dictData.FindOne()
 	if err == nil {
 		dictValue = dictData.DictLabel
@@ -29,9 +29,9 @@ func (svc *DictService) DictLabel(dictType string, dictValue string) string {
 }
 
 // 根据字典类型查询字典数据
-func (svc *DictService) SelectDictDataByType(dictType string) ([]dictDataModel.SysDictData, error) {
+func (svc *DictService) SelectDictDataByType(dictType string) ([]models.SysDictData, error) {
 	tb := db2.GetMasterGorm().Table("sys_dict_data")
-	var list []dictDataModel.SysDictData
+	var list []models.SysDictData
 	err := tb.Where(&list, "status = '0' and dict_type = ? ", dictType).Order("dict_sort asc").Find(&list).Error
 	return list, err
 }

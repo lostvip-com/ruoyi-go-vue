@@ -112,8 +112,29 @@ func (svc *DictDataService) FindPage(params *common_vo.SelectDictDataPageReq) (*
 
 // Export 导出excel
 func (svc *DictDataService) Export(param *common_vo.SelectDictDataPageReq) (string, error) {
-	head := []string{"字典编码", "字典排序", "字典标签", "字典键值", "字典类型", "样式属性", "表格回显样式", "是否默认", "状态", "创建者", "创建时间", "更新者", "更新时间", "备注"}
-	col := []string{"dict_code", "dict_sort", "dict_label", "dict_value", "dict_type", "css_class", "list_class", "is_default", "status", "create_by", "create_time", "update_by", "update_time", "remark"}
-	var dao dao2.DictDataDao
-	return dao.FindListExport(param, head, col)
+	//head := []string{"字典编码", "字典排序", "字典标签", "字典键值", "字典类型", "样式属性", "表格回显样式", "是否默认", "状态", "创建者", "创建时间", "更新者", "更新时间", "备注"}
+	//col := []string{"dict_code", "dict_sort", "dict_label", "dict_value", "dict_type", "css_class", "list_class", "is_default", "status", "create_by", "create_time", "update_by", "update_time", "remark"}
+	//var dao dao2.DictDataDao
+	//db := lv_db.GetMasterGorm()
+	//build := builder.Select(col...).From("sys_dict_data", "t")
+	//if param != nil {
+	//	if param.DictLabel != "" {
+	//		build.Where(builder.Like{"t.dict_label", param.DictLabel})
+	//	}
+	//	if param.Status != "" {
+	//		build.Where(builder.Eq{"t.status": param.Status})
+	//	}
+	//	if param.DictType != "" {
+	//		build.Where(builder.Like{"t.dict_type", param.DictType})
+	//	}
+	//}
+	//sqlStr, _ := build.ToBoundSQL()
+	//arr, err := namedsql.ListArrStr(db, sqlStr, nil)
+	//head := []string{"字典主键", "字典名称", "字典类型", "状态", "创建者", "创建时间", "更新者", "更新时间", "备注"}
+	//col := []string{"dict_id", "dict_name", "dict_type", "status", "create_by", "create_time", "update_by", "update_time", "remark"}
+	//var dao = dao2.GetSysDictTypeDaoInstance()
+	//return dao.SelectListExport(param, head, col)
+	//
+	//path, err := lv_office.DownlaodExcel(head, *arr)
+	return "", nil
 }

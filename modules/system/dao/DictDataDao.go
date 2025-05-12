@@ -5,9 +5,6 @@ import (
 	"common/models"
 	"errors"
 	"github.com/lostvip-com/lv_framework/lv_db"
-	"github.com/lostvip-com/lv_framework/lv_db/namedsql"
-	"github.com/lostvip-com/lv_framework/utils/lv_office"
-	"xorm.io/builder"
 )
 
 type DictDataDao struct {
@@ -43,27 +40,6 @@ func (dao *DictDataDao) FindPage(param *common_vo.SelectDictDataPageReq) (*[]mod
 	var result []models.SysDictData
 	tb.Count(&total).Offset(param.GetStartNum()).Limit(param.GetPageSize()).Order("dict_sort asc").Find(&result)
 	return &result, total, nil
-}
-
-// 导出excel
-func (dao *DictDataDao) FindListExport(param *common_vo.SelectDictDataPageReq, head, col []string) (string, error) {
-	db := lv_db.GetMasterGorm()
-	build := builder.Select(col...).From("sys_dict_data", "t")
-	if param != nil {
-		if param.DictLabel != "" {
-			build.Where(builder.Like{"t.dict_label", param.DictLabel})
-		}
-		if param.Status != "" {
-			build.Where(builder.Eq{"t.status": param.Status})
-		}
-		if param.DictType != "" {
-			build.Where(builder.Like{"t.dict_type", param.DictType})
-		}
-	}
-	sqlStr, _ := build.ToBoundSQL()
-	arr, err := namedsql.ListArrStr(db, sqlStr, nil)
-	path, err := lv_office.DownlaodExcel(head, *arr)
-	return path, err
 }
 
 // FindAll 获取所有数据

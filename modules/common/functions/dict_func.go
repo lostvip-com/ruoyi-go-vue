@@ -1,7 +1,7 @@
 package functions
 
 import (
-	dictDataModel "common/models"
+	"common/models"
 	"encoding/json"
 	"github.com/lostvip-com/lv_framework/utils/lv_conv"
 	"html/template"
@@ -15,7 +15,7 @@ type DictService struct {
 // 根据字典类型和字典键值查询字典数据信息
 func DictLabel(dictType string, dictValue interface{}) template.HTML {
 	result := ""
-	dictData := &dictDataModel.SysDictData{DictType: dictType, DictValue: lv_conv.String(dictValue)}
+	dictData := &models.SysDictData{DictType: dictType, DictValue: lv_conv.String(dictValue)}
 	dictData, err := dictData.FindOne()
 	if err == nil {
 		result = dictData.DictLabel
@@ -115,7 +115,7 @@ func DictSelect(dictType, htmlField, selectedVal string) template.HTML {
 
 // 通用的字典下拉框控件
 func DictType(dictType string) template.JS {
-	result := make([]dictDataModel.SysDictData, 0)
+	result := make([]models.SysDictData, 0)
 	rs, err := FindDictDataByType(dictType)
 	if err == nil || len(rs) > 0 {
 		result = rs
@@ -133,6 +133,6 @@ func DictType(dictType string) template.JS {
 }
 
 // FindDictDataByType 根据字典类型查询字典数据
-func FindDictDataByType(dictType string) ([]dictDataModel.SysDictData, error) {
+func FindDictDataByType(dictType string) ([]models.SysDictData, error) {
 	return dao.GetDictDataDaoInstance().FindAll("", dictType)
 }

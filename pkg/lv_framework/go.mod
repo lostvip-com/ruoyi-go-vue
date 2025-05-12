@@ -16,7 +16,6 @@ require (
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/cast v1.7.0
 	github.com/spf13/viper v1.19.0
-	github.com/tealeg/xlsx v1.0.5
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 	gorm.io/driver/mysql v1.5.7
 	gorm.io/driver/sqlite v1.5.6

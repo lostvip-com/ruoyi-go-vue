@@ -19,9 +19,9 @@ import (
 
 const (
 	// Verify that this generated code is sufficiently up-to-date.
-	_ = protoimpl.EnforceVersion(20 - protoimpl.MinVersion)
+	_ = protoimpxls.EnforceVersion(20 - protoimpxls.MinVersion)
 	// Verify that runtime/protoimpl is sufficiently up-to-date.
-	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
+	_ = protoimpxls.EnforceVersion(protoimpxls.MaxVersion - 20)
 )
 
 // Symbols defined in public import of google/protobuf/timestamp.proto.
@@ -29,22 +29,22 @@ const (
 type Timestamp = timestamppb.Timestamp
 
 type CreateDeviceCallbackRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
+	state         protoimpxls.MessageState `protogen:"open.v1"`
 	Data          *driverdevice.Device   `protobuf:"bytes,1,opt,name=Data,proto3" json:"Data,omitempty"`
 	HappenTime    *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=happenTime,proto3" json:"happenTime,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpxls.UnknownFields
+	sizeCache     protoimpxls.SizeCache
 }
 
 func (x *CreateDeviceCallbackRequest) Reset() {
 	*x = CreateDeviceCallbackRequest{}
 	mi := &file_devicecallback_devicecallback_proto_msgTypes[0]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
 func (x *CreateDeviceCallbackRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
+	return protoimpxls.X.MessageStringOf(x)
 }
 
 func (*CreateDeviceCallbackRequest) ProtoMessage() {}
@@ -52,7 +52,7 @@ func (*CreateDeviceCallbackRequest) ProtoMessage() {}
 func (x *CreateDeviceCallbackRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_devicecallback_devicecallback_proto_msgTypes[0]
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
 			ms.StoreMessageInfo(mi)
 		}
@@ -81,22 +81,22 @@ func (x *CreateDeviceCallbackRequest) GetHappenTime() *timestamppb.Timestamp {
 }
 
 type UpdateDeviceCallbackRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
+	state         protoimpxls.MessageState `protogen:"open.v1"`
 	Data          *driverdevice.Device   `protobuf:"bytes,1,opt,name=Data,proto3" json:"Data,omitempty"`
 	HappenTime    *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=happenTime,proto3" json:"happenTime,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpxls.UnknownFields
+	sizeCache     protoimpxls.SizeCache
 }
 
 func (x *UpdateDeviceCallbackRequest) Reset() {
 	*x = UpdateDeviceCallbackRequest{}
 	mi := &file_devicecallback_devicecallback_proto_msgTypes[1]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
 func (x *UpdateDeviceCallbackRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
+	return protoimpxls.X.MessageStringOf(x)
 }
 
 func (*UpdateDeviceCallbackRequest) ProtoMessage() {}
@@ -104,7 +104,7 @@ func (*UpdateDeviceCallbackRequest) ProtoMessage() {}
 func (x *UpdateDeviceCallbackRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_devicecallback_devicecallback_proto_msgTypes[1]
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
 			ms.StoreMessageInfo(mi)
 		}
@@ -133,22 +133,22 @@ func (x *UpdateDeviceCallbackRequest) GetHappenTime() *timestamppb.Timestamp {
 }
 
 type DeleteDeviceCallbackRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
+	state         protoimpxls.MessageState `protogen:"open.v1"`
 	DeviceId      int64                  `protobuf:"varint,1,opt,name=deviceId,proto3" json:"deviceId,omitempty"`
 	HappenTime    *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=happenTime,proto3" json:"happenTime,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpxls.UnknownFields
+	sizeCache     protoimpxls.SizeCache
 }
 
 func (x *DeleteDeviceCallbackRequest) Reset() {
 	*x = DeleteDeviceCallbackRequest{}
 	mi := &file_devicecallback_devicecallback_proto_msgTypes[2]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
 func (x *DeleteDeviceCallbackRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
+	return protoimpxls.X.MessageStringOf(x)
 }
 
 func (*DeleteDeviceCallbackRequest) ProtoMessage() {}
@@ -156,7 +156,7 @@ func (*DeleteDeviceCallbackRequest) ProtoMessage() {}
 func (x *DeleteDeviceCallbackRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_devicecallback_devicecallback_proto_msgTypes[2]
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
 			ms.StoreMessageInfo(mi)
 		}
@@ -253,12 +253,12 @@ var (
 
 func file_devicecallback_devicecallback_proto_rawDescGZIP() []byte {
 	file_devicecallback_devicecallback_proto_rawDescOnce.Do(func() {
-		file_devicecallback_devicecallback_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_devicecallback_devicecallback_proto_rawDesc), len(file_devicecallback_devicecallback_proto_rawDesc)))
+		file_devicecallback_devicecallback_proto_rawDescData = protoimpxls.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_devicecallback_devicecallback_proto_rawDesc), len(file_devicecallback_devicecallback_proto_rawDesc)))
 	})
 	return file_devicecallback_devicecallback_proto_rawDescData
 }
 
-var file_devicecallback_devicecallback_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_devicecallback_devicecallback_proto_msgTypes = make([]protoimpxls.MessageInfo, 3)
 var file_devicecallback_devicecallback_proto_goTypes = []any{
 	(*CreateDeviceCallbackRequest)(nil), // 0: devicecallback.createDeviceCallbackRequest
 	(*UpdateDeviceCallbackRequest)(nil), // 1: devicecallback.updateDeviceCallbackRequest
@@ -292,8 +292,8 @@ func file_devicecallback_devicecallback_proto_init() {
 		return
 	}
 	type x struct{}
-	out := protoimpl.TypeBuilder{
-		File: protoimpl.DescBuilder{
+	out := protoimpxls.TypeBuilder{
+		File: protoimpxls.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_devicecallback_devicecallback_proto_rawDesc), len(file_devicecallback_devicecallback_proto_rawDesc)),
 			NumEnums:      0,

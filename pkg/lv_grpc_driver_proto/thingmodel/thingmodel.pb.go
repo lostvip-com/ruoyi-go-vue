@@ -19,9 +19,9 @@ import (
 
 const (
 	// Verify that this generated code is sufficiently up-to-date.
-	_ = protoimpl.EnforceVersion(20 - protoimpl.MinVersion)
+	_ = protoimpxls.EnforceVersion(20 - protoimpxls.MinVersion)
 	// Verify that runtime/protoimpl is sufficiently up-to-date.
-	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
+	_ = protoimpxls.EnforceVersion(protoimpxls.MaxVersion - 20)
 )
 
 type OperationType int32
@@ -100,7 +100,7 @@ func (x OperationType) Enum() *OperationType {
 }
 
 func (x OperationType) String() string {
-	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+	return protoimpxls.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
 }
 
 func (OperationType) Descriptor() protoreflect.EnumDescriptor {
@@ -122,26 +122,26 @@ func (OperationType) EnumDescriptor() ([]byte, []int) {
 
 // ThingModelIssueMsg 消息下发
 type ThingModelIssueMsg struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
+	state         protoimpxls.MessageState `protogen:"open.v1"`
 	OperationType OperationType          `protobuf:"varint,1,opt,name=operationType,proto3,enum=thingmodel.OperationType" json:"operationType,omitempty"`
 	TraceId       string                 `protobuf:"bytes,2,opt,name=traceId,proto3" json:"traceId,omitempty"`      // 唯一标识
 	GatewayId     int64                  `protobuf:"varint,3,opt,name=gatewayId,proto3" json:"gatewayId,omitempty"` // 下发的目标设备id
 	DeviceId      int64                  `protobuf:"varint,4,opt,name=deviceId,proto3" json:"deviceId,omitempty"`   // 下发的目标设备id
 	NeedAck       bool                   `protobuf:"varint,5,opt,name=needAck,proto3" json:"needAck,omitempty"`     // 0:不用确认 1:需要确认，否则重发
 	ListData      []*Point               `protobuf:"bytes,6,rep,name=listData,proto3" json:"listData,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpxls.UnknownFields
+	sizeCache     protoimpxls.SizeCache
 }
 
 func (x *ThingModelIssueMsg) Reset() {
 	*x = ThingModelIssueMsg{}
 	mi := &file_thingmodel_thingmodel_proto_msgTypes[0]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
 func (x *ThingModelIssueMsg) String() string {
-	return protoimpl.X.MessageStringOf(x)
+	return protoimpxls.X.MessageStringOf(x)
 }
 
 func (*ThingModelIssueMsg) ProtoMessage() {}
@@ -149,7 +149,7 @@ func (*ThingModelIssueMsg) ProtoMessage() {}
 func (x *ThingModelIssueMsg) ProtoReflect() protoreflect.Message {
 	mi := &file_thingmodel_thingmodel_proto_msgTypes[0]
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
 			ms.StoreMessageInfo(mi)
 		}
@@ -207,7 +207,7 @@ func (x *ThingModelIssueMsg) GetListData() []*Point {
 
 // ThingModelResp 消息响应
 type ThingModelResp struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
+	state         protoimpxls.MessageState `protogen:"open.v1"`
 	TraceId       string                 `protobuf:"bytes,1,opt,name=TraceId,proto3" json:"TraceId,omitempty"`
 	Msg           string                 `protobuf:"bytes,2,opt,name=Msg,proto3" json:"Msg,omitempty"`
 	Code          int32                  `protobuf:"varint,3,opt,name=Code,proto3" json:"Code,omitempty"`
@@ -215,19 +215,19 @@ type ThingModelResp struct {
 	Extra         string                 `protobuf:"bytes,5,opt,name=Extra,proto3" json:"Extra,omitempty"`
 	DeviceId      int64                  `protobuf:"varint,6,opt,name=deviceId,proto3" json:"deviceId,omitempty"` // 下发的目标设备id
 	ListData      []*Point               `protobuf:"bytes,7,rep,name=listData,proto3" json:"listData,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpxls.UnknownFields
+	sizeCache     protoimpxls.SizeCache
 }
 
 func (x *ThingModelResp) Reset() {
 	*x = ThingModelResp{}
 	mi := &file_thingmodel_thingmodel_proto_msgTypes[1]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
 func (x *ThingModelResp) String() string {
-	return protoimpl.X.MessageStringOf(x)
+	return protoimpxls.X.MessageStringOf(x)
 }
 
 func (*ThingModelResp) ProtoMessage() {}
@@ -235,7 +235,7 @@ func (*ThingModelResp) ProtoMessage() {}
 func (x *ThingModelResp) ProtoReflect() protoreflect.Message {
 	mi := &file_thingmodel_thingmodel_proto_msgTypes[1]
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
 			ms.StoreMessageInfo(mi)
 		}
@@ -299,26 +299,26 @@ func (x *ThingModelResp) GetListData() []*Point {
 }
 
 type Point struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpxls.MessageState `protogen:"open.v1"`
 	Code  string                 `protobuf:"bytes,1,opt,name=code,proto3" json:"code,omitempty"`   //参量号
 	Value string                 `protobuf:"bytes,2,opt,name=value,proto3" json:"value,omitempty"` //参量值
 	Time  *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=time,proto3" json:"time,omitempty"`   //采集时间
 	// 下发数据时使用，上传数据忽略
 	DataType      string `protobuf:"bytes,4,opt,name=dataType,proto3" json:"dataType,omitempty"` //数据类型 int32/float32/string/bool/byte
 	Rate          string `protobuf:"bytes,5,opt,name=rate,proto3" json:"rate,omitempty"`         //倍率，默认1，100表示把设备采集值放大100倍
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpxls.UnknownFields
+	sizeCache     protoimpxls.SizeCache
 }
 
 func (x *Point) Reset() {
 	*x = Point{}
 	mi := &file_thingmodel_thingmodel_proto_msgTypes[2]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
 func (x *Point) String() string {
-	return protoimpl.X.MessageStringOf(x)
+	return protoimpxls.X.MessageStringOf(x)
 }
 
 func (*Point) ProtoMessage() {}
@@ -326,7 +326,7 @@ func (*Point) ProtoMessage() {}
 func (x *Point) ProtoReflect() protoreflect.Message {
 	mi := &file_thingmodel_thingmodel_proto_msgTypes[2]
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
 			ms.StoreMessageInfo(mi)
 		}
@@ -481,13 +481,13 @@ var (
 
 func file_thingmodel_thingmodel_proto_rawDescGZIP() []byte {
 	file_thingmodel_thingmodel_proto_rawDescOnce.Do(func() {
-		file_thingmodel_thingmodel_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_thingmodel_thingmodel_proto_rawDesc), len(file_thingmodel_thingmodel_proto_rawDesc)))
+		file_thingmodel_thingmodel_proto_rawDescData = protoimpxls.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_thingmodel_thingmodel_proto_rawDesc), len(file_thingmodel_thingmodel_proto_rawDesc)))
 	})
 	return file_thingmodel_thingmodel_proto_rawDescData
 }
 
-var file_thingmodel_thingmodel_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_thingmodel_thingmodel_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_thingmodel_thingmodel_proto_enumTypes = make([]protoimpxls.EnumInfo, 1)
+var file_thingmodel_thingmodel_proto_msgTypes = make([]protoimpxls.MessageInfo, 3)
 var file_thingmodel_thingmodel_proto_goTypes = []any{
 	(OperationType)(0),                  // 0: thingmodel.OperationType
 	(*ThingModelIssueMsg)(nil),          // 1: thingmodel.ThingModelIssueMsg
@@ -518,8 +518,8 @@ func file_thingmodel_thingmodel_proto_init() {
 		return
 	}
 	type x struct{}
-	out := protoimpl.TypeBuilder{
-		File: protoimpl.DescBuilder{
+	out := protoimpxls.TypeBuilder{
+		File: protoimpxls.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_thingmodel_thingmodel_proto_rawDesc), len(file_thingmodel_thingmodel_proto_rawDesc)),
 			NumEnums:      1,

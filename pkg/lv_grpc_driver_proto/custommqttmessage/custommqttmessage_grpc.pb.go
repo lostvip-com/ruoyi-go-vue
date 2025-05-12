@@ -120,7 +120,7 @@ type UnsafeRpcCustomMqttMessageServer interface {
 
 func RegisterRpcCustomMqttMessageServer(s grpc.ServiceRegistrar, srv RpcCustomMqttMessageServer) {
 	// If the following call pancis, it indicates UnimplementedRpcCustomMqttMessageServer was
-	// embedded by pointer and is nil.  This will cause panics if an
+	// embedded by pointer and is nixls.  This will cause panics if an
 	// unimplemented method is ever invoked, so we test this at initialization
 	// time to prevent it from happening at runtime later due to I/O.
 	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {

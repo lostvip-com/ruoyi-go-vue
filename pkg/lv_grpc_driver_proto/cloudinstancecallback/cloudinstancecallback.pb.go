@@ -18,9 +18,9 @@ import (
 
 const (
 	// Verify that this generated code is sufficiently up-to-date.
-	_ = protoimpl.EnforceVersion(20 - protoimpl.MinVersion)
+	_ = protoimpxls.EnforceVersion(20 - protoimpxls.MinVersion)
 	// Verify that runtime/protoimpl is sufficiently up-to-date.
-	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
+	_ = protoimpxls.EnforceVersion(protoimpxls.MaxVersion - 20)
 )
 
 // Symbols defined in public import of google/protobuf/timestamp.proto.
@@ -28,23 +28,23 @@ const (
 type Timestamp = timestamppb.Timestamp
 
 type CloudInstanceStatueCallbackRequest struct {
-	state             protoimpl.MessageState `protogen:"open.v1"`
+	state             protoimpxls.MessageState `protogen:"open.v1"`
 	CloudInstanceName string                 `protobuf:"bytes,1,opt,name=cloudInstanceName,proto3" json:"cloudInstanceName,omitempty"`
 	Status            string                 `protobuf:"bytes,2,opt,name=status,proto3" json:"status,omitempty"`
 	HappenTime        *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=happenTime,proto3" json:"happenTime,omitempty"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
+	unknownFields     protoimpxls.UnknownFields
+	sizeCache         protoimpxls.SizeCache
 }
 
 func (x *CloudInstanceStatueCallbackRequest) Reset() {
 	*x = CloudInstanceStatueCallbackRequest{}
 	mi := &file_cloudinstancecallback_cloudinstancecallback_proto_msgTypes[0]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
 func (x *CloudInstanceStatueCallbackRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
+	return protoimpxls.X.MessageStringOf(x)
 }
 
 func (*CloudInstanceStatueCallbackRequest) ProtoMessage() {}
@@ -52,7 +52,7 @@ func (*CloudInstanceStatueCallbackRequest) ProtoMessage() {}
 func (x *CloudInstanceStatueCallbackRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_cloudinstancecallback_cloudinstancecallback_proto_msgTypes[0]
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
 			ms.StoreMessageInfo(mi)
 		}
@@ -133,12 +133,12 @@ var (
 
 func file_cloudinstancecallback_cloudinstancecallback_proto_rawDescGZIP() []byte {
 	file_cloudinstancecallback_cloudinstancecallback_proto_rawDescOnce.Do(func() {
-		file_cloudinstancecallback_cloudinstancecallback_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_cloudinstancecallback_cloudinstancecallback_proto_rawDesc), len(file_cloudinstancecallback_cloudinstancecallback_proto_rawDesc)))
+		file_cloudinstancecallback_cloudinstancecallback_proto_rawDescData = protoimpxls.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_cloudinstancecallback_cloudinstancecallback_proto_rawDesc), len(file_cloudinstancecallback_cloudinstancecallback_proto_rawDesc)))
 	})
 	return file_cloudinstancecallback_cloudinstancecallback_proto_rawDescData
 }
 
-var file_cloudinstancecallback_cloudinstancecallback_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_cloudinstancecallback_cloudinstancecallback_proto_msgTypes = make([]protoimpxls.MessageInfo, 1)
 var file_cloudinstancecallback_cloudinstancecallback_proto_goTypes = []any{
 	(*CloudInstanceStatueCallbackRequest)(nil), // 0: cloudinstancecallback.cloudInstanceStatueCallbackRequest
 	(*timestamppb.Timestamp)(nil),              // 1: google.protobuf.Timestamp
@@ -161,8 +161,8 @@ func file_cloudinstancecallback_cloudinstancecallback_proto_init() {
 		return
 	}
 	type x struct{}
-	out := protoimpl.TypeBuilder{
-		File: protoimpl.DescBuilder{
+	out := protoimpxls.TypeBuilder{
+		File: protoimpxls.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_cloudinstancecallback_cloudinstancecallback_proto_rawDesc), len(file_cloudinstancecallback_cloudinstancecallback_proto_rawDesc)),
 			NumEnums:      0,

@@ -4,14 +4,11 @@ import (
 	"common/global"
 	"github.com/lostvip-com/lv_framework/lv_cache"
 	"github.com/lostvip-com/lv_framework/lv_db"
-	"github.com/lostvip-com/lv_framework/lv_db/namedsql"
 	"github.com/lostvip-com/lv_framework/utils/lv_conv"
-	"github.com/lostvip-com/lv_framework/utils/lv_office"
 	"github.com/spf13/cast"
 	"system/model"
 	"system/vo"
 	"time"
-	"xorm.io/builder"
 )
 
 const USER_NOPASS_TIME string = "user_nopass_"
@@ -95,35 +92,35 @@ func (svc LoginService) DeleteRecordAll() error {
 
 // 导出excel
 func (svc LoginService) Export(param *vo.LoginInfoPageReq) (string, error) {
-	head := []string{"访问编号", "登录名称", "登录地址", "登录地点", "浏览器", "操作系统", "登录状态", "操作信息", "登录时间"}
-	col := []string{"info_id", "user_name", "ipaddr", "login_location", "browser", "os", "status", "msg", "login_time"}
-	db := lv_db.GetMasterGorm()
-	build := builder.Select(col...).From(" sys_logininfor ", "t")
-	if param != nil {
-		if param.UserName != "" {
-			build.Where(builder.Like{"t.user_name", param.UserName})
-		}
-
-		if param.Ipaddr != "" {
-			build.Where(builder.Like{"t.ipaddr", param.Ipaddr})
-		}
-
-		if param.Status != "" {
-			build.Where(builder.Eq{"t.status": param.Status})
-		}
-
-		if param.BeginTime != "" {
-			build.Where(builder.Gte{"date_format(t.create_time,'%y%m%d')": "date_format('" + param.BeginTime + "','%y%m%d')"})
-		}
-
-		if param.EndTime != "" {
-			build.Where(builder.Lte{"date_format(t.create_time,'%y%m%d')": "date_format('" + param.EndTime + "','%y%m%d')"})
-		}
-	}
-	sqlStr, err := build.ToBoundSQL()
-	arr, err := namedsql.ListArrStr(db, sqlStr, nil)
-	path, err := lv_office.DownlaodExcel(head, *arr)
-	return path, err
+	//head := []string{"访问编号", "登录名称", "登录地址", "登录地点", "浏览器", "操作系统", "登录状态", "操作信息", "登录时间"}
+	//col := []string{"info_id", "user_name", "ipaddr", "login_location", "browser", "os", "status", "msg", "login_time"}
+	//db := lv_db.GetMasterGorm()
+	//build := builder.Select(col...).From(" sys_logininfor ", "t")
+	//if param != nil {
+	//	if param.UserName != "" {
+	//		build.Where(builder.Like{"t.user_name", param.UserName})
+	//	}
+	//
+	//	if param.Ipaddr != "" {
+	//		build.Where(builder.Like{"t.ipaddr", param.Ipaddr})
+	//	}
+	//
+	//	if param.Status != "" {
+	//		build.Where(builder.Eq{"t.status": param.Status})
+	//	}
+	//
+	//	if param.BeginTime != "" {
+	//		build.Where(builder.Gte{"date_format(t.create_time,'%y%m%d')": "date_format('" + param.BeginTime + "','%y%m%d')"})
+	//	}
+	//
+	//	if param.EndTime != "" {
+	//		build.Where(builder.Lte{"date_format(t.create_time,'%y%m%d')": "date_format('" + param.EndTime + "','%y%m%d')"})
+	//	}
+	//}
+	//sqlStr, err := build.ToBoundSQL()
+	//arr, err := namedsql.ListArrStr(db, sqlStr, nil)
+	//path, err := lv_office.DownlaodExcel(head, *arr)
+	return "", nil
 }
 
 // 记录密码尝试次数

@@ -111,12 +111,9 @@ func (svc *DictTypeService) FindByType(dictType string) *model.SysDictType {
 }
 
 // 导出excel
-func (svc *DictTypeService) Export(param *common_vo.DictTypePageReq) (string, error) {
-	head := []string{"字典主键", "字典名称", "字典类型", "状态", "创建者", "创建时间", "更新者", "更新时间", "备注"}
-	col := []string{"dict_id", "dict_name", "dict_type", "status", "create_by", "create_time", "update_by", "update_time", "remark"}
-	var dao = dao2.GetSysDictTypeDaoInstance()
-	return dao.SelectListExport(param, head, col)
-}
+//func (svc *DictTypeService) Export(param *common_vo.DictTypePageReq) (string, error) {
+//
+//}
 
 // 检查字典类型是否唯一
 func (svc *DictTypeService) CheckDictTypeUniqueAll(configKey string) (bool, error) {

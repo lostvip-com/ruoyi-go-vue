@@ -17,13 +17,13 @@ import (
 
 const (
 	// Verify that this generated code is sufficiently up-to-date.
-	_ = protoimpl.EnforceVersion(20 - protoimpl.MinVersion)
+	_ = protoimpxls.EnforceVersion(20 - protoimpxls.MinVersion)
 	// Verify that runtime/protoimpl is sufficiently up-to-date.
-	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
+	_ = protoimpxls.EnforceVersion(protoimpxls.MaxVersion - 20)
 )
 
 type PlatformCustomPublishRequest struct {
-	state             protoimpl.MessageState `protogen:"open.v1"`
+	state             protoimpxls.MessageState `protogen:"open.v1"`
 	TraceId           string                 `protobuf:"bytes,1,opt,name=traceId,proto3" json:"traceId,omitempty"`
 	CloudInstanceId   int64                  `protobuf:"varint,2,opt,name=cloudInstanceId,proto3" json:"cloudInstanceId,omitempty"`
 	BaseAddress       string                 `protobuf:"bytes,3,opt,name=baseAddress,proto3" json:"baseAddress,omitempty"`
@@ -35,19 +35,19 @@ type PlatformCustomPublishRequest struct {
 	Qos               int32                  `protobuf:"varint,9,opt,name=qos,proto3" json:"qos,omitempty"`
 	Retained          bool                   `protobuf:"varint,10,opt,name=retained,proto3" json:"retained,omitempty"`
 	Payload           string                 `protobuf:"bytes,11,opt,name=payload,proto3" json:"payload,omitempty"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
+	unknownFields     protoimpxls.UnknownFields
+	sizeCache         protoimpxls.SizeCache
 }
 
 func (x *PlatformCustomPublishRequest) Reset() {
 	*x = PlatformCustomPublishRequest{}
 	mi := &file_custommqttmessage_custommqttmessage_proto_msgTypes[0]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
 func (x *PlatformCustomPublishRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
+	return protoimpxls.X.MessageStringOf(x)
 }
 
 func (*PlatformCustomPublishRequest) ProtoMessage() {}
@@ -55,7 +55,7 @@ func (*PlatformCustomPublishRequest) ProtoMessage() {}
 func (x *PlatformCustomPublishRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_custommqttmessage_custommqttmessage_proto_msgTypes[0]
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
 			ms.StoreMessageInfo(mi)
 		}
@@ -147,7 +147,7 @@ func (x *PlatformCustomPublishRequest) GetPayload() string {
 }
 
 type PlatformCustomSubscribeRequest struct {
-	state             protoimpl.MessageState `protogen:"open.v1"`
+	state             protoimpxls.MessageState `protogen:"open.v1"`
 	TraceId           string                 `protobuf:"bytes,1,opt,name=traceId,proto3" json:"traceId,omitempty"`
 	CloudInstanceId   int64                  `protobuf:"varint,2,opt,name=cloudInstanceId,proto3" json:"cloudInstanceId,omitempty"`
 	BaseAddress       string                 `protobuf:"bytes,3,opt,name=baseAddress,proto3" json:"baseAddress,omitempty"`
@@ -157,19 +157,19 @@ type PlatformCustomSubscribeRequest struct {
 	DeviceId          int64                  `protobuf:"varint,7,opt,name=deviceId,proto3" json:"deviceId,omitempty"`
 	Topic             string                 `protobuf:"bytes,8,opt,name=topic,proto3" json:"topic,omitempty"`
 	Qos               int32                  `protobuf:"varint,9,opt,name=qos,proto3" json:"qos,omitempty"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
+	unknownFields     protoimpxls.UnknownFields
+	sizeCache         protoimpxls.SizeCache
 }
 
 func (x *PlatformCustomSubscribeRequest) Reset() {
 	*x = PlatformCustomSubscribeRequest{}
 	mi := &file_custommqttmessage_custommqttmessage_proto_msgTypes[1]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
 func (x *PlatformCustomSubscribeRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
+	return protoimpxls.X.MessageStringOf(x)
 }
 
 func (*PlatformCustomSubscribeRequest) ProtoMessage() {}
@@ -177,7 +177,7 @@ func (*PlatformCustomSubscribeRequest) ProtoMessage() {}
 func (x *PlatformCustomSubscribeRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_custommqttmessage_custommqttmessage_proto_msgTypes[1]
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
 			ms.StoreMessageInfo(mi)
 		}
@@ -255,7 +255,7 @@ func (x *PlatformCustomSubscribeRequest) GetQos() int32 {
 }
 
 type PlatformCustomUnSubscribeRequest struct {
-	state             protoimpl.MessageState `protogen:"open.v1"`
+	state             protoimpxls.MessageState `protogen:"open.v1"`
 	TraceId           string                 `protobuf:"bytes,1,opt,name=traceId,proto3" json:"traceId,omitempty"`
 	CloudInstanceId   int64                  `protobuf:"varint,2,opt,name=cloudInstanceId,proto3" json:"cloudInstanceId,omitempty"`
 	BaseAddress       string                 `protobuf:"bytes,3,opt,name=baseAddress,proto3" json:"baseAddress,omitempty"`
@@ -264,19 +264,19 @@ type PlatformCustomUnSubscribeRequest struct {
 	DriverInstanceId  int64                  `protobuf:"varint,6,opt,name=driverInstanceId,proto3" json:"driverInstanceId,omitempty"`
 	DeviceId          int64                  `protobuf:"varint,7,opt,name=deviceId,proto3" json:"deviceId,omitempty"`
 	Topics            []string               `protobuf:"bytes,8,rep,name=topics,proto3" json:"topics,omitempty"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
+	unknownFields     protoimpxls.UnknownFields
+	sizeCache         protoimpxls.SizeCache
 }
 
 func (x *PlatformCustomUnSubscribeRequest) Reset() {
 	*x = PlatformCustomUnSubscribeRequest{}
 	mi := &file_custommqttmessage_custommqttmessage_proto_msgTypes[2]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
 func (x *PlatformCustomUnSubscribeRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
+	return protoimpxls.X.MessageStringOf(x)
 }
 
 func (*PlatformCustomUnSubscribeRequest) ProtoMessage() {}
@@ -284,7 +284,7 @@ func (*PlatformCustomUnSubscribeRequest) ProtoMessage() {}
 func (x *PlatformCustomUnSubscribeRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_custommqttmessage_custommqttmessage_proto_msgTypes[2]
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
 			ms.StoreMessageInfo(mi)
 		}
@@ -463,12 +463,12 @@ var (
 
 func file_custommqttmessage_custommqttmessage_proto_rawDescGZIP() []byte {
 	file_custommqttmessage_custommqttmessage_proto_rawDescOnce.Do(func() {
-		file_custommqttmessage_custommqttmessage_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_custommqttmessage_custommqttmessage_proto_rawDesc), len(file_custommqttmessage_custommqttmessage_proto_rawDesc)))
+		file_custommqttmessage_custommqttmessage_proto_rawDescData = protoimpxls.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_custommqttmessage_custommqttmessage_proto_rawDesc), len(file_custommqttmessage_custommqttmessage_proto_rawDesc)))
 	})
 	return file_custommqttmessage_custommqttmessage_proto_rawDescData
 }
 
-var file_custommqttmessage_custommqttmessage_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_custommqttmessage_custommqttmessage_proto_msgTypes = make([]protoimpxls.MessageInfo, 3)
 var file_custommqttmessage_custommqttmessage_proto_goTypes = []any{
 	(*PlatformCustomPublishRequest)(nil),     // 0: custommqttmessage.PlatformCustomPublishRequest
 	(*PlatformCustomSubscribeRequest)(nil),   // 1: custommqttmessage.PlatformCustomSubscribeRequest
@@ -495,8 +495,8 @@ func file_custommqttmessage_custommqttmessage_proto_init() {
 		return
 	}
 	type x struct{}
-	out := protoimpl.TypeBuilder{
-		File: protoimpl.DescBuilder{
+	out := protoimpxls.TypeBuilder{
+		File: protoimpxls.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_custommqttmessage_custommqttmessage_proto_rawDesc), len(file_custommqttmessage_custommqttmessage_proto_rawDesc)),
 			NumEnums:      0,

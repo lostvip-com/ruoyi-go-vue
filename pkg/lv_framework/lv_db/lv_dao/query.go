@@ -21,7 +21,7 @@ func ListMapStrByNamedSql(sql string, req any, isCamel bool) (*[]map[string]stri
 
 func ListMapByNamedSql(sql string, req any, isCamel bool) (*[]map[string]any, error) {
 	d := lv_db.GetMasterGorm()
-	return namedsql.ListMapAny(d, sql, req, isCamel)
+	return namedsql.ListMap(d, sql, req, isCamel)
 }
 
 func GetOneMapByNamedSql(sql string, req any, isCamel bool) (*map[string]any, error) {
@@ -35,7 +35,7 @@ func GetOneMapByNamedSql(sql string, req any, isCamel bool) (*map[string]any, er
 
 func ListByNamed(sql string, req any, isCamel bool) (*[]map[string]any, error) {
 	d := lv_db.GetMasterGorm()
-	return namedsql.ListMapAny(d, sql, req, isCamel)
+	return namedsql.ListMap(d, sql, req, isCamel)
 }
 
 /**

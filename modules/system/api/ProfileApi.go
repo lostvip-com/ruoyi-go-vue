@@ -1,7 +1,7 @@
 package api
 
 import (
-	userModel "common/common_vo"
+	"common/common_vo"
 	"common/global"
 	"common/util"
 	"github.com/gin-gonic/gin"
@@ -28,7 +28,7 @@ func (w *ProfileApi) Profile(c *gin.Context) {
 
 // 修改用户信息
 func (w *ProfileApi) Update(c *gin.Context) {
-	var req userModel.ProfileReq
+	var req common_vo.ProfileReq
 
 	if err := c.ShouldBind(&req); err != nil {
 		lv_log.Error(err)
@@ -46,7 +46,7 @@ func (w *ProfileApi) Update(c *gin.Context) {
 
 // 修改用户密码
 func (w *ProfileApi) UpdatePassword(c *gin.Context) {
-	var req userModel.PasswordReq
+	var req common_vo.PasswordReq
 	err := c.ShouldBind(&req)
 	lv_err.HasErrAndPanic(err)
 	var userService service.UserService
@@ -57,7 +57,7 @@ func (w *ProfileApi) UpdatePassword(c *gin.Context) {
 
 // 检查登录名是否存在
 func (w *ProfileApi) CheckUserNameOK(c *gin.Context) {
-	var req userModel.CheckUserNameReq
+	var req common_vo.CheckUserNameReq
 	if err := c.ShouldBind(&req); err != nil {
 		c.Writer.WriteString("1")
 		return
@@ -73,7 +73,7 @@ func (w *ProfileApi) CheckUserNameOK(c *gin.Context) {
 
 // CheckPhoneOK 检查手机号是否存在 1 存在，0不存在
 func (w *ProfileApi) CheckPhoneOK(c *gin.Context) {
-	var req userModel.CheckPhoneAllReq
+	var req common_vo.CheckPhoneAllReq
 	err := c.ShouldBind(&req)
 	lv_err.HasErrAndPanic(err)
 	var userService service.UserService
@@ -101,7 +101,7 @@ func (w *ProfileApi) CheckEmailOK(c *gin.Context) {
 
 // 校验密码是否正确
 func (w *ProfileApi) CheckPassword(c *gin.Context) {
-	var req userModel.CheckPasswordReq
+	var req common_vo.CheckPasswordReq
 	if err := c.ShouldBind(&req); err != nil {
 		c.JSON(http.StatusOK, lv_dto.CommonRes{
 			Code: 500,

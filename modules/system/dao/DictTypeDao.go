@@ -5,7 +5,6 @@ import (
 	"errors"
 	"github.com/lostvip-com/lv_framework/lv_db"
 	"github.com/lostvip-com/lv_framework/lv_db/namedsql"
-	"github.com/lostvip-com/lv_framework/utils/lv_office"
 	"system/model"
 	"xorm.io/builder"
 )
@@ -55,10 +54,10 @@ func (dao *DictTypeDao) FindPage(param *common_vo.DictTypePageReq) ([]model.SysD
 }
 
 // 导出excel
-func (dao *DictTypeDao) SelectListExport(param *common_vo.DictTypePageReq, head, col []string) (string, error) {
+func (dao *DictTypeDao) SelectListExport(param *common_vo.DictTypePageReq, head, col []string) (*[][]string, error) {
 	gdb := lv_db.GetMasterGorm()
 	if gdb == nil {
-		return "", errors.New("获取数据库连接失败")
+		return nil, errors.New("获取数据库连接失败")
 	}
 
 	build := builder.Select(col...).From("sys_dict_type", "t")
@@ -76,20 +75,18 @@ func (dao *DictTypeDao) SelectListExport(param *common_vo.DictTypePageReq, head,
 		}
 
 		if param.BeginTime != "" {
-			build.Where(builder.Gte{"date_format(t.create_time,'%y%m%d')": "date_format('" + param.BeginTime + "','%y%m%d')"})
+			build.Where(builder.Gte{"t.create_time": param.BeginTime})
 		}
 
 		if param.EndTime != "" {
-			build.Where(builder.Lte{"date_format(t.create_time,'%y%m%d')": "date_format('" + param.EndTime + "','%y%m%d')"})
+			build.Where(builder.Lte{"t.create_time": param.EndTime})
 		}
 	}
 
 	sqlStr, _, _ := build.ToSQL()
 	arr, err := namedsql.ListArrStr(gdb, sqlStr, map[string]any{})
 
-	path, err := lv_office.DownlaodExcel(head, *arr)
-
-	return path, err
+	return arr, err
 }
 
 // 获取所有数据

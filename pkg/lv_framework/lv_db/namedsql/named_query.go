@@ -11,7 +11,9 @@ import (
 	"github.com/lostvip-com/lv_framework/utils/lv_sql"
 	"github.com/spf13/cast"
 	"gorm.io/gorm"
+	"reflect"
 	"strings"
+	"time"
 )
 
 func Exec(db *gorm.DB, dmlSql string, req map[string]any) (int64, error) {
@@ -32,9 +34,9 @@ func Exec(db *gorm.DB, dmlSql string, req map[string]any) (int64, error) {
 }
 
 func GetOneMapByNamedSql(db *gorm.DB, limitSql string, req any, isCamel bool) (result *map[string]any, err error) {
-	list, err := ListMapAny(db, limitSql, req, isCamel)
-	var mpList []map[string]any = *list
+	list, err := ListMap(db, limitSql, req, isCamel)
 	if err == nil {
+		var mpList = *list
 		if mpList == nil || len(mpList) == 0 {
 			err = gorm.ErrRecordNotFound
 		} else {
@@ -124,8 +126,9 @@ func checkAndExtractMap(value interface{}) (map[string]any, bool) {
 	return nil, false
 }
 
-// ListMapAny params可是是strtuc指针或map,isCamel key是否按驼峰式命名
-func ListMapAny(db *gorm.DB, sqlQuery string, params any, isCamel bool) (*[]map[string]any, error) {
+// ListMap sql查询返回map isCamel key是否按驼峰式命名,有些数据会出现2进制输出
+func ListMap(db *gorm.DB, sqlQuery string, params any, isCamel bool) (*[]map[string]any, error) {
+	// 1. 执行查询
 	var rows *sql.Rows
 	var err error
 	if lv_global.IsDebug {
@@ -144,76 +147,75 @@ func ListMapAny(db *gorm.DB, sqlQuery string, params any, isCamel bool) (*[]map[
 		return nil, err
 	}
 	defer rows.Close()
+
+	// 2. 获取列信息
 	cols, err := rows.Columns()
 	if err != nil {
 		return nil, err
 	}
-	// 获取列的类型信息
-	types, err := rows.ColumnTypes()
+	colTypes, err := rows.ColumnTypes()
 	if err != nil {
 		return nil, err
 	}
-	// 创建一个切片来存储每行的数据
-	var results []map[string]any
-
-	// 遍历每一行
-	for rows.Next() {
-		rowData := make(map[string]any)
-		values := make([]interface{}, len(cols))
-		valuePtrs := make([]interface{}, len(cols))
-		// 为每列创建一个 interface{} 类型的指针
-		for i := range values {
-			valuePtrs[i] = &values[i]
+	// 3. 初始化扫描缓冲区
+	values := make([]interface{}, len(cols))
+	scanArgs := make([]interface{}, len(cols))
+	for i, colType := range colTypes {
+		switch colType.DatabaseTypeName() {
+		case "DATE", "DATETIME", "TIMESTAMP", "TIME":
+			var t time.Time
+			values[i] = &t
+		case "INT", "BIGINT", "SMALLINT", "TINYINT":
+			var n int64
+			values[i] = &n
+		case "FLOAT", "DOUBLE", "DECIMAL":
+			var f float64
+			values[i] = &f
+		case "BOOLEAN", "BOOL":
+			var b bool
+			values[i] = &b
+		case "BLOB", "BINARY", "VARBINARY":
+			var blob []byte
+			values[i] = &blob
+		default:
+			// 默认处理文本和其他类型
+			var s string
+			values[i] = &s
 		}
-		// 扫描当前行的数据
-		if err := rows.Scan(valuePtrs...); err != nil {
+		scanArgs[i] = values[i]
+	}
+
+	// 4. 遍历结果集
+	result := make([]map[string]any, 0)
+	for rows.Next() {
+		if err = rows.Scan(scanArgs...); err != nil {
 			return nil, err
 		}
-		// 根据列的类型将值转换为更具体的 Go 类型
-		var key string
-		for i, val := range values {
+
+		rowData := make(map[string]any)
+		for i, colName := range cols {
+			val := reflect.Indirect(reflect.ValueOf(values[i])).Interface()
+
+			// 特殊处理时间类型
+			if t, ok := val.(time.Time); ok {
+				val = t.Format("2006-01-02 15:04:05")
+			}
+
+			// 处理列名驼峰转换
+			key := colName
 			if isCamel {
-				key = lv_sql.ToCamel(cols[i])
+				key = lv_sql.ToCamel(key)
 			}
-			if val == nil {
-				rowData[key] = nil
-				continue
-			}
-			colType := types[i].DatabaseTypeName()
-			CastValueType(colType, rowData, key, val)
+			rowData[key] = val
 		}
-		// 将处理好的行数据添加到结果切片中
-		results = append(results, rowData)
+		result = append(result, rowData)
 	}
 
-	return &results, err
-}
-
-// CastValueType 根据列类型转换值类型
-func CastValueType(colType string, rowData map[string]any, key string, val interface{}) {
-	switch colType {
-	case "VARCHAR", "TEXT":
-		rowData[key] = cast.ToString(val)
-	case "INT", "INTEGER":
-		rowData[key] = cast.ToInt(val)
-	case "BIGINT":
-		rowData[key] = cast.ToInt64(val)
-	case "FLOAT", "DOUBLE":
-		rowData[key] = cast.ToFloat64(val)
-	case "DATETIME":
-		rowData[key] = cast.ToString(val)[:19]
-	case "DATE":
-		rowData[key] = cast.ToString(val)[:10]
-	default:
-		// 其他类型，直接存储 interface{}
-		rowData[key] = cast.ToString(val)
+	// 5. 检查遍历错误
+	if err = rows.Err(); err != nil {
+		return nil, err
 	}
-}
-
-// ListMap sql查询返回map isCamel key是否按驼峰式命名
-// Deprecated: 不再使用
-func ListMap(db *gorm.DB, sqlQuery string, params any, isCamel bool) (*[]map[string]string, error) {
-	return ListMapStr(db, sqlQuery, params, isCamel)
+	return &result, nil
 }
 
 // ListMapStr 所有数据转为字符串格式返回，params可是是strtuc指针或map,isCamel key是否按驼峰式命名

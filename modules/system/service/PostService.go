@@ -6,7 +6,6 @@ import (
 	"github.com/lostvip-com/lv_framework/lv_db/lv_dao"
 	"github.com/lostvip-com/lv_framework/utils/lv_conv"
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
-	"github.com/lostvip-com/lv_framework/utils/lv_office"
 	"system/dao"
 	"system/model"
 	"system/vo"
@@ -88,12 +87,12 @@ func (svc *PostService) FindPage(params *vo.PostPageReq) (*[]map[string]string, 
 
 // 导出excel
 func (svc *PostService) Export(param *vo.PostPageReq) (string, error) {
-	head := []string{"岗位序号", "岗位名称", "岗位编码", "岗位排序", "状态"}
-	col := []string{"post_id", "post_name", "post_code", "post_sort", "status"}
-	var d dao.SysPostDao
-	result, err := d.ListAllMap(param, false)
-	url, err := lv_office.DownlaodExcelByListMapStr(&head, &col, result)
-	return url, err
+	//head := []string{"岗位序号", "岗位名称", "岗位编码", "岗位排序", "状态"}
+	//col := []string{"post_id", "post_name", "post_code", "post_sort", "status"}
+	//var d dao.SysPostDao
+	//result, err := d.ListAllMap(param, false)
+	//url, err := lv_office.DownloadExcel(&head, &col, result)
+	return "", nil
 }
 
 // 根据用户ID查询岗位

@@ -32,7 +32,7 @@ func (e SysUserDao) DeleteByIds(ida []int64) int64 {
 }
 
 // 根据条件分页查询用户列表
-func (d SysUserDao) FindPage(param *common_vo.SelectUserPageReq) (*[]map[string]string, int64, error) {
+func (d SysUserDao) FindPage(param *common_vo.UserPageReq) (*[]map[string]string, int64, error) {
 	db := lv_db.GetMasterGorm()
 	sqlParams, sql := d.GetSql(param)
 	lv_log.Info("============sqlParams:", sqlParams)
@@ -44,7 +44,7 @@ func (d SysUserDao) FindPage(param *common_vo.SelectUserPageReq) (*[]map[string]
 	return result, total, err
 }
 
-func (d SysUserDao) GetSql(param *common_vo.SelectUserPageReq) (map[string]interface{}, string) {
+func (d SysUserDao) GetSql(param *common_vo.UserPageReq) (map[string]interface{}, string) {
 	sqlParams := make(map[string]interface{})
 	sql := `
             select u.user_id, u.dept_id, u.user_name, u.nick_name, u.email, u.avatar, u.phonenumber, u.password,u.sex, u.status, u.del_flag, 
@@ -92,11 +92,11 @@ func (d SysUserDao) GetSql(param *common_vo.SelectUserPageReq) (map[string]inter
 }
 
 // 导出excel
-func (d SysUserDao) SelectExportList(param *common_vo.SelectUserPageReq) (*[]map[string]string, error) {
+func (d SysUserDao) SelectExportList(param *common_vo.UserPageReq) (*[]map[string]any, error) {
 	db := lv_db.GetMasterGorm()
 	sqlParams, sql := d.GetSql(param)
 	limitSql := sql + " order by u.user_id desc "
-	result, err := namedsql.ListMapStr(db, limitSql, &sqlParams, true)
+	result, err := namedsql.ListMap(db, limitSql, &sqlParams, true)
 	return result, err
 }
 

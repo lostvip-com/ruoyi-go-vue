@@ -19,9 +19,9 @@ import (
 
 const (
 	// Verify that this generated code is sufficiently up-to-date.
-	_ = protoimpl.EnforceVersion(20 - protoimpl.MinVersion)
+	_ = protoimpxls.EnforceVersion(20 - protoimpxls.MinVersion)
 	// Verify that runtime/protoimpl is sufficiently up-to-date.
-	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
+	_ = protoimpxls.EnforceVersion(protoimpxls.MaxVersion - 20)
 )
 
 // Symbols defined in public import of google/protobuf/timestamp.proto.
@@ -29,22 +29,22 @@ const (
 type Timestamp = timestamppb.Timestamp
 
 type CreateProductCallbackRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
+	state         protoimpxls.MessageState `protogen:"open.v1"`
 	Data          *driverproduct.Product `protobuf:"bytes,1,opt,name=Data,proto3" json:"Data,omitempty"`
 	HappenTime    *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=happenTime,proto3" json:"happenTime,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpxls.UnknownFields
+	sizeCache     protoimpxls.SizeCache
 }
 
 func (x *CreateProductCallbackRequest) Reset() {
 	*x = CreateProductCallbackRequest{}
 	mi := &file_productcallback_productcallback_proto_msgTypes[0]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
 func (x *CreateProductCallbackRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
+	return protoimpxls.X.MessageStringOf(x)
 }
 
 func (*CreateProductCallbackRequest) ProtoMessage() {}
@@ -52,7 +52,7 @@ func (*CreateProductCallbackRequest) ProtoMessage() {}
 func (x *CreateProductCallbackRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_productcallback_productcallback_proto_msgTypes[0]
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
 			ms.StoreMessageInfo(mi)
 		}
@@ -81,22 +81,22 @@ func (x *CreateProductCallbackRequest) GetHappenTime() *timestamppb.Timestamp {
 }
 
 type UpdateProductCallbackRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
+	state         protoimpxls.MessageState `protogen:"open.v1"`
 	Data          *driverproduct.Product `protobuf:"bytes,1,opt,name=Data,proto3" json:"Data,omitempty"`
 	HappenTime    *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=happenTime,proto3" json:"happenTime,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpxls.UnknownFields
+	sizeCache     protoimpxls.SizeCache
 }
 
 func (x *UpdateProductCallbackRequest) Reset() {
 	*x = UpdateProductCallbackRequest{}
 	mi := &file_productcallback_productcallback_proto_msgTypes[1]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
 func (x *UpdateProductCallbackRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
+	return protoimpxls.X.MessageStringOf(x)
 }
 
 func (*UpdateProductCallbackRequest) ProtoMessage() {}
@@ -104,7 +104,7 @@ func (*UpdateProductCallbackRequest) ProtoMessage() {}
 func (x *UpdateProductCallbackRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_productcallback_productcallback_proto_msgTypes[1]
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
 			ms.StoreMessageInfo(mi)
 		}
@@ -133,22 +133,22 @@ func (x *UpdateProductCallbackRequest) GetHappenTime() *timestamppb.Timestamp {
 }
 
 type DeleteProductCallbackRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
+	state         protoimpxls.MessageState `protogen:"open.v1"`
 	ProductId     int64                  `protobuf:"varint,1,opt,name=productId,proto3" json:"productId,omitempty"`
 	HappenTime    *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=happenTime,proto3" json:"happenTime,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpxls.UnknownFields
+	sizeCache     protoimpxls.SizeCache
 }
 
 func (x *DeleteProductCallbackRequest) Reset() {
 	*x = DeleteProductCallbackRequest{}
 	mi := &file_productcallback_productcallback_proto_msgTypes[2]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
 func (x *DeleteProductCallbackRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
+	return protoimpxls.X.MessageStringOf(x)
 }
 
 func (*DeleteProductCallbackRequest) ProtoMessage() {}
@@ -156,7 +156,7 @@ func (*DeleteProductCallbackRequest) ProtoMessage() {}
 func (x *DeleteProductCallbackRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_productcallback_productcallback_proto_msgTypes[2]
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
 			ms.StoreMessageInfo(mi)
 		}
@@ -255,12 +255,12 @@ var (
 
 func file_productcallback_productcallback_proto_rawDescGZIP() []byte {
 	file_productcallback_productcallback_proto_rawDescOnce.Do(func() {
-		file_productcallback_productcallback_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_productcallback_productcallback_proto_rawDesc), len(file_productcallback_productcallback_proto_rawDesc)))
+		file_productcallback_productcallback_proto_rawDescData = protoimpxls.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_productcallback_productcallback_proto_rawDesc), len(file_productcallback_productcallback_proto_rawDesc)))
 	})
 	return file_productcallback_productcallback_proto_rawDescData
 }
 
-var file_productcallback_productcallback_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_productcallback_productcallback_proto_msgTypes = make([]protoimpxls.MessageInfo, 3)
 var file_productcallback_productcallback_proto_goTypes = []any{
 	(*CreateProductCallbackRequest)(nil), // 0: productcallback.createProductCallbackRequest
 	(*UpdateProductCallbackRequest)(nil), // 1: productcallback.updateProductCallbackRequest
@@ -294,8 +294,8 @@ func file_productcallback_productcallback_proto_init() {
 		return
 	}
 	type x struct{}
-	out := protoimpl.TypeBuilder{
-		File: protoimpl.DescBuilder{
+	out := protoimpxls.TypeBuilder{
+		File: protoimpxls.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_productcallback_productcallback_proto_rawDesc), len(file_productcallback_productcallback_proto_rawDesc)),
 			NumEnums:      0,

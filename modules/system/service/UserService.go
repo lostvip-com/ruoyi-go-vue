@@ -8,10 +8,8 @@ import (
 	"github.com/lostvip-com/lv_framework/lv_cache"
 	"github.com/lostvip-com/lv_framework/lv_db"
 	"github.com/lostvip-com/lv_framework/utils/lv_conv"
-	"github.com/lostvip-com/lv_framework/utils/lv_err"
 	"github.com/lostvip-com/lv_framework/utils/lv_gen"
 	"github.com/lostvip-com/lv_framework/utils/lv_net"
-	"github.com/lostvip-com/lv_framework/utils/lv_office"
 	"github.com/lostvip-com/lv_framework/utils/lv_secret"
 	"github.com/spf13/cast"
 	"gorm.io/gorm"
@@ -25,7 +23,7 @@ type UserService struct{}
 
 var userService *UserService
 
-func GetUserService() *UserService {
+func GetUserServiceInstance() *UserService {
 	if userService == nil {
 		userService = &UserService{}
 	}
@@ -38,7 +36,7 @@ func (svc *UserService) FindById(id int64) (*model.SysUser, error) {
 	return entity, err
 }
 
-func (svc *UserService) FindList(param *common_vo.SelectUserPageReq) (*[]map[string]string, int64, error) {
+func (svc *UserService) FindList(param *common_vo.UserPageReq) (*[]map[string]string, int64, error) {
 	var deptService DeptService
 	var dept, _ = deptService.FindById(param.DeptId)
 	if dept != nil { //数据权限
@@ -46,16 +44,6 @@ func (svc *UserService) FindList(param *common_vo.SelectUserPageReq) (*[]map[str
 	}
 	var d = dao.GetUserDaoInstance()
 	return d.FindPage(param)
-}
-
-// 导出excel
-func (svc *UserService) Export(param *common_vo.SelectUserPageReq) (string, error) {
-	head := []string{"用户名", "呢称", "Email", "电话号码", "性别", "部门", "领导", "状态", "删除标记", "创建人", "创建时间", "备注"}
-	col := []string{"UserName", "userName", "u.email", "phonenumber", "sex", "deptName", "leader", "status", "delFlag", "createBy", "createTime", "Remark"}
-	var d dao.SysUserDao
-	listMap, err := d.SelectExportList(param)
-	lv_err.HasErrAndPanic(err)
-	return lv_office.DownlaodExcelByListMapStr(&head, &col, listMap)
 }
 
 // 新增用户

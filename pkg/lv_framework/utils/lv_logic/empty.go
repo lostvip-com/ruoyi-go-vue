@@ -68,7 +68,7 @@ func IsEmpty(value interface{}) bool {
 	return false
 }
 
-// IsNil checks whether given <value> is nil.
+// IsNil checks whether given <value> is nixls.
 // Note that it might use reflect feature which affects performance a little bit.
 func IsNil(value interface{}) bool {
 	if value == nil {

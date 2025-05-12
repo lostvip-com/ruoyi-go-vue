@@ -27,7 +27,7 @@ func (w *CommonApi) DownloadTmp(c *gin.Context) {
 	}
 	b, _ := io.ReadAll(file)
 	c.Writer.Header().Add("Content-Disposition", "attachment")
-	c.Writer.Header().Add("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	c.Writer.Header().Add("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetmxls.sheet")
 	c.Writer.Write(b)
 	c.Abort()
 }
@@ -47,7 +47,7 @@ func (w *CommonApi) DownloadUpload(c *gin.Context) {
 	}
 	b, _ := io.ReadAll(file)
 	c.Writer.Header().Add("Content-Disposition", "attachment")
-	c.Writer.Header().Add("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	c.Writer.Header().Add("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetmxls.sheet")
 	c.Writer.Write(b)
 	c.Abort()
 }

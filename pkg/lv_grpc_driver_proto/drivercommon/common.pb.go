@@ -18,9 +18,9 @@ import (
 
 const (
 	// Verify that this generated code is sufficiently up-to-date.
-	_ = protoimpl.EnforceVersion(20 - protoimpl.MinVersion)
+	_ = protoimpxls.EnforceVersion(20 - protoimpxls.MinVersion)
 	// Verify that runtime/protoimpl is sufficiently up-to-date.
-	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
+	_ = protoimpxls.EnforceVersion(protoimpxls.MaxVersion - 20)
 )
 
 // Symbols defined in public import of google/protobuf/timestamp.proto.
@@ -28,24 +28,24 @@ const (
 type Timestamp = timestamppb.Timestamp
 
 type CloudInstanceInfo struct {
-	state             protoimpl.MessageState `protogen:"open.v1"`
+	state             protoimpxls.MessageState `protogen:"open.v1"`
 	CloudInstanceId   int64                  `protobuf:"varint,2,opt,name=cloudInstanceId,proto3" json:"cloudInstanceId,omitempty"`
 	BaseAddress       string                 `protobuf:"bytes,3,opt,name=baseAddress,proto3" json:"baseAddress,omitempty"`
 	CloudInstanceName string                 `protobuf:"bytes,4,opt,name=cloudInstanceName,proto3" json:"cloudInstanceName,omitempty"`
 	IotPlatform       string                 `protobuf:"bytes,5,opt,name=iotPlatform,proto3" json:"iotPlatform,omitempty"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
+	unknownFields     protoimpxls.UnknownFields
+	sizeCache         protoimpxls.SizeCache
 }
 
 func (x *CloudInstanceInfo) Reset() {
 	*x = CloudInstanceInfo{}
 	mi := &file_drivercommon_common_proto_msgTypes[0]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
 func (x *CloudInstanceInfo) String() string {
-	return protoimpl.X.MessageStringOf(x)
+	return protoimpxls.X.MessageStringOf(x)
 }
 
 func (*CloudInstanceInfo) ProtoMessage() {}
@@ -53,7 +53,7 @@ func (*CloudInstanceInfo) ProtoMessage() {}
 func (x *CloudInstanceInfo) ProtoReflect() protoreflect.Message {
 	mi := &file_drivercommon_common_proto_msgTypes[0]
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
 			ms.StoreMessageInfo(mi)
 		}
@@ -96,26 +96,26 @@ func (x *CloudInstanceInfo) GetIotPlatform() string {
 }
 
 type BaseRequestMessage struct {
-	state             protoimpl.MessageState `protogen:"open.v1"`
+	state             protoimpxls.MessageState `protogen:"open.v1"`
 	TraceId           string                 `protobuf:"bytes,1,opt,name=traceId,proto3" json:"traceId,omitempty"`
 	CloudInstanceId   int64                  `protobuf:"varint,2,opt,name=cloudInstanceId,proto3" json:"cloudInstanceId,omitempty"`
 	BaseAddress       string                 `protobuf:"bytes,3,opt,name=baseAddress,proto3" json:"baseAddress,omitempty"`
 	CloudInstanceName string                 `protobuf:"bytes,4,opt,name=cloudInstanceName,proto3" json:"cloudInstanceName,omitempty"`
 	IotPlatform       string                 `protobuf:"bytes,5,opt,name=iotPlatform,proto3" json:"iotPlatform,omitempty"`
 	DriverInstanceId  int64                  `protobuf:"varint,6,opt,name=driverInstanceId,proto3" json:"driverInstanceId,omitempty"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
+	unknownFields     protoimpxls.UnknownFields
+	sizeCache         protoimpxls.SizeCache
 }
 
 func (x *BaseRequestMessage) Reset() {
 	*x = BaseRequestMessage{}
 	mi := &file_drivercommon_common_proto_msgTypes[1]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
 func (x *BaseRequestMessage) String() string {
-	return protoimpl.X.MessageStringOf(x)
+	return protoimpxls.X.MessageStringOf(x)
 }
 
 func (*BaseRequestMessage) ProtoMessage() {}
@@ -123,7 +123,7 @@ func (*BaseRequestMessage) ProtoMessage() {}
 func (x *BaseRequestMessage) ProtoReflect() protoreflect.Message {
 	mi := &file_drivercommon_common_proto_msgTypes[1]
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
 			ms.StoreMessageInfo(mi)
 		}
@@ -180,25 +180,25 @@ func (x *BaseRequestMessage) GetDriverInstanceId() int64 {
 }
 
 type CommonResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
+	state         protoimpxls.MessageState `protogen:"open.v1"`
 	TraceId       string                 `protobuf:"bytes,1,opt,name=TraceId,proto3" json:"TraceId,omitempty"`
 	Msg           string                 `protobuf:"bytes,2,opt,name=Msg,proto3" json:"Msg,omitempty"`
 	Code          int32                  `protobuf:"varint,3,opt,name=Code,proto3" json:"Code,omitempty"`
 	Success       bool                   `protobuf:"varint,4,opt,name=Success,proto3" json:"Success,omitempty"`
 	Extra         string                 `protobuf:"bytes,5,opt,name=Extra,proto3" json:"Extra,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpxls.UnknownFields
+	sizeCache     protoimpxls.SizeCache
 }
 
 func (x *CommonResponse) Reset() {
 	*x = CommonResponse{}
 	mi := &file_drivercommon_common_proto_msgTypes[2]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
 func (x *CommonResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
+	return protoimpxls.X.MessageStringOf(x)
 }
 
 func (*CommonResponse) ProtoMessage() {}
@@ -206,7 +206,7 @@ func (*CommonResponse) ProtoMessage() {}
 func (x *CommonResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_drivercommon_common_proto_msgTypes[2]
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
 			ms.StoreMessageInfo(mi)
 		}
@@ -256,21 +256,21 @@ func (x *CommonResponse) GetExtra() string {
 }
 
 type Pong struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
+	state         protoimpxls.MessageState `protogen:"open.v1"`
 	Timestamp     string                 `protobuf:"bytes,2,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpxls.UnknownFields
+	sizeCache     protoimpxls.SizeCache
 }
 
 func (x *Pong) Reset() {
 	*x = Pong{}
 	mi := &file_drivercommon_common_proto_msgTypes[3]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
 func (x *Pong) String() string {
-	return protoimpl.X.MessageStringOf(x)
+	return protoimpxls.X.MessageStringOf(x)
 }
 
 func (*Pong) ProtoMessage() {}
@@ -278,7 +278,7 @@ func (*Pong) ProtoMessage() {}
 func (x *Pong) ProtoReflect() protoreflect.Message {
 	mi := &file_drivercommon_common_proto_msgTypes[3]
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
 			ms.StoreMessageInfo(mi)
 		}
@@ -300,21 +300,21 @@ func (x *Pong) GetTimestamp() string {
 }
 
 type VersionResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
+	state         protoimpxls.MessageState `protogen:"open.v1"`
 	Version       string                 `protobuf:"bytes,2,opt,name=version,proto3" json:"version,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpxls.UnknownFields
+	sizeCache     protoimpxls.SizeCache
 }
 
 func (x *VersionResponse) Reset() {
 	*x = VersionResponse{}
 	mi := &file_drivercommon_common_proto_msgTypes[4]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
 func (x *VersionResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
+	return protoimpxls.X.MessageStringOf(x)
 }
 
 func (*VersionResponse) ProtoMessage() {}
@@ -322,7 +322,7 @@ func (*VersionResponse) ProtoMessage() {}
 func (x *VersionResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_drivercommon_common_proto_msgTypes[4]
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
 			ms.StoreMessageInfo(mi)
 		}
@@ -415,12 +415,12 @@ var (
 
 func file_drivercommon_common_proto_rawDescGZIP() []byte {
 	file_drivercommon_common_proto_rawDescOnce.Do(func() {
-		file_drivercommon_common_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_drivercommon_common_proto_rawDesc), len(file_drivercommon_common_proto_rawDesc)))
+		file_drivercommon_common_proto_rawDescData = protoimpxls.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_drivercommon_common_proto_rawDesc), len(file_drivercommon_common_proto_rawDesc)))
 	})
 	return file_drivercommon_common_proto_rawDescData
 }
 
-var file_drivercommon_common_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_drivercommon_common_proto_msgTypes = make([]protoimpxls.MessageInfo, 5)
 var file_drivercommon_common_proto_goTypes = []any{
 	(*CloudInstanceInfo)(nil),  // 0: drivercommon.CloudInstanceInfo
 	(*BaseRequestMessage)(nil), // 1: drivercommon.BaseRequestMessage
@@ -447,8 +447,8 @@ func file_drivercommon_common_proto_init() {
 		return
 	}
 	type x struct{}
-	out := protoimpl.TypeBuilder{
-		File: protoimpl.DescBuilder{
+	out := protoimpxls.TypeBuilder{
+		File: protoimpxls.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_drivercommon_common_proto_rawDesc), len(file_drivercommon_common_proto_rawDesc)),
 			NumEnums:      0,

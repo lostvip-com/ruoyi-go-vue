@@ -8,7 +8,6 @@ import (
 	"github.com/lostvip-com/lv_framework/lv_cache/lv_ram"
 	"github.com/lostvip-com/lv_framework/utils/lv_conv"
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
-	"github.com/lostvip-com/lv_framework/utils/lv_office"
 	"github.com/spf13/cast"
 	dao2 "system/dao"
 	"system/model"
@@ -130,12 +129,12 @@ func (svc *ConfigService) FindPage(params *common_vo.SelectConfigPageReq) (*[]ma
 
 // 导出excel
 func (svc *ConfigService) Export(param *common_vo.SelectConfigPageReq) (string, error) {
-	head := []string{"参数主键", "参数名称", "参数键名", "参数键值", "系统内置（Y是 N否）", "状态"}
-	col := []string{"config_id", "config_name", "config_key", "config_value", "config_type"}
-	var d dao2.ConfigDao
-	listMap, err := d.SelectExportList(param)
-	lv_err.HasErrAndPanic(err)
-	return lv_office.DownlaodExcelByListMapStr(&head, &col, listMap)
+	//head := []string{"参数主键", "参数名称", "参数键名", "参数键值", "系统内置（Y是 N否）", "状态"}
+	//col := []string{"config_id", "config_name", "config_key", "config_value", "config_type"}
+	//var d dao2.ConfigDao
+	//listMap, err := d.SelectExportList(param)
+	//lv_err.HasErrAndPanic(err)
+	return "", nil
 }
 
 func (svc *ConfigService) CountKey(key string) (int64, error) {

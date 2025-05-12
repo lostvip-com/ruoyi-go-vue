@@ -17,7 +17,7 @@ import (
 	"os"
 	"os/exec"
 	"strings"
-	menuModel "system/model"
+	"system/model"
 	"system/service"
 	"system/vo"
 )
@@ -36,7 +36,7 @@ func (w *GenApi) ExecSqlFile(c *gin.Context) {
 	if tableId <= 0 {
 		util2.ErrorResp(c).SetBtype(lv_dto.Buniss_Add).SetMsg("参数错误").Log("执行SQL文件错误", gin.H{"tableId": tableId})
 	}
-	genTable := menuModel.GenTable{}
+	genTable := model.GenTable{}
 	po, err := genTable.FindById(tableId)
 	if err != nil {
 		panic(err.Error())
@@ -50,7 +50,7 @@ func (w *GenApi) ExecSqlFile(c *gin.Context) {
 	//cfg := global.GetConfigInstance()
 	batis.Exec(tb, "menu")
 	menuName := po.FunctionName
-	sysmenu := menuModel.SysMenu{}
+	sysmenu := model.SysMenu{}
 	sysmenu.MenuName = menuName
 	err = sysmenu.FindLastOne()
 	lv_err.HasErrAndPanic(err)
@@ -117,7 +117,7 @@ func (w *GenApi) GenList(c *gin.Context) {
 		util2.ErrorResp(c).SetMsg(err.Error()).Log("生成代码", req).WriteJsonExit()
 		return
 	}
-	rows := make([]menuModel.GenTable, 0)
+	rows := make([]model.GenTable, 0)
 	result, total, err := tableService.FindPage(req)
 
 	if err == nil && len(result) > 0 {
@@ -243,7 +243,7 @@ func canGenIt(overwrite bool, file string) bool {
 	if overwrite { //允许覆盖
 		lv_log.Warn("--------->您配置了 overwrite 开关的值为true，旧文件会被覆盖！！！！ ")
 		return true
-	} else { // 不允许覆盖
+	} else {                      // 不允许覆盖
 		if lv_file.Exists(file) { //文件已经存在，不允许重新生成
 			lv_log.Warn("=======> 文件已经存在，本次将不会生成新文件！！！！！！！！！！！！ ")
 			return false
@@ -260,7 +260,7 @@ func (w *GenApi) DataList(c *gin.Context) {
 	err := c.ShouldBind(&req)
 	lv_err.HasErrAndPanic(err)
 	tableService := service.TableService{}
-	rows := make([]menuModel.GenTable, 0)
+	rows := make([]model.GenTable, 0)
 	result, total, err := tableService.SelectDbTableList(req)
 	if err == nil && len(result) > 0 {
 		rows = result
@@ -306,7 +306,7 @@ func (w *GenApi) ImportTableSave(c *gin.Context) {
 // 根据table_id查询表列数据
 func (w *GenApi) ColumnList(c *gin.Context) {
 	tableId := lv_conv.Int64(c.Query("tableId"))
-	rows := make([]menuModel.GenTableColumn, 0)
+	rows := make([]model.GenTableColumn, 0)
 	tableService := service.TableColumnService{}
 	result, err := tableService.SelectGenTableColumnListByTableId(tableId)
 

@@ -57,7 +57,7 @@ func (w *MenuApi) AddSave(c *gin.Context) {
 		util.ErrorResp(c).SetBtype(lv_dto.Buniss_Add).SetMsg(err.Error()).Log("菜单管理", req).WriteJsonExit()
 		return
 	}
-	user := service.GetUserService().GetProfile(c)
+	user := service.GetUserServiceInstance().GetProfile(c)
 	if user != nil {
 		req.CreateBy = user.UserName
 	}

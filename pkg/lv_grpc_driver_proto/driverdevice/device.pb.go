@@ -16,9 +16,9 @@ import (
 
 const (
 	// Verify that this generated code is sufficiently up-to-date.
-	_ = protoimpl.EnforceVersion(20 - protoimpl.MinVersion)
+	_ = protoimpxls.EnforceVersion(20 - protoimpxls.MinVersion)
 	// Verify that runtime/protoimpl is sufficiently up-to-date.
-	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
+	_ = protoimpxls.EnforceVersion(protoimpxls.MaxVersion - 20)
 )
 
 type DeviceStatus int32
@@ -56,7 +56,7 @@ func (x DeviceStatus) Enum() *DeviceStatus {
 }
 
 func (x DeviceStatus) String() string {
-	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+	return protoimpxls.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
 }
 
 func (DeviceStatus) Descriptor() protoreflect.EnumDescriptor {
@@ -111,7 +111,7 @@ func (x ConnectStatus) Enum() *ConnectStatus {
 }
 
 func (x ConnectStatus) String() string {
-	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+	return protoimpxls.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
 }
 
 func (ConnectStatus) Descriptor() protoreflect.EnumDescriptor {
@@ -132,7 +132,7 @@ func (ConnectStatus) EnumDescriptor() ([]byte, []int) {
 }
 
 type ConnectIotPlatformRequest struct {
-	state             protoimpl.MessageState `protogen:"open.v1"`
+	state             protoimpxls.MessageState `protogen:"open.v1"`
 	TraceId           string                 `protobuf:"bytes,1,opt,name=traceId,proto3" json:"traceId,omitempty"`
 	CloudInstanceId   int64                  `protobuf:"varint,2,opt,name=cloudInstanceId,proto3" json:"cloudInstanceId,omitempty"`
 	BaseAddress       string                 `protobuf:"bytes,3,opt,name=baseAddress,proto3" json:"baseAddress,omitempty"`
@@ -140,19 +140,19 @@ type ConnectIotPlatformRequest struct {
 	IotPlatform       string                 `protobuf:"bytes,5,opt,name=iotPlatform,proto3" json:"iotPlatform,omitempty"`
 	DriverInstanceId  int64                  `protobuf:"varint,6,opt,name=driverInstanceId,proto3" json:"driverInstanceId,omitempty"`
 	DeviceId          int64                  `protobuf:"varint,7,opt,name=deviceId,proto3" json:"deviceId,omitempty"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
+	unknownFields     protoimpxls.UnknownFields
+	sizeCache         protoimpxls.SizeCache
 }
 
 func (x *ConnectIotPlatformRequest) Reset() {
 	*x = ConnectIotPlatformRequest{}
 	mi := &file_driverdevice_device_proto_msgTypes[0]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
 func (x *ConnectIotPlatformRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
+	return protoimpxls.X.MessageStringOf(x)
 }
 
 func (*ConnectIotPlatformRequest) ProtoMessage() {}
@@ -160,7 +160,7 @@ func (*ConnectIotPlatformRequest) ProtoMessage() {}
 func (x *ConnectIotPlatformRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_driverdevice_device_proto_msgTypes[0]
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
 			ms.StoreMessageInfo(mi)
 		}
@@ -224,25 +224,25 @@ func (x *ConnectIotPlatformRequest) GetDeviceId() int64 {
 }
 
 type ConnectIotPlatformResponse struct {
-	state         protoimpl.MessageState           `protogen:"open.v1"`
+	state         protoimpxls.MessageState           `protogen:"open.v1"`
 	TraceId       string                           `protobuf:"bytes,1,opt,name=TraceId,proto3" json:"TraceId,omitempty"`
 	Msg           string                           `protobuf:"bytes,2,opt,name=Msg,proto3" json:"Msg,omitempty"`
 	Code          int32                            `protobuf:"varint,3,opt,name=Code,proto3" json:"Code,omitempty"`
 	Success       bool                             `protobuf:"varint,4,opt,name=Success,proto3" json:"Success,omitempty"`
 	Data          *ConnectIotPlatformResponse_Data `protobuf:"bytes,5,opt,name=data,proto3" json:"data,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpxls.UnknownFields
+	sizeCache     protoimpxls.SizeCache
 }
 
 func (x *ConnectIotPlatformResponse) Reset() {
 	*x = ConnectIotPlatformResponse{}
 	mi := &file_driverdevice_device_proto_msgTypes[1]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
 func (x *ConnectIotPlatformResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
+	return protoimpxls.X.MessageStringOf(x)
 }
 
 func (*ConnectIotPlatformResponse) ProtoMessage() {}
@@ -250,7 +250,7 @@ func (*ConnectIotPlatformResponse) ProtoMessage() {}
 func (x *ConnectIotPlatformResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_driverdevice_device_proto_msgTypes[1]
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
 			ms.StoreMessageInfo(mi)
 		}
@@ -300,7 +300,7 @@ func (x *ConnectIotPlatformResponse) GetData() *ConnectIotPlatformResponse_Data 
 }
 
 type DisconnectIotPlatformRequest struct {
-	state             protoimpl.MessageState `protogen:"open.v1"`
+	state             protoimpxls.MessageState `protogen:"open.v1"`
 	TraceId           string                 `protobuf:"bytes,1,opt,name=traceId,proto3" json:"traceId,omitempty"`
 	CloudInstanceId   int64                  `protobuf:"varint,2,opt,name=cloudInstanceId,proto3" json:"cloudInstanceId,omitempty"`
 	BaseAddress       string                 `protobuf:"bytes,3,opt,name=baseAddress,proto3" json:"baseAddress,omitempty"`
@@ -308,19 +308,19 @@ type DisconnectIotPlatformRequest struct {
 	IotPlatform       string                 `protobuf:"bytes,5,opt,name=iotPlatform,proto3" json:"iotPlatform,omitempty"`
 	DriverInstanceId  int64                  `protobuf:"varint,6,opt,name=driverInstanceId,proto3" json:"driverInstanceId,omitempty"`
 	DeviceId          int64                  `protobuf:"varint,7,opt,name=deviceId,proto3" json:"deviceId,omitempty"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
+	unknownFields     protoimpxls.UnknownFields
+	sizeCache         protoimpxls.SizeCache
 }
 
 func (x *DisconnectIotPlatformRequest) Reset() {
 	*x = DisconnectIotPlatformRequest{}
 	mi := &file_driverdevice_device_proto_msgTypes[2]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
 func (x *DisconnectIotPlatformRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
+	return protoimpxls.X.MessageStringOf(x)
 }
 
 func (*DisconnectIotPlatformRequest) ProtoMessage() {}
@@ -328,7 +328,7 @@ func (*DisconnectIotPlatformRequest) ProtoMessage() {}
 func (x *DisconnectIotPlatformRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_driverdevice_device_proto_msgTypes[2]
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
 			ms.StoreMessageInfo(mi)
 		}
@@ -392,25 +392,25 @@ func (x *DisconnectIotPlatformRequest) GetDeviceId() int64 {
 }
 
 type DisconnectIotPlatformResponse struct {
-	state         protoimpl.MessageState              `protogen:"open.v1"`
+	state         protoimpxls.MessageState              `protogen:"open.v1"`
 	TraceId       string                              `protobuf:"bytes,1,opt,name=TraceId,proto3" json:"TraceId,omitempty"`
 	Msg           string                              `protobuf:"bytes,2,opt,name=Msg,proto3" json:"Msg,omitempty"`
 	Code          int32                               `protobuf:"varint,3,opt,name=Code,proto3" json:"Code,omitempty"`
 	Success       bool                                `protobuf:"varint,4,opt,name=Success,proto3" json:"Success,omitempty"`
 	Data          *DisconnectIotPlatformResponse_Data `protobuf:"bytes,5,opt,name=data,proto3" json:"data,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpxls.UnknownFields
+	sizeCache     protoimpxls.SizeCache
 }
 
 func (x *DisconnectIotPlatformResponse) Reset() {
 	*x = DisconnectIotPlatformResponse{}
 	mi := &file_driverdevice_device_proto_msgTypes[3]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
 func (x *DisconnectIotPlatformResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
+	return protoimpxls.X.MessageStringOf(x)
 }
 
 func (*DisconnectIotPlatformResponse) ProtoMessage() {}
@@ -418,7 +418,7 @@ func (*DisconnectIotPlatformResponse) ProtoMessage() {}
 func (x *DisconnectIotPlatformResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_driverdevice_device_proto_msgTypes[3]
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
 			ms.StoreMessageInfo(mi)
 		}
@@ -468,7 +468,7 @@ func (x *DisconnectIotPlatformResponse) GetData() *DisconnectIotPlatformResponse
 }
 
 type QueryDeviceByIdRequest struct {
-	state             protoimpl.MessageState `protogen:"open.v1"`
+	state             protoimpxls.MessageState `protogen:"open.v1"`
 	TraceId           string                 `protobuf:"bytes,1,opt,name=traceId,proto3" json:"traceId,omitempty"`
 	CloudInstanceId   int64                  `protobuf:"varint,2,opt,name=cloudInstanceId,proto3" json:"cloudInstanceId,omitempty"`
 	BaseAddress       string                 `protobuf:"bytes,3,opt,name=baseAddress,proto3" json:"baseAddress,omitempty"`
@@ -476,19 +476,19 @@ type QueryDeviceByIdRequest struct {
 	IotPlatform       string                 `protobuf:"bytes,5,opt,name=iotPlatform,proto3" json:"iotPlatform,omitempty"`
 	DriverInstanceId  int64                  `protobuf:"varint,6,opt,name=driverInstanceId,proto3" json:"driverInstanceId,omitempty"`
 	Id                int64                  `protobuf:"varint,7,opt,name=id,proto3" json:"id,omitempty"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
+	unknownFields     protoimpxls.UnknownFields
+	sizeCache         protoimpxls.SizeCache
 }
 
 func (x *QueryDeviceByIdRequest) Reset() {
 	*x = QueryDeviceByIdRequest{}
 	mi := &file_driverdevice_device_proto_msgTypes[4]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
 func (x *QueryDeviceByIdRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
+	return protoimpxls.X.MessageStringOf(x)
 }
 
 func (*QueryDeviceByIdRequest) ProtoMessage() {}
@@ -496,7 +496,7 @@ func (*QueryDeviceByIdRequest) ProtoMessage() {}
 func (x *QueryDeviceByIdRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_driverdevice_device_proto_msgTypes[4]
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
 			ms.StoreMessageInfo(mi)
 		}
@@ -560,25 +560,25 @@ func (x *QueryDeviceByIdRequest) GetId() int64 {
 }
 
 type QueryDeviceByIdResponse struct {
-	state         protoimpl.MessageState        `protogen:"open.v1"`
+	state         protoimpxls.MessageState        `protogen:"open.v1"`
 	TraceId       string                        `protobuf:"bytes,1,opt,name=TraceId,proto3" json:"TraceId,omitempty"`
 	Msg           string                        `protobuf:"bytes,2,opt,name=Msg,proto3" json:"Msg,omitempty"`
 	Code          int32                         `protobuf:"varint,3,opt,name=Code,proto3" json:"Code,omitempty"`
 	Success       bool                          `protobuf:"varint,4,opt,name=Success,proto3" json:"Success,omitempty"`
 	Data          *QueryDeviceByIdResponse_Data `protobuf:"bytes,5,opt,name=data,proto3" json:"data,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpxls.UnknownFields
+	sizeCache     protoimpxls.SizeCache
 }
 
 func (x *QueryDeviceByIdResponse) Reset() {
 	*x = QueryDeviceByIdResponse{}
 	mi := &file_driverdevice_device_proto_msgTypes[5]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
 func (x *QueryDeviceByIdResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
+	return protoimpxls.X.MessageStringOf(x)
 }
 
 func (*QueryDeviceByIdResponse) ProtoMessage() {}
@@ -586,7 +586,7 @@ func (*QueryDeviceByIdResponse) ProtoMessage() {}
 func (x *QueryDeviceByIdResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_driverdevice_device_proto_msgTypes[5]
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
 			ms.StoreMessageInfo(mi)
 		}
@@ -636,7 +636,7 @@ func (x *QueryDeviceByIdResponse) GetData() *QueryDeviceByIdResponse_Data {
 }
 
 type Device struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
+	state         protoimpxls.MessageState `protogen:"open.v1"`
 	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	Description   string                 `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
@@ -646,19 +646,19 @@ type Device struct {
 	DeviceSn      string                 `protobuf:"bytes,7,opt,name=deviceSn,proto3" json:"deviceSn,omitempty"`
 	Secret        string                 `protobuf:"bytes,8,opt,name=secret,proto3" json:"secret,omitempty"`
 	External      map[string]string      `protobuf:"bytes,9,rep,name=External,proto3" json:"External,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpxls.UnknownFields
+	sizeCache     protoimpxls.SizeCache
 }
 
 func (x *Device) Reset() {
 	*x = Device{}
 	mi := &file_driverdevice_device_proto_msgTypes[6]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
 func (x *Device) String() string {
-	return protoimpl.X.MessageStringOf(x)
+	return protoimpxls.X.MessageStringOf(x)
 }
 
 func (*Device) ProtoMessage() {}
@@ -666,7 +666,7 @@ func (*Device) ProtoMessage() {}
 func (x *Device) ProtoReflect() protoreflect.Message {
 	mi := &file_driverdevice_device_proto_msgTypes[6]
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
 			ms.StoreMessageInfo(mi)
 		}
@@ -744,26 +744,26 @@ func (x *Device) GetExternal() map[string]string {
 }
 
 type AddDevice struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
+	state         protoimpxls.MessageState `protogen:"open.v1"`
 	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	ProductId     int64                  `protobuf:"varint,2,opt,name=productId,proto3" json:"productId,omitempty"`
 	Description   string                 `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
 	DeviceSn      string                 `protobuf:"bytes,4,opt,name=deviceSn,proto3" json:"deviceSn,omitempty"`
 	Addr          int32                  `protobuf:"varint,5,opt,name=addr,proto3" json:"addr,omitempty"` //从机地址,子设备用
 	External      map[string]string      `protobuf:"bytes,6,rep,name=External,proto3" json:"External,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpxls.UnknownFields
+	sizeCache     protoimpxls.SizeCache
 }
 
 func (x *AddDevice) Reset() {
 	*x = AddDevice{}
 	mi := &file_driverdevice_device_proto_msgTypes[7]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
 func (x *AddDevice) String() string {
-	return protoimpl.X.MessageStringOf(x)
+	return protoimpxls.X.MessageStringOf(x)
 }
 
 func (*AddDevice) ProtoMessage() {}
@@ -771,7 +771,7 @@ func (*AddDevice) ProtoMessage() {}
 func (x *AddDevice) ProtoReflect() protoreflect.Message {
 	mi := &file_driverdevice_device_proto_msgTypes[7]
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
 			ms.StoreMessageInfo(mi)
 		}
@@ -828,7 +828,7 @@ func (x *AddDevice) GetExternal() map[string]string {
 }
 
 type CreateDeviceRequest struct {
-	state             protoimpl.MessageState `protogen:"open.v1"`
+	state             protoimpxls.MessageState `protogen:"open.v1"`
 	TraceId           string                 `protobuf:"bytes,1,opt,name=traceId,proto3" json:"traceId,omitempty"`
 	CloudInstanceId   int64                  `protobuf:"varint,2,opt,name=cloudInstanceId,proto3" json:"cloudInstanceId,omitempty"`
 	BaseAddress       string                 `protobuf:"bytes,3,opt,name=baseAddress,proto3" json:"baseAddress,omitempty"`
@@ -836,19 +836,19 @@ type CreateDeviceRequest struct {
 	IotPlatform       string                 `protobuf:"bytes,5,opt,name=iotPlatform,proto3" json:"iotPlatform,omitempty"`
 	DriverInstanceId  int64                  `protobuf:"varint,6,opt,name=driverInstanceId,proto3" json:"driverInstanceId,omitempty"`
 	Device            *AddDevice             `protobuf:"bytes,7,opt,name=device,proto3" json:"device,omitempty"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
+	unknownFields     protoimpxls.UnknownFields
+	sizeCache         protoimpxls.SizeCache
 }
 
 func (x *CreateDeviceRequest) Reset() {
 	*x = CreateDeviceRequest{}
 	mi := &file_driverdevice_device_proto_msgTypes[8]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
 func (x *CreateDeviceRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
+	return protoimpxls.X.MessageStringOf(x)
 }
 
 func (*CreateDeviceRequest) ProtoMessage() {}
@@ -856,7 +856,7 @@ func (*CreateDeviceRequest) ProtoMessage() {}
 func (x *CreateDeviceRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_driverdevice_device_proto_msgTypes[8]
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
 			ms.StoreMessageInfo(mi)
 		}
@@ -920,25 +920,25 @@ func (x *CreateDeviceRequest) GetDevice() *AddDevice {
 }
 
 type CreateDeviceRequestResponse struct {
-	state         protoimpl.MessageState            `protogen:"open.v1"`
+	state         protoimpxls.MessageState            `protogen:"open.v1"`
 	TraceId       string                            `protobuf:"bytes,1,opt,name=TraceId,proto3" json:"TraceId,omitempty"`
 	Msg           string                            `protobuf:"bytes,2,opt,name=Msg,proto3" json:"Msg,omitempty"`
 	Code          int32                             `protobuf:"varint,3,opt,name=Code,proto3" json:"Code,omitempty"`
 	Success       bool                              `protobuf:"varint,4,opt,name=Success,proto3" json:"Success,omitempty"`
 	Data          *CreateDeviceRequestResponse_Data `protobuf:"bytes,5,opt,name=data,proto3" json:"data,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpxls.UnknownFields
+	sizeCache     protoimpxls.SizeCache
 }
 
 func (x *CreateDeviceRequestResponse) Reset() {
 	*x = CreateDeviceRequestResponse{}
 	mi := &file_driverdevice_device_proto_msgTypes[9]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
 func (x *CreateDeviceRequestResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
+	return protoimpxls.X.MessageStringOf(x)
 }
 
 func (*CreateDeviceRequestResponse) ProtoMessage() {}
@@ -946,7 +946,7 @@ func (*CreateDeviceRequestResponse) ProtoMessage() {}
 func (x *CreateDeviceRequestResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_driverdevice_device_proto_msgTypes[9]
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
 			ms.StoreMessageInfo(mi)
 		}
@@ -996,21 +996,21 @@ func (x *CreateDeviceRequestResponse) GetData() *CreateDeviceRequestResponse_Dat
 }
 
 type CreateDeviceAndConnectRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
+	state         protoimpxls.MessageState `protogen:"open.v1"`
 	Device        *AddDevice             `protobuf:"bytes,1,opt,name=device,proto3" json:"device,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpxls.UnknownFields
+	sizeCache     protoimpxls.SizeCache
 }
 
 func (x *CreateDeviceAndConnectRequest) Reset() {
 	*x = CreateDeviceAndConnectRequest{}
 	mi := &file_driverdevice_device_proto_msgTypes[10]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
 func (x *CreateDeviceAndConnectRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
+	return protoimpxls.X.MessageStringOf(x)
 }
 
 func (*CreateDeviceAndConnectRequest) ProtoMessage() {}
@@ -1018,7 +1018,7 @@ func (*CreateDeviceAndConnectRequest) ProtoMessage() {}
 func (x *CreateDeviceAndConnectRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_driverdevice_device_proto_msgTypes[10]
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
 			ms.StoreMessageInfo(mi)
 		}
@@ -1040,25 +1040,25 @@ func (x *CreateDeviceAndConnectRequest) GetDevice() *AddDevice {
 }
 
 type CreateDeviceAndConnectRequestResponse struct {
-	state         protoimpl.MessageState                      `protogen:"open.v1"`
+	state         protoimpxls.MessageState                      `protogen:"open.v1"`
 	TraceId       string                                      `protobuf:"bytes,1,opt,name=TraceId,proto3" json:"TraceId,omitempty"`
 	Msg           string                                      `protobuf:"bytes,2,opt,name=Msg,proto3" json:"Msg,omitempty"`
 	Code          int32                                       `protobuf:"varint,3,opt,name=Code,proto3" json:"Code,omitempty"`
 	Success       bool                                        `protobuf:"varint,4,opt,name=Success,proto3" json:"Success,omitempty"`
 	Data          *CreateDeviceAndConnectRequestResponse_Data `protobuf:"bytes,5,opt,name=data,proto3" json:"data,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpxls.UnknownFields
+	sizeCache     protoimpxls.SizeCache
 }
 
 func (x *CreateDeviceAndConnectRequestResponse) Reset() {
 	*x = CreateDeviceAndConnectRequestResponse{}
 	mi := &file_driverdevice_device_proto_msgTypes[11]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
 func (x *CreateDeviceAndConnectRequestResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
+	return protoimpxls.X.MessageStringOf(x)
 }
 
 func (*CreateDeviceAndConnectRequestResponse) ProtoMessage() {}
@@ -1066,7 +1066,7 @@ func (*CreateDeviceAndConnectRequestResponse) ProtoMessage() {}
 func (x *CreateDeviceAndConnectRequestResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_driverdevice_device_proto_msgTypes[11]
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
 			ms.StoreMessageInfo(mi)
 		}
@@ -1116,7 +1116,7 @@ func (x *CreateDeviceAndConnectRequestResponse) GetData() *CreateDeviceAndConnec
 }
 
 type DeleteDeviceRequest struct {
-	state             protoimpl.MessageState `protogen:"open.v1"`
+	state             protoimpxls.MessageState `protogen:"open.v1"`
 	TraceId           string                 `protobuf:"bytes,1,opt,name=traceId,proto3" json:"traceId,omitempty"`
 	CloudInstanceId   int64                  `protobuf:"varint,2,opt,name=cloudInstanceId,proto3" json:"cloudInstanceId,omitempty"`
 	BaseAddress       string                 `protobuf:"bytes,3,opt,name=baseAddress,proto3" json:"baseAddress,omitempty"`
@@ -1124,19 +1124,19 @@ type DeleteDeviceRequest struct {
 	IotPlatform       string                 `protobuf:"bytes,5,opt,name=iotPlatform,proto3" json:"iotPlatform,omitempty"`
 	DriverInstanceId  int64                  `protobuf:"varint,6,opt,name=driverInstanceId,proto3" json:"driverInstanceId,omitempty"`
 	DeviceId          int64                  `protobuf:"varint,7,opt,name=deviceId,proto3" json:"deviceId,omitempty"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
+	unknownFields     protoimpxls.UnknownFields
+	sizeCache         protoimpxls.SizeCache
 }
 
 func (x *DeleteDeviceRequest) Reset() {
 	*x = DeleteDeviceRequest{}
 	mi := &file_driverdevice_device_proto_msgTypes[12]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
 func (x *DeleteDeviceRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
+	return protoimpxls.X.MessageStringOf(x)
 }
 
 func (*DeleteDeviceRequest) ProtoMessage() {}
@@ -1144,7 +1144,7 @@ func (*DeleteDeviceRequest) ProtoMessage() {}
 func (x *DeleteDeviceRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_driverdevice_device_proto_msgTypes[12]
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
 			ms.StoreMessageInfo(mi)
 		}
@@ -1208,24 +1208,24 @@ func (x *DeleteDeviceRequest) GetDeviceId() int64 {
 }
 
 type DeleteDeviceResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
+	state         protoimpxls.MessageState `protogen:"open.v1"`
 	TraceId       string                 `protobuf:"bytes,1,opt,name=TraceId,proto3" json:"TraceId,omitempty"`
 	Msg           string                 `protobuf:"bytes,2,opt,name=Msg,proto3" json:"Msg,omitempty"`
 	Code          int32                  `protobuf:"varint,3,opt,name=Code,proto3" json:"Code,omitempty"`
 	Success       bool                   `protobuf:"varint,4,opt,name=Success,proto3" json:"Success,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpxls.UnknownFields
+	sizeCache     protoimpxls.SizeCache
 }
 
 func (x *DeleteDeviceResponse) Reset() {
 	*x = DeleteDeviceResponse{}
 	mi := &file_driverdevice_device_proto_msgTypes[13]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
 func (x *DeleteDeviceResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
+	return protoimpxls.X.MessageStringOf(x)
 }
 
 func (*DeleteDeviceResponse) ProtoMessage() {}
@@ -1233,7 +1233,7 @@ func (*DeleteDeviceResponse) ProtoMessage() {}
 func (x *DeleteDeviceResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_driverdevice_device_proto_msgTypes[13]
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
 			ms.StoreMessageInfo(mi)
 		}
@@ -1276,7 +1276,7 @@ func (x *DeleteDeviceResponse) GetSuccess() bool {
 }
 
 type GetDeviceConnectStatusRequest struct {
-	state             protoimpl.MessageState `protogen:"open.v1"`
+	state             protoimpxls.MessageState `protogen:"open.v1"`
 	TraceId           string                 `protobuf:"bytes,1,opt,name=traceId,proto3" json:"traceId,omitempty"`
 	CloudInstanceId   int64                  `protobuf:"varint,2,opt,name=cloudInstanceId,proto3" json:"cloudInstanceId,omitempty"`
 	BaseAddress       string                 `protobuf:"bytes,3,opt,name=baseAddress,proto3" json:"baseAddress,omitempty"`
@@ -1284,19 +1284,19 @@ type GetDeviceConnectStatusRequest struct {
 	IotPlatform       string                 `protobuf:"bytes,5,opt,name=iotPlatform,proto3" json:"iotPlatform,omitempty"`
 	DriverInstanceId  int64                  `protobuf:"varint,6,opt,name=driverInstanceId,proto3" json:"driverInstanceId,omitempty"`
 	DeviceId          int64                  `protobuf:"varint,7,opt,name=deviceId,proto3" json:"deviceId,omitempty"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
+	unknownFields     protoimpxls.UnknownFields
+	sizeCache         protoimpxls.SizeCache
 }
 
 func (x *GetDeviceConnectStatusRequest) Reset() {
 	*x = GetDeviceConnectStatusRequest{}
 	mi := &file_driverdevice_device_proto_msgTypes[14]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
 func (x *GetDeviceConnectStatusRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
+	return protoimpxls.X.MessageStringOf(x)
 }
 
 func (*GetDeviceConnectStatusRequest) ProtoMessage() {}
@@ -1304,7 +1304,7 @@ func (*GetDeviceConnectStatusRequest) ProtoMessage() {}
 func (x *GetDeviceConnectStatusRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_driverdevice_device_proto_msgTypes[14]
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
 			ms.StoreMessageInfo(mi)
 		}
@@ -1368,25 +1368,25 @@ func (x *GetDeviceConnectStatusRequest) GetDeviceId() int64 {
 }
 
 type GetDeviceConnectStatusResponse struct {
-	state         protoimpl.MessageState               `protogen:"open.v1"`
+	state         protoimpxls.MessageState               `protogen:"open.v1"`
 	TraceId       string                               `protobuf:"bytes,1,opt,name=TraceId,proto3" json:"TraceId,omitempty"`
 	Msg           string                               `protobuf:"bytes,2,opt,name=Msg,proto3" json:"Msg,omitempty"`
 	Code          int32                                `protobuf:"varint,3,opt,name=Code,proto3" json:"Code,omitempty"`
 	Success       bool                                 `protobuf:"varint,4,opt,name=Success,proto3" json:"Success,omitempty"`
 	Data          *GetDeviceConnectStatusResponse_Data `protobuf:"bytes,5,opt,name=data,proto3" json:"data,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpxls.UnknownFields
+	sizeCache     protoimpxls.SizeCache
 }
 
 func (x *GetDeviceConnectStatusResponse) Reset() {
 	*x = GetDeviceConnectStatusResponse{}
 	mi := &file_driverdevice_device_proto_msgTypes[15]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
 func (x *GetDeviceConnectStatusResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
+	return protoimpxls.X.MessageStringOf(x)
 }
 
 func (*GetDeviceConnectStatusResponse) ProtoMessage() {}
@@ -1394,7 +1394,7 @@ func (*GetDeviceConnectStatusResponse) ProtoMessage() {}
 func (x *GetDeviceConnectStatusResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_driverdevice_device_proto_msgTypes[15]
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
 			ms.StoreMessageInfo(mi)
 		}
@@ -1444,21 +1444,21 @@ func (x *GetDeviceConnectStatusResponse) GetData() *GetDeviceConnectStatusRespon
 }
 
 type ConnectIotPlatformResponse_Data struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
+	state         protoimpxls.MessageState `protogen:"open.v1"`
 	Status        ConnectStatus          `protobuf:"varint,1,opt,name=Status,proto3,enum=driverdevice.ConnectStatus" json:"Status,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpxls.UnknownFields
+	sizeCache     protoimpxls.SizeCache
 }
 
 func (x *ConnectIotPlatformResponse_Data) Reset() {
 	*x = ConnectIotPlatformResponse_Data{}
 	mi := &file_driverdevice_device_proto_msgTypes[16]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
 func (x *ConnectIotPlatformResponse_Data) String() string {
-	return protoimpl.X.MessageStringOf(x)
+	return protoimpxls.X.MessageStringOf(x)
 }
 
 func (*ConnectIotPlatformResponse_Data) ProtoMessage() {}
@@ -1466,7 +1466,7 @@ func (*ConnectIotPlatformResponse_Data) ProtoMessage() {}
 func (x *ConnectIotPlatformResponse_Data) ProtoReflect() protoreflect.Message {
 	mi := &file_driverdevice_device_proto_msgTypes[16]
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
 			ms.StoreMessageInfo(mi)
 		}
@@ -1488,21 +1488,21 @@ func (x *ConnectIotPlatformResponse_Data) GetStatus() ConnectStatus {
 }
 
 type DisconnectIotPlatformResponse_Data struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
+	state         protoimpxls.MessageState `protogen:"open.v1"`
 	Status        ConnectStatus          `protobuf:"varint,1,opt,name=Status,proto3,enum=driverdevice.ConnectStatus" json:"Status,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpxls.UnknownFields
+	sizeCache     protoimpxls.SizeCache
 }
 
 func (x *DisconnectIotPlatformResponse_Data) Reset() {
 	*x = DisconnectIotPlatformResponse_Data{}
 	mi := &file_driverdevice_device_proto_msgTypes[17]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
 func (x *DisconnectIotPlatformResponse_Data) String() string {
-	return protoimpl.X.MessageStringOf(x)
+	return protoimpxls.X.MessageStringOf(x)
 }
 
 func (*DisconnectIotPlatformResponse_Data) ProtoMessage() {}
@@ -1510,7 +1510,7 @@ func (*DisconnectIotPlatformResponse_Data) ProtoMessage() {}
 func (x *DisconnectIotPlatformResponse_Data) ProtoReflect() protoreflect.Message {
 	mi := &file_driverdevice_device_proto_msgTypes[17]
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
 			ms.StoreMessageInfo(mi)
 		}
@@ -1532,21 +1532,21 @@ func (x *DisconnectIotPlatformResponse_Data) GetStatus() ConnectStatus {
 }
 
 type QueryDeviceByIdResponse_Data struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
+	state         protoimpxls.MessageState `protogen:"open.v1"`
 	Device        *Device                `protobuf:"bytes,1,opt,name=device,proto3" json:"device,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpxls.UnknownFields
+	sizeCache     protoimpxls.SizeCache
 }
 
 func (x *QueryDeviceByIdResponse_Data) Reset() {
 	*x = QueryDeviceByIdResponse_Data{}
 	mi := &file_driverdevice_device_proto_msgTypes[18]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
 func (x *QueryDeviceByIdResponse_Data) String() string {
-	return protoimpl.X.MessageStringOf(x)
+	return protoimpxls.X.MessageStringOf(x)
 }
 
 func (*QueryDeviceByIdResponse_Data) ProtoMessage() {}
@@ -1554,7 +1554,7 @@ func (*QueryDeviceByIdResponse_Data) ProtoMessage() {}
 func (x *QueryDeviceByIdResponse_Data) ProtoReflect() protoreflect.Message {
 	mi := &file_driverdevice_device_proto_msgTypes[18]
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
 			ms.StoreMessageInfo(mi)
 		}
@@ -1576,21 +1576,21 @@ func (x *QueryDeviceByIdResponse_Data) GetDevice() *Device {
 }
 
 type CreateDeviceRequestResponse_Data struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
+	state         protoimpxls.MessageState `protogen:"open.v1"`
 	Device        *Device                `protobuf:"bytes,2,opt,name=device,proto3" json:"device,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpxls.UnknownFields
+	sizeCache     protoimpxls.SizeCache
 }
 
 func (x *CreateDeviceRequestResponse_Data) Reset() {
 	*x = CreateDeviceRequestResponse_Data{}
 	mi := &file_driverdevice_device_proto_msgTypes[21]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
 func (x *CreateDeviceRequestResponse_Data) String() string {
-	return protoimpl.X.MessageStringOf(x)
+	return protoimpxls.X.MessageStringOf(x)
 }
 
 func (*CreateDeviceRequestResponse_Data) ProtoMessage() {}
@@ -1598,7 +1598,7 @@ func (*CreateDeviceRequestResponse_Data) ProtoMessage() {}
 func (x *CreateDeviceRequestResponse_Data) ProtoReflect() protoreflect.Message {
 	mi := &file_driverdevice_device_proto_msgTypes[21]
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
 			ms.StoreMessageInfo(mi)
 		}
@@ -1620,21 +1620,21 @@ func (x *CreateDeviceRequestResponse_Data) GetDevice() *Device {
 }
 
 type CreateDeviceAndConnectRequestResponse_Data struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
+	state         protoimpxls.MessageState `protogen:"open.v1"`
 	Device        *Device                `protobuf:"bytes,1,opt,name=device,proto3" json:"device,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpxls.UnknownFields
+	sizeCache     protoimpxls.SizeCache
 }
 
 func (x *CreateDeviceAndConnectRequestResponse_Data) Reset() {
 	*x = CreateDeviceAndConnectRequestResponse_Data{}
 	mi := &file_driverdevice_device_proto_msgTypes[22]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
 func (x *CreateDeviceAndConnectRequestResponse_Data) String() string {
-	return protoimpl.X.MessageStringOf(x)
+	return protoimpxls.X.MessageStringOf(x)
 }
 
 func (*CreateDeviceAndConnectRequestResponse_Data) ProtoMessage() {}
@@ -1642,7 +1642,7 @@ func (*CreateDeviceAndConnectRequestResponse_Data) ProtoMessage() {}
 func (x *CreateDeviceAndConnectRequestResponse_Data) ProtoReflect() protoreflect.Message {
 	mi := &file_driverdevice_device_proto_msgTypes[22]
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
 			ms.StoreMessageInfo(mi)
 		}
@@ -1664,21 +1664,21 @@ func (x *CreateDeviceAndConnectRequestResponse_Data) GetDevice() *Device {
 }
 
 type GetDeviceConnectStatusResponse_Data struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
+	state         protoimpxls.MessageState `protogen:"open.v1"`
 	Status        ConnectStatus          `protobuf:"varint,1,opt,name=Status,proto3,enum=driverdevice.ConnectStatus" json:"Status,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpxls.UnknownFields
+	sizeCache     protoimpxls.SizeCache
 }
 
 func (x *GetDeviceConnectStatusResponse_Data) Reset() {
 	*x = GetDeviceConnectStatusResponse_Data{}
 	mi := &file_driverdevice_device_proto_msgTypes[23]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
 func (x *GetDeviceConnectStatusResponse_Data) String() string {
-	return protoimpl.X.MessageStringOf(x)
+	return protoimpxls.X.MessageStringOf(x)
 }
 
 func (*GetDeviceConnectStatusResponse_Data) ProtoMessage() {}
@@ -1686,7 +1686,7 @@ func (*GetDeviceConnectStatusResponse_Data) ProtoMessage() {}
 func (x *GetDeviceConnectStatusResponse_Data) ProtoReflect() protoreflect.Message {
 	mi := &file_driverdevice_device_proto_msgTypes[23]
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
 			ms.StoreMessageInfo(mi)
 		}
@@ -2036,13 +2036,13 @@ var (
 
 func file_driverdevice_device_proto_rawDescGZIP() []byte {
 	file_driverdevice_device_proto_rawDescOnce.Do(func() {
-		file_driverdevice_device_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_driverdevice_device_proto_rawDesc), len(file_driverdevice_device_proto_rawDesc)))
+		file_driverdevice_device_proto_rawDescData = protoimpxls.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_driverdevice_device_proto_rawDesc), len(file_driverdevice_device_proto_rawDesc)))
 	})
 	return file_driverdevice_device_proto_rawDescData
 }
 
-var file_driverdevice_device_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_driverdevice_device_proto_msgTypes = make([]protoimpl.MessageInfo, 24)
+var file_driverdevice_device_proto_enumTypes = make([]protoimpxls.EnumInfo, 2)
+var file_driverdevice_device_proto_msgTypes = make([]protoimpxls.MessageInfo, 24)
 var file_driverdevice_device_proto_goTypes = []any{
 	(DeviceStatus)(0),                                  // 0: driverdevice.DeviceStatus
 	(ConnectStatus)(0),                                 // 1: driverdevice.ConnectStatus
@@ -2115,8 +2115,8 @@ func file_driverdevice_device_proto_init() {
 		return
 	}
 	type x struct{}
-	out := protoimpl.TypeBuilder{
-		File: protoimpl.DescBuilder{
+	out := protoimpxls.TypeBuilder{
+		File: protoimpxls.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_driverdevice_device_proto_rawDesc), len(file_driverdevice_device_proto_rawDesc)),
 			NumEnums:      2,

@@ -19,9 +19,9 @@ func (r *GenTableDao) ListColumn(tableId int64) (*vo.GenTableVO, error) {
 		return nil, err
 	}
 	//表数据列
-	columModel := db.Table("gen_table_column").Where("table_id=?", tableId)
+	columTb := db.Table("gen_table_column").Where("table_id=?", tableId)
 	var columList []model.GenTableColumn
-	err = columModel.Find(&columList).Error
+	err = columTb.Find(&columList).Error
 
 	if err != nil {
 		return nil, err

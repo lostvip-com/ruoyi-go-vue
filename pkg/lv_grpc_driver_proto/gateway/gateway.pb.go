@@ -17,29 +17,29 @@ import (
 
 const (
 	// Verify that this generated code is sufficiently up-to-date.
-	_ = protoimpl.EnforceVersion(20 - protoimpl.MinVersion)
+	_ = protoimpxls.EnforceVersion(20 - protoimpxls.MinVersion)
 	// Verify that runtime/protoimpl is sufficiently up-to-date.
-	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
+	_ = protoimpxls.EnforceVersion(protoimpxls.MaxVersion - 20)
 )
 
 type GateWayInfoResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
+	state         protoimpxls.MessageState `protogen:"open.v1"`
 	Env           string                 `protobuf:"bytes,2,opt,name=env,proto3" json:"env,omitempty"`
 	GwId          int64                  `protobuf:"varint,3,opt,name=gwId,proto3" json:"gwId,omitempty"`
 	LocalKey      string                 `protobuf:"bytes,4,opt,name=localKey,proto3" json:"localKey,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpxls.UnknownFields
+	sizeCache     protoimpxls.SizeCache
 }
 
 func (x *GateWayInfoResponse) Reset() {
 	*x = GateWayInfoResponse{}
 	mi := &file_gateway_gateway_proto_msgTypes[0]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
 func (x *GateWayInfoResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
+	return protoimpxls.X.MessageStringOf(x)
 }
 
 func (*GateWayInfoResponse) ProtoMessage() {}
@@ -47,7 +47,7 @@ func (*GateWayInfoResponse) ProtoMessage() {}
 func (x *GateWayInfoResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_gateway_gateway_proto_msgTypes[0]
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms := protoimpxls.X.MessageStateOf(protoimpxls.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
 			ms.StoreMessageInfo(mi)
 		}
@@ -113,12 +113,12 @@ var (
 
 func file_gateway_gateway_proto_rawDescGZIP() []byte {
 	file_gateway_gateway_proto_rawDescOnce.Do(func() {
-		file_gateway_gateway_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_gateway_gateway_proto_rawDesc), len(file_gateway_gateway_proto_rawDesc)))
+		file_gateway_gateway_proto_rawDescData = protoimpxls.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_gateway_gateway_proto_rawDesc), len(file_gateway_gateway_proto_rawDesc)))
 	})
 	return file_gateway_gateway_proto_rawDescData
 }
 
-var file_gateway_gateway_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_gateway_gateway_proto_msgTypes = make([]protoimpxls.MessageInfo, 1)
 var file_gateway_gateway_proto_goTypes = []any{
 	(*GateWayInfoResponse)(nil), // 0: gateway.GateWayInfoResponse
 	(*emptypb.Empty)(nil),       // 1: google.protobuf.Empty
@@ -139,8 +139,8 @@ func file_gateway_gateway_proto_init() {
 		return
 	}
 	type x struct{}
-	out := protoimpl.TypeBuilder{
-		File: protoimpl.DescBuilder{
+	out := protoimpxls.TypeBuilder{
+		File: protoimpxls.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_gateway_gateway_proto_rawDesc), len(file_gateway_gateway_proto_rawDesc)),
 			NumEnums:      0,

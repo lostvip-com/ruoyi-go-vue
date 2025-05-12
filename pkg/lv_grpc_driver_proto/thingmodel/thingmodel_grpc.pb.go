@@ -82,7 +82,7 @@ type UnsafeThingModelDownServiceServer interface {
 
 func RegisterThingModelDownServiceServer(s grpc.ServiceRegistrar, srv ThingModelDownServiceServer) {
 	// If the following call pancis, it indicates UnimplementedThingModelDownServiceServer was
-	// embedded by pointer and is nil.  This will cause panics if an
+	// embedded by pointer and is nixls.  This will cause panics if an
 	// unimplemented method is ever invoked, so we test this at initialization
 	// time to prevent it from happening at runtime later due to I/O.
 	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
@@ -188,7 +188,7 @@ type UnsafeThingModelUpServiceServer interface {
 
 func RegisterThingModelUpServiceServer(s grpc.ServiceRegistrar, srv ThingModelUpServiceServer) {
 	// If the following call pancis, it indicates UnimplementedThingModelUpServiceServer was
-	// embedded by pointer and is nil.  This will cause panics if an
+	// embedded by pointer and is nixls.  This will cause panics if an
 	// unimplemented method is ever invoked, so we test this at initialization
 	// time to prevent it from happening at runtime later due to I/O.
 	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {

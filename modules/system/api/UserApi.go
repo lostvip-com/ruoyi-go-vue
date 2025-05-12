@@ -1,10 +1,11 @@
 package api
 
 import (
-	userModel "common/common_vo"
+	"common/common_vo"
 	util "common/util"
 	"github.com/gin-gonic/gin"
 	"github.com/lostvip-com/lv_framework/lv_db"
+	"github.com/lostvip-com/lv_framework/utils/lv_err"
 	"github.com/lostvip-com/lv_framework/web/lv_dto"
 	"github.com/spf13/cast"
 	"net/http"
@@ -21,7 +22,7 @@ type UserApi struct {
 // 删除数据
 func (w *UserApi) Remove(c *gin.Context) {
 	userIds := c.Param("userIds")
-	var userService = service2.GetUserService()
+	var userService = service2.GetUserServiceInstance()
 	err := userService.DeleteByIds(userIds)
 	if err != nil {
 		util.Fail(c, err.Error())
@@ -69,12 +70,15 @@ func (w *UserApi) GetUserInfo(c *gin.Context) {
 
 // ListAjax 用户列表分页数据
 func (w *UserApi) ListAjax(c *gin.Context) {
-	var req *userModel.SelectUserPageReq
+	var req *common_vo.UserPageReq
 	if err := c.ShouldBind(&req); err != nil {
 		util.Fail(c, err.Error())
 		return
 	}
-	var userService = service2.GetUserService()
+	req.BeginTime = c.DefaultQuery("params[beginTime]", "")
+	req.EndTime = c.DefaultQuery("params[endTime]", "")
+
+	var userService = service2.GetUserServiceInstance()
 	result, total, err := userService.FindList(req)
 	if err != nil {
 		util.Fail(c, err.Error())
@@ -84,13 +88,13 @@ func (w *UserApi) ListAjax(c *gin.Context) {
 }
 
 func (w *UserApi) AddSave(c *gin.Context) {
-	var req *userModel.AddUserReq
+	var req *common_vo.AddUserReq
 	//获取参数
 	if err := c.ShouldBind(&req); err != nil {
 		util.Fail(c, err.Error())
 		return
 	}
-	var userService = service2.GetUserService()
+	var userService = service2.GetUserServiceInstance()
 	//判断登录名是否已注册
 	count, err := userService.CountCol("username", req.UserName)
 	if count > 0 {
@@ -119,12 +123,12 @@ func (w *UserApi) ChangeStatus(c *gin.Context) {
 }
 
 func (w *UserApi) ResetPwdSave(c *gin.Context) {
-	var req *userModel.ResetPwdReq
+	var req *common_vo.ResetPwdReq
 	if err := c.ShouldBind(&req); err != nil {
 		util.Fail(c, err.Error())
 		return
 	}
-	var userService = service2.GetUserService()
+	var userService = service2.GetUserServiceInstance()
 	err := userService.ResetPassword(req)
 	if err != nil {
 		util.Fail(c, err.Error())
@@ -134,12 +138,12 @@ func (w *UserApi) ResetPwdSave(c *gin.Context) {
 }
 
 func (w *UserApi) EditSave(c *gin.Context) {
-	var req *userModel.EditUserReq
+	var req *common_vo.EditUserReq
 	if err := c.ShouldBind(&req); err != nil {
 		util.ErrorResp(c).SetBtype(lv_dto.Buniss_Edit).SetMsg(err.Error()).WriteJsonExit()
 		return
 	}
-	var userService = service2.GetUserService()
+	var userService = service2.GetUserServiceInstance()
 	err := userService.EditSave(req, c)
 	if err != nil {
 		util.Fail(c, err.Error())
@@ -150,19 +154,28 @@ func (w *UserApi) EditSave(c *gin.Context) {
 
 // 导出
 func (w *UserApi) Export(c *gin.Context) {
-	var req *userModel.SelectUserPageReq
-
+	var req *common_vo.UserPageReq
 	if err := c.ShouldBind(&req); err != nil {
 		util.ErrorResp(c).SetMsg(err.Error()).Log("导出Excel", req).WriteJsonExit()
 	}
-	var userService = service2.GetUserService()
-	url, err := userService.Export(req)
-
-	if err != nil {
-		util.ErrorResp(c).SetMsg(err.Error()).Log("导出Excel", req).WriteJsonExit()
-		return
+	req.BeginTime = c.DefaultQuery("params[beginTime]", "")
+	req.EndTime = c.DefaultQuery("params[endTime]", "")
+	listMap, err := dao.GetUserDaoInstance().SelectExportList(req)
+	lv_err.HasErrAndPanic(err)
+	headerMap := []map[string]string{
+		map[string]string{"key": "userId", "title": "用户序号", "width": "10"},
+		map[string]string{"key": "deptId", "title": "部门编号", "width": "15"},
+		map[string]string{"key": "deptId", "title": "部门编号", "width": "15"},
+		map[string]string{"key": "nickName", "title": "用户名称", "width": "20"},
+		map[string]string{"key": "phonenumber", "title": "手机号码", "width": "20"},
+		map[string]string{"key": "status", "title": "帐号状态", "width": "10"},
+		map[string]string{"key": "loginIp", "title": "最后登录IP", "width": "30"},
+		map[string]string{"key": "loginDate", "title": "最后登录时间", "width": "60"},
+		map[string]string{"key": "deptName", "title": "部门名称", "width": "50"},
+		map[string]string{"key": "leader", "title": "部门负责人", "width": "30"},
 	}
-	util.SucessResp(c).SetMsg(url).Log("导出Excel", req).WriteJsonExit()
+	ex := util.NewMyExcel()
+	ex.ExportToWeb(c, headerMap, *listMap)
 }
 
 func (w *UserApi) PutAuthUserRoleIds(c *gin.Context) {

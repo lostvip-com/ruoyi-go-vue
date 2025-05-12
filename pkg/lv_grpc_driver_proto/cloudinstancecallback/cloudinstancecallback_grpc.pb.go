@@ -81,7 +81,7 @@ type UnsafeCloudInstanceCallBackServiceServer interface {
 
 func RegisterCloudInstanceCallBackServiceServer(s grpc.ServiceRegistrar, srv CloudInstanceCallBackServiceServer) {
 	// If the following call pancis, it indicates UnimplementedCloudInstanceCallBackServiceServer was
-	// embedded by pointer and is nil.  This will cause panics if an
+	// embedded by pointer and is nixls.  This will cause panics if an
 	// unimplemented method is ever invoked, so we test this at initialization
 	// time to prevent it from happening at runtime later due to I/O.
 	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {

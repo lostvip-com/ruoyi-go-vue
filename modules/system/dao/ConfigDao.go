@@ -104,7 +104,7 @@ func (d ConfigDao) GetSql(param *common_vo.SelectConfigPageReq) (map[string]inte
 //
 //	totalModel := tb.Clone()
 //
-//	total, err := totalModel.Count()
+//	total, err := totalmodel.Count()
 //
 //	if err != nil {
 //		return nil, p, errors.New("读取行数失败")

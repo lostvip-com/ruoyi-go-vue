@@ -52,7 +52,7 @@ func ProxyWithUrlSame(c *gin.Context, host string) {
 //		response.Header.Set("proxy", "proxy by ssz")
 //		return nil
 //	}
-//	c.Request.URL.Host = host
+//	c.Request.url.Host = host
 //	c.Request.URL.Path = path //修改旧的url为新的URL
 //	proxy.ServeHTTP(c.Writer, c.Request)
 //	fmt.Println("============= HttpProxyWithSameUrl over ==================")

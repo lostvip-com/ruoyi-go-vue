@@ -19,7 +19,7 @@ func PermitCheck(c *gin.Context) {
 		url = strings.TrimRight(url, "/")
 	}
 	//获取用户信息
-	userSvc := service.GetUserService()
+	userSvc := service.GetUserServiceInstance()
 	userPtr := userSvc.GetProfile(c)
 	c.Set("userId", userPtr.UserId) //供api使用
 	c.Set("user", userPtr)          //供api使用

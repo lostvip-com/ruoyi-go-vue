@@ -20,7 +20,7 @@ func (w *HomeApi) GetUserInfo(c *gin.Context) {
 	}
 	user := u.(*model.SysUser)
 	roles := user.GetRoleKeys()
-	isAdmin := service.GetUserService().IsAdmin(user.UserId)
+	isAdmin := service.GetUserServiceInstance().IsAdmin(user.UserId)
 	var permissions []string
 	if isAdmin {
 		permissions = []string{"*:*:*"}
