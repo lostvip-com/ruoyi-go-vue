@@ -102,10 +102,13 @@ func (w *RoleApi) EditSave(c *gin.Context) {
 }
 
 func (w *RoleApi) ChangeStatus(c *gin.Context) {
-	roleId := c.Query("roleId")
-	status := c.Query("status")
+	var req *vo.RoleStatusReq
+	if err := c.ShouldBind(&req); err != nil {
+		util.Fail(c, err.Error())
+		return
+	}
 	sql := " update sys_role set status=? where role_id = ? "
-	rows := db2.GetMasterGorm().Exec(sql, status, roleId).RowsAffected
+	rows := db2.GetMasterGorm().Exec(sql, req.Status, req.RoleId).RowsAffected
 	util.Success(c, rows)
 }
 

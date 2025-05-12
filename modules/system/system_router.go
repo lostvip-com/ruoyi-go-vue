@@ -81,7 +81,7 @@ func init() {
 	system.GET("/role/optionselect", "system:role:view", roleApi.GetRoleOptionSelect)
 	system.POST("/role", "system:role:add", roleApi.AddSave)
 	system.PUT("/role", "system:role:edit", roleApi.EditSave)
-	system.POST("/role/changeStatus", "system:role:edit", roleApi.ChangeStatus)
+	system.PUT("/role/changeStatus", "system:role:edit", roleApi.ChangeStatus)
 	system.PUT("/role/dataScope", "system:role:edit", roleApi.PutDataScope)
 	system.DELETE("/role/:roleIds", "system:role:remove", roleApi.Remove)
 
