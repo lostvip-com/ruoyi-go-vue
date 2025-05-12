@@ -94,7 +94,7 @@ func (w *PostApi) EditSave(c *gin.Context) {
 // Remove 删除数据
 func (w *PostApi) Remove(c *gin.Context) {
 	var postIds = c.Param("postIds")
-	err := service.GetSysPostServiceInstance().DeleteRecordByIds(postIds)
+	err := service.GetSysPostServiceInstance().DeleteByIds(postIds)
 	if err != nil {
 		util.Fail(c, err.Error())
 		return

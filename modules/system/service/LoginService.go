@@ -61,15 +61,15 @@ func (svc LoginService) FindPage(param *vo.LoginInfoPageReq) (*[]model.SysLoginI
 	return &result, total, err
 }
 
-// SelectRecordById 根据主键查询用户信息
-func (svc LoginService) SelectRecordById(id int64) (*model.SysLoginInfo, error) {
+// FindById 根据主键查询用户信息
+func (svc LoginService) FindById(id int64) (*model.SysLoginInfo, error) {
 	entity := &model.SysLoginInfo{InfoId: id}
 	err := entity.FindById()
 	return entity, err
 }
 
-// DeleteRecordById 根据主键删除用户信息
-func (svc LoginService) DeleteRecordById(id int64) bool {
+// DeleteById 根据主键删除用户信息
+func (svc LoginService) DeleteById(id int64) bool {
 	entity := &model.SysLoginInfo{InfoId: id}
 	err := entity.Delete()
 	if err == nil {
@@ -79,8 +79,8 @@ func (svc LoginService) DeleteRecordById(id int64) bool {
 	return false
 }
 
-// DeleteRecordByIds 批量删除记录
-func (svc LoginService) DeleteRecordByIds(ids string) error {
+// DeleteByIds 批量删除记录
+func (svc LoginService) DeleteByIds(ids string) error {
 	idarr := lv_conv.ToInt64Array(ids, ",")
 	err := lv_db.GetMasterGorm().Exec("delete from sys_logininfor where info_id in ? ", idarr).Error
 	return err

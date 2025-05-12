@@ -88,7 +88,7 @@ func (w *ConfigApi) EditSave(c *gin.Context) {
 func (w *ConfigApi) Remove(c *gin.Context) {
 	var configIds = c.Param("configIds")
 	var configService service.ConfigService
-	configService.DeleteRecordByIds(configIds)
+	configService.DeleteByIds(configIds)
 	util.Success(c, "")
 }
 

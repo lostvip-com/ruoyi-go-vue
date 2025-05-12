@@ -24,15 +24,15 @@ func (svc TableColumnService) Update(entity *model.GenTableColumn) error {
 	return entity.Updates()
 }
 
-// SelectRecordById 根据主键查询数据
-func (svc TableColumnService) SelectRecordById(id int64) (*model.GenTableColumn, error) {
+// FindById 根据主键查询数据
+func (svc TableColumnService) FindById(id int64) (*model.GenTableColumn, error) {
 	entity := &model.GenTableColumn{ColumnId: id}
 	_, err := entity.FindOne()
 	return entity, err
 }
 
-// DeleteRecordById 根据主键删除数据
-func (svc TableColumnService) DeleteRecordById(id int64) bool {
+// DeleteById 根据主键删除数据
+func (svc TableColumnService) DeleteById(id int64) bool {
 	err := (&model.GenTableColumn{ColumnId: id}).Delete()
 	if err == nil {
 		return true
@@ -40,8 +40,8 @@ func (svc TableColumnService) DeleteRecordById(id int64) bool {
 	return false
 }
 
-// DeleteRecordByIds 批量删除数据记录
-func (svc TableColumnService) DeleteRecordByIds(ids string) error {
+// DeleteByIds 批量删除数据记录
+func (svc TableColumnService) DeleteByIds(ids string) error {
 	idarr := lv_conv.ToInt64Array(ids, ",")
 	err := lv_db.GetMasterGorm().Exec("delete from gen_table_column where column_id in ? ", idarr).Error
 	return err

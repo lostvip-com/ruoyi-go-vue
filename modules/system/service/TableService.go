@@ -24,8 +24,8 @@ import (
 type TableService struct {
 }
 
-// SelectRecordById 根据主键查询数据
-func (svc TableService) SelectRecordById(id int64) (*vo.GenTableVO, error) {
+// FindById 根据主键查询数据
+func (svc TableService) FindById(id int64) (*vo.GenTableVO, error) {
 	var dao dao.GenTableDao
 	vo, err := dao.ListColumn(id)
 	if err != nil {
@@ -47,8 +47,8 @@ func (svc TableService) SelectRecordById(id int64) (*vo.GenTableVO, error) {
 	return vo, err
 }
 
-// DeleteRecordById 根据主键删除数据
-func (svc TableService) DeleteRecordById(id int64) bool {
+// DeleteById 根据主键删除数据
+func (svc TableService) DeleteById(id int64) bool {
 	err := (&model.GenTable{TableId: id}).Delete()
 	if err != nil {
 		return true
@@ -57,7 +57,7 @@ func (svc TableService) DeleteRecordById(id int64) bool {
 }
 
 // 批量删除数据记录
-func (svc TableService) DeleteRecordByIds(ids string) error {
+func (svc TableService) DeleteByIds(ids string) error {
 	idarr := lv_conv.ToInt64Array(ids, ",")
 	err := lv_db.GetMasterGorm().Exec("delete from gen_table where table_id in (?)", idarr).Error
 	err = lv_db.GetMasterGorm().Exec("delete from gen_table_column where table_id in (?)", idarr).Error

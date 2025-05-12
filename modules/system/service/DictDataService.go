@@ -24,22 +24,21 @@ func GetDictDataServiceInstance() *DictDataService {
 	return dictDataService
 }
 
-// 根据主键查询数据
-func (svc *DictDataService) SeById(id int64) (*models.SysDictData, error) {
+func (svc *DictDataService) GetById(id int64) (*models.SysDictData, error) {
 	entity := &models.SysDictData{DictCode: id}
 	_, err := entity.FindOne()
 	return entity, err
 }
 
 // 根据主键查询数据
-func (svc *DictDataService) SelectRecordById(id int64) (*models.SysDictData, error) {
+func (svc *DictDataService) FindById(id int64) (*models.SysDictData, error) {
 	entity := &models.SysDictData{DictCode: id}
 	_, err := entity.FindOne()
 	return entity, err
 }
 
 // 根据主键删除数据
-func (svc *DictDataService) DeleteRecordById(id int64) bool {
+func (svc *DictDataService) DeleteById(id int64) bool {
 	err := (&models.SysDictData{DictCode: id}).Delete()
 	if err == nil {
 		return true
@@ -48,7 +47,7 @@ func (svc *DictDataService) DeleteRecordById(id int64) bool {
 }
 
 // 批量删除数据记录
-func (svc *DictDataService) DeleteRecordByIds(ids string) error {
+func (svc *DictDataService) DeleteByIds(ids string) error {
 	ida := lv_conv.ToInt64Array(ids, ",")
 	data := new(dao2.DictDataDao)
 	err := data.DeleteBatch(ida...)
@@ -100,8 +99,8 @@ func (svc *DictDataService) EditSave(req *common_vo.EditDictDataReq, c *gin.Cont
 	return entity.Updates()
 }
 
-// SelectListAll 根据条件分页查询角色数据
-func (svc *DictDataService) SelectListAll(params *common_vo.SelectDictDataPageReq) ([]models.SysDictData, error) {
+// FindAll 根据条件分页查询角色数据
+func (svc *DictDataService) FindAll(params *common_vo.SelectDictDataPageReq) ([]models.SysDictData, error) {
 	var dao dao2.DictDataDao
 	return dao.FindAll(params.DictLabel, params.DictType)
 }

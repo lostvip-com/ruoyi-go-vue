@@ -19,7 +19,7 @@ func (w *DeptApi) ExcludeDept(c *gin.Context) {
 	deptId := c.Param("deptId")
 	svc := service.GetDeptServiceInstance()
 	dept, err := svc.FindById(cast.ToInt64(deptId))
-	listPtr, err := svc.SelectListAll(&common_vo.DeptPageReq{})
+	listPtr, err := svc.FindAll(&common_vo.DeptPageReq{})
 	if err != nil {
 		util.Fail(c, err.Error())
 	} else {
@@ -42,7 +42,7 @@ func (w *DeptApi) ListAjax(c *gin.Context) {
 		util.Fail(c, err.Error())
 		return
 	}
-	result, err := service.GetDeptServiceInstance().SelectListAll(&req)
+	result, err := service.GetDeptServiceInstance().FindAll(&req)
 	if err != nil {
 		util.Fail(c, err.Error())
 		return

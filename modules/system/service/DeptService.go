@@ -92,7 +92,7 @@ func (svc *DeptService) EditSave(req *common_vo.EditDeptReq, c *gin.Context) (in
 }
 
 // 根据分页查询部门管理数据
-func (svc *DeptService) SelectListAll(param *common_vo.DeptPageReq) (*[]models.SysDept, error) {
+func (svc *DeptService) FindAll(param *common_vo.DeptPageReq) (*[]models.SysDept, error) {
 	if param == nil {
 		return svc.SelectDeptList(0, "", "", param.TenantId)
 	} else {

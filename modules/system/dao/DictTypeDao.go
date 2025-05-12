@@ -93,7 +93,7 @@ func (dao *DictTypeDao) SelectListExport(param *common_vo.DictTypePageReq, head,
 }
 
 // 获取所有数据
-func (dao *DictTypeDao) SelectListAll(param *common_vo.DictTypePageReq) ([]model.SysDictType, error) {
+func (dao *DictTypeDao) FindAll(param *common_vo.DictTypePageReq) ([]model.SysDictType, error) {
 	gdb := lv_db.GetMasterGorm()
 	if gdb == nil {
 		return nil, errors.New("获取数据库连接失败")

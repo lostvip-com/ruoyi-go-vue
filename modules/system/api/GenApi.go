@@ -140,7 +140,7 @@ func (w *GenApi) Remove(c *gin.Context) {
 		return
 	}
 	tableService := service.TableService{}
-	err := tableService.DeleteRecordByIds(req.Ids)
+	err := tableService.DeleteByIds(req.Ids)
 
 	if err == nil {
 		util2.SucessResp(c).SetBtype(lv_dto.Buniss_Del).Log("生成代码", req).WriteJsonExit()
@@ -153,7 +153,7 @@ func (w *GenApi) Remove(c *gin.Context) {
 func (w *GenApi) Edit(c *gin.Context) {
 	id := lv_conv.Int64(c.Query("id"))
 	tableService := service.TableService{}
-	entity, err := tableService.SelectRecordById(id)
+	entity, err := tableService.FindById(id)
 	lv_err.HasErrAndPanic(err)
 	goTypeTpl := tableService.GoTypeTpl()
 	queryTypeTpl := tableService.QueryTypeTpl()
@@ -195,7 +195,7 @@ func (w *GenApi) Preview(c *gin.Context) {
 		})
 	}
 	tableService := service.TableService{}
-	entity, err := tableService.SelectRecordById(tableId)
+	entity, err := tableService.FindById(tableId)
 
 	if err != nil || entity == nil {
 		c.JSON(http.StatusOK, lv_dto.CommonRes{
@@ -224,7 +224,7 @@ func (w *GenApi) GenCode(c *gin.Context) {
 	overwrite := myconf.GetConfigInstance().GetBool("gen.overwrite")
 	tableId := lv_conv.Int64(c.Query("tableId"))
 	tableService := service.TableService{}
-	entity, err := tableService.SelectRecordById(tableId)
+	entity, err := tableService.FindById(tableId)
 	if err != nil || entity == nil {
 		c.JSON(http.StatusOK, lv_dto.CommonRes{
 			Code:  500,

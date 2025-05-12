@@ -28,7 +28,7 @@ func GetRoleServiceInstance() *RoleService {
 }
 
 // 根据主键查询数据
-func (svc *RoleService) SelectRecordById(id int64) (*model.SysRole, error) {
+func (svc *RoleService) FindById(id int64) (*model.SysRole, error) {
 	entity := &model.SysRole{RoleId: id}
 	err := entity.FindOne()
 	return entity, err
@@ -166,8 +166,8 @@ func (svc *RoleService) AuthDataScope(req *common_vo.DataScopeReq, c *gin.Contex
 
 }
 
-// DeleteRecordByIds 批量删除数据记录
-func (svc *RoleService) DeleteRecordByIds(ids string) error {
+// DeleteByIds 批量删除数据记录
+func (svc *RoleService) DeleteByIds(ids string) error {
 	idArr := lv_conv.ToInt64Array(ids, ",")
 	idsDel := make([]int64, 0)
 	for _, id := range idArr {
@@ -188,7 +188,7 @@ func (svc *RoleService) DeleteRolesByUserIds(userIds []int64) {
 func (svc *RoleService) SelectRoleContactVo(userId int64) ([]common_vo.SysRoleFlag, error) {
 	var paramsPost *common_vo.RolePageReq
 	var roleDao = dao.GetRoleDaoInstance()
-	roleAll, err := roleDao.SelectListAll(paramsPost)
+	roleAll, err := roleDao.FindAll(paramsPost)
 	if err != nil || roleAll == nil {
 		return nil, errors.New("未查询到角色数据")
 	}

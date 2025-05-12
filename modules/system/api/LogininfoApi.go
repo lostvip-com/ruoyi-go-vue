@@ -32,7 +32,7 @@ func (w *LogininfoApi) ListAjax(c *gin.Context) {
 func (w *LogininfoApi) Remove(c *gin.Context) {
 	var ids = c.Param("infoIds")
 	//获取参数
-	err := service.GetLoginServiceInstance().DeleteRecordByIds(ids)
+	err := service.GetLoginServiceInstance().DeleteByIds(ids)
 	if err == nil {
 		util.Success(c, nil)
 	} else {

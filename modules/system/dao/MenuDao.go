@@ -34,7 +34,7 @@ func (r *MenuDao) DeleteChildren(parentId int64) (int64, error) {
 }
 
 // 根据主键查询数据
-func (dao *MenuDao) SelectRecordById(id int64) (*model.SysMenu, error) {
+func (dao *MenuDao) FindById(id int64) (*model.SysMenu, error) {
 	tb := lv_db.GetMasterGorm()
 	if tb == nil {
 		return nil, errors.New("获取数据库连接失败")
@@ -81,7 +81,7 @@ func (dao *MenuDao) SelectListPage(param *vo.SelectMenuPageReq) (*[]model.SysMen
 }
 
 // 获取所有数据
-func (dao *MenuDao) SelectListAll(sysMenu *vo.SelectMenuPageReq) ([]model.SysMenu, error) {
+func (dao *MenuDao) FindAll(sysMenu *vo.SelectMenuPageReq) ([]model.SysMenu, error) {
 	tb := lv_db.GetMasterGorm()
 	var rows []model.SysMenu
 	var sql = `select menu_id, menu_name, parent_id, order_num, path, component, query, is_frame, is_cache, menu_type, 

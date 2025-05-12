@@ -79,8 +79,8 @@ func (svc *ConfigService) DeleteConfigById(id int64) bool {
 	return false
 }
 
-// DeleteRecordByIds 批量删除数据记录
-func (svc *ConfigService) DeleteRecordByIds(ids string) {
+// DeleteByIds 批量删除数据记录
+func (svc *ConfigService) DeleteByIds(ids string) {
 	idArr := lv_conv.ToInt64Array(ids, ",")
 	cfg := new(model.SysConfig)
 	for _, id := range idArr {
@@ -118,9 +118,9 @@ func (svc *ConfigService) EditSave(req *common_vo.EditConfigReq, c *gin.Context)
 }
 
 // 根据条件分页查询角色数据
-func (svc *ConfigService) SelectListAll(params *common_vo.SelectConfigPageReq) ([]model.SysConfig, error) {
+func (svc *ConfigService) FindAll(params *common_vo.SelectConfigPageReq) ([]model.SysConfig, error) {
 	var config dao2.ConfigDao
-	return config.SelectListAll(params)
+	return config.FindAll(params)
 }
 
 // 根据条件分页查询角色数据

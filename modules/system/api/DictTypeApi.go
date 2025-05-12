@@ -98,7 +98,7 @@ func (w *DictTypeApi) EditSave(c *gin.Context) {
 func (w *DictTypeApi) Remove(c *gin.Context) {
 	dictIds := c.Param("dictIds")
 	var dictTypeService service.DictTypeService
-	err := dictTypeService.DeleteRecordByIds(dictIds)
+	err := dictTypeService.DeleteByIds(dictIds)
 	if err == nil {
 		util.Success(c, nil)
 	} else {
@@ -109,7 +109,7 @@ func (w *DictTypeApi) Remove(c *gin.Context) {
 // GetOptionSelect 加载部门列表树结构的数据
 //func (w *DictTypeApi) GetOptionSelect(c *gin.Context) {
 //	var dictTypeService service.DictTypeService
-//	result := dictTypeService.SelectDictTree(nil)
+//	result := dictTypeService.FindDictTree(nil)
 //	c.JSON(http.StatusOK, result)
 //}
 
@@ -132,7 +132,7 @@ func (w *DictTypeApi) Export(c *gin.Context) {
 
 // GetOptionSelect 加载部门列表树结构的数据
 func (w *DictTypeApi) GetOptionSelect(c *gin.Context) {
-	result, err := dao.GetSysDictTypeDaoInstance().SelectListAll(nil)
+	result, err := dao.GetSysDictTypeDaoInstance().FindAll(nil)
 	if err != nil {
 		util.Fail(c, err.Error())
 		return

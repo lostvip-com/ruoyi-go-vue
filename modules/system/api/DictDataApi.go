@@ -82,7 +82,7 @@ func (w *DictDataApi) EditSave(c *gin.Context) {
 func (w *DictDataApi) Remove(c *gin.Context) {
 	var dictCodes = c.Param("dictCodes")
 	var dictService service.DictDataService
-	err := dictService.DeleteRecordByIds(dictCodes)
+	err := dictService.DeleteByIds(dictCodes)
 	if err == nil {
 		util.Success(c, nil)
 	} else {

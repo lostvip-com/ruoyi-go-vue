@@ -21,7 +21,7 @@ type RoleApi struct {
 }
 
 func (w *RoleApi) GetRoleOptionSelect(c *gin.Context) {
-	arr, err := dao.GetRoleDaoInstance().SelectListAll(nil)
+	arr, err := dao.GetRoleDaoInstance().FindAll(nil)
 	if err != nil {
 		util.Fail(c, err.Error())
 		return
@@ -132,7 +132,7 @@ func (w *RoleApi) GetUnAllocatedList(c *gin.Context) {
 func (w *RoleApi) Remove(c *gin.Context) {
 	var roleIds = c.Param("roleIds")
 	roleService := service.GetRoleServiceInstance()
-	err := roleService.DeleteRecordByIds(roleIds)
+	err := roleService.DeleteByIds(roleIds)
 
 	if err != nil {
 		util.Fail(c, err.Error())

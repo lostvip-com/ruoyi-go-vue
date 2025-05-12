@@ -129,7 +129,7 @@ func (d ConfigDao) SelectExportList(param *common_vo.SelectConfigPageReq) (*[]ma
 }
 
 // 获取所有数据
-func (dao *ConfigDao) SelectListAll(param *common_vo.SelectConfigPageReq) ([]model.SysConfig, error) {
+func (dao *ConfigDao) FindAll(param *common_vo.SelectConfigPageReq) ([]model.SysConfig, error) {
 	db := lv_db.GetMasterGorm()
 
 	tb := db.Table("sys_config t")

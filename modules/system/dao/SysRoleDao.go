@@ -57,7 +57,7 @@ func (dao *SysRoleDao) SelectListPage(param *common_vo.RolePageReq) (result []mo
 }
 
 // 获取所有角色数据
-func (dao *SysRoleDao) SelectListAll(param *common_vo.RolePageReq) ([]common_vo.SysRoleFlag, error) {
+func (dao *SysRoleDao) FindAll(param *common_vo.RolePageReq) ([]common_vo.SysRoleFlag, error) {
 	db := lv_db.GetMasterGorm()
 
 	if db == nil {

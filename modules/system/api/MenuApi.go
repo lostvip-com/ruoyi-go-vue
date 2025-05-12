@@ -39,7 +39,7 @@ func (w *MenuApi) ListMenu(c *gin.Context) {
 	rows := make([]model.SysMenu, 0)
 	var err error
 	if w.IsAdmin(userId) {
-		rows, err = dao.GetMenuDaoInstance().SelectListAll(req)
+		rows, err = dao.GetMenuDaoInstance().FindAll(req)
 	} else {
 		rows, err = dao.GetMenuDaoInstance().FindMenusByUserId(userId, req)
 	}
@@ -89,7 +89,7 @@ func (w *MenuApi) EditSave(c *gin.Context) {
 // Remove 删除数据
 func (w *MenuApi) Remove(c *gin.Context) {
 	id := lv_conv.Int64(c.Query("menuId"))
-	err := service.GetMenuServiceInstance().DeleteRecordById(id)
+	err := service.GetMenuServiceInstance().DeleteById(id)
 	if err == nil {
 		util.Success(c, gin.H{"id": id})
 	} else {

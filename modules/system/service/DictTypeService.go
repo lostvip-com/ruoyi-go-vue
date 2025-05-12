@@ -16,14 +16,14 @@ type DictTypeService struct {
 }
 
 // 根据主键查询数据
-func (svc *DictTypeService) SelectRecordById(id int64) (*model.SysDictType, error) {
-	entity := &model.SysDictType{DictId: id}
-	_, err := entity.FindOne()
-	return entity, err
+func (svc *DictTypeService) FindById(id int64) (*model.SysDictType, error) {
+	dictType := &model.SysDictType{}
+	dictType, err := dictType.FindById(id)
+	return dictType, err
 }
 
 // 根据主键删除数据
-func (svc *DictTypeService) DeleteRecordById(id int64) bool {
+func (svc *DictTypeService) DeleteById(id int64) bool {
 	err := (&model.SysDictType{DictId: id}).Delete()
 	if err == nil {
 		return true
@@ -31,7 +31,7 @@ func (svc *DictTypeService) DeleteRecordById(id int64) bool {
 	return false
 }
 
-func (svc *DictTypeService) DeleteRecordByIds(ids string) error {
+func (svc *DictTypeService) DeleteByIds(ids string) error {
 	ida := lv_conv.ToInt64Array(ids, ",")
 	data := dao2.GetDictDataDaoInstance()
 	//data.DeleteBatch()
@@ -89,9 +89,9 @@ func (svc *DictTypeService) EditSave(req *common_vo.EditDictTypeReq, c *gin.Cont
 }
 
 // 根据条件分页查询角色数据
-func (svc *DictTypeService) SelectListAll(params *common_vo.DictTypePageReq) ([]model.SysDictType, error) {
+func (svc *DictTypeService) FindAll(params *common_vo.DictTypePageReq) ([]model.SysDictType, error) {
 	var dao = dao2.GetSysDictTypeDaoInstance()
-	return dao.SelectListAll(params)
+	return dao.FindAll(params)
 }
 
 // 根据条件分页查询角色数据
@@ -101,7 +101,7 @@ func (svc *DictTypeService) FindPage(params *common_vo.DictTypePageReq) ([]model
 }
 
 // 根据字典类型查询信息
-func (svc *DictTypeService) SelectDictTypeByType(dictType string) *model.SysDictType {
+func (svc *DictTypeService) FindByType(dictType string) *model.SysDictType {
 	entity := &model.SysDictType{DictType: dictType}
 	entity, err := entity.FindOne()
 	if err != nil {
@@ -137,10 +137,10 @@ func (svc *DictTypeService) IsDictTypeExist(configKey string) bool {
 }
 
 // 查询字典类型树
-func (svc *DictTypeService) SelectDictTree(params *common_vo.DictTypePageReq) *[]lv_dto.Ztree {
+func (svc *DictTypeService) FindDictTree(params *common_vo.DictTypePageReq) *[]lv_dto.Ztree {
 	var result []lv_dto.Ztree
 	var dao = dao2.GetSysDictTypeDaoInstance()
-	dictList, err := dao.SelectListAll(params)
+	dictList, err := dao.FindAll(params)
 	if err == nil && dictList != nil {
 		for _, item := range dictList {
 			var tmp lv_dto.Ztree

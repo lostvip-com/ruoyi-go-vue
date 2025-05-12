@@ -29,13 +29,13 @@ func GetMenuServiceInstance() *MenuService {
 }
 
 // 根据主键查询数据
-func (svc *MenuService) SelectRecordById(id int64) (*model.SysMenu, error) {
-	return svc.SelectRecordById(id)
+func (svc *MenuService) FindById(id int64) (*model.SysMenu, error) {
+	return svc.FindById(id)
 }
 
 // 根据条件查询数据
-func (svc *MenuService) SelectListAll(params *vo.SelectMenuPageReq) ([]model.SysMenu, error) {
-	return svc.SelectListAll(params)
+func (svc *MenuService) FindAll(params *vo.SelectMenuPageReq) ([]model.SysMenu, error) {
+	return svc.FindAll(params)
 }
 
 // 根据条件分页查询数据
@@ -44,7 +44,7 @@ func (svc *MenuService) SelectListPage(params *vo.SelectMenuPageReq) (*[]model.S
 }
 
 // 根据主键删除数据
-func (svc *MenuService) DeleteRecordById(id int64) error {
+func (svc *MenuService) DeleteById(id int64) error {
 	err := (&model.SysMenu{MenuId: id}).Delete()
 	if err == nil {
 		lv_db.GetMasterGorm().Exec("delete from sys_menu where parent_id=?", id)
@@ -83,7 +83,7 @@ func (svc *MenuService) Edit(req *model.SysMenu) error {
 }
 
 // 批量删除数据记录
-func (svc *MenuService) DeleteRecordByIds(ids string) int64 {
+func (svc *MenuService) DeleteByIds(ids string) int64 {
 	idarr := lv_conv.ToInt64Array(ids, ",")
 	var dao dao.MenuDao
 	result, err := dao.DeleteBatch(idarr...)

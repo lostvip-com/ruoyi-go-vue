@@ -105,14 +105,14 @@ func (svc OperLogService) FindPage(param *vo.OperLogPageReq) (*[]model.SysOperLo
 }
 
 // 根据主键查询用户信息
-func (svc OperLogService) SelectRecordById(id int64) (*model.SysOperLog, error) {
+func (svc OperLogService) FindById(id int64) (*model.SysOperLog, error) {
 	entity := &model.SysOperLog{OperId: id}
 	_, err := entity.FindOne()
 	return entity, err
 }
 
-// DeleteRecordById 根据主键删除用户信息
-func (svc OperLogService) DeleteRecordById(id int64) bool {
+// DeleteById 根据主键删除用户信息
+func (svc OperLogService) DeleteById(id int64) bool {
 	entity := &model.SysOperLog{OperId: id}
 	err := entity.Delete()
 	if err == nil {

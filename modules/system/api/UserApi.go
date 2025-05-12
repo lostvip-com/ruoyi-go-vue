@@ -22,7 +22,7 @@ type UserApi struct {
 func (w *UserApi) Remove(c *gin.Context) {
 	userIds := c.Param("userIds")
 	var userService = service2.GetUserService()
-	err := userService.DeleteRecordByIds(userIds)
+	err := userService.DeleteByIds(userIds)
 	if err != nil {
 		util.Fail(c, err.Error())
 		return

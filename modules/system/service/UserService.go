@@ -33,7 +33,7 @@ func GetUserService() *UserService {
 }
 
 // 根据主键查询用户信息
-func (svc *UserService) SelectRecordById(id int64) (*model.SysUser, error) {
+func (svc *UserService) FindById(id int64) (*model.SysUser, error) {
 	entity := &model.SysUser{UserId: id}
 	err := entity.FindOne()
 	return entity, err
@@ -199,14 +199,14 @@ func (svc UserService) EditSave(req *common_vo.EditUserReq, c *gin.Context) erro
 }
 
 // 根据主键删除用户信息
-func (svc UserService) DeleteRecordById(id int64) error {
+func (svc UserService) DeleteById(id int64) error {
 	entity := &model.SysUser{UserId: id}
 	err := entity.Delete()
 	return err
 }
 
 // 批量删除用户记录
-func (svc UserService) DeleteRecordByIds(ids string) error {
+func (svc UserService) DeleteByIds(ids string) error {
 	idarr := lv_conv.ToInt64Array(ids, ",")
 	idarr = lv_conv.RemoveOne(idarr, 1) //去掉admin的id
 	if len(idarr) == 0 {

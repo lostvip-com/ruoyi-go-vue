@@ -26,7 +26,7 @@ func GetSysPostServiceInstance() *SysPostService {
 }
 
 // 批量删除数据记录
-func (svc SysPostService) DeleteRecordByIds(ids string) error {
+func (svc SysPostService) DeleteByIds(ids string) error {
 	ida := lv_conv.ToInt64Array(ids, ",")
 	var d dao.SysPostDao
 	_, err := d.DeleteByIds(ida)
@@ -78,7 +78,7 @@ func (svc SysPostService) EditSave(req *vo.EditSysPostReq, c *gin.Context) error
 }
 
 // 根据条件分页查询角色数据
-func (svc SysPostService) SelectListAll(params *vo.PostPageReq) (*[]model.SysPost, error) {
+func (svc SysPostService) FindAll(params *vo.PostPageReq) (*[]model.SysPost, error) {
 	var d dao.SysPostDao
 	ret, err := d.ListAll(params)
 	return ret, err
