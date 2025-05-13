@@ -15,9 +15,9 @@ type LoginUserCache struct {
 	Browser       string `json:"browser"`
 	Os            string `json:"os"`
 	LoginTime     int64  `json:"loginTime"`
-	UserId        int    `json:"userId"`
+	UserId        int64  `json:"userId"`
 	UserName      string `json:"userName"`
 	Uuid          string `json:"uuid"`
-	DeptId        int    `json:"deptId"`
+	DeptId        int64  `json:"deptId"`
 	NickName      string `json:"nickName"`
 }

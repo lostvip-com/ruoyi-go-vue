@@ -3,7 +3,6 @@ package api
 import (
 	"common/global"
 	"common/util"
-	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/lostvip-com/lv_framework/lv_cache/lv_redis"
 	"github.com/lostvip-com/lv_framework/lv_log"
@@ -116,13 +115,11 @@ func (m MonitorApi) ListOnLine(c *gin.Context) {
 	key := global.LoginCacheKey + "*"
 	redisCache := lv_redis.GetInstance(0)
 	keyList, _, _ := redisCache.Scan(0, key, 0)
-	var rows []vo.LoginUserCache
+	var rows []map[string]string
 	for i := range keyList {
 		keyString := keyList[i]
-		result, _ := redisCache.Get(keyString)
-		var loginUser vo.LoginUserCache
-		json.Unmarshal([]byte(result), &loginUser)
-		rows = append(rows, loginUser)
+		result, _ := redisCache.HGetAll(keyString)
+		rows = append(rows, result)
 	}
 	if userName != "" || ipaddr != "" { //按条件搜索
 		rows = *m.FindSearchTarget(rows, userName, ipaddr)
@@ -130,24 +127,32 @@ func (m MonitorApi) ListOnLine(c *gin.Context) {
 	util.SuccessPage(c, rows, int64(len(rows)))
 }
 
-func (m MonitorApi) FindSearchTarget(rows []vo.LoginUserCache, userName string, ipaddr string) *[]vo.LoginUserCache {
-	var search = make([]vo.LoginUserCache, 0)
+func (m MonitorApi) FindSearchTarget(rows []map[string]string, userName string, ipaddr string) *[]map[string]string {
+	var search = make([]map[string]string, 0)
 	for i := range rows {
-		row := &rows[i]
-		if userName != "" || row.UserName == userName {
-			if strings.Contains(userName, row.UserName) {
-				search = append(search, *row)
+		row := rows[i]
+		if userName != "" || row["userName"] == userName {
+			if strings.Contains(userName, row["userName"]) {
+				search = append(search, row)
 			}
 		}
-		if ipaddr != "" || row.Ipaddr == ipaddr {
-			if strings.Contains(ipaddr, row.Ipaddr) {
-				search = append(search, *row)
+		if ipaddr != "" || row["ipaddr"] == ipaddr {
+			if strings.Contains(ipaddr, row["ipaddr"]) {
+				search = append(search, row)
 			}
 		}
 	}
 	return &search
 }
 
-func (m MonitorApi) DetectOnLine(context *gin.Context) {
-
+func (m MonitorApi) DetectOnLine(c *gin.Context) {
+	var tokenId = c.Param("tokenId")
+	var key = global.LoginCacheKey + tokenId
+	redisCache := lv_redis.GetInstance(0)
+	error := redisCache.Del(key)
+	if error != nil {
+		util.Fail(c, error.Error())
+		return
+	}
+	util.Success(c, nil)
 }

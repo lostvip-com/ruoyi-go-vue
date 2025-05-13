@@ -5,7 +5,9 @@ import (
 	"errors"
 	"github.com/lostvip-com/lv_framework/lv_cache"
 	"github.com/lostvip-com/lv_framework/lv_log"
+	"github.com/lostvip-com/lv_framework/utils/lv_conv"
 	"github.com/lostvip-com/lv_framework/utils/lv_secret"
+	"github.com/lostvip-com/lv_framework/utils/lv_time"
 	"system/model"
 	"time"
 )
@@ -51,64 +53,25 @@ func (svc *SessionService) ForceLogout(token string) error {
 	return svc.SignOut(token)
 }
 
-func (svc *SessionService) SaveUserToSession(tokenId string, user *model.SysUser, roleKeys string) error {
-	//记录到redis
-	fieldMap := make(map[string]interface{})
-	fieldMap["userName"] = user.UserName
-	fieldMap["userId"] = user.UserId
-	fieldMap["UserName"] = user.UserName
-	fieldMap["avatar"] = user.Avatar
+func (svc *SessionService) SaveSessionToRedis(tokenId string, user *model.SysLoginInfo, roleKeys string, deptName string) error {
+	fieldMap := lv_conv.StructToMap(user)
+	fieldMap["tokenId"] = tokenId
+	fieldMap["loginTime"] = lv_time.GetCurrentTimeStr()
 	fieldMap["roleKeys"] = roleKeys
-	fieldMap["deptId"] = user.DeptId
+	fieldMap["deptName"] = deptName
 	//fieldMap["tenantId"] = user.TenantId //租户ID
-	//其它
 	key := global.LoginCacheKey + tokenId
 	err := lv_cache.GetCacheClient().HSet(key, fieldMap)
-	if err != nil {
-		panic("redis 故障！" + err.Error())
-	}
 	err = lv_cache.GetCacheClient().Expire(key, time.Hour)
-	if err != nil {
-		panic("redis 故障！" + err.Error())
-	}
 	return err
-}
-
-func (svc *SessionService) SaveLoginLog2DB(token string, user *model.SysUser, userAgent string, ip string) error {
-	//save to lv_db
-	//ua := user_agent.New(userAgent)
-	//os := ua.OS()
-	//browser, _ := ua.Browser()
-	////移除登录次数记录
-	//var logininforService LoginService
-	//logininforService.RemovePasswordCounts(user.UserName)
-	//
-	//var userOnline vo.OnlineVo
-	//// 保存用户信息到session
-	//loginLocation := util.GetCityByIp(ip)
-	//userOnline.UserName = user.UserName
-	//userOnline.Browser = browser
-	//userOnline.Os = os
-	//userOnline.DeptName = ""
-	//userOnline.Ipaddr = ip
-	//userOnline.StartTimestamp = lv_time.GetCurrentTimeStr()
-	//userOnline.LastAccessTime = lv_time.GetCurrentTimeStr()
-	//userOnline.CreateTime = userOnline.StartTimestamp
-	//userOnline.Status = "on_line"
-	//userOnline.LoginLocation = loginLocation
-	//userOnline.SessionId = token
-	//err := userOnline.Delete()
-	//if err != nil {
-	//	return err
-	//}
-	//err = userOnline.Save()
-	//if err != nil {
-	//	return err
-	//}
-	return nil
 }
 
 func (svc *SessionService) Refresh(token string) {
 	token = "login:" + token
 	lv_cache.GetCacheClient().Expire(token, 8*time.Hour)
+}
+
+func (svc *SessionService) SaveLogs(login *model.SysLoginInfo, msg string) {
+	login.Msg = msg
+	login.Insert()
 }

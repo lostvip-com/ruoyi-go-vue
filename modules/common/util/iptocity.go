@@ -16,7 +16,6 @@ func GetCityByIp(ip string) string {
 	if lv_net.IsPrivateIP(ip) {
 		return "内网IP"
 	}
-
 	url := "http://whois.pconline.com.cn/ipJson.jsp?json=true&ip=" + ip
 	client := &http.Client{}
 	request, _ := http.NewRequest("GET", url, nil)

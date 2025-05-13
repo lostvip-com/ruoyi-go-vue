@@ -23,15 +23,7 @@ func init() {
 	g3.GET("/list", "monitor:operlog:list", operApi.ListAjax)
 	g3.DELETE("/:operId", "monitor:operlog:Remove", operApi.DelectOperlog)
 	g3.DELETE("/clean", "monitor:operlog:export", operApi.Clean)
-
-	//在线用户
-	g4 := router.New("/monitor/online", auth2.TokenCheck(), auth2.PermitCheck)
-	onlineController := api.OnlineApi{}
-	g4.POST("/list", "monitor:online:list", onlineController.ListAjax)
-	g4.POST("/forceLogout", "monitor:online:forceLogout", onlineController.ForceLogout)
-	g4.POST("/batchForceLogout", "monitor:online:batchForceLogout", onlineController.BatchForceLogout)
-
-	//
+	// 监控
 	monitor := new(api.MonitorApi)
 	monitorGroup := router.New("/monitor", auth2.TokenCheck(), auth2.PermitCheck)
 	monitorGroup.GET("/cache", "", monitor.CacheHandler)
