@@ -42,4 +42,7 @@ func init() {
 	monitorGroup.DELETE("/cache/clearCacheKey/:cacheKey", "", monitor.ClearCacheKeyHandler)
 	monitorGroup.DELETE("/cache/clearCacheAll", "", monitor.ClearCacheAllHandler)
 	monitorGroup.GET("/server", "", monitor.ServerInfo)
+	//online
+	monitorGroup.GET("/online/list", "", monitor.ListOnLine)
+	monitorGroup.DELETE("online/:tokenId", "", monitor.DetectOnLine)
 }
