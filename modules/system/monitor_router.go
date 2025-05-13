@@ -34,7 +34,7 @@ func init() {
 	//
 	monitor := new(api.MonitorApi)
 	monitorGroup := router.New("/monitor", auth2.TokenCheck(), auth2.PermitCheck)
-	monitorGroup.GET("", "", monitor.CacheHandler)
+	monitorGroup.GET("/cache", "", monitor.CacheHandler)
 	monitorGroup.GET("/cache/getNames", "", monitor.CacheHandler)
 	monitorGroup.GET("/cache/getKeys/:cacheName", "", monitor.GetCacheKeysHandler)
 	monitorGroup.GET("/cache/getValue/:cacheName/:cacheKey", "", monitor.GetCacheValueHandler)

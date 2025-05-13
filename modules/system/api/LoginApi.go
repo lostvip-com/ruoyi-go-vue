@@ -110,16 +110,23 @@ func (w *LoginApi) SaveLogs(c *gin.Context, req *RegisterReq, msg string) {
 	loginInfo.LoginLocation = util2.GetCityByIp(loginInfo.Ipaddr)
 	loginInfo.Msg = msg
 	loginInfo.Status = "0"
-	loginInfo.Insert()
+	err := loginInfo.Insert()
+	if err != nil {
+		lv_log.Error(err.Error())
+	}
 }
 
 // 注销
 func (w *LoginApi) Logout(c *gin.Context) {
-	var user service.SessionService
-	tokenStr := lv_net.GetParam(c, "token")
-	err := user.SignOut(tokenStr)
+	uuidStr, err := auth.GetJwtUuid(c)
 	if err != nil {
+		util2.Fail(c, err.Error())
 		return
+	}
+	var user service.SessionService
+	err = user.SignOut(uuidStr)
+	if err != nil {
+		lv_log.Error(err.Error())
 	}
 	util2.Success(c, nil)
 }

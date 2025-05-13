@@ -43,8 +43,8 @@ func (svc *SessionService) SignIn(loginnName, password string) (*model.SysUser, 
 	return &user, nil
 }
 
-func (svc *SessionService) SignOut(tokenStr string) error {
-	return lv_cache.GetCacheClient().Del(global.LoginCacheKey + tokenStr)
+func (svc *SessionService) SignOut(uuid string) error {
+	return lv_cache.GetCacheClient().Del(global.LoginCacheKey + uuid)
 }
 
 func (svc *SessionService) ForceLogout(token string) error {
