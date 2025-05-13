@@ -24,8 +24,7 @@ type SysLoginInfo struct {
 	LoginTime     time.Time `gorm:"type:datetime;comment:访问时间;" json:"loginTime" time_format:"2006-01-02 15:04:05"`
 }
 
-// 映射数据表
-func (SysLoginInfo) TableName() string {
+func (*SysLoginInfo) TableName() string {
 	return "sys_logininfor"
 }
 

@@ -6,26 +6,28 @@ import (
 	"github.com/lostvip-com/lv_framework/lv_conf"
 	"github.com/lostvip-com/lv_framework/lv_log"
 	"github.com/redis/go-redis/v9"
+	"sync"
 	"time"
 )
 
 var (
 	redisClient *RedisClient
+	onceRedis   = sync.Once{}
 )
 
 type RedisClient struct {
-	c *redis.Client
+	client *redis.Client
 }
 
-// // 获取缓存单例
 func GetInstance(indexDb int) *RedisClient {
 	if redisClient == nil {
-		redisClient = NewRedisClient(indexDb)
+		onceRedis.Do(func() {
+			redisClient = NewRedisClient(indexDb)
+		})
 	}
 	return redisClient
 }
 
-// 获取缓存单例
 func NewRedisClient(indexDb int) *RedisClient {
 	conf := lv_conf.ConfigDefault{}
 	addr := conf.GetValueStr("go.redis.host")
@@ -37,8 +39,8 @@ func NewRedisClient(indexDb int) *RedisClient {
 		DB:       indexDb,  // 默认DB 0
 	})
 	redisClient = new(RedisClient)
-	redisClient.c = rdb
-	if redisClient.c.Ping(context.Background()).Val() == "" {
+	redisClient.client = rdb
+	if redisClient.client.Ping(context.Background()).Val() == "" {
 		msg := ` 
 			  ------------>连接 reids 错误：
 			  无法链接到redis!!!! 检查相关配置:
@@ -54,55 +56,65 @@ func NewRedisClient(indexDb int) *RedisClient {
 }
 
 func (rcc *RedisClient) HMSet(key string, mp map[string]any, expiration time.Duration) error {
-	err := rcc.c.HSet(context.Background(), key, mp).Err()
-	err = rcc.c.Expire(context.Background(), key, expiration).Err()
+	err := rcc.client.HSet(context.Background(), key, mp).Err()
+	err = rcc.client.Expire(context.Background(), key, expiration).Err()
 	return err
 }
 
 func (rcc *RedisClient) Expire(key string, duration time.Duration) error {
-	return rcc.c.Expire(context.Background(), key, duration).Err()
+	return rcc.client.Expire(context.Background(), key, duration).Err()
 }
 
 func (rcc *RedisClient) Exists(key string) (int64, error) {
-	return rcc.c.Exists(context.Background(), key).Result()
+	return rcc.client.Exists(context.Background(), key).Result()
 }
 
 func (rcc *RedisClient) Set(key string, value interface{}, expiration time.Duration) error {
-	rcc.c.Set(context.Background(), key, value, expiration)
+	rcc.client.Set(context.Background(), key, value, expiration)
 	return nil
 }
 
 func (rcc *RedisClient) Get(key string) (data string, err error) {
-	data, err = rcc.c.Get(context.Background(), key).Result()
+	data, err = rcc.client.Get(context.Background(), key).Result()
 	return data, err
 }
 
 func (rcc *RedisClient) Del(keys ...string) error {
 	var err error = nil
 	for _, key := range keys {
-		err = rcc.c.Del(context.Background(), key).Err()
+		err = rcc.client.Del(context.Background(), key).Err()
 	}
 	return err
 }
 
 func (rcc *RedisClient) HSet(key string, values ...interface{}) error {
-	err := rcc.c.HSet(context.Background(), key, values...).Err()
+	err := rcc.client.HSet(context.Background(), key, values...).Err()
 	return err
 }
 
 func (rcc *RedisClient) HGet(key, field string) (string, error) {
-	data, err := rcc.c.HGet(context.Background(), key, field).Result()
+	data, err := rcc.client.HGet(context.Background(), key, field).Result()
 	return data, err
 }
 
 func (rcc *RedisClient) HDel(key string, fields ...string) error {
-	return rcc.c.HDel(context.Background(), key, fields...).Err()
+	return rcc.client.HDel(context.Background(), key, fields...).Err()
 }
 
 func (rcc *RedisClient) HGetAll(key string) (map[string]string, error) {
-	return rcc.c.HGetAll(context.Background(), key).Result()
+	return rcc.client.HGetAll(context.Background(), key).Result()
+}
+
+func (rcc *RedisClient) Execute(script string, keys []string, args ...interface{}) (interface{}, error) {
+	return rcc.client.Eval(context.TODO(), script, keys, args).Result()
 }
 
 func (rcc *RedisClient) Close() {
-	rcc.c.Close()
+	err := rcc.client.Close()
+	if err != nil {
+		return
+	}
+}
+func (r RedisClient) Scan(cursor uint64, match string, count int64) ([]string, uint64, error) {
+	return r.client.Scan(context.TODO(), cursor, match, count).Result()
 }

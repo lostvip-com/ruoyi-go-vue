@@ -6,6 +6,7 @@ import (
 	util2 "common/util"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/lostvip-com/lv_framework/lv_log"
 	"github.com/lostvip-com/lv_framework/utils/lv_conv"
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
 	"github.com/lostvip-com/lv_framework/utils/lv_net"
@@ -43,9 +44,9 @@ func (w *LoginApi) Login(c *gin.Context) {
 		util2.ErrorResp(c).SetMsg(err.Error()).WriteJsonExit()
 		return
 	}
-	clientIp := lv_net.GetClientRealIP(c)
-	var logininforService service.LoginService
-	errTimes4Ip := logininforService.GetPasswordCounts(clientIp)
+	clientIp := lv_net.GetRemoteClientIp(c.Request)
+	var loginSvc = service.GetLoginServiceInstance()
+	errTimes4Ip := loginSvc.GetPasswordCounts(clientIp)
 	if errTimes4Ip > 5 { //超过5次错误开始校验验证码
 		//比对验证码
 		_, err := w.VerifyCaptcha(req.IdKey, req.ValidateCode)
@@ -54,7 +55,7 @@ func (w *LoginApi) Login(c *gin.Context) {
 			return
 		}
 	}
-	isLock := logininforService.CheckLock(req.UserName)
+	isLock := loginSvc.CheckLock(req.UserName)
 	if isLock {
 		util2.ErrorResp(c).SetMsg("账号已锁定，请30分钟后再试").WriteJsonExit()
 		return
@@ -63,14 +64,14 @@ func (w *LoginApi) Login(c *gin.Context) {
 	//验证账号密码
 	user, err := service.GetSessionServiceInstance().SignIn(req.UserName, req.Password)
 	if err != nil {
-		logininforService.SetPasswordCounts(clientIp)
-		errTimes4UserName := logininforService.SetPasswordCounts(req.UserName)
+		loginSvc.SetPasswordCounts(clientIp)
+		errTimes4UserName := loginSvc.SetPasswordCounts(req.UserName)
 		having := global2.ErrTimes2Lock - errTimes4UserName
 		w.SaveLogs(c, &req, "账号或密码不正确") //记录日志
 		if having <= 5 {
-			util2.ErrorResp(c).SetData(errTimes4Ip).SetMsg("账号或密码不正确,还有" + lv_conv.String(having) + "次之后账号将锁定").WriteJsonExit()
+			util2.Fail(c, "账号或密码不正确,还有"+lv_conv.String(having)+"次之后账号将锁定")
 		} else {
-			util2.ErrorResp(c).SetData(errTimes4Ip).SetMsg("账号或密码不正确!").WriteJsonExit()
+			util2.Fail(c, "账号或密码不正确")
 		}
 		return
 	}
@@ -83,30 +84,33 @@ func (w *LoginApi) Login(c *gin.Context) {
 	roles, err := userService.GetRoleKeys(user.UserId)
 	lv_err.HasErrAndPanic(err)
 	var svc service.SessionService
-	ip := lv_net.GetClientRealIP(c)
+	ip := lv_net.GetRemoteClientIp(c.Request)
 	err = svc.SaveUserToSession(tokenId, user, roles)
 	go func() {
-		lv_try.Catch(func() {
+		err := lv_try.Catch(func() {
 			w.SaveLogs(c, &req, "login success") //记录日志
 			err = svc.SaveLoginLog2DB(token, user, ua, ip)
 		})
+		if err != nil {
+			lv_log.Error(err.Error())
+		}
 	}()
 	c.AbortWithStatusJSON(http.StatusOK, gin.H{"code": 200, "msg": "success", "token": token})
 }
 
 func (w *LoginApi) SaveLogs(c *gin.Context, req *RegisterReq, msg string) {
-	var logininfor model.SysLoginInfo
-	logininfor.UserName = req.UserName
-	logininfor.Ipaddr = c.ClientIP()
+	var loginInfo model.SysLoginInfo
+	loginInfo.UserName = req.UserName
+	loginInfo.Ipaddr = c.ClientIP()
 	userAgent := c.Request.Header.Get("User-Agent")
 	ua := user_agent.New(userAgent)
-	logininfor.Os = ua.OS()
-	logininfor.Browser, _ = ua.Browser()
-	logininfor.LoginTime = time.Now()
-	logininfor.LoginLocation = util2.GetCityByIp(logininfor.Ipaddr)
-	logininfor.Msg = msg
-	logininfor.Status = "0"
-	logininfor.Insert()
+	loginInfo.Os = ua.OS()
+	loginInfo.Browser, _ = ua.Browser()
+	loginInfo.LoginTime = time.Now()
+	loginInfo.LoginLocation = util2.GetCityByIp(loginInfo.Ipaddr)
+	loginInfo.Msg = msg
+	loginInfo.Status = "0"
+	loginInfo.Insert()
 }
 
 // 注销

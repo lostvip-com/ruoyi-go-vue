@@ -21,7 +21,7 @@ func GetSessionServiceInstance() *SessionService {
 	return sessionService
 }
 func (svc *SessionService) IsSignedIn(uuid string) bool {
-	loginKey := global.LOGIN_TOKEN_KEY + uuid
+	loginKey := global.LoginCacheKey + uuid
 	num, err := lv_cache.GetCacheClient().Exists(loginKey)
 	return err == nil && num > 0
 }
@@ -44,7 +44,7 @@ func (svc *SessionService) SignIn(loginnName, password string) (*model.SysUser, 
 }
 
 func (svc *SessionService) SignOut(tokenStr string) error {
-	return lv_cache.GetCacheClient().Del(global.LOGIN_TOKEN_KEY + tokenStr)
+	return lv_cache.GetCacheClient().Del(global.LoginCacheKey + tokenStr)
 }
 
 func (svc *SessionService) ForceLogout(token string) error {
@@ -62,7 +62,7 @@ func (svc *SessionService) SaveUserToSession(tokenId string, user *model.SysUser
 	fieldMap["deptId"] = user.DeptId
 	//fieldMap["tenantId"] = user.TenantId //租户ID
 	//其它
-	key := global.LOGIN_TOKEN_KEY + tokenId
+	key := global.LoginCacheKey + tokenId
 	err := lv_cache.GetCacheClient().HSet(key, fieldMap)
 	if err != nil {
 		panic("redis 故障！" + err.Error())

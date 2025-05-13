@@ -242,7 +242,7 @@ func canGenIt(overwrite bool, file string) bool {
 	if overwrite { //允许覆盖
 		lv_log.Warn("--------->您配置了 overwrite 开关的值为true，旧文件会被覆盖！！！！ ")
 		return true
-	} else {                      // 不允许覆盖
+	} else { // 不允许覆盖
 		if lv_file.Exists(file) { //文件已经存在，不允许重新生成
 			lv_log.Warn("=======> 文件已经存在，本次将不会生成新文件！！！！！！！！！！！！ ")
 			return false

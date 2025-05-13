@@ -8,12 +8,6 @@ import (
 
 // 加载路由
 func init() {
-	serverController := api.ServiceApi{}
-	g0 := router.New("/health")
-	g0.GET("/", "", serverController.Health)
-	// 服务监控
-	g1 := router.New("/monitor/server", auth2.TokenCheck(), auth2.PermitCheck)
-	g1.GET("/", "", serverController.Server)
 	//登录日志
 	g2 := router.New("/monitor/logininfor", auth2.TokenCheck(), auth2.PermitCheck)
 	loginInfoApi := api.LogininfoApi{}
@@ -36,4 +30,16 @@ func init() {
 	g4.POST("/list", "monitor:online:list", onlineController.ListAjax)
 	g4.POST("/forceLogout", "monitor:online:forceLogout", onlineController.ForceLogout)
 	g4.POST("/batchForceLogout", "monitor:online:batchForceLogout", onlineController.BatchForceLogout)
+
+	//
+	monitor := new(api.MonitorApi)
+	monitorGroup := router.New("/monitor", auth2.TokenCheck(), auth2.PermitCheck)
+	monitorGroup.GET("", "", monitor.CacheHandler)
+	monitorGroup.GET("/cache/getNames", "", monitor.CacheHandler)
+	monitorGroup.GET("/cache/getKeys/:cacheName", "", monitor.GetCacheKeysHandler)
+	monitorGroup.GET("/cache/getValue/:cacheName/:cacheKey", "", monitor.GetCacheValueHandler)
+	monitorGroup.DELETE("/cache/clearCacheName/:cacheName", "", monitor.ClearCacheNameHandler)
+	monitorGroup.DELETE("/cache/clearCacheKey/:cacheKey", "", monitor.ClearCacheKeyHandler)
+	monitorGroup.DELETE("/cache/clearCacheAll", "", monitor.ClearCacheAllHandler)
+	monitorGroup.GET("/server", "", monitor.ServerInfo)
 }

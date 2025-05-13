@@ -26,6 +26,7 @@ router.beforeEach((to, from, next) => {
     } else if (isWhiteList(to.path)) {
       next()
     } else {
+      debugger
       if (store.getters.roles.length === 0) {
         isRelogin.show = true
         // 判断当前用户是否已拉取完user_info信息

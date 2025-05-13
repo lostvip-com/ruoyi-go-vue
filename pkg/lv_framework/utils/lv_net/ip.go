@@ -1,9 +1,11 @@
 package lv_net
 
 import (
+	"encoding/json"
 	"fmt"
-	"github.com/gin-gonic/gin"
+	"io"
 	"net"
+	"net/http"
 )
 
 // GET preferred outbound ip of this machine
@@ -67,16 +69,23 @@ func IsPrivateIP(ipStr string) bool {
 	return false
 }
 
-func GetClientRealIP(c *gin.Context) string {
-	// 获取用户请求的 IP 地址
-	ip := c.Request.Header.Get("X-Real-IP")
-	if ip == "" {
-		ip = c.Request.Header.Get("X-Forwarded-For")
+func GetRemoteClientIp(r *http.Request) string {
+	remoteIp := r.RemoteAddr
+
+	if ip := r.Header.Get("X-Real-IP"); ip != "" {
+		remoteIp = ip
+	} else if ip = r.Header.Get("X-Forwarded-For"); ip != "" {
+		remoteIp = ip
+	} else {
+		remoteIp, _, _ = net.SplitHostPort(remoteIp)
 	}
-	if ip == "" {
-		ip = c.Request.RemoteAddr
+
+	//本地ip
+	if remoteIp == "::1" {
+		remoteIp = "127.0.0.1"
 	}
-	return ip
+
+	return remoteIp
 }
 
 // 获取外网ip地址
@@ -128,4 +137,25 @@ func GetLocaHost() string {
 
 	}
 	return ""
+}
+
+type Tunit struct {
+	Pro  string `json:"pro"`
+	City string `json:"city"`
+}
+
+func GetRealAddressByIP(ip string) string {
+	url := "http://whois.pconline.com.cn/ipJson.jsp?ip=" + ip + "&json=true"
+	resp, err := http.Get(url)
+	defer resp.Body.Close()
+	var result string
+	body, err := io.ReadAll(resp.Body)
+	if err == nil {
+		dws := new(Tunit)
+		json.Unmarshal(body, &dws)
+		result = dws.Pro + " " + dws.City
+	} else {
+		result = ip
+	}
+	return result
 }
