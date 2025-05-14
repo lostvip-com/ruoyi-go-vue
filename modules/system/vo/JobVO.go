@@ -19,3 +19,9 @@ type JobReq struct {
 	BeginTime    string `form:"beginTime"` //开始时间
 	EndTime      string `form:"endTime"`   //结束时间
 }
+
+type JobStatus struct {
+	JobId    int64  `form:"jobId" form:"jobId"`
+	Status   string `form:"status" form:"status"`
+	JobGroup string `form:"jobGroup" form:"jobGroup"`
+}

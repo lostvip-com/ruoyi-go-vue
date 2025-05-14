@@ -232,32 +232,32 @@ func (m MonitorApi) ExportJob(c *gin.Context) {
 		for _, v := range list {
 			misfirePolicyKey := v.MisfirePolicy
 			var misfirePolicy = ""
-			if 0 == misfirePolicyKey {
+			if "0" == misfirePolicyKey {
 				misfirePolicy = "默认"
 			}
-			if 1 == misfirePolicyKey {
+			if "1" == misfirePolicyKey {
 				misfirePolicy = "立即触发执行"
 			}
-			if 2 == misfirePolicyKey {
+			if "2" == misfirePolicyKey {
 				misfirePolicy = "触发一次执行"
 			}
-			if 3 == misfirePolicyKey {
+			if "3" == misfirePolicyKey {
 				misfirePolicy = "不触发立即执行"
 			}
 			concurrentKey := v.Concurrent
 			var concurrent = ""
-			if 0 == concurrentKey {
+			if "0" == concurrentKey {
 				concurrent = "允许"
 			}
-			if 1 == concurrentKey {
+			if "1" == concurrentKey {
 				concurrent = "禁止"
 			}
 			statusKey := v.Concurrent
 			var status = ""
-			if 0 == statusKey {
+			if "0" == statusKey {
 				status = "正常"
 			}
-			if 1 == statusKey {
+			if "1" == statusKey {
 				status = "暂停"
 			}
 			data = append(data, map[string]interface{}{
@@ -317,9 +317,12 @@ func (m MonitorApi) UploadJob(c *gin.Context) {
 }
 
 func (m MonitorApi) ChangeStatus(c *gin.Context) {
-	jobId := c.Param("jobIds")
-	status := c.Param("status")
-	err := lv_db.GetMasterGorm().Table("sys_job").Where("job_id=?", jobId).UpdateColumn("status", status).Error
+	js := new(vo.JobStatus)
+	if err := c.ShouldBind(js); err != nil {
+		util.Fail(c, err.Error())
+		return
+	}
+	err := lv_db.GetMasterGorm().Table("sys_job").Where("job_id=?", js.JobId).UpdateColumn("status", js.Status).Error
 	if err != nil {
 		util.Fail(c, err.Error())
 		return
@@ -328,8 +331,12 @@ func (m MonitorApi) ChangeStatus(c *gin.Context) {
 }
 
 func (m MonitorApi) RunJob(c *gin.Context) {
-	jobId := c.Param("jobId")
-	util.Fail(c, "未实现 jobId:"+jobId)
+	js := new(vo.JobStatus)
+	if err := c.ShouldBind(js); err != nil {
+		util.Fail(c, err.Error())
+		return
+	}
+	util.Fail(c, "未实现！")
 }
 
 func (m MonitorApi) DelectJob(c *gin.Context) {

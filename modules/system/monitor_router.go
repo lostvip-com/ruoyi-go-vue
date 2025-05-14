@@ -8,24 +8,23 @@ import (
 
 // 加载路由
 func init() {
+	monitorApi := new(api.MonitorApi)
+	monitor := router.New("/monitor", auth2.TokenCheck(), auth2.PermitCheck)
 	//登录日志
-	g2 := router.New("/monitorApi/logininfor", auth2.TokenCheck(), auth2.PermitCheck)
 	loginInfoApi := api.LogininfoApi{}
-	g2.GET("/list", "monitorApi:logininfor:list", loginInfoApi.ListAjax)
-	g2.POST("/export", "monitorApi:logininfor:export", loginInfoApi.Export)
-	g2.POST("/clean", "monitorApi:logininfor:remove", loginInfoApi.Clean)
-	g2.DELETE("/:infoIds", "monitorApi:logininfor:remove", loginInfoApi.Remove)
-	g2.POST("/unlock", "monitorApi:logininfor:unlock", loginInfoApi.Unlock)
+	monitor.GET("/logininfor/list", "monitorApi:logininfor:list", loginInfoApi.ListAjax)
+	monitor.POST("/logininfor/export", "monitorApi:logininfor:export", loginInfoApi.Export)
+	monitor.POST("/logininfor/clean", "monitorApi:logininfor:remove", loginInfoApi.Clean)
+	monitor.DELETE("/logininfor/:infoIds", "monitorApi:logininfor:remove", loginInfoApi.Remove)
+	monitor.POST("/logininfor/unlock", "monitorApi:logininfor:unlock", loginInfoApi.Unlock)
 
 	//操作日志
-	g3 := router.New("/monitorApi/operlog", auth2.TokenCheck(), auth2.PermitCheck)
 	operApi := api.OperateLogApi{}
-	g3.GET("/list", "monitorApi:operlog:list", operApi.ListAjax)
-	g3.DELETE("/:operId", "monitorApi:operlog:Remove", operApi.DelectOperlog)
-	g3.DELETE("/clean", "monitorApi:operlog:export", operApi.Clean)
+	monitor.GET("/operlog/list", "monitorApi:operlog:list", operApi.ListAjax)
+	monitor.DELETE("/operlog/:operId", "monitorApi:operlog:Remove", operApi.DelectOperlog)
+	monitor.DELETE("/operlog/clean", "monitorApi:operlog:export", operApi.Clean)
 	// 监控
-	monitorApi := new(api.MonitorApi)
-	monitor := router.New("/monitorApi", auth2.TokenCheck(), auth2.PermitCheck)
+
 	monitor.GET("/cache", "", monitorApi.CacheHandler)
 	monitor.GET("/cache/getNames", "", monitorApi.CacheHandler)
 	monitor.GET("/cache/getKeys/:cacheName", "", monitorApi.GetCacheKeysHandler)
@@ -45,7 +44,7 @@ func init() {
 	monitor.POST("/job/export", "", monitorApi.ExportJob)
 	monitor.PUT("/job/changeStatus", "", monitorApi.ChangeStatus)
 	monitor.DELETE("/job/:jobIds", "", monitorApi.DelectJob)
-	monitor.PUT("/job/run/:jobId", "", monitorApi.RunJob)
+	monitor.PUT("/job/run", "", monitorApi.RunJob)
 	//job log
 	monitor.GET("/jobLog/list", "", monitorApi.ListJobLog)
 	monitor.POST("/jobLog/export", "", monitorApi.ExportJobLog)

@@ -21,8 +21,8 @@ type SysJob struct {
 	JobGroup       string `json:"jobGroup" form:"jobGroup" gorm:"job_group"`
 	InvokeTarget   string `json:"invokeTarget" form:"invokeTarget" gorm:"invoke_target"`
 	CronExpression string `json:"cronExpression" form:"cronExpression" gorm:"cron_expression"`
-	MisfirePolicy  int    `json:"misfirePolicy" form:"misfirePolicy" gorm:"misfire_policy"`
-	Concurrent     int    `json:"concurrent" form:"concurrent"  gorm:"concurrent"`
+	MisfirePolicy  string `json:"misfirePolicy" form:"misfirePolicy" gorm:"misfire_policy"`
+	Concurrent     string `json:"concurrent" form:"concurrent"  gorm:"concurrent"`
 	Status         string `json:"status" form:"status" gorm:"status"`
 	Remark         string `json:"remark" form:"remark" gorm:"remark"`
 	models.BaseModel
