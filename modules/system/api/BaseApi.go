@@ -1,11 +1,13 @@
 package api
 
 import (
+	"common/models"
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
 	"github.com/spf13/cast"
 	"system/model"
+	"time"
 )
 
 type BaseApi struct {
@@ -31,4 +33,15 @@ func (svc *BaseApi) IsAdmin(userId int64) bool {
 	} else {
 		return false
 	}
+}
+
+func (svc *BaseApi) FillInUpdate(c *gin.Context, po *models.BaseModel) {
+	user := svc.GetCurrUser(c)
+	po.UpdateBy = user.UserName
+	po.UpdateTime = time.Now()
+}
+func (svc *BaseApi) FillInCreate(c *gin.Context, po *models.BaseModel) {
+	user := svc.GetCurrUser(c)
+	po.CreateBy = user.UserName
+	po.CreateTime = time.Now()
 }

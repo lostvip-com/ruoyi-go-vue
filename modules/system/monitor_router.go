@@ -37,4 +37,13 @@ func init() {
 	//online
 	monitorGroup.GET("/online/list", "", monitor.ListOnLine)
 	monitorGroup.DELETE("online/:tokenId", "", monitor.DetectOnLine)
+	//job
+	monitorGroup.GET("list", "", monitor.ListJob)
+	monitorGroup.POST("export", "", monitor.ExportJob)
+	monitorGroup.GET(":jobId", "", monitor.GetJobById)
+	monitorGroup.POST("", "", monitor.SaveJob)
+	monitorGroup.PUT("", "", monitor.UploadJob)
+	monitorGroup.PUT("changeStatus", "", monitor.ChangeStatus)
+	monitorGroup.DELETE(":jobIds", "", monitor.DelectJob)
+	monitorGroup.PUT("run", "", monitor.RunJob)
 }

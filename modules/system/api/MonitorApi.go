@@ -5,14 +5,18 @@ import (
 	"common/util"
 	"github.com/gin-gonic/gin"
 	"github.com/lostvip-com/lv_framework/lv_cache/lv_redis"
+	"github.com/lostvip-com/lv_framework/lv_db"
 	"github.com/lostvip-com/lv_framework/lv_log"
 	"github.com/lostvip-com/lv_framework/utils/lv_net"
+	"github.com/spf13/cast"
 	"strings"
+	"system/model"
 	"system/service"
 	"system/vo"
 )
 
 type MonitorApi struct {
+	BaseApi
 }
 
 func (m MonitorApi) CacheHandler(c *gin.Context) {
@@ -152,6 +156,188 @@ func (m MonitorApi) DetectOnLine(c *gin.Context) {
 	error := redisCache.Del(key)
 	if error != nil {
 		util.Fail(c, error.Error())
+		return
+	}
+	util.Success(c, nil)
+}
+
+func (m MonitorApi) ListJob(c *gin.Context) {
+	var req *vo.JobReq
+	if err := c.ShouldBind(&req); err != nil {
+		util.Fail(c, err.Error())
+		return
+	}
+	list, total, err := service.GetJobServiceInstance().FindJobList(req)
+	if err != nil {
+		util.Fail(c, err.Error())
+		return
+	}
+	util.SuccessPage(c, list, total)
+}
+
+func (m MonitorApi) ExportJob(c *gin.Context) {
+	var req *vo.JobReq
+	if err := c.ShouldBind(&req); err != nil {
+		util.Fail(c, err.Error())
+		return
+	}
+	svc := service.GetJobServiceInstance()
+	listPtr, _, _ := svc.FindJobList(req)
+	//定义首行标题
+	dataKey := make([]map[string]string, 0)
+	dataKey = append(dataKey, map[string]string{
+		"key":   "jobId",
+		"title": "任务序号",
+		"width": "10",
+	})
+	dataKey = append(dataKey, map[string]string{
+		"key":   "jobName",
+		"title": "任务名称",
+		"width": "10",
+	})
+	dataKey = append(dataKey, map[string]string{
+		"key":   "jobGroup",
+		"title": "任务组名",
+		"width": "10",
+	})
+	dataKey = append(dataKey, map[string]string{
+		"key":   "invokeTarget",
+		"title": "调用目标字符串",
+		"width": "10",
+	})
+	dataKey = append(dataKey, map[string]string{
+		"key":   "cronExpression",
+		"title": "执行表达式",
+		"width": "10",
+	})
+	dataKey = append(dataKey, map[string]string{
+		"key":   "misfirePolicy",
+		"title": "计划策略",
+		"width": "10",
+	})
+	dataKey = append(dataKey, map[string]string{
+		"key":   "concurrent",
+		"title": "并发执行",
+		"width": "10",
+	})
+	dataKey = append(dataKey, map[string]string{
+		"key":   "status",
+		"title": "任务状态",
+		"width": "10",
+	})
+	//填充数据
+	data := make([]map[string]interface{}, 0)
+	list := *listPtr
+	if len(list) > 0 {
+		for _, v := range list {
+			misfirePolicyKey := v.MisfirePolicy
+			var misfirePolicy = ""
+			if 0 == misfirePolicyKey {
+				misfirePolicy = "默认"
+			}
+			if 1 == misfirePolicyKey {
+				misfirePolicy = "立即触发执行"
+			}
+			if 2 == misfirePolicyKey {
+				misfirePolicy = "触发一次执行"
+			}
+			if 3 == misfirePolicyKey {
+				misfirePolicy = "不触发立即执行"
+			}
+			concurrentKey := v.Concurrent
+			var concurrent = ""
+			if 0 == concurrentKey {
+				concurrent = "允许"
+			}
+			if 1 == concurrentKey {
+				concurrent = "禁止"
+			}
+			statusKey := v.Concurrent
+			var status = ""
+			if 0 == statusKey {
+				status = "正常"
+			}
+			if 1 == statusKey {
+				status = "暂停"
+			}
+			data = append(data, map[string]interface{}{
+				"jobId":          v.JobId,
+				"jobName":        v.JobName,
+				"jobGroup":       v.JobGroup,
+				"cronExpression": v.CronExpression,
+				"invokeTarget":   v.InvokeTarget,
+				"misfirePolicy":  misfirePolicy,
+				"concurrent":     concurrent,
+				"status":         status,
+			})
+		}
+	}
+	ex := util.NewMyExcel()
+	ex.ExportToWeb(c, dataKey, data)
+}
+
+func (m MonitorApi) GetJobById(c *gin.Context) {
+	jobId := c.Param("jobId")
+	job := new(model.SysJob)
+	result, err := job.FindById(cast.ToInt64(jobId))
+	if err != nil {
+		util.Fail(c, err.Error())
+		return
+	}
+	util.Success(c, result)
+}
+
+func (m MonitorApi) SaveJob(c *gin.Context) {
+	job := new(model.SysJob)
+	if err := c.ShouldBind(job); err != nil {
+		util.Fail(c, err.Error())
+		return
+	}
+	result, err := job.Save()
+	if err != nil {
+		util.Fail(c, err.Error())
+		return
+	}
+	util.Success(c, result)
+}
+
+func (m MonitorApi) UploadJob(c *gin.Context) {
+	job := new(model.SysJob)
+	if err := c.ShouldBind(job); err != nil {
+		util.Fail(c, err.Error())
+		return
+	}
+	m.FillInUpdate(c, &job.BaseModel)
+	result, err := job.Update()
+	if err != nil {
+		util.Fail(c, err.Error())
+		return
+	}
+	util.Success(c, result)
+}
+
+func (m MonitorApi) ChangeStatus(c *gin.Context) {
+	jobId := c.Param("jobIds")
+	status := c.Param("status")
+	err := lv_db.GetMasterGorm().Table("sys_job").Where("job_id=?", jobId).UpdateColumn("status", status).Error
+	if err != nil {
+		util.Fail(c, err.Error())
+		return
+	}
+	util.Success(c, nil)
+}
+
+func (m MonitorApi) RunJob(c *gin.Context) {
+	jobId := c.Param("jobId")
+	util.Fail(c, "未实现 jobId:"+jobId)
+}
+
+func (m MonitorApi) DelectJob(c *gin.Context) {
+	jobIds := c.Param("jobIds")
+	arr := strings.Split(jobIds, ",")
+	err := lv_db.GetMasterGorm().Where("job_id in ( ? )", arr).Delete(&model.SysJob{}).Error
+	if err != nil {
+		util.Fail(c, err.Error())
 		return
 	}
 	util.Success(c, nil)
