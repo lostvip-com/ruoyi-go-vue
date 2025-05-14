@@ -342,3 +342,128 @@ func (m MonitorApi) DelectJob(c *gin.Context) {
 	}
 	util.Success(c, nil)
 }
+
+func (m MonitorApi) ListJobLog(c *gin.Context) {
+	var req *vo.JobReq
+	if err := c.ShouldBind(&req); err != nil {
+		util.Fail(c, err.Error())
+		return
+	}
+	list, total, err := service.GetJobServiceInstance().FindJobLogList(req)
+	if err != nil {
+		util.Fail(c, err.Error())
+		return
+	}
+	util.SuccessPage(c, list, total)
+}
+
+func (m MonitorApi) ExportJobLog(c *gin.Context) {
+	var req *vo.JobReq
+	if err := c.ShouldBind(&req); err != nil {
+		util.Fail(c, err.Error())
+		return
+	}
+	//定义首行标题
+	dataKey := make([]map[string]string, 0)
+	dataKey = append(dataKey, map[string]string{
+		"key":    "jobLogId",
+		"title":  "日志序号",
+		"width":  "10",
+		"is_num": "0",
+	})
+	dataKey = append(dataKey, map[string]string{
+		"key":    "jobName",
+		"title":  "任务名称",
+		"width":  "10",
+		"is_num": "0",
+	})
+	dataKey = append(dataKey, map[string]string{
+		"key":    "jobGroup",
+		"title":  "任务组名",
+		"width":  "10",
+		"is_num": "0",
+	})
+	dataKey = append(dataKey, map[string]string{
+		"key":    "invokeTarget",
+		"title":  "调用目标字符串",
+		"width":  "10",
+		"is_num": "0",
+	})
+	dataKey = append(dataKey, map[string]string{
+		"key":    "jobMessage",
+		"title":  "日志信息",
+		"width":  "10",
+		"is_num": "0",
+	})
+	dataKey = append(dataKey, map[string]string{
+		"key":    "status",
+		"title":  "执行状态",
+		"width":  "10",
+		"is_num": "0",
+	})
+	dataKey = append(dataKey, map[string]string{
+		"key":    "exceptionInfo",
+		"title":  "异常信息",
+		"width":  "10",
+		"is_num": "0",
+	})
+	//填充数据
+	data := make([]map[string]interface{}, 0)
+	svc := service.GetJobServiceInstance()
+	listPtr, _, _ := svc.FindJobLogList(req)
+	list := *listPtr
+	if len(list) > 0 {
+		for _, v := range list {
+			statusStr := ""
+			status := v.Status
+			if status == "0" {
+				statusStr = "正常"
+			}
+			if status == "1" {
+				statusStr = "失败"
+			}
+			data = append(data, map[string]interface{}{
+				"jobLogId":      v.JobLogId,
+				"jobName":       v.JobName,
+				"jobGroup":      v.JobGroup,
+				"invokeTarget":  v.InvokeTarget,
+				"jobMessage":    v.JobMessage,
+				"status":        statusStr,
+				"exceptionInfo": v.ExceptionInfo,
+			})
+		}
+	}
+
+	ex := util.NewMyExcel()
+	ex.ExportToWeb(c, dataKey, data)
+}
+
+func (m MonitorApi) GetJobLog(c *gin.Context) {
+	var logId = c.Param("logId")
+	log := new(model.SysJobLog)
+	log, err := log.FindJobLogById(cast.ToInt64(logId))
+	if err != nil {
+		util.Fail(c, err.Error())
+		return
+	}
+	util.Success(c, nil)
+}
+
+func (m MonitorApi) DetectJobLog(c *gin.Context) {
+	var ids = c.Param("jobLogIds")
+	err := lv_db.GetMasterGorm().Where("id in ( ? )", util.SplitToInt(ids, ",")).Delete(&model.SysJobLog{}).Error
+	if err != nil {
+		util.Fail(c, err.Error())
+		return
+	}
+	util.Success(c, nil)
+}
+
+func (m MonitorApi) ClearJobLog(c *gin.Context) {
+	err := lv_db.GetMasterGorm().Exec("truncate table sys_job_log").Error
+	if err != nil {
+		util.Fail(c, err.Error())
+		return
+	}
+	util.Success(c, nil)
+}

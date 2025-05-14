@@ -45,7 +45,7 @@ func (e *JobService) FindJobList(params *vo.JobReq) (*[]model.SysJob, int64, err
 	err := db.Find(&list).Error
 	return &list, total, err
 }
-func (e *JobService) FindJobLogList(params vo.JobReq) (*[]model.SysJobLog, int64, error) {
+func (e *JobService) FindJobLogList(params *vo.JobReq) (*[]model.SysJobLog, int64, error) {
 	var total int64
 	db := e.GetDb()
 	if params.JobName != "" {
