@@ -47,7 +47,7 @@ func (e *JobService) FindJobList(params *vo.JobReq) (*[]model.SysJob, int64, err
 }
 func (e *JobService) FindJobLogList(params *vo.JobReq) (*[]model.SysJobLog, int64, error) {
 	var total int64
-	db := e.GetDb()
+	db := e.GetDb().Table("sys_job_log")
 	if params.JobName != "" {
 		db.Where("job_name like ?", "%"+params.JobName+"%")
 	}
@@ -65,7 +65,7 @@ func (e *JobService) FindJobLogList(params *vo.JobReq) (*[]model.SysJobLog, int6
 	if err := db.Count(&total).Error; err != nil {
 		return nil, 0, err
 	}
-	db.Order("job_id DESC")
+	db.Order("job_log_id DESC")
 
 	var list []model.SysJobLog
 	if params.PageNum >= 1 && params.PageSize > 0 {
