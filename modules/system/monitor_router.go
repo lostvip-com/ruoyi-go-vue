@@ -45,5 +45,5 @@ func init() {
 	monitorGroup.PUT("", "", monitor.UploadJob)
 	monitorGroup.PUT("changeStatus", "", monitor.ChangeStatus)
 	monitorGroup.DELETE(":jobIds", "", monitor.DelectJob)
-	monitorGroup.PUT("run", "", monitor.RunJob)
+	monitorGroup.PUT("run/:jobId", "", monitor.RunJob)
 }
