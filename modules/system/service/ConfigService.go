@@ -42,6 +42,11 @@ func (svc *ConfigService) SetCache(po *model.SysConfig) error {
 	err := lv_cache.GetCacheClient().Set(unitedKey, po, 10*time.Minute)
 	return err
 }
+func (svc *ConfigService) RemoveCache(po *model.SysConfig) error {
+	unitedKey := global.SysConfigCacheKey + po.ConfigKey
+	err := lv_cache.GetCacheClient().Del(unitedKey)
+	return err
+}
 
 // FindConfigById 根据主键查询数据
 func (svc *ConfigService) FindConfigById(id int64) (*model.SysConfig, error) {
