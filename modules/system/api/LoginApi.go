@@ -5,12 +5,15 @@ import (
 	"common/middleware/auth"
 	"common/util"
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt"
 	"github.com/google/uuid"
 	"github.com/lostvip-com/lv_framework/lv_log"
 	"github.com/lostvip-com/lv_framework/utils/lv_conv"
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
 	"github.com/lostvip-com/lv_framework/utils/lv_net"
 	"github.com/mssola/user_agent"
+	"github.com/spf13/cast"
+	"strings"
 	"system/model"
 	"system/service"
 	"time"
@@ -100,15 +103,26 @@ func (w *LoginApi) Login(c *gin.Context) {
 
 // 注销
 func (w *LoginApi) Logout(c *gin.Context) {
-	uuidStr, err := auth.GetJwtUuid(c)
-	if err != nil {
-		util.Fail(c, err.Error())
+	tokenStr := c.Request.Header.Get(auth.Authorization)
+	if len(tokenStr) <= 0 {
+		util.Fail(c, "token is null")
 		return
 	}
-	var user service.SessionService
-	err = user.SignOut(uuidStr)
-	if err != nil {
+	mySigningKey := []byte(auth.Secret)
+	tokenStr = strings.ReplaceAll(tokenStr, auth.Bearer, "")
+	token, err := jwt.Parse(tokenStr, func(t *jwt.Token) (interface{}, error) {
+		return mySigningKey, nil
+	})
+	if err != nil { //token 过期这里会出现错误，只记录即可
 		lv_log.Error(err.Error())
 	}
-	util.Success(c, nil)
+	if token != nil {
+		uuidStr := token.Claims.(jwt.MapClaims)["uuid"]
+		var user service.SessionService
+		err = user.SignOut(cast.ToString(uuidStr))
+		util.Success(c, nil)
+	} else {
+		util.Fail(c, "bad token！")
+	}
+
 }
