@@ -8,7 +8,6 @@ import (
 	"github.com/lostvip-com/lv_framework/lv_cache/lv_redis"
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
 	"github.com/spf13/cast"
-	dao2 "system/dao"
 	"system/model"
 	"system/service"
 )
@@ -57,7 +56,7 @@ func (w *ConfigApi) AddSave(c *gin.Context) {
 	//获取参数
 	err := c.ShouldBind(entity)
 	lv_err.HasErrAndPanic(err)
-	var config dao2.ConfigDao
+	var config = service.GetConfigServiceInstance()
 	count, err := config.Count(entity.ConfigKey)
 	if err != nil {
 		util.Fail(c, err.Error())
@@ -77,16 +76,15 @@ func (w *ConfigApi) AddSave(c *gin.Context) {
 }
 
 func (w *ConfigApi) EditSave(c *gin.Context) {
-	req := new(common_vo.EditConfigReq)
-	//获取参数
+	req := new(model.SysConfig)
 	err := c.ShouldBind(req)
 	lv_err.HasErrAndPanic(err)
+	w.FillInUpdate(c, &req.BaseModel)
 	var configService = service.GetConfigServiceInstance()
-	configService.EditSave(req, c)
+	configService.EditSave(req)
 	util.Success(c, "")
 }
 
-// 删除数据
 func (w *ConfigApi) Remove(c *gin.Context) {
 	var configIds = c.Param("configIds")
 	var configService service.ConfigService
@@ -94,7 +92,6 @@ func (w *ConfigApi) Remove(c *gin.Context) {
 	util.Success(c, "")
 }
 
-// 导出
 func (w *ConfigApi) Export(c *gin.Context) {
 	req := new(common_vo.SelectConfigPageReq)
 	err := c.ShouldBind(req)

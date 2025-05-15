@@ -13,7 +13,7 @@ type SysConfig struct {
 	ConfigKey   string `gorm:"type:varchar(100);comment:参数键名;" json:"configKey" form:"configKey"`
 	ConfigValue string `gorm:"type:varchar(500);comment:参数键值;" json:"configValue" form:"configValue"`
 	ConfigType  string `gorm:"type:char(1);comment:系统内置（Y是 N否）;" json:"configType" form:"configType"`
-	Remark      string `gorm:"type:varchar(500);comment:备注;" json:"remark"`
+	Remark      string `gorm:"type:varchar(500);comment:备注;" json:"remark" form:"remark"`
 	models.BaseModel
 }
 

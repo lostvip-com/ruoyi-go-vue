@@ -4,17 +4,6 @@ import (
 	"github.com/lostvip-com/lv_framework/web/lv_dto"
 )
 
-// 修改页面请求参数
-type EditConfigReq struct {
-	ConfigId    int64  `form:"configId" binding:"required"`
-	ConfigName  string `form:"configName"  binding:"required"`
-	ConfigKey   string `form:"configKey"  binding:"required"`
-	ConfigValue string `form:"configValue"  binding:"required"`
-	ConfigType  string `form:"configType"    binding:"required"`
-	Remark      string `form:"remark"`
-}
-
-// 分页请求参数
 type SelectConfigPageReq struct {
 	ConfigName string `form:"configName"` //参数名称
 	ConfigKey  string `form:"configKey"`  //参数键名

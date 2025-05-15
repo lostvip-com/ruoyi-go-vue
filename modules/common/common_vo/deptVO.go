@@ -16,24 +16,6 @@ type DeptPageReq struct {
 	lv_dto.Paging
 }
 
-// AddDeptReq 新增页面请求参数
-type AddDeptReq struct {
-	ParentId int64  `form:"parentId"`
-	NodeType string `form:"nodeType"`
-	DeptName string `form:"deptName"  binding:"required"`
-	OrderNum int    `form:"orderNum" `
-	Leader   string `form:"leader"`
-	Phone    string `form:"phone"`
-	Status   string `form:"status"`
-	TenantId int64  `form:"tenantId"` //结束时间
-}
-
-// EditDeptReq 修改页面请求参数
-type EditDeptReq struct {
-	DeptId int64 `form:"deptId" binding:"required"`
-	AddDeptReq
-}
-
 // 检查菜单名称请求参数
 type CheckDeptNameReq struct {
 	DeptId   int64  `form:"deptId"  binding:"required"`

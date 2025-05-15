@@ -4,7 +4,6 @@ import (
 	"common/models"
 	"github.com/lostvip-com/lv_framework/lv_db"
 	"github.com/lostvip-com/lv_framework/lv_db/lv_dao"
-	"github.com/spf13/cast"
 )
 
 // Fill with you ideas below.
@@ -13,18 +12,10 @@ import (
 type SysDeptDao struct {
 }
 
-// 根据部门ID查询信息
-func (dao SysDeptDao) SelectDeptById(deptId int64) (*models.SysDept, error) {
-	var result = new(models.SysDept)
-	result, err := result.FindById(deptId)
-	return result, err
-}
-
 // 根据ID查询所有子部门
 func (dao SysDeptDao) SelectChildrenDeptById(deptId int64) []*models.SysDept {
 	db := lv_db.GetMasterGorm()
 	var rs []*models.SysDept
-	//lv_db.Table("sys_dept").Where("find_in_set(?, ancestors)", deptId).Find(&rs)
 	db.Table("sys_dept").Where("parent_id=?", deptId).Find(&rs)
 	return rs
 }
@@ -34,20 +25,6 @@ func (dao SysDeptDao) DeleteDeptById(deptId int64) error {
 	var entity models.SysDept
 	err := entity.UpdateDelFlag(deptId)
 	return err
-}
-
-// 修改子元素关系（替换前半部分）
-func (dao SysDeptDao) UpdateDeptChildrenAncestors(dept *models.SysDept, parentCodes string) {
-	dept.Ancestors = parentCodes + "," + cast.ToString(dept.DeptId)
-	lv_db.GetMasterGorm().Table("sys_dept").Where("dept_id=", dept.DeptId).Update("ancestors", dept.Ancestors)
-	// ancestors 上级ancestors发生变化，修改下级
-	deptList := dao.SelectChildrenDeptById(dept.DeptId)
-	if deptList == nil || len(deptList) <= 0 {
-		return
-	}
-	for _, child := range deptList {
-		dao.UpdateDeptChildrenAncestors(child, dept.Ancestors)
-	}
 }
 
 // 查询部门管理数据
@@ -96,32 +73,4 @@ func (dao SysDeptDao) SelectRoleDeptTree(roleId int64) ([]string, error) {
 		}
 	}
 	return result, nil
-}
-
-// 查询部门人数
-func (dao SysDeptDao) SelectDeptCount(deptId, parentId int64) int64 {
-	sql := " select count(*) from sys_dept where del_flag = 0 "
-	param := map[string]any{}
-	if deptId > 0 {
-		param["deptId"] = deptId
-		sql += " and dept_id= @deptId "
-	}
-	if parentId > 0 {
-		param["parentId"] = parentId
-		sql += " and parent_id= @parentId "
-	}
-	count, err := lv_dao.CountByNamedSql(sql, param)
-	if err != nil {
-		panic(err)
-	}
-	return count
-}
-
-// 校验部门名称是否唯一
-func (dao SysDeptDao) FindOne(deptName string, parentId int64) (*models.SysDept, error) {
-	var entity models.SysDept
-	entity.DeptName = deptName
-	entity.ParentId = parentId
-	err := entity.FindOne()
-	return &entity, err
 }

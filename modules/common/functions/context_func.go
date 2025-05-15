@@ -47,12 +47,12 @@ func GetValueFromRam(key string) string {
 	// 这里为了提高速度使用内在缓存
 	result, err := lv_ram.GetRamCacheClient().Get(key)
 	if err != nil {
-		entity := &model.SysConfig{ConfigKey: key}
-		err := entity.FindOne()
+		cfg := &model.SysConfig{ConfigKey: key}
+		cfg, err := cfg.FindOne()
 		if err != nil {
 			panic(errors.New("获取配置失败,检查配置表：sys_config 中是否存在配置项：" + key))
 		}
-		result = entity.ConfigValue
+		result = cfg.ConfigValue
 		//内存续期
 		lv_ram.GetRamCacheClient().Set(key, result, 10*time.Minute)
 	}

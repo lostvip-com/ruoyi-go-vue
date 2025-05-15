@@ -12,6 +12,7 @@ import (
 )
 
 type DeptApi struct {
+	BaseApi
 }
 
 /*排除节点*/
@@ -52,12 +53,13 @@ func (w *DeptApi) ListAjax(c *gin.Context) {
 
 // AddSave 新增页面保存
 func (w *DeptApi) AddSave(c *gin.Context) {
-	var req *common_vo.AddDeptReq
+	var req *models.SysDept
 	if err := c.ShouldBind(&req); err != nil {
 		util.Fail(c, err.Error())
 		return
 	}
-	rid, err := service.GetDeptServiceInstance().AddSave(req, c)
+	w.FillInCreate(c, &req.BaseModel)
+	rid, err := service.GetDeptServiceInstance().AddSave(req)
 	if err != nil {
 		util.Fail(c, err.Error())
 		return
@@ -67,17 +69,18 @@ func (w *DeptApi) AddSave(c *gin.Context) {
 
 // EditSave 修改页面保存
 func (w *DeptApi) EditSave(c *gin.Context) {
-	var req *common_vo.EditDeptReq
+	var req *models.SysDept
 	if err := c.ShouldBind(&req); err != nil {
 		util.Fail(c, err.Error())
 		return
 	}
-	rs, err := service.GetDeptServiceInstance().EditSave(req, c)
+	w.FillInUpdate(c, &req.BaseModel)
+	po, err := service.GetDeptServiceInstance().EditSave(req)
 	if err != nil {
 		util.Fail(c, err.Error())
 		return
 	}
-	util.Success(c, rs)
+	util.Success(c, po)
 }
 
 // 删除数据
