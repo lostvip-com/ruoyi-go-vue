@@ -84,7 +84,7 @@ func (w *UserApi) ListAjax(c *gin.Context) {
 		util.Fail(c, err.Error())
 		return
 	}
-	util.BuildTable(c, total, result).WriteJsonExit()
+	util.SuccessPage(c, result, total)
 }
 
 func (w *UserApi) AddSave(c *gin.Context) {
