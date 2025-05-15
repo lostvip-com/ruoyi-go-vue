@@ -2,10 +2,9 @@ package service
 
 import (
 	"common/common_vo"
-	"errors"
+	"common/global"
 	"github.com/gin-gonic/gin"
 	"github.com/lostvip-com/lv_framework/lv_cache"
-	"github.com/lostvip-com/lv_framework/lv_cache/lv_ram"
 	"github.com/lostvip-com/lv_framework/utils/lv_conv"
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
 	"github.com/spf13/cast"
@@ -26,55 +25,38 @@ func GetConfigServiceInstance() *ConfigService {
 	return configService
 }
 
-func (svc *ConfigService) GetValueFromCache(key string) string {
-	//从缓存读取
-	result, err := lv_cache.GetCacheClient().Get(key)
+func (svc *ConfigService) GetValue(configKey string) string {
+	unitedKey := global.SysConfigCacheKey + configKey
+	result, err := lv_cache.GetCacheClient().Get(unitedKey)
 	if err != nil {
-		entity := &model.SysConfig{ConfigKey: key}
-		err := entity.FindOne()
+		po := &model.SysConfig{ConfigKey: configKey}
+		po, err := po.FindOne()
 		lv_err.HasErrAndPanic(err)
-		result = entity.ConfigValue
-		lv_cache.GetCacheClient().Set(key, result, 10*time.Minute)
+		err = svc.SetCache(po)
+		lv_err.HasErrAndPanic(err)
 	}
-
 	return result
 }
-
-// 根据键获取值
-func (svc *ConfigService) GetValueFromRam(key string) string {
-	// 这里为了提高速度使用内在缓存
-	result, err := lv_ram.GetRamCacheClient().Get(key)
-	if err != nil {
-		entity := &model.SysConfig{ConfigKey: key}
-		err := entity.FindOne()
-		if err != nil {
-			panic(errors.New("获取配置失败,检查配置表：sys_config 中是否存在配置项：" + key))
-		}
-		result = entity.ConfigValue
-		//内存续期
-		lv_ram.GetRamCacheClient().Set(key, result, 10*time.Minute)
-	}
-	return result
+func (svc *ConfigService) SetCache(po *model.SysConfig) error {
+	unitedKey := global.SysConfigCacheKey + po.ConfigKey
+	err := lv_cache.GetCacheClient().Set(unitedKey, po, 10*time.Minute)
+	return err
 }
 
 // FindConfigById 根据主键查询数据
 func (svc *ConfigService) FindConfigById(id int64) (*model.SysConfig, error) {
-	entity := &model.SysConfig{ConfigId: id}
-	err := entity.FindOne()
-	return entity, err
+	po := &model.SysConfig{ConfigId: id}
+	po, err := po.FindOne()
+	return po, err
 }
 
 // DeleteConfigById 根据主键删除数据
-func (svc *ConfigService) DeleteConfigById(id int64) bool {
+func (svc *ConfigService) DeleteConfigById(id int64) error {
 	entity := &model.SysConfig{ConfigId: id}
-	err := entity.FindOne()
+	po, err := entity.FindOne()
 	lv_err.HasErrAndPanic(err)
-	err = entity.Delete()
-	if err == nil {
-		lv_cache.GetCacheClient().Del(entity.ConfigKey)
-		return true
-	}
-	return false
+	err = po.Delete()
+	return err
 }
 
 // DeleteByIds 批量删除数据记录
@@ -85,37 +67,34 @@ func (svc *ConfigService) DeleteByIds(ids string) {
 		cfg, err := cfg.FindById(cast.ToInt64(id))
 		lv_err.HasErrAndPanic(err)
 		cfg.Delete()
-		//从缓存删除
-		lv_cache.GetCacheClient().Del(cfg.ConfigKey)
 	}
 }
 
 // 修改数据
 func (svc *ConfigService) EditSave(req *common_vo.EditConfigReq, c *gin.Context) {
-	entity := &model.SysConfig{ConfigId: req.ConfigId}
-	err := entity.FindOne()
+	po := &model.SysConfig{ConfigId: req.ConfigId}
+	po, err := po.FindOne()
 	lv_err.HasErrAndPanic(err)
-	entity.ConfigName = req.ConfigName
-	entity.ConfigKey = req.ConfigKey
-	entity.ConfigValue = req.ConfigValue
-	entity.Remark = req.Remark
-	entity.ConfigType = req.ConfigType
-	entity.UpdateTime = time.Now()
-	entity.UpdateBy = ""
+	po.ConfigName = req.ConfigName
+	po.ConfigKey = req.ConfigKey
+	po.ConfigValue = req.ConfigValue
+	po.Remark = req.Remark
+	po.ConfigType = req.ConfigType
+	po.UpdateTime = time.Now()
+	po.UpdateBy = ""
 	var userService UserService
 	user := userService.GetProfile(c)
 
 	if user == nil {
-		entity.UpdateBy = user.UserName
+		po.UpdateBy = user.UserName
 	}
 
-	err = entity.Update()
+	err = po.Update()
 	lv_err.HasErrAndPanic(err)
 	//保存到缓存
-	lv_cache.GetCacheClient().Set(entity.ConfigKey, entity.ConfigValue, 10*time.Minute)
+	_ = svc.SetCache(po)
 }
 
-// 根据条件分页查询角色数据
 func (svc *ConfigService) FindAll(params *common_vo.SelectConfigPageReq) ([]model.SysConfig, error) {
 	var config dao2.ConfigDao
 	return config.FindAll(params)
@@ -140,5 +119,4 @@ func (svc *ConfigService) Export(param *common_vo.SelectConfigPageReq) (string, 
 func (svc *ConfigService) CountKey(key string) (int64, error) {
 	var config dao2.ConfigDao
 	return config.Count(key)
-
 }

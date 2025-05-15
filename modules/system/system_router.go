@@ -17,7 +17,7 @@ func init() {
 	config := api.ConfigApi{}
 	system.GET("/config/:configId", "system:config:list", config.GetConfigInfo)
 	system.GET("/config/list", "system:config:list", config.ListAjax)
-	system.GET("/config/configKey/:configKey", "", config.GetConfigKey)
+	system.GET("/config/configKey/:configKey", "", config.GetConfigValueByKey)
 	system.POST("/config", "system:config:add", config.AddSave)
 	system.PUT("/config", "system:config:edit", config.EditSave)
 	system.DELETE("/config/:configIds", "system:config:remove", config.Remove)

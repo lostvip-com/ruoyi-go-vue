@@ -33,7 +33,7 @@ func (e *SysConfig) FindById(id int64) (*SysConfig, error) {
 }
 
 // 查第一条
-func (e *SysConfig) FindOne() error {
+func (e *SysConfig) FindOne() (*SysConfig, error) {
 	tb := lv_db.GetMasterGorm().Table(e.TableName())
 	if e.ConfigId != 0 {
 		tb = tb.Where("config_id=?", e.ConfigId)
@@ -44,9 +44,9 @@ func (e *SysConfig) FindOne() error {
 
 	err := tb.First(e).Error
 	if err != nil {
-		return errors.New("未找到系统配置信息Key:" + e.ConfigKey)
+		return nil, errors.New("未找到系统配置信息Key:" + e.ConfigKey)
 	}
-	return err
+	return e, err
 }
 
 // 改

@@ -28,10 +28,10 @@ func (w *ConfigApi) GetConfigInfo(c *gin.Context) {
 	util.Success(c, value)
 }
 
-func (w *ConfigApi) GetConfigKey(c *gin.Context) {
+func (w *ConfigApi) GetConfigValueByKey(c *gin.Context) {
 	configKey := c.Param("configKey")
 	var configService = service.GetConfigServiceInstance()
-	value := configService.GetValueFromCache(configKey)
+	value := configService.GetValue(configKey)
 	util.Success(c, value)
 }
 
