@@ -86,7 +86,7 @@ func (svc LoginService) DeleteByIds(ids string) error {
 // 清空记录
 func (svc LoginService) DeleteRecordAll() error {
 	db := lv_db.GetMasterGorm()
-	err := db.Exec("delete from sys_logininfor").Error
+	err := db.Exec(" truncate table sys_logininfor ").Error
 	return err
 }
 

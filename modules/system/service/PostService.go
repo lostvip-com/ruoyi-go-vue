@@ -80,7 +80,7 @@ func (svc *PostService) FindAll(params *vo.PostPageReq) (*[]model.SysPost, error
 }
 
 // 根据条件分页查询角色数据
-func (svc *PostService) FindPage(params *vo.PostPageReq) (*[]map[string]string, int64, error) {
+func (svc *PostService) FindPage(params *vo.PostPageReq) (*[]map[string]any, int64, error) {
 	var d dao.SysPostDao
 	return d.FindPage(params)
 }

@@ -27,12 +27,12 @@ func (e SysPostDao) DeleteByIds(ida []int64) (int64, error) {
 }
 
 // 根据条件分页查询用户列表
-func (d SysPostDao) FindPage(param *vo.PostPageReq) (*[]map[string]string, int64, error) {
+func (d SysPostDao) FindPage(param *vo.PostPageReq) (*[]map[string]any, int64, error) {
 	db := lv_db.GetMasterGorm()
 	sqlParams, sql := d.GetSql(param)
 	limitSql := sql + " order by u.post_id desc "
 	limitSql += "  limit " + cast.ToString(param.GetStartNum()) + "," + cast.ToString(param.GetPageSize())
-	result, err := namedsql.ListMapStr(db, limitSql, sqlParams, true)
+	result, err := namedsql.ListMap(db, limitSql, sqlParams, true)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -80,11 +80,11 @@ func (d SysPostDao) ListAll(param *vo.PostPageReq) (*[]model.SysPost, error) {
 }
 
 // 导出excel
-func (d SysPostDao) ListAllMap(param *vo.PostPageReq, camel bool) (*[]map[string]string, error) {
+func (d SysPostDao) ListAllMap(param *vo.PostPageReq, camel bool) (*[]map[string]any, error) {
 	db := lv_db.GetMasterGorm()
 	sqlParams, sql := d.GetSql(param)
 	allSql := sql + " order by u.post_id desc "
-	result, err := namedsql.ListMapStr(db, allSql, &sqlParams, camel)
+	result, err := namedsql.ListMap(db, allSql, &sqlParams, camel)
 	return result, err
 }
 

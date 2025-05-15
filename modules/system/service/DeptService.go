@@ -90,7 +90,7 @@ func (svc *DeptService) FindAll(param *common_vo.DeptPageReq) (*[]models.SysDept
 }
 
 // 根据角色ID查询部门
-func (svc *DeptService) SelectRoleDeptTree(roleId int64) ([]string, error) {
+func (svc *DeptService) SelectRoleDeptTree(roleId int64) ([]any, error) {
 	sql := ` select concat(d.dept_id, d.dept_name) as DeptName 
              from sys_dept d 
              left join sys_role_dept rd  on d.dept_id = rd.dept_id 
@@ -99,8 +99,9 @@ func (svc *DeptService) SelectRoleDeptTree(roleId int64) ([]string, error) {
              `
 	param := map[string]any{}
 	param["roleId"] = roleId
-	listMap, err := lv_dao.ListMapStrByNamedSql(sql, param, false)
-	var result []string
+	listMap, err := lv_dao.ListMapByNamedSql(sql, param, false)
+	lv_err.HasErrAndPanic(err)
+	var result []any
 	var rs = *listMap
 	if err == nil && rs != nil && len(rs) > 0 {
 		for _, record := range rs {

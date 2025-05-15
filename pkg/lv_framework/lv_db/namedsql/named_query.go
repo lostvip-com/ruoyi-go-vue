@@ -6,6 +6,7 @@ package namedsql
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/lostvip-com/lv_framework/lv_global"
 	"github.com/lostvip-com/lv_framework/lv_log"
 	"github.com/lostvip-com/lv_framework/utils/lv_sql"
@@ -126,82 +127,159 @@ func checkAndExtractMap(value interface{}) (map[string]any, bool) {
 	return nil, false
 }
 
+func ListMapAny(db *gorm.DB, sqlQuery string, params any, isCamel bool) (*[]map[string]any, error) {
+	return ListMap(db, sqlQuery, params, isCamel)
+}
+
 // ListMap sql查询返回map isCamel key是否按驼峰式命名,有些数据会出现2进制输出
 func ListMap(db *gorm.DB, sqlQuery string, params any, isCamel bool) (*[]map[string]any, error) {
-	// 1. 执行查询
-	var rows *sql.Rows
-	var err error
+	// Validate inputs
+	if db == nil {
+		return nil, fmt.Errorf("db cannot be nil")
+	}
+	if sqlQuery == "" {
+		return nil, fmt.Errorf("sqlQuery cannot be empty")
+	}
+	// Debug mode
 	if lv_global.IsDebug {
 		db = db.Debug()
 	}
+	// 1. Execute query
+	var rows *sql.Rows
+	var err error
+
 	if strings.Contains(sqlQuery, "@") {
 		kvMap, isMap := checkAndExtractMap(params)
 		if isMap {
-			params = kvMap
+			rows, err = db.Raw(sqlQuery, kvMap).Rows()
+		} else {
+			// Try with original params if not a map
+			rows, err = db.Raw(sqlQuery, params).Rows()
 		}
-		rows, err = db.Raw(sqlQuery, params).Rows()
 	} else {
 		rows, err = db.Raw(sqlQuery).Rows()
 	}
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("query execution failed: %w", err)
+	}
+	if rows == nil {
+		return nil, fmt.Errorf("query returned nil rows")
 	}
 	defer rows.Close()
 
-	// 2. 获取列信息
+	// 2. Get column information
 	cols, err := rows.Columns()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get columns: %w", err)
 	}
 	colTypes, err := rows.ColumnTypes()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get column types: %w", err)
 	}
-	// 3. 初始化扫描缓冲区
+	// 3. Initialize scan buffers
 	values := make([]interface{}, len(cols))
 	scanArgs := make([]interface{}, len(cols))
+
 	for i, colType := range colTypes {
-		switch colType.DatabaseTypeName() {
-		case "DATE", "DATETIME", "TIMESTAMP", "TIME":
-			var t time.Time
-			values[i] = &t
-		case "INT", "BIGINT", "SMALLINT", "TINYINT":
-			var n int64
-			values[i] = &n
-		case "FLOAT", "DOUBLE", "DECIMAL":
-			var f float64
-			values[i] = &f
-		case "BOOLEAN", "BOOL":
-			var b bool
-			values[i] = &b
-		case "BLOB", "BINARY", "VARBINARY":
+		// Handle nullable types
+		nullable, nullableOk := colType.Nullable()
+		dbType := strings.ToUpper(colType.DatabaseTypeName())
+
+		switch {
+		case strings.Contains(dbType, "INT"):
+			if nullable && nullableOk {
+				var n sql.NullInt64
+				values[i] = &n
+			} else {
+				var n int64
+				values[i] = &n
+			}
+		case strings.Contains(dbType, "FLOAT") || strings.Contains(dbType, "DOUBLE") || strings.Contains(dbType, "DECIMAL"):
+			if nullable && nullableOk {
+				var f sql.NullFloat64
+				values[i] = &f
+			} else {
+				var f float64
+				values[i] = &f
+			}
+		case strings.Contains(dbType, "BOOL"):
+			if nullable && nullableOk {
+				var b sql.NullBool
+				values[i] = &b
+			} else {
+				var b bool
+				values[i] = &b
+			}
+		case strings.Contains(dbType, "DATE") || strings.Contains(dbType, "TIME"):
+			if nullable && nullableOk {
+				var t sql.NullTime
+				values[i] = &t
+			} else {
+				var t time.Time
+				values[i] = &t
+			}
+		case strings.Contains(dbType, "BLOB") || strings.Contains(dbType, "BINARY"):
 			var blob []byte
 			values[i] = &blob
 		default:
-			// 默认处理文本和其他类型
-			var s string
-			values[i] = &s
+			// Handle string types and unknowns
+			if nullable && nullableOk {
+				var s sql.NullString
+				values[i] = &s
+			} else {
+				var s string
+				values[i] = &s
+			}
 		}
 		scanArgs[i] = values[i]
 	}
-
-	// 4. 遍历结果集
+	// 4. Process result set
 	result := make([]map[string]any, 0)
 	for rows.Next() {
 		if err = rows.Scan(scanArgs...); err != nil {
-			return nil, err
+			return nil, fmt.Errorf("row scan failed: %w", err)
 		}
 
 		rowData := make(map[string]any)
 		for i, colName := range cols {
 			val := reflect.Indirect(reflect.ValueOf(values[i])).Interface()
-
-			// 特殊处理时间类型
-			if t, ok := val.(time.Time); ok {
-				val = t.Format("2006-01-02 15:04:05")
+			// Handle NULL values
+			switch v := val.(type) {
+			case sql.NullString:
+				if v.Valid {
+					val = v.String
+				} else {
+					val = nil
+				}
+			case sql.NullInt64:
+				if v.Valid {
+					val = v.Int64
+				} else {
+					val = nil
+				}
+			case sql.NullFloat64:
+				if v.Valid {
+					val = v.Float64
+				} else {
+					val = nil
+				}
+			case sql.NullBool:
+				if v.Valid {
+					val = v.Bool
+				} else {
+					val = nil
+				}
+			case sql.NullTime:
+				if v.Valid {
+					val = v.Time.Format("2006-01-02 15:04:05")
+				} else {
+					val = nil
+				}
+			case time.Time:
+				val = v.Format("2006-01-02 15:04:05")
 			}
 
-			// 处理列名驼峰转换
+			// Handle column name case
 			key := colName
 			if isCamel {
 				key = lv_sql.ToCamel(key)
@@ -210,68 +288,12 @@ func ListMap(db *gorm.DB, sqlQuery string, params any, isCamel bool) (*[]map[str
 		}
 		result = append(result, rowData)
 	}
-
-	// 5. 检查遍历错误
+	// 5. Check for iteration errors
 	if err = rows.Err(); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("row iteration failed: %w", err)
 	}
-	return &result, nil
-}
 
-// ListMapStr 所有数据转为字符串格式返回，params可是是strtuc指针或map,isCamel key是否按驼峰式命名
-func ListMapStr(db *gorm.DB, sqlQuery string, params any, isCamel bool) (*[]map[string]string, error) {
-	var rows *sql.Rows
-	var err error
-	if lv_global.IsDebug {
-		db = db.Debug()
-	}
-	if strings.Contains(sqlQuery, "@") {
-		kvMap, isMap := checkAndExtractMap(params)
-		if isMap {
-			params = kvMap
-		}
-		rows, err = db.Raw(sqlQuery, params).Rows()
-	} else {
-		rows, err = db.Raw(sqlQuery).Rows()
-	}
-	if err != nil {
-		lv_log.Info(err)
-		return nil, err
-	}
-	cols, err := rows.Columns()
-	if err != nil {
-		lv_log.Info(err)
-		return nil, err
-	}
-	result := make([]map[string]string, 0)
-	values := make([]sql.RawBytes, len(cols))
-	scanArgs := make([]interface{}, len(values))
-	for i := range values {
-		scanArgs[i] = &values[i]
-	}
-	for rows.Next() {
-		err = rows.Scan(scanArgs...)
-		if err != nil {
-			lv_log.Info(err)
-			return nil, err
-		}
-		var value string
-		resultC := map[string]string{}
-		for i, col := range values {
-			if col == nil {
-				value = ""
-			} else {
-				value = string(col)
-			}
-			colKey := cols[i]
-			if isCamel {
-				colKey = lv_sql.ToCamel(colKey)
-			}
-			resultC[colKey] = value
-		}
-		result = append(result, resultC)
-	}
-	return &result, err
+	return &result, nil
 }
 
 func ListArrStr(db *gorm.DB, sqlQuery string, params any) (*[][]string, error) {

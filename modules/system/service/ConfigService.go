@@ -85,11 +85,13 @@ func (svc *ConfigService) DeleteByIds(ids string) {
 // 修改数据
 func (svc *ConfigService) EditSave(param *model.SysConfig) {
 	po := new(model.SysConfig)
-	po, err := po.FindById(po.ConfigId)
+	po, err := po.FindById(param.ConfigId)
 	lv_err.HasErrAndPanic(err)
 	err = lv_reflect.CopyProp(param, po, true)
 	lv_err.HasErrAndPanic(err)
 	//保存到缓存
+	err = po.Update()
+	lv_err.HasErrAndPanic(err)
 	_ = svc.SetCache(po)
 }
 
@@ -106,7 +108,7 @@ func (d *ConfigService) DeleteBatch(ids ...int64) error {
 }
 
 // 根据条件分页查询用户列表
-func (d ConfigService) FindPage(param *common_vo.SelectConfigPageReq) (*[]map[string]string, int64, error) {
+func (d ConfigService) FindPage(param *common_vo.SelectConfigPageReq) (*[]map[string]any, int64, error) {
 	db := lv_db.GetMasterGorm()
 	sqlParams, sql := d.GetSql(param)
 	countSql := "select count(*) from (" + sql + ") t "
@@ -114,7 +116,7 @@ func (d ConfigService) FindPage(param *common_vo.SelectConfigPageReq) (*[]map[st
 	lv_err.HasErrAndPanic(err)
 	limitSql := sql + " order by u.config_id desc "
 	limitSql += "  limit " + cast.ToString(param.GetStartNum()) + "," + cast.ToString(param.GetPageSize())
-	result, err := namedsql.ListMapStr(db, limitSql, sqlParams, true)
+	result, err := namedsql.ListMap(db, limitSql, sqlParams, true)
 	lv_err.HasErrAndPanic(err)
 	return result, total, err
 }
@@ -152,11 +154,11 @@ func (d ConfigService) GetSql(param *common_vo.SelectConfigPageReq) (map[string]
 }
 
 // 导出excel
-func (d ConfigService) SelectExportList(param *common_vo.SelectConfigPageReq) (*[]map[string]string, error) {
+func (d ConfigService) SelectExportList(param *common_vo.SelectConfigPageReq) (*[]map[string]any, error) {
 	db := lv_db.GetMasterGorm()
 	sqlParams, sql := d.GetSql(param)
 	limitSql := sql + " order by u.user_id desc "
-	result, err := namedsql.ListMapStr(db, limitSql, &sqlParams, false)
+	result, err := namedsql.ListMapAny(db, limitSql, &sqlParams, false)
 	return result, err
 }
 

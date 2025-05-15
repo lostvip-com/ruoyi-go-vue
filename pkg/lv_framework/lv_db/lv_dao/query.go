@@ -14,11 +14,6 @@ func CountCol(table, column, value string) (int64, error) {
 	return total, err
 }
 
-func ListMapStrByNamedSql(sql string, req any, isCamel bool) (*[]map[string]string, error) {
-	d := lv_db.GetMasterGorm()
-	return namedsql.ListMapStr(d, sql, req, isCamel)
-}
-
 func ListMapByNamedSql(sql string, req any, isCamel bool) (*[]map[string]any, error) {
 	d := lv_db.GetMasterGorm()
 	return namedsql.ListMap(d, sql, req, isCamel)

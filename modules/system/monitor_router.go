@@ -12,17 +12,17 @@ func init() {
 	monitor := router.New("/monitor", auth2.TokenCheck(), auth2.PermitCheck)
 	//登录日志
 	loginInfoApi := api.LogininfoApi{}
-	monitor.GET("/logininfor/list", "monitorApi:logininfor:list", loginInfoApi.ListAjax)
-	monitor.POST("/logininfor/export", "monitorApi:logininfor:export", loginInfoApi.Export)
-	monitor.POST("/logininfor/clean", "monitorApi:logininfor:remove", loginInfoApi.Clean)
-	monitor.DELETE("/logininfor/:infoIds", "monitorApi:logininfor:remove", loginInfoApi.Remove)
-	monitor.POST("/logininfor/unlock", "monitorApi:logininfor:unlock", loginInfoApi.Unlock)
+	monitor.GET("/logininfor/list", "monitor:logininfor:list", loginInfoApi.ListAjax)
+	monitor.POST("/logininfor/export", "monitor:logininfor:export", loginInfoApi.Export)
+	monitor.DELETE("/logininfor/clean", "monitor:logininfor:remove", loginInfoApi.Clean)
+	monitor.DELETE("/logininfor/:infoIds", "monitor:logininfor:remove", loginInfoApi.Remove)
+	monitor.POST("/logininfor/unlock", "monitor:logininfor:unlock", loginInfoApi.Unlock)
 
 	//操作日志
 	operApi := api.OperateLogApi{}
-	monitor.GET("/operlog/list", "monitorApi:operlog:list", operApi.ListAjax)
-	monitor.DELETE("/operlog/:operId", "monitorApi:operlog:Remove", operApi.DelectOperlog)
-	monitor.DELETE("/operlog/clean", "monitorApi:operlog:export", operApi.Clean)
+	monitor.GET("/operlog/list", "monitor:operlog:list", operApi.ListAjax)
+	monitor.DELETE("/operlog/:operId", "monitor:operlog:Remove", operApi.DelectOperlog)
+	monitor.DELETE("/operlog/clean", "monitor:operlog:export", operApi.Clean)
 	// 监控
 
 	monitor.GET("/cache", "", monitorApi.CacheHandler)

@@ -116,7 +116,7 @@ func (w *RoleApi) GetUnAllocatedList(c *gin.Context) {
 	roleId := lv_conv.Int64(c.Query("roleId"))
 	UserName := c.Query("userName")
 	phonenumber := c.Query("phonenumber")
-	var rows []map[string]string
+	var rows []map[string]any
 	var userService service.UserService
 	userList, err := userService.SelectUnallocatedList(roleId, UserName, phonenumber)
 
@@ -168,7 +168,7 @@ func (w *RoleApi) AllocatedList(c *gin.Context) {
 	roleId := lv_conv.Int64(c.Query("roleId"))
 	UserName := c.Query("UserName")
 	phonenumber := c.Query("phonenumber")
-	var rows []map[string]string
+	var rows []map[string]any
 
 	var userService service.UserService
 	userList, err := userService.SelectAllocatedList(roleId, UserName, phonenumber)

@@ -32,13 +32,13 @@ func (e SysUserDao) DeleteByIds(ida []int64) int64 {
 }
 
 // 根据条件分页查询用户列表
-func (d SysUserDao) FindPage(param *common_vo.UserPageReq) (*[]map[string]string, int64, error) {
+func (d SysUserDao) FindPage(param *common_vo.UserPageReq) (*[]map[string]any, int64, error) {
 	db := lv_db.GetMasterGorm()
 	sqlParams, sql := d.GetSql(param)
 	lv_log.Info("============sqlParams:", sqlParams)
 	limitSql := sql + " order by u.user_id desc "
 	limitSql += "  limit " + cast.ToString(param.GetStartNum()) + "," + cast.ToString(param.GetPageSize())
-	result, err := namedsql.ListMapStr(db, limitSql, sqlParams, true)
+	result, err := namedsql.ListMapAny(db, limitSql, sqlParams, true)
 	countSql := "select count(*) from (" + sql + ") t "
 	total, err := namedsql.Count(db, countSql, sqlParams)
 	return result, total, err
@@ -101,7 +101,7 @@ func (d SysUserDao) SelectExportList(param *common_vo.UserPageReq) (*[]map[strin
 }
 
 // 根据条件分页查询已分配用户角色列表
-func (d SysUserDao) SelectAllocatedList(roleId int64, UserName, phonenumber string) (*[]map[string]string, error) {
+func (d SysUserDao) SelectAllocatedList(roleId int64, UserName, phonenumber string) (*[]map[string]any, error) {
 	db := lv_db.GetMasterGorm()
 	sqlParams := make(map[string]interface{})
 	sql := `
@@ -122,12 +122,12 @@ func (d SysUserDao) SelectAllocatedList(roleId int64, UserName, phonenumber stri
 		sqlParams["phonenumber"] = "%" + phonenumber + "%"
 	}
 
-	result, err := namedsql.ListMapStr(db, sql, &sqlParams, true)
+	result, err := namedsql.ListMapAny(db, sql, &sqlParams, true)
 	return result, err
 }
 
 // 根据条件分页查询未分配用户角色列表
-func (d SysUserDao) SelectUnallocatedList(roleId int64, UserName, phonenumber string) (*[]map[string]string, error) {
+func (d SysUserDao) SelectUnallocatedList(roleId int64, UserName, phonenumber string) (*[]map[string]any, error) {
 	db := lv_db.GetMasterGorm()
 	sqlParams := make(map[string]interface{})
 	sql := `
@@ -145,7 +145,7 @@ func (d SysUserDao) SelectUnallocatedList(roleId int64, UserName, phonenumber st
 		sqlParams["phonenumber"] = "%" + phonenumber + "%"
 	}
 
-	result, err := namedsql.ListMapStr(db, sql, &sqlParams, true)
+	result, err := namedsql.ListMapAny(db, sql, &sqlParams, true)
 	return result, err
 }
 

@@ -27,20 +27,20 @@ func (e *SysUserPost) Save() error {
 }
 
 // 查
-func (e *SysUserPost) FindById() error {
+func (e *SysUserPost) FindById() (*SysUserPost, error) {
 	err := lv_db.GetMasterGorm().Take(e, "user_id=? and post_id=?", e.UserId, e.PostId).Error
-	return err
+	return e, err
 }
 
 // 查第一条
-func (e *SysUserPost) FindOne() error {
-	err := lv_db.GetMasterGorm().First(e, "user_id=? and post_id=?", e.UserId, e.PostId).Error
-	return err
+func (e *SysUserPost) FindOne() (*SysUserPost, error) {
+	err := lv_db.GetMasterGorm().Table(e.TableName()).First(e, "user_id=? and post_id=?", e.UserId, e.PostId).Error
+	return e, err
 }
 
 // 删
 func (e *SysUserPost) Delete() error {
-	err := e.FindById()
+	e, err := e.FindById()
 	if err == nil {
 		return lv_db.GetMasterGorm().Delete(e).Error
 	}

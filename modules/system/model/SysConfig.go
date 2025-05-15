@@ -28,7 +28,7 @@ func (e *SysConfig) Save() error {
 
 // 查
 func (e *SysConfig) FindById(id int64) (*SysConfig, error) {
-	err := lv_db.GetMasterGorm().First(e, id).Error
+	err := lv_db.GetMasterGorm().Table(e.TableName()).First(e, id).Error
 	return e, err
 }
 

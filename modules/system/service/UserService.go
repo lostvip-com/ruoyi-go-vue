@@ -36,7 +36,7 @@ func (svc *UserService) FindById(id int64) (*model.SysUser, error) {
 	return entity, err
 }
 
-func (svc *UserService) FindList(param *common_vo.UserPageReq) (*[]map[string]string, int64, error) {
+func (svc *UserService) FindList(param *common_vo.UserPageReq) (*[]map[string]any, int64, error) {
 	var deptService DeptService
 	var dept, _ = deptService.FindById(param.DeptId)
 	if dept != nil { //数据权限
@@ -382,13 +382,13 @@ func (svc *UserService) SelectUserByPhoneNumber(phonenumber string) (*model.SysU
 }
 
 // 查询已分配用户角色列表
-func (svc *UserService) SelectAllocatedList(roleId int64, UserName, phonenumber string) (*[]map[string]string, error) {
+func (svc *UserService) SelectAllocatedList(roleId int64, UserName, phonenumber string) (*[]map[string]any, error) {
 	var vo dao.SysUserDao
 	return vo.SelectAllocatedList(roleId, UserName, phonenumber)
 }
 
 // 查询未分配用户角色列表
-func (svc *UserService) SelectUnallocatedList(roleId int64, UserName, phonenumber string) (*[]map[string]string, error) {
+func (svc *UserService) SelectUnallocatedList(roleId int64, UserName, phonenumber string) (*[]map[string]any, error) {
 	var vo dao.SysUserDao
 	return vo.SelectUnallocatedList(roleId, UserName, phonenumber)
 }
