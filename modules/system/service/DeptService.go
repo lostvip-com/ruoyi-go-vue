@@ -66,7 +66,7 @@ func (svc *DeptService) EditSave(req *models.SysDept) (*models.SysDept, error) {
 	}
 }
 
-// 修改子元素关系（替换前半部分）
+// UpdateChildrenAncestors 修改子元素关系（替换前半部分）
 func (svc *DeptService) UpdateChildrenAncestors(dept *models.SysDept, parentCodes string) {
 	dept.Ancestors = parentCodes + "," + cast.ToString(dept.DeptId)
 	lv_db.GetMasterGorm().Table("sys_dept").Where("dept_id=", dept.DeptId).Update("ancestors", dept.Ancestors)
