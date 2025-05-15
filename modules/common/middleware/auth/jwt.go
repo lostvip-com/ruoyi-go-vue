@@ -13,7 +13,7 @@ import (
 const Authorization = "Authorization"
 const Bearer = "Bearer "
 const Secret = "3Bde3BGEbYqtqyEUzW3ry8jKFcaPH17fRmTmqE7MDr05Lwj95uruRKrrkb44TJ4s"
-const JwtTtl = 24 * 3600 //12h
+const JwtTtl = 12 * 3600 //12h
 
 func CreateToken(UserName string, UserId int64, DeptId int64, uuid string) string {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
