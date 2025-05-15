@@ -21,6 +21,7 @@ func init() {
 	system.POST("/config", "system:config:add", config.AddSave)
 	system.PUT("/config", "system:config:edit", config.EditSave)
 	system.DELETE("/config/:configIds", "system:config:remove", config.Remove)
+	system.DELETE("/config/refreshCache", "system:config:remove", config.RefreshCacheConfig)
 	system.POST("/config/export", "system:config:export", config.Export)
 	// 字典类型参数路由
 	dictType := api.DictTypeApi{}

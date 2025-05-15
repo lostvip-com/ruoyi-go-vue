@@ -2,8 +2,10 @@ package api
 
 import (
 	"common/common_vo"
+	"common/global"
 	"common/util"
 	"github.com/gin-gonic/gin"
+	"github.com/lostvip-com/lv_framework/lv_cache/lv_redis"
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
 	"github.com/spf13/cast"
 	dao2 "system/dao"
@@ -102,4 +104,17 @@ func (w *ConfigApi) Export(c *gin.Context) {
 	lv_err.HasErrAndPanic(err)
 
 	util.Success(c, url)
+}
+
+func (w *ConfigApi) RefreshCacheConfig(c *gin.Context) {
+	redisCache := lv_redis.GetInstance(0)
+	keys, _, err := redisCache.Scan(0, global.SysConfigCacheKey+"*", global.ScanCountMax)
+	if err != nil {
+		util.Fail(c, err.Error())
+	}
+	for _, key := range keys {
+		err = redisCache.Del(key)
+		lv_err.HasErrAndPanic(err)
+	}
+	util.Success(c, nil)
 }
