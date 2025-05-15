@@ -22,7 +22,9 @@ import (
 	"system/vo"
 )
 
-type GenApi struct{}
+type GenApi struct {
+	BaseApi
+}
 
 // 表单构建
 func (w *GenApi) Build(c *gin.Context) {
@@ -242,7 +244,7 @@ func canGenIt(overwrite bool, file string) bool {
 	if overwrite { //允许覆盖
 		lv_log.Warn("--------->您配置了 overwrite 开关的值为true，旧文件会被覆盖！！！！ ")
 		return true
-	} else { // 不允许覆盖
+	} else {                      // 不允许覆盖
 		if lv_file.Exists(file) { //文件已经存在，不允许重新生成
 			lv_log.Warn("=======> 文件已经存在，本次将不会生成新文件！！！！！！！！！！！！ ")
 			return false
@@ -277,29 +279,27 @@ func (w *GenApi) DataList(c *gin.Context) {
 func (w *GenApi) ImportTableSave(c *gin.Context) {
 	tables := c.Query("tables")
 	if tables == "" {
-		util2.ErrorResp(c).SetBtype(lv_dto.Buniss_Add).SetMsg("参数错误tables未选中").Log("生成代码", gin.H{"tables": tables}).WriteJsonExit()
+		util2.Fail(c, "参数错误tables未选中")
 	}
-	var userService service.UserService
-	user := userService.GetProfile(c)
-	if user == nil {
-		util2.ErrorResp(c).SetBtype(lv_dto.Buniss_Add).SetMsg("登录超时").Log("生成代码", gin.H{"tables": tables}).WriteJsonExit()
-	}
-
+	user := w.GetCurrUser(c)
 	operName := user.UserName
 	tableService := service.TableService{}
 	tableArr := strings.Split(tables, ",")
 	tableList, err := tableService.SelectDbTableListByNames(tableArr)
 	if err != nil {
-		util2.ErrorResp(c).SetBtype(lv_dto.Buniss_Add).SetMsg(err.Error()).WriteJsonExit()
+		util2.Fail(c, err.Error())
 		return
 	}
-
 	if tableList == nil {
-		util2.ErrorResp(c).SetBtype(lv_dto.Buniss_Add).SetMsg("请选择需要导入的表").WriteJsonExit()
+		util2.Fail(c, "请选择需要导入的表")
 		return
 	}
-	tableService.ImportGenTable(&tableList, operName)
-	util2.SucessResp(c).WriteJsonExit()
+	err = tableService.ImportGenTable(&tableList, operName)
+	if err != nil {
+		util2.Fail(c, err.Error())
+		return
+	}
+	util2.Success(c, nil)
 }
 func (w *GenApi) ColumnList(c *gin.Context) {
 	tableId := lv_conv.Int64(c.Query("tableId"))
