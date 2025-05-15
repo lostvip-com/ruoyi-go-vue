@@ -61,22 +61,22 @@ func (svc *DeptService) EditSave(req *models.SysDept) (*models.SysDept, error) {
 		err := po.Update()
 		lv_err.HasErrAndPanic(err)
 		//递归修改所有子项目
-		svc.UpdateDeptChildrenAncestors(po, parent.Ancestors)
+		svc.UpdateChildrenAncestors(po, parent.Ancestors)
 		return po, err
 	}
 }
 
 // 修改子元素关系（替换前半部分）
-func (svc *DeptService) UpdateDeptChildrenAncestors(dept *models.SysDept, parentCodes string) {
+func (svc *DeptService) UpdateChildrenAncestors(dept *models.SysDept, parentCodes string) {
 	dept.Ancestors = parentCodes + "," + cast.ToString(dept.DeptId)
 	lv_db.GetMasterGorm().Table("sys_dept").Where("dept_id=", dept.DeptId).Update("ancestors", dept.Ancestors)
 	// ancestors 上级ancestors发生变化，修改下级
-	deptList := svc.SelectChildrenDeptById(dept.DeptId)
+	deptList, _ := svc.FindChildren(dept.DeptId)
 	if deptList == nil || len(deptList) <= 0 {
 		return
 	}
 	for _, child := range deptList {
-		svc.UpdateDeptChildrenAncestors(child, dept.Ancestors)
+		svc.UpdateChildrenAncestors(child, dept.Ancestors)
 	}
 }
 
@@ -89,10 +89,34 @@ func (svc *DeptService) FindAll(param *common_vo.DeptPageReq) (*[]models.SysDept
 	}
 }
 
+// 根据角色ID查询部门
+func (svc *DeptService) SelectRoleDeptTree(roleId int64) ([]string, error) {
+	sql := ` select concat(d.dept_id, d.dept_name) as DeptName 
+             from sys_dept d 
+             left join sys_role_dept rd  on d.dept_id = rd.dept_id 
+             where d.del_flag =0 and rd.role_id = @roleId
+             order by d.parent_id, d.order_num
+             `
+	param := map[string]any{}
+	param["roleId"] = roleId
+	listMap, err := lv_dao.ListMapStrByNamedSql(sql, param, false)
+	var result []string
+	var rs = *listMap
+	if err == nil && rs != nil && len(rs) > 0 {
+		for _, record := range rs {
+			if record["DeptName"] != "" {
+				result = append(result, record["DeptName"])
+			}
+		}
+	}
+	return result, nil
+}
+
 // 删除部门管理信息
 func (svc *DeptService) DeleteDeptById(deptId int64) error {
-	var dao dao.SysDeptDao
-	return dao.DeleteDeptById(deptId)
+	var entity models.SysDept
+	err := entity.UpdateDelFlag(deptId)
+	return err
 }
 
 // FindById 根据部门ID查询信息
@@ -110,10 +134,11 @@ func (svc *DeptService) FindById(deptId int64) (*models.SysDept, error) {
 	return dept, err
 }
 
-// 根据ID查询所有子部门
-func (svc *DeptService) SelectChildrenDeptById(deptId int64) []*models.SysDept {
-	var dao dao.SysDeptDao
-	return dao.SelectChildrenDeptById(deptId)
+func (svc *DeptService) FindChildren(parentId int64) ([]*models.SysDept, error) {
+	db := lv_db.GetMasterGorm()
+	var rs []*models.SysDept
+	err := db.Table("sys_dept").Where("parent_id=?", parentId).Find(&rs).Error
+	return rs, err
 }
 
 // 查询部门管理数据
