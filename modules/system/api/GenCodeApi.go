@@ -7,10 +7,8 @@ import (
 	"github.com/lostvip-com/lv_framework/lv_db"
 	"github.com/lostvip-com/lv_framework/lv_db/lv_batis"
 	"github.com/lostvip-com/lv_framework/lv_global"
-	"github.com/lostvip-com/lv_framework/lv_log"
 	"github.com/lostvip-com/lv_framework/utils/lv_conv"
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
-	"github.com/lostvip-com/lv_framework/utils/lv_file"
 	"github.com/lostvip-com/lv_framework/web/lv_dto"
 	"net/http"
 	"os"
@@ -207,31 +205,6 @@ func (w *GenCodeApi) DataList(c *gin.Context) {
 		Total: total,
 		Rows:  rows,
 	})
-}
-func (w *GenCodeApi) ImportTableSave(c *gin.Context) {
-	tables := c.Query("tables")
-	if tables == "" {
-		util2.Fail(c, "参数错误tables未选中")
-	}
-	user := w.GetCurrUser(c)
-	operName := user.UserName
-	tableService := service.TableService{}
-	tableArr := strings.Split(tables, ",")
-	tableList, err := tableService.SelectDbTableListByNames(tableArr)
-	if err != nil {
-		util2.Fail(c, err.Error())
-		return
-	}
-	if tableList == nil {
-		util2.Fail(c, "请选择需要导入的表")
-		return
-	}
-	err = tableService.ImportGenTable(&tableList, operName)
-	if err != nil {
-		util2.Fail(c, err.Error())
-		return
-	}
-	util2.Success(c, nil)
 }
 func (w *GenCodeApi) ColumnList(c *gin.Context) {
 	tableId := lv_conv.Int64(c.Query("tableId"))

@@ -35,7 +35,6 @@ func (e SysUserDao) DeleteByIds(ida []int64) int64 {
 func (d SysUserDao) FindPage(param *common_vo.UserPageReq) (*[]map[string]any, int64, error) {
 	db := lv_db.GetMasterGorm()
 	sqlParams, sql := d.GetSql(param)
-	lv_log.Info("============sqlParams:", sqlParams)
 	limitSql := sql + " order by u.user_id desc "
 	limitSql += "  limit " + cast.ToString(param.GetStartNum()) + "," + cast.ToString(param.GetPageSize())
 	result, err := namedsql.ListMapAny(db, limitSql, sqlParams, true)

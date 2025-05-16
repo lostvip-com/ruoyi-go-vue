@@ -43,21 +43,17 @@ func (r *GenTableDao) FindPage(param *vo.GenTablePageReq) ([]model.GenTable, int
 		if param.TableComment != "" {
 			tb.Where("t.table_comment like ?", "%"+param.TableComment+"%")
 		}
-
-		if param.BeginTime != "" {
-			tb.Where("t.create_time >= ? ", param.BeginTime)
-		}
-
-		if param.EndTime != "" {
-			tb.Where("date_format(t.create_time,'%y%m%d') <= date_format(?,'%y%m%d') ", param.EndTime)
-		}
 	}
 	var total int64
 	tb = tb.Count(&total)
-	tb.Limit(param.GetPageSize()).Offset(param.GetStartNum()).Order(param.OrderByColumn + " " + param.IsAsc)
+	if param != nil {
+		if param.OrderByColumn != "" {
+			tb.Order(param.OrderByColumn + " " + param.IsAsc)
+		}
+	}
+	tb.Limit(param.GetStartNum()).Offset(param.GetPageSize())
 	var result []model.GenTable
 	err := tb.Find(&result).Error
-
 	return result, total, err
 }
 
