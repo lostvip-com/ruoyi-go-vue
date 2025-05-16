@@ -187,8 +187,6 @@ func (w *GenApi) Preview(c *gin.Context) {
 		Data: retMap,
 	})
 }
-
-// 生成代码
 func (w *GenApi) GenCode(c *gin.Context) {
 	overwrite := myconf.GetConfigInstance().GetBool("gen.overwrite")
 	tableId := lv_conv.Int64(c.Query("tableId"))
@@ -220,11 +218,8 @@ func canGenIt(overwrite bool, file string) bool {
 		}
 	}
 }
-
-// 查询数据库列表
 func (w *GenApi) DataList(c *gin.Context) {
 	var req *vo.GenTablePageReq
-
 	err := c.ShouldBind(&req)
 	lv_err.HasErrAndPanic(err)
 	tableService := service.TableService{}
@@ -233,7 +228,6 @@ func (w *GenApi) DataList(c *gin.Context) {
 	if err == nil && len(result) > 0 {
 		rows = result
 	}
-
 	c.JSON(http.StatusOK, lv_dto.TableDataInfo{
 		Code:  200,
 		Msg:   "操作成功",
