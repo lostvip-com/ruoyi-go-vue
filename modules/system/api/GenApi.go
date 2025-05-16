@@ -12,7 +12,6 @@ import (
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
 	"github.com/lostvip-com/lv_framework/utils/lv_file"
 	"github.com/lostvip-com/lv_framework/web/lv_dto"
-	"html/template"
 	"net/http"
 	"os"
 	"os/exec"
@@ -31,7 +30,6 @@ func (w *GenApi) Build(c *gin.Context) {
 	util2.BuildTpl(c, "tool/build").WriteTpl()
 }
 
-// swagger文档
 func (w *GenApi) ExecSqlFile(c *gin.Context) {
 	tableId := lv_conv.Int64(c.Query("tableId"))
 
@@ -105,12 +103,6 @@ func (w *GenApi) generateSwaggerFiles(output string) error {
 
 	return nil
 }
-
-// 生成代码列表页面
-func (w *GenApi) Gen(c *gin.Context) {
-	util2.BuildTpl(c, "tool/gen_list_tables").WriteTpl()
-}
-
 func (w *GenApi) GenList(c *gin.Context) {
 	var req *vo.GenTablePageReq
 	tableService := service.TableService{}
@@ -126,11 +118,6 @@ func (w *GenApi) GenList(c *gin.Context) {
 		rows = result
 	}
 	util2.SuccessPage(c, rows, total)
-}
-
-// 导入数据表
-func (w *GenApi) ImportTable(c *gin.Context) {
-	util2.WriteTpl(c, "tool/gen_import_table")
 }
 
 // 删除数据
@@ -149,24 +136,6 @@ func (w *GenApi) Remove(c *gin.Context) {
 	} else {
 		util2.ErrorResp(c).SetBtype(lv_dto.Buniss_Del).Log("生成代码", req).WriteJsonExit()
 	}
-}
-
-// Edit 修改数据
-func (w *GenApi) Edit(c *gin.Context) {
-	id := lv_conv.Int64(c.Query("id"))
-	tableService := service.TableService{}
-	entity, err := tableService.FindById(id)
-	lv_err.HasErrAndPanic(err)
-	goTypeTpl := tableService.GoTypeTpl()
-	queryTypeTpl := tableService.QueryTypeTpl()
-	htmlTypeTpl := tableService.HtmlTypeTpl()
-
-	util2.WriteTpl(c, "tool/gen_edit_table", gin.H{
-		"table":        entity,
-		"goTypeTpl":    template.HTML(goTypeTpl),
-		"queryTypeTpl": template.HTML(queryTypeTpl),
-		"htmlTypeTpl":  template.HTML(htmlTypeTpl),
-	})
 }
 
 // EditSave 修改数据保存
