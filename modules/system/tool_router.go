@@ -8,7 +8,6 @@ import (
 
 // 加载路由
 func init() {
-	// 服务监控
 	tool := new(api.GenCodeApi)
 	g1 := router.New("/tool", auth2.TokenCheck(), auth2.PermitCheck)
 	g1.GET("/build", "", tool.Build)
