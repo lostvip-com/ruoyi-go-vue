@@ -5,9 +5,6 @@ import (
 	"system/model"
 )
 
-// Fill with you ideas below.
-
-// GenTable is the golang structure for table gen_table.
 type GenTableVO struct {
 	model.GenTable
 	TreeCode       string                 `gorm:"-"` // 树编码字段
@@ -17,27 +14,18 @@ type GenTableVO struct {
 	PkColumn       model.GenTableColumn   `gorm:"-"` // 表列信息
 }
 
+type EditGenTableVO struct {
+	model.GenTable
+	Tree    bool                   `json:"tree"`
+	Crud    bool                   `json:"crud"`
+	Sub     bool                   `json:"sub"`
+	Columns []model.GenTableColumn `json:"columns"`
+}
+
 type GenTableParams struct {
 	TreeCode       string `form:"treeCode"`
 	TreeParentCode string `form:"treeParentCode"`
 	TreeName       string `form:"treeName"`
-}
-
-// 修改页面请求参数
-type GenTableEditReq struct {
-	TableId        int64  `form:"tableId" binding:"required"`
-	TableName      string `form:"tableName"  binding:"required"`
-	TableComment   string `form:"tableComment"  binding:"required"`
-	ClassName      string `form:"className" binding:"required"`
-	FunctionAuthor string `form:"functionAuthor"  binding:"required"`
-	TplCategory    string `form:"tplCategory"`
-	PackageName    string `form:"packageName" binding:"required"`
-	ModuleName     string `form:"moduleName" binding:"required"`
-	BusinessName   string `form:"businessName" binding:"required"`
-	FunctionName   string `form:"functionName" binding:"required"`
-	Remark         string `form:"remark"`
-	Params         string `form:"params"`
-	Columns        string `form:"columns"`
 }
 
 // 分页请求参数

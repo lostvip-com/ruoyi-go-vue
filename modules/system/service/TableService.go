@@ -65,7 +65,7 @@ func (svc TableService) DeleteByIds(ids string) error {
 }
 
 // 保存修改数据
-func (svc TableService) SaveEdit(req *vo.GenTableEditReq, c *gin.Context) error {
+func (svc TableService) SaveEdit(req *vo.EditGenTableVO, c *gin.Context) error {
 	table := new(model.GenTable)
 	table, err := table.FindById(req.TableId)
 	if err != nil {
@@ -80,12 +80,7 @@ func (svc TableService) SaveEdit(req *vo.GenTableEditReq, c *gin.Context) error 
 	err = lv_db.GetMasterGorm().Transaction(func(tx *gorm.DB) error {
 		var err error
 		err = table.Updates()
-		//保存列数据
-		if req.Columns == "" {
-			return err
-		}
-		var columnList []model.GenTableColumn
-		err = json.Unmarshal([]byte(req.Columns), &columnList)
+		var columnList = req.Columns
 		lv_err.HasError1(err)
 		if columnList == nil {
 			return err
@@ -97,7 +92,7 @@ func (svc TableService) SaveEdit(req *vo.GenTableEditReq, c *gin.Context) error 
 			}
 			po, err = po.FindById(column.ColumnId)
 			lv_err.HasErrAndPanic(err)
-			lv_reflect.CopyProperties(column, po)
+			_ = lv_reflect.CopyProperties(column, po)
 			err = po.Updates()
 			lv_err.HasErrAndPanic(err)
 		}
@@ -494,56 +489,6 @@ func (svc TableService) GetColumnLength(columnType string) int {
 	end := strings.Index(columnType, ")")
 	result := columnType[start+1 : end-1]
 	return cast.ToInt(result)
-}
-
-// 获取Go类别下拉框
-func (svc TableService) GoTypeTpl() string {
-	return `<script id="goTypeTpl" type="text/x-jquery-tmpl">
-<div>
-<select class='form-control' name='columns[${index}].goType'>
-    <option value="int64" {{if goType==="int64"}}selected{{/if}}>int64</option>
-    <option value="int" {{if goType==="int"}}selected{{/if}}>int</option>
-    <option value="string" {{if goType==="string"}}selected{{/if}}>string</option>
-    <option value="time.Time" {{if goType==="time.Time"}}selected{{/if}}>time.Time</option>
-    <option value="float64" {{if goType==="float64"}}selected{{/if}}>float64</option>
-    <option value="byte" {{if goType==="byte"}}selected{{/if}}>byte</option>
-</select>
-</div>
-</script>`
-}
-
-// 获取查询方式下拉框
-func (svc TableService) QueryTypeTpl() string {
-	return `<script id="queryTypeTpl" type="text/x-jquery-tmpl">
-<div>
-<select class='form-control' name='columns[${index}].queryType'>
-    <option value="EQ" {{if queryType==="EQ"}}selected{{/if}}>=</option>
-    <option value="NE" {{if queryType==="NE"}}selected{{/if}}>!=</option>
-    <option value="GT" {{if queryType==="GT"}}selected{{/if}}>></option>
-    <option value="GTE" {{if queryType==="GTE"}}selected{{/if}}>>=</option>
-    <option value="LT" {{if queryType==="LT"}}selected{{/if}}><</option>
-    <option value="LTE" {{if queryType==="LTE"}}selected{{/if}}><=</option>
-    <option value="LIKE" {{if queryType==="LIKE"}}selected{{/if}}>Like</option>
-    <option value="BETWEEN" {{if queryType==="BETWEEN"}}selected{{/if}}>Between</option>
-</select>
-</div>
-</script>`
-}
-
-// 获取显示类型下拉框
-func (svc TableService) HtmlTypeTpl() string {
-	return `<script id="htmlTypeTpl" type="text/x-jquery-tmpl">
-<div>
-<select class='form-control' name='columns[${index}].htmlType'>
-    <option value="input" {{if htmlType==="input"}}selected{{/if}}>文本框</option>
-    <option value="textarea" {{if htmlType==="textarea"}}selected{{/if}}>文本域</option>
-    <option value="select" {{if htmlType==="select"}}selected{{/if}}>下拉框</option>
-    <option value="radio" {{if htmlType==="radio"}}selected{{/if}}>单选框</option>
-    <option value="checkbox" {{if htmlType==="checkbox"}}selected{{/if}}>复选框</option>
-    <option value="datetime" {{if htmlType==="datetime"}}selected{{/if}}>日期控件</option>
-</select>
-</div>
-</script>`
 }
 
 // 读取模板

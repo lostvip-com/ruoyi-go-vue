@@ -9,18 +9,21 @@ import (
 )
 
 type GenTable struct {
-	TableId        int64  `gorm:"size:20;primary_key;auto_increment;编号;" json:"tableId"`
-	TbName         string `gorm:"type:string;size:32;comment:表名称;column:table_name" json:"tableName"`
-	TableComment   string `gorm:"type:string;size:32;comment:表描述;" json:"tableComment"`
-	ClassName      string `gorm:"type:string;size:32;comment:实体类名称;" json:"className"`
-	TplCategory    string `gorm:"type:string;size:32;comment:使用的模板（crud单表操作 tree树表操作）;" json:"tplCategory"`
-	PackageName    string `gorm:"type:string;size:32;comment:生成包路径;" json:"packageName"`
-	ModuleName     string `gorm:"type:string;size:32;comment:生成模块名;" json:"moduleName"`
-	BusinessName   string `gorm:"type:string;size:32;comment:生成业务名;" json:"businessName"`
-	FunctionName   string `gorm:"type:string;size:32;comment:生成功能名;" json:"functionName"`
-	FunctionAuthor string `gorm:"type:string;size:32;comment:生成功能作者;" json:"functionAuthor"`
-	Options        string `gorm:"type:string;size:32;comment:其它生成选项;" json:"options"`
-	Remark         string `gorm:"type:string;size:32;comment:备注;" json:"remark"`
+	TableId        string `json:"tableId" gorm:"table_id"`
+	Table_Name     string `json:"tableName,omitempty" gorm:"table_name,omitempty"`
+	TableComment   string `json:"tableComment" gorm:"table_comment"`
+	SubTableName   string `json:"subTableName" gorm:"sub_table_name"`
+	SubTableFkName string `json:"subTableFkName" gorm:"sub_table_fk_name"`
+	ClassName      string `json:"className" gorm:"class_name"`
+	TplCategory    string `json:"tplCategory" gorm:"tpl_category"`
+	PackageName    string `json:"packageName" gorm:"package_name"`
+	ModuleName     string `json:"moduleName" gorm:"module_name"`
+	BusinessName   string `json:"businessName" gorm:"business_name"`
+	FunctionName   string `json:"functionName" gorm:"function_name"`
+	FunctionAuthor string `json:"functionAuthor" gorm:"function_author"`
+	GenType        string `json:"genType" gorm:"gen_type"`
+	GenPath        string `json:"genPath" gorm:"gen_path"`
+	Options        string `json:"options" gorm:"options"`
 	models.BaseModel
 	HasEditTime string `gorm:"-"` //1需要导入time.Time 0 不需要
 }
@@ -58,8 +61,8 @@ func (e *GenTable) FindById(id int64) (*GenTable, error) {
 func (e *GenTable) FindOne() (*GenTable, error) {
 	tb := lv_db.GetMasterGorm().Table(e.TableName())
 
-	if e.TbName != "" {
-		tb = tb.Where("table_name=?", e.TableName)
+	if e.Table_Name != "" {
+		tb = tb.Where("table_name=?", e.Table_Name)
 	}
 	if e.TableComment != "" {
 		tb = tb.Where("table_comment=?", e.TableComment)
@@ -87,8 +90,8 @@ func (e *GenTable) Delete() error {
 func (e *GenTable) Count() (int64, error) {
 	sql := " select count(*) from gen_table where del_flag = 0 "
 
-	if e.TbName != "" {
-		sql += " and table_name = @TbName "
+	if e.Table_Name != "" {
+		sql += " and table_name = @Table_Name "
 	}
 	if e.TableComment != "" {
 		sql += " and table_comment = @TableComment "

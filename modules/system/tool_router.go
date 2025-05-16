@@ -8,19 +8,21 @@ import (
 
 // 加载路由
 func init() {
-	tool := new(api.GenCodeApi)
-	g1 := router.New("/tool", auth2.TokenCheck(), auth2.PermitCheck)
-	g1.GET("/build", "", tool.Build)
-	g1.GET("/swagger", "", tool.Swagger)
-	g1.GET("/gen/list", "tool:gen:list", tool.GenList)
-	g1.DELETE("/gen/remove", "tool:gen:remove", tool.Remove)
-	g1.GET("/gen/db/list", "tool:gen:list", tool.DataList)
-	g1.POST("/gen/importTable", "tool:gen:list", tool.ImportTableSave)
-	g1.POST("/gen/edit", "tool:gen:edit", tool.EditSave)
-	g1.POST("/gen/column/list", "tool:gen:list", tool.ColumnList)
-	g1.GET("/gen/preview", "", tool.Preview)
-	g1.GET("/gen/genCode", "", tool.GenCode)
+	codeGenApi := new(api.GenCodeApi)
+	tool := router.New("/tool", auth2.TokenCheck(), auth2.PermitCheck)
+	tool.GET("/build", "", codeGenApi.Build)
+	tool.GET("/swagger", "", codeGenApi.Swagger)
+	//code gen
+	tool.GET("/gen/list", "tool:gen:list", codeGenApi.GenList)
+	tool.GET("/gen/:tableId", "tool:gen:list", codeGenApi.GetGenTableInfo)
+	tool.GET("/gen/db/list", "tool:gen:list", codeGenApi.DataList)
+	tool.DELETE("/gen/:tableId", "tool:gen:remove", codeGenApi.RemoveByTableId)
+	tool.POST("/gen/importTable", "tool:gen:list", codeGenApi.ImportTableSave)
+	tool.PUT("/gen", "tool:gen:edit", codeGenApi.EditSave)
+	//column
+	tool.GET("/gen/column/list", "tool:gen:list", codeGenApi.ColumnList)
+	tool.GET("/gen/preview", "", codeGenApi.Preview)
+	tool.POST("/gen/genCode", "", codeGenApi.GenCode)
 	//执行sql文件
-	g1.GET("/gen/execSqlFile", "", tool.ExecSqlFile)
-
+	tool.POST("/gen/execSqlFile", "", codeGenApi.ExecSqlFile)
 }

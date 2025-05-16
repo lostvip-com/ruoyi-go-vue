@@ -10,6 +10,7 @@ import (
 	"github.com/lostvip-com/lv_framework/utils/lv_conv"
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
 	"github.com/lostvip-com/lv_framework/web/lv_dto"
+	"github.com/spf13/cast"
 	"net/http"
 	"os"
 	"os/exec"
@@ -104,74 +105,52 @@ func (w *GenCodeApi) generateSwaggerFiles(output string) error {
 func (w *GenCodeApi) GenList(c *gin.Context) {
 	var req *vo.GenTablePageReq
 	tableService := service.TableService{}
-
 	if err := c.ShouldBind(&req); err != nil {
-		util2.ErrorResp(c).SetMsg(err.Error()).Log("生成代码", req).WriteJsonExit()
+		util2.Fail(c, err.Error())
 		return
 	}
-	rows := make([]model.GenTable, 0)
-	result, total, err := tableService.FindPage(req)
-
-	if err == nil && len(result) > 0 {
-		rows = result
+	rows, total, err := tableService.FindPage(req)
+	if err != nil {
+		util2.Fail(c, err.Error())
+		return
 	}
 	util2.SuccessPage(c, rows, total)
 }
 
-// 删除数据
-func (w *GenCodeApi) Remove(c *gin.Context) {
-	var req *lv_dto.IdsReq
-
-	if err := c.ShouldBind(&req); err != nil {
-		util2.ErrorResp(c).SetBtype(lv_dto.Buniss_Del).Log("生成代码", req).WriteJsonExit()
+func (w *GenCodeApi) RemoveByTableId(c *gin.Context) {
+	tableId := c.Param("tableId")
+	tableService := service.TableService{}
+	err := tableService.DeleteByIds(tableId)
+	if err != nil {
+		util2.Fail(c, err.Error())
 		return
 	}
-	tableService := service.TableService{}
-	err := tableService.DeleteByIds(req.Ids)
-
-	if err == nil {
-		util2.SucessResp(c).SetBtype(lv_dto.Buniss_Del).Log("生成代码", req).WriteJsonExit()
-	} else {
-		util2.ErrorResp(c).SetBtype(lv_dto.Buniss_Del).Log("生成代码", req).WriteJsonExit()
-	}
+	util2.Success(c, nil)
 }
 
 // EditSave 修改数据保存
 func (w *GenCodeApi) EditSave(c *gin.Context) {
-	var req vo.GenTableEditReq
-
+	var req vo.EditGenTableVO
 	if err := c.ShouldBind(&req); err != nil {
-		util2.ErrorResp(c).SetMsg(err.Error()).SetBtype(lv_dto.Buniss_Edit).Log("生成代码", gin.H{"tableName": req.TableName}).WriteJsonExit()
+		util2.Fail(c, err.Error())
 		return
 	}
 	tableService := service.TableService{}
 	err := tableService.SaveEdit(&req, c)
 	if err != nil {
-		util2.ErrorResp(c).SetMsg(err.Error()).SetBtype(lv_dto.Buniss_Edit).Log("生成代码", gin.H{"tableName": req.TableName}).WriteJsonExit()
+		util2.Fail(c, err.Error())
 		return
 	}
-	util2.SucessResp(c).SetBtype(lv_dto.Buniss_Edit).Log("生成代码", gin.H{"tableName": req.TableName}).WriteJsonExit()
+	util2.Success(c, nil)
 }
 
 // Preview 预览代码
 func (w *GenCodeApi) Preview(c *gin.Context) {
 	tableId := lv_conv.Int64(c.Query("tableId"))
-	if tableId <= 0 {
-		c.JSON(http.StatusOK, lv_dto.CommonRes{
-			Code:  500,
-			Btype: lv_dto.Buniss_Other,
-			Msg:   "参数错误",
-		})
-	}
 	tableService := service.TableService{}
 	entity, err := tableService.FindById(tableId)
-
-	if err != nil || entity == nil {
-		c.JSON(http.StatusOK, lv_dto.CommonRes{
-			Code:  500,
-			Btype: lv_dto.Buniss_Other,
-			Msg:   "数据不存在",
-		})
+	if err != nil {
+		util2.Fail(c, err.Error())
 	}
 	tableService.SetPkColumn(entity, entity.Columns)
 	var codeGenService service.CodeGenService
@@ -265,4 +244,20 @@ func (w *GenCodeApi) GenCode(c *gin.Context) {
 	codeGenService.GenCode(entity, overwrite)
 	//(genService)
 	util2.Success(c, gin.H{"tableId": tableId})
+}
+
+func (w *GenCodeApi) GetGenTableInfo(c *gin.Context) {
+	tableIdStr := c.Param("tableId")
+	tableId := cast.ToInt64(tableIdStr)
+	m := make(map[string]any)
+	var svc service.TableService
+	table, err := svc.SelectGenTableById(tableId)
+	lv_err.HasErrAndPanic(err)
+	var svcCol service.TableColumnService
+	columns, err := svcCol.SelectGenTableColumnListByTableId(tableId)
+	lv_err.HasErrAndPanic(err)
+	m["info"] = table
+	m["rows"] = columns
+	//m["tables"] = selectGenTableAllInfoById()
+	util2.Success(c, m)
 }
