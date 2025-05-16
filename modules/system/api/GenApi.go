@@ -266,3 +266,38 @@ func (w *GenApi) ImportTableSave(c *gin.Context) {
 	}
 	util2.Success(c, nil)
 }
+
+// 生成代码
+func (w *GenApi) GenCode(c *gin.Context) {
+	overwrite := myconf.GetConfigInstance().GetBool("gen.overwrite")
+	tableId := lv_conv.Int64(c.Query("tableId"))
+	tableService := service.TableService{}
+	entity, err := tableService.FindById(tableId)
+	if err != nil || entity == nil {
+		c.JSON(http.StatusOK, lv_dto.CommonRes{
+			Code:  500,
+			Btype: lv_dto.Buniss_Other,
+			Msg:   "数据不存在",
+		})
+	}
+	tableService.SetPkColumn(entity, entity.Columns)
+	var codeGenService service.CodeGenService
+	codeGenService.GenCode(entity, overwrite)
+	//(genService)
+	util2.Success(c, gin.H{"tableId": tableId})
+}
+func canGenIt(overwrite bool, file string) bool {
+	if overwrite { //允许覆盖
+		lv_log.Warn("--------->您配置了 overwrite 开关的值为true，旧文件会被覆盖！！！！ ")
+		return true
+	} else {                      // 不允许覆盖
+		if lv_file.Exists(file) { //文件已经存在，不允许重新生成
+			lv_log.Warn("=======> 文件已经存在，本次将不会生成新文件！！！！！！！！！！！！ ")
+			return false
+		} else { //文件不存在，允许重新生成
+			return true
+		}
+	}
+}
+
+// 查询数据库列表
