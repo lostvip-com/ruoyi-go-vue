@@ -21,16 +21,16 @@ import (
 	"system/vo"
 )
 
-type GenApi struct {
+type GenCodeApi struct {
 	BaseApi
 }
 
 // 表单构建
-func (w *GenApi) Build(c *gin.Context) {
+func (w *GenCodeApi) Build(c *gin.Context) {
 	util2.BuildTpl(c, "tool/build").WriteTpl()
 }
 
-func (w *GenApi) ExecSqlFile(c *gin.Context) {
+func (w *GenCodeApi) ExecSqlFile(c *gin.Context) {
 	tableId := lv_conv.Int64(c.Query("tableId"))
 
 	if tableId <= 0 {
@@ -67,7 +67,7 @@ func (w *GenApi) ExecSqlFile(c *gin.Context) {
 }
 
 // swagger文档
-func (w *GenApi) Swagger(c *gin.Context) {
+func (w *GenCodeApi) Swagger(c *gin.Context) {
 	a := c.Query("a")
 	if a == "r" {
 		//重新生成文档
@@ -93,7 +93,7 @@ func (w *GenApi) Swagger(c *gin.Context) {
 }
 
 // 自动生成文档 swag init -o static/swagger
-func (w *GenApi) generateSwaggerFiles(output string) error {
+func (w *GenCodeApi) generateSwaggerFiles(output string) error {
 
 	cmd := exec.Command("swag", "init -o "+output)
 	// 保证关闭输出流
@@ -103,7 +103,7 @@ func (w *GenApi) generateSwaggerFiles(output string) error {
 
 	return nil
 }
-func (w *GenApi) GenList(c *gin.Context) {
+func (w *GenCodeApi) GenList(c *gin.Context) {
 	var req *vo.GenTablePageReq
 	tableService := service.TableService{}
 
@@ -121,7 +121,7 @@ func (w *GenApi) GenList(c *gin.Context) {
 }
 
 // 删除数据
-func (w *GenApi) Remove(c *gin.Context) {
+func (w *GenCodeApi) Remove(c *gin.Context) {
 	var req *lv_dto.IdsReq
 
 	if err := c.ShouldBind(&req); err != nil {
@@ -139,7 +139,7 @@ func (w *GenApi) Remove(c *gin.Context) {
 }
 
 // EditSave 修改数据保存
-func (w *GenApi) EditSave(c *gin.Context) {
+func (w *GenCodeApi) EditSave(c *gin.Context) {
 	var req vo.GenTableEditReq
 
 	if err := c.ShouldBind(&req); err != nil {
@@ -156,7 +156,7 @@ func (w *GenApi) EditSave(c *gin.Context) {
 }
 
 // Preview 预览代码
-func (w *GenApi) Preview(c *gin.Context) {
+func (w *GenCodeApi) Preview(c *gin.Context) {
 	tableId := lv_conv.Int64(c.Query("tableId"))
 	if tableId <= 0 {
 		c.JSON(http.StatusOK, lv_dto.CommonRes{
@@ -189,7 +189,7 @@ func (w *GenApi) Preview(c *gin.Context) {
 		Data: retMap,
 	})
 }
-func (w *GenApi) DataList(c *gin.Context) {
+func (w *GenCodeApi) DataList(c *gin.Context) {
 	var req *vo.GenTablePageReq
 
 	err := c.ShouldBind(&req)
@@ -208,7 +208,7 @@ func (w *GenApi) DataList(c *gin.Context) {
 		Rows:  rows,
 	})
 }
-func (w *GenApi) ImportTableSave(c *gin.Context) {
+func (w *GenCodeApi) ImportTableSave(c *gin.Context) {
 	tables := c.Query("tables")
 	if tables == "" {
 		util2.Fail(c, "参数错误tables未选中")
@@ -233,7 +233,7 @@ func (w *GenApi) ImportTableSave(c *gin.Context) {
 	}
 	util2.Success(c, nil)
 }
-func (w *GenApi) ColumnList(c *gin.Context) {
+func (w *GenCodeApi) ColumnList(c *gin.Context) {
 	tableId := lv_conv.Int64(c.Query("tableId"))
 	rows := make([]model.GenTableColumn, 0)
 	tableService := service.TableColumnService{}
@@ -248,7 +248,7 @@ func (w *GenApi) ColumnList(c *gin.Context) {
 		Rows:  rows,
 	})
 }
-func (w *GenApi) ImportTableSave(c *gin.Context) {
+func (w *GenCodeApi) ImportTableSave(c *gin.Context) {
 	tables := c.Query("tables")
 	if tables == "" {
 		util2.Fail(c, "参数错误tables未选中")
@@ -275,7 +275,7 @@ func (w *GenApi) ImportTableSave(c *gin.Context) {
 }
 
 // 生成代码
-func (w *GenApi) GenCode(c *gin.Context) {
+func (w *GenCodeApi) GenCode(c *gin.Context) {
 	overwrite := myconf.GetConfigInstance().GetBool("gen.overwrite")
 	tableId := lv_conv.Int64(c.Query("tableId"))
 	tableService := service.TableService{}
