@@ -243,8 +243,6 @@ func (w *GenApi) DataList(c *gin.Context) {
 		Rows:  rows,
 	})
 }
-
-// 导入表结构（保存）
 func (w *GenApi) ImportTableSave(c *gin.Context) {
 	tables := c.Query("tables")
 	if tables == "" {
