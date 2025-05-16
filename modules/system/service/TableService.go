@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"github.com/gin-gonic/gin"
 	"github.com/lostvip-com/lv_framework/lv_db"
 	"github.com/lostvip-com/lv_framework/lv_global"
 	"github.com/lostvip-com/lv_framework/utils/lv_conv"
@@ -65,18 +64,14 @@ func (svc TableService) DeleteByIds(ids string) error {
 }
 
 // 保存修改数据
-func (svc TableService) SaveEdit(req *vo.EditGenTableVO, c *gin.Context) error {
+func (svc TableService) SaveEdit(req *vo.EditGenTableVO) error {
 	table := new(model.GenTable)
 	table, err := table.FindById(req.TableId)
 	if err != nil {
 		return errors.New("数据不存在")
 	}
-	lv_reflect.CopyProperties(req, table)
+	_ = lv_reflect.CopyProperties(req, table)
 	table.UpdateTime = time.Now()
-	var userService UserService
-	user := userService.GetProfile(c)
-	if user != nil {
-	}
 	err = lv_db.GetMasterGorm().Transaction(func(tx *gorm.DB) error {
 		var err error
 		err = table.Updates()
@@ -150,7 +145,7 @@ func (svc TableService) SelectGenTableById(tableId int64) (*model.GenTable, erro
 
 // SelectGenTableByName 查询表名称业务信息
 func (svc TableService) SelectGenTableByName(tbName string) (*model.GenTable, error) {
-	var table = model.GenTable{TbName: tbName}
+	var table = model.GenTable{Table_Name: tbName}
 	return table.FindOne()
 }
 
@@ -161,7 +156,7 @@ func (svc TableService) ImportGenTable(tableList *[]model.GenTable, operName str
 		err = lv_db.GetMasterGorm().Transaction(func(tx *gorm.DB) error {
 			var err error
 			for _, table := range *tableList {
-				tableName := table.TbName
+				tableName := table.Table_Name
 				svc.InitTable(&table, operName)
 				err = tx.Table(table.TableName()).Save(&table).Error
 				if err != nil {
@@ -199,8 +194,8 @@ func (svc TableService) ImportGenTable(tableList *[]model.GenTable, operName str
 
 // InitTable 初始化表信息
 func (svc TableService) InitTable(table *model.GenTable, createBy string) {
-	table.ClassName = svc.ConvertClassName(table.TbName)
-	table.BusinessName = svc.GetBusinessName(table.TbName)
+	table.ClassName = svc.ConvertClassName(table.Table_Name)
+	table.BusinessName = svc.GetBusinessName(table.Table_Name)
 	table.FunctionName = table.BusinessName
 	table.PackageName = lv_global.Config().GetVipperCfg().GetString("gen.packageName")
 	table.ModuleName = lv_global.Config().GetVipperCfg().GetString("gen.moduleName")

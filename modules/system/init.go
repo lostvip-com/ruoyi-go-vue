@@ -20,6 +20,7 @@ func init() {
 		err := lv_db.GetMasterGorm().AutoMigrate(
 			//cm_model.SysDept{}, model.SysPost{}, model.SysUser{}, model.SysDictType{}, cm_model.SysDictData{},
 			//model.SysMenu{}, model.SysRole{}, model.SysUserOnline{}, model.SysOperLog{}
+			model.GenTable{},
 			model.GenTableColumn{},
 		)
 		lv_err.HasErrAndPanic(err)

@@ -143,7 +143,7 @@ func (e *CodeGenService) replaceTplVar(tab *vo.GenTableVO, tpl *TplInfo) {
 	tpl.pathDist = strings.ReplaceAll(tpl.pathDist, "{{.ClassName}}", tab.ClassName)
 	tpl.pathDist = strings.ReplaceAll(tpl.pathDist, "{{.FuncName}}", tab.FunctionName)
 	tpl.pathDist = strings.ReplaceAll(tpl.pathDist, "{{.FunctionName}}", tab.FunctionName)
-	tpl.pathDist = strings.ReplaceAll(tpl.pathDist, "{{.TbName}}", tab.TbName)
+	tpl.pathDist = strings.ReplaceAll(tpl.pathDist, "{{.Table_Name}}", tab.Table_Name)
 	tpl.pathDist = strings.ReplaceAll(tpl.pathDist, "{{.Tmp}}", "tmp")
 	_ = lv_file.PathCreateIfNotExist(tpl.pathDist)
 	//替换文件名中的占位符
@@ -154,5 +154,5 @@ func (e *CodeGenService) replaceTplVar(tab *vo.GenTableVO, tpl *TplInfo) {
 	tpl.nameDist = strings.ReplaceAll(tpl.nameDist, "{{.ClassName}}", tab.ClassName)
 	tpl.nameDist = strings.ReplaceAll(tpl.nameDist, "{{.FuncName}}", tab.FunctionName)
 	tpl.nameDist = strings.ReplaceAll(tpl.nameDist, "{{.FunctionName}}", tab.FunctionName)
-	tpl.nameDist = strings.ReplaceAll(tpl.nameDist, "{{.TbName}}", tab.TbName)
+	tpl.nameDist = strings.ReplaceAll(tpl.nameDist, "{{.Table_Name}}", tab.Table_Name)
 }

@@ -15,8 +15,8 @@ type GenTableColumn struct {
 	ColumnComment string `gorm:"type:string;size:32;comment:列描述;" json:"columnComment"`
 	ColumnType    string `gorm:"type:string;size:32;comment:列类型;" json:"columnType"`
 	ColumnSize    int    `gorm:"type:int;comment:列类长度;" json:"columnSize"`
-	GoType        string `gorm:"type:string;size:32;comment:Go类型;" json:"goType"`
-	GoField       string `gorm:"type:string;size:32;comment:Go字段名;" json:"goField"`
+	GoType        string `gorm:"type:string;size:32;comment:Go类型;为兼容若依前段json映射为javaType"   json:"javaType"`
+	GoField       string `gorm:"type:string;size:32;comment:Go字段名;为兼容若依前段json映射为javaField" json:"javaField"`
 	HtmlField     string `gorm:"type:string;size:32;comment:html字段名;" json:"htmlField"`
 	IsPk          string `gorm:"type:char,size:1;comment:是否主键（1是）;" json:"isPk"`
 	IsIncrement   string `gorm:"type:char;size:1;comment:是否自增（1是）;" json:"isIncrement"`
@@ -28,6 +28,7 @@ type GenTableColumn struct {
 	QueryType     string `gorm:"type:string;size:32;comment:查询方式（等于、不等于、大于、小于、范围）;" json:"queryType"`
 	HtmlType      string `gorm:"type:string;size:32;comment:显示类型（文本框、文本域、下拉框、复选框、单选框、日期控件）;" json:"htmlType"`
 	DictType      string `gorm:"type:string;size:32;comment:字典类型;" json:"dictType"`
+	Remark        string `gorm:"type:string;size:32;comment:备注信息;" json:"remark"`
 	models.BaseModel
 }
 

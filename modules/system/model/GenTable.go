@@ -9,21 +9,23 @@ import (
 )
 
 type GenTable struct {
-	TableId        string `json:"tableId" gorm:"table_id"`
-	Table_Name     string `json:"tableName,omitempty" gorm:"table_name,omitempty"`
-	TableComment   string `json:"tableComment" gorm:"table_comment"`
-	SubTableName   string `json:"subTableName" gorm:"sub_table_name"`
-	SubTableFkName string `json:"subTableFkName" gorm:"sub_table_fk_name"`
-	ClassName      string `json:"className" gorm:"class_name"`
-	TplCategory    string `json:"tplCategory" gorm:"tpl_category"`
-	PackageName    string `json:"packageName" gorm:"package_name"`
-	ModuleName     string `json:"moduleName" gorm:"module_name"`
-	BusinessName   string `json:"businessName" gorm:"business_name"`
-	FunctionName   string `json:"functionName" gorm:"function_name"`
-	FunctionAuthor string `json:"functionAuthor" gorm:"function_author"`
-	GenType        string `json:"genType" gorm:"gen_type"`
-	GenPath        string `json:"genPath" gorm:"gen_path"`
-	Options        string `json:"options" gorm:"options"`
+	TableId      int64 `json:"tableId" gorm:"size:20;primary_key;"`
+	ParentMenuId int64 `json:"parentMenuId" gorm:"size:20;comment:上级菜单ID;"`
+
+	Table_Name     string `json:"tableName,omitempty" gorm:"size:32"`
+	TableComment   string `json:"tableComment" gorm:"size:32"`
+	SubTableName   string `json:"subTableName" gorm:"size:32"`
+	SubTableFkName string `json:"subTableFkName" gorm:"size:32"`
+	ClassName      string `json:"className" gorm:"size:32"`
+	TplCategory    string `json:"tplCategory" gorm:"size:32"`
+	PackageName    string `json:"packageName" gorm:"size:32"`
+	ModuleName     string `json:"moduleName" gorm:"size:32"`
+	BusinessName   string `json:"businessName" gorm:"size:32"`
+	FunctionName   string `json:"functionName" gorm:"size:32"`
+	FunctionAuthor string `json:"functionAuthor" gorm:"size:32"`
+	GenType        string `json:"genType" gorm:"size:32"`
+	GenPath        string `json:"genPath" gorm:"size:64"`
+	Options        string `json:"options" gorm:"size:32"`
 	models.BaseModel
 	HasEditTime string `gorm:"-"` //1需要导入time.Time 0 不需要
 }

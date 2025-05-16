@@ -43,7 +43,7 @@ func (w *GenCodeApi) ExecSqlFile(c *gin.Context) {
 
 	//err = lv_db.ExecSqlFile(sqlFile)
 	// Loads queries from file
-	batis, err := lv_batis.LoadFromFile(lv_global.Config().GetTmpPath() + "/" + po.TbName + "_menu.sql")
+	batis, err := lv_batis.LoadFromFile(lv_global.Config().GetTmpPath() + "/" + po.Table_Name + "_menu.sql")
 	// Run queries
 	tb := lv_db.GetMasterGorm()
 	//cfg := global.GetConfigInstance()
@@ -130,13 +130,14 @@ func (w *GenCodeApi) RemoveByTableId(c *gin.Context) {
 
 // EditSave 修改数据保存
 func (w *GenCodeApi) EditSave(c *gin.Context) {
-	var req vo.EditGenTableVO
+	var req = new(vo.EditGenTableVO)
 	if err := c.ShouldBind(&req); err != nil {
 		util2.Fail(c, err.Error())
 		return
 	}
+	w.FillInUpdate(c, &req.BaseModel)
 	tableService := service.TableService{}
-	err := tableService.SaveEdit(&req, c)
+	err := tableService.SaveEdit(req)
 	if err != nil {
 		util2.Fail(c, err.Error())
 		return
