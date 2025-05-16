@@ -23,14 +23,14 @@ type GenApi struct {
 
 // 表单构建
 func (w *GenApi) Build(c *gin.Context) {
-	util2.BuildTpl(c, "tool/build").WriteTpl()
+	util.BuildTpl(c, "tool/build").WriteTpl()
 }
 
 func (w *GenApi) ExecSqlFile(c *gin.Context) {
 	tableId := lv_conv.Int64(c.Query("tableId"))
 
 	if tableId <= 0 {
-		util2.ErrorResp(c).SetBtype(lv_dto.Buniss_Add).SetMsg("参数错误").Log("执行SQL文件错误", gin.H{"tableId": tableId})
+		util.ErrorResp(c).SetBtype(lv_dto.Buniss_Add).SetMsg("参数错误").Log("执行SQL文件错误", gin.H{"tableId": tableId})
 	}
 	genTable := model.GenTable{}
 	po, err := genTable.FindById(tableId)
@@ -59,7 +59,7 @@ func (w *GenApi) ExecSqlFile(c *gin.Context) {
 	if err != nil {
 		panic(err)
 	}
-	util2.Success(c, nil)
+	util.Success(c, nil)
 }
 
 // swagger文档
@@ -69,7 +69,7 @@ func (w *GenApi) Swagger(c *gin.Context) {
 		//重新生成文档
 		curDir, err := os.Getwd()
 		if err != nil {
-			util2.BuildTpl(c, lv_dto.ERROR_PAGE).WriteTpl(gin.H{
+			util.BuildTpl(c, lv_dto.ERROR_PAGE).WriteTpl(gin.H{
 				"desc": "参数错误",
 			})
 			c.Abort()
@@ -78,7 +78,7 @@ func (w *GenApi) Swagger(c *gin.Context) {
 		genPath := curDir + "/static/swagger"
 		err = w.generateSwaggerFiles(genPath)
 		if err != nil {
-			util2.BuildTpl(c, lv_dto.ERROR_PAGE).WriteTpl(gin.H{
+			util.BuildTpl(c, lv_dto.ERROR_PAGE).WriteTpl(gin.H{
 				"desc": "参数错误",
 			})
 			c.Abort()
@@ -104,7 +104,7 @@ func (w *GenApi) GenList(c *gin.Context) {
 	tableService := service.TableService{}
 
 	if err := c.ShouldBind(&req); err != nil {
-		util2.ErrorResp(c).SetMsg(err.Error()).Log("生成代码", req).WriteJsonExit()
+		util.ErrorResp(c).SetMsg(err.Error()).Log("生成代码", req).WriteJsonExit()
 		return
 	}
 	rows := make([]model.GenTable, 0)
@@ -113,7 +113,7 @@ func (w *GenApi) GenList(c *gin.Context) {
 	if err == nil && len(result) > 0 {
 		rows = result
 	}
-	util2.SuccessPage(c, rows, total)
+	util.SuccessPage(c, rows, total)
 }
 
 // 删除数据
@@ -121,16 +121,16 @@ func (w *GenApi) Remove(c *gin.Context) {
 	var req *lv_dto.IdsReq
 
 	if err := c.ShouldBind(&req); err != nil {
-		util2.ErrorResp(c).SetBtype(lv_dto.Buniss_Del).Log("生成代码", req).WriteJsonExit()
+		util.ErrorResp(c).SetBtype(lv_dto.Buniss_Del).Log("生成代码", req).WriteJsonExit()
 		return
 	}
 	tableService := service.TableService{}
 	err := tableService.DeleteByIds(req.Ids)
 
 	if err == nil {
-		util2.SucessResp(c).SetBtype(lv_dto.Buniss_Del).Log("生成代码", req).WriteJsonExit()
+		util.SucessResp(c).SetBtype(lv_dto.Buniss_Del).Log("生成代码", req).WriteJsonExit()
 	} else {
-		util2.ErrorResp(c).SetBtype(lv_dto.Buniss_Del).Log("生成代码", req).WriteJsonExit()
+		util.ErrorResp(c).SetBtype(lv_dto.Buniss_Del).Log("生成代码", req).WriteJsonExit()
 	}
 }
 
@@ -139,14 +139,14 @@ func (w *GenApi) EditSave(c *gin.Context) {
 	var req vo.GenTableEditReq
 
 	if err := c.ShouldBind(&req); err != nil {
-		util2.ErrorResp(c).SetMsg(err.Error()).SetBtype(lv_dto.Buniss_Edit).Log("生成代码", gin.H{"tableName": req.TableName}).WriteJsonExit()
+		util.ErrorResp(c).SetMsg(err.Error()).SetBtype(lv_dto.Buniss_Edit).Log("生成代码", gin.H{"tableName": req.TableName}).WriteJsonExit()
 		return
 	}
 	tableService := service.TableService{}
 	err := tableService.SaveEdit(&req, c)
 	if err != nil {
-		util2.ErrorResp(c).SetMsg(err.Error()).SetBtype(lv_dto.Buniss_Edit).Log("生成代码", gin.H{"tableName": req.TableName}).WriteJsonExit()
+		util.ErrorResp(c).SetMsg(err.Error()).SetBtype(lv_dto.Buniss_Edit).Log("生成代码", gin.H{"tableName": req.TableName}).WriteJsonExit()
 		return
 	}
-	util2.SucessResp(c).SetBtype(lv_dto.Buniss_Edit).Log("生成代码", gin.H{"tableName": req.TableName}).WriteJsonExit()
+	util.SucessResp(c).SetBtype(lv_dto.Buniss_Edit).Log("生成代码", gin.H{"tableName": req.TableName}).WriteJsonExit()
 }
