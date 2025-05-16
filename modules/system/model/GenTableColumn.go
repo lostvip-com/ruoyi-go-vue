@@ -11,13 +11,13 @@ import (
 type GenTableColumn struct {
 	ColumnId      int64  `gorm:"size:20;primary_key;auto_increment;编号;" json:"columnId"`
 	TableId       int64  `gorm:"size:20;comment:归属表编号;" json:"tableId"`
-	ColumnName    string `gorm:"type:string;comment:列名称;" json:"columnName"`
-	ColumnComment string `gorm:"type:string;comment:列描述;" json:"columnComment"`
-	ColumnType    string `gorm:"type:string;comment:列类型;" json:"columnType"`
+	ColumnName    string `gorm:"type:string;size:32;comment:列名称;" json:"columnName"`
+	ColumnComment string `gorm:"type:string;size:32;comment:列描述;" json:"columnComment"`
+	ColumnType    string `gorm:"type:string;size:32;comment:列类型;" json:"columnType"`
 	ColumnSize    int    `gorm:"type:int;comment:列类长度;" json:"columnSize"`
-	GoType        string `gorm:"type:string;comment:Go类型;" json:"goType"`
-	GoField       string `gorm:"type:string;comment:Go字段名;" json:"goField"`
-	HtmlField     string `gorm:"type:string;comment:html字段名;" json:"htmlField"`
+	GoType        string `gorm:"type:string;size:32;comment:Go类型;" json:"goType"`
+	GoField       string `gorm:"type:string;size:32;comment:Go字段名;" json:"goField"`
+	HtmlField     string `gorm:"type:string;size:32;comment:html字段名;" json:"htmlField"`
 	IsPk          string `gorm:"type:char,size:1;comment:是否主键（1是）;" json:"isPk"`
 	IsIncrement   string `gorm:"type:char;size:1;comment:是否自增（1是）;" json:"isIncrement"`
 	IsRequired    string `gorm:"type:char;size:1;comment:是否必填（1是）;" json:"isRequired"`
@@ -25,9 +25,9 @@ type GenTableColumn struct {
 	IsEdit        string `gorm:"type:char;size:1;comment:是否编辑字段（1是）;" json:"isEdit"`
 	IsList        string `gorm:"type:char;size:1;comment:是否列表字段（1是）;" json:"isList"`
 	IsQuery       string `gorm:"type:char;size:1;comment:是否查询字段（1是）;" json:"isQuery"`
-	QueryType     string `gorm:"type:string;comment:查询方式（等于、不等于、大于、小于、范围）;" json:"queryType"`
-	HtmlType      string `gorm:"type:string;comment:显示类型（文本框、文本域、下拉框、复选框、单选框、日期控件）;" json:"htmlType"`
-	DictType      string `gorm:"type:string;comment:字典类型;" json:"dictType"`
+	QueryType     string `gorm:"type:string;size:32;comment:查询方式（等于、不等于、大于、小于、范围）;" json:"queryType"`
+	HtmlType      string `gorm:"type:string;size:32;comment:显示类型（文本框、文本域、下拉框、复选框、单选框、日期控件）;" json:"htmlType"`
+	DictType      string `gorm:"type:string;size:32;comment:字典类型;" json:"dictType"`
 	models.BaseModel
 }
 

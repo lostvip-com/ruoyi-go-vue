@@ -10,17 +10,17 @@ import (
 
 type GenTable struct {
 	TableId        int64  `gorm:"size:20;primary_key;auto_increment;编号;" json:"tableId"`
-	TbName         string `gorm:"type:string;comment:表名称;column:table_name" json:"tableName"`
-	TableComment   string `gorm:"type:string;comment:表描述;" json:"tableComment"`
-	ClassName      string `gorm:"type:string;comment:实体类名称;" json:"className"`
-	TplCategory    string `gorm:"type:string;comment:使用的模板（crud单表操作 tree树表操作）;" json:"tplCategory"`
-	PackageName    string `gorm:"type:string;comment:生成包路径;" json:"packageName"`
-	ModuleName     string `gorm:"type:string;comment:生成模块名;" json:"moduleName"`
-	BusinessName   string `gorm:"type:string;comment:生成业务名;" json:"businessName"`
-	FunctionName   string `gorm:"type:string;comment:生成功能名;" json:"functionName"`
-	FunctionAuthor string `gorm:"type:string;comment:生成功能作者;" json:"functionAuthor"`
-	Options        string `gorm:"type:string;comment:其它生成选项;" json:"options"`
-	Remark         string `gorm:"type:string;comment:备注;" json:"remark"`
+	TbName         string `gorm:"type:string;size:32;comment:表名称;column:table_name" json:"tableName"`
+	TableComment   string `gorm:"type:string;size:32;comment:表描述;" json:"tableComment"`
+	ClassName      string `gorm:"type:string;size:32;comment:实体类名称;" json:"className"`
+	TplCategory    string `gorm:"type:string;size:32;comment:使用的模板（crud单表操作 tree树表操作）;" json:"tplCategory"`
+	PackageName    string `gorm:"type:string;size:32;comment:生成包路径;" json:"packageName"`
+	ModuleName     string `gorm:"type:string;size:32;comment:生成模块名;" json:"moduleName"`
+	BusinessName   string `gorm:"type:string;size:32;comment:生成业务名;" json:"businessName"`
+	FunctionName   string `gorm:"type:string;size:32;comment:生成功能名;" json:"functionName"`
+	FunctionAuthor string `gorm:"type:string;size:32;comment:生成功能作者;" json:"functionAuthor"`
+	Options        string `gorm:"type:string;size:32;comment:其它生成选项;" json:"options"`
+	Remark         string `gorm:"type:string;size:32;comment:备注;" json:"remark"`
 	models.BaseModel
 	HasEditTime string `gorm:"-"` //1需要导入time.Time 0 不需要
 }

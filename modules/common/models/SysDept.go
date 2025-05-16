@@ -17,7 +17,7 @@ type SysDept struct {
 	UpdateBy  string `gorm:"type:varchar(64);comment:更新者;" json:"updateBy"`
 	CreateBy  string `gorm:"type:varchar(32);comment:创建人;column:create_by;"  json:"createBy"`
 	TenantId  int64  `gorm:"size:20;comment:租户id;" json:"tenantId" form:"tenantId"`
-	DelFlag   string `gorm:"type:string;size:1;default:0;comment:删除标记;column:del_flag;" json:"delFlag"`
+	DelFlag   string `gorm:"type:string;size:32;size:1;default:0;comment:删除标记;column:del_flag;" json:"delFlag"`
 	BaseModel
 	ParentName string    `gorm:"-" json:"parentName"`
 	Children   []SysDept `gorm:"-" json:"children"`

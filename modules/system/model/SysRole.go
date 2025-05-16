@@ -20,7 +20,7 @@ type SysRole struct {
 	UpdateBy          string    `json:"updateBy" gorm:"update_by"`
 	UpdateTime        time.Time `json:"updateTime" gorm:"column:update_time;type:datetime;autoCreateTime"`
 	Remark            string    `json:"remark" gorm:"remark"`
-	DelFlag           string    `gorm:"type:string;size:1;default:0;comment:删除标记;column:del_flag;" json:"delFlag"`
+	DelFlag           string    `gorm:"type:string;size:32;size:1;default:0;comment:删除标记;column:del_flag;" json:"delFlag"`
 	models.BaseModel
 	//临时属性
 	MenuIds []int64 `gorm:"-" json:"menuIds"`
