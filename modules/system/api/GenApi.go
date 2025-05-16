@@ -154,6 +154,37 @@ func (w *GenApi) EditSave(c *gin.Context) {
 	}
 	util.SucessResp(c).SetBtype(lv_dto.Buniss_Edit).Log("生成代码", gin.H{"tableName": req.TableName}).WriteJsonExit()
 }
+
+func canGenIt(overwrite bool, file string) bool {
+	if overwrite { //允许覆盖
+		lv_log.Warn("--------->您配置了 overwrite 开关的值为true，旧文件会被覆盖！！！！ ")
+		return true
+	} else {                      // 不允许覆盖
+		if lv_file.Exists(file) { //文件已经存在，不允许重新生成
+			lv_log.Warn("=======> 文件已经存在，本次将不会生成新文件！！！！！！！！！！！！ ")
+			return false
+		} else { //文件不存在，允许重新生成
+			return true
+		}
+	}
+}
+func (w *GenApi) DataList(c *gin.Context) {
+	var req *vo.GenTablePageReq
+	err := c.ShouldBind(&req)
+	lv_err.HasErrAndPanic(err)
+	tableService := service.TableService{}
+	rows := make([]model.GenTable, 0)
+	result, total, err := tableService.SelectDbTableList(req)
+	if err == nil && len(result) > 0 {
+		rows = result
+	}
+	c.JSON(http.StatusOK, lv_dto.TableDataInfo{
+		Code:  200,
+		Msg:   "操作成功",
+		Total: total,
+		Rows:  rows,
+	})
+}
 func (w *GenApi) Preview(c *gin.Context) {
 	tableId := lv_conv.Int64(c.Query("tableId"))
 	if tableId <= 0 {
@@ -187,53 +218,3 @@ func (w *GenApi) Preview(c *gin.Context) {
 		Data: retMap,
 	})
 }
-func (w *GenApi) GenCode(c *gin.Context) {
-	overwrite := myconf.GetConfigInstance().GetBool("gen.overwrite")
-	tableId := lv_conv.Int64(c.Query("tableId"))
-	tableService := service.TableService{}
-	entity, err := tableService.FindById(tableId)
-	if err != nil || entity == nil {
-		c.JSON(http.StatusOK, lv_dto.CommonRes{
-			Code:  500,
-			Btype: lv_dto.Buniss_Other,
-			Msg:   "数据不存在",
-		})
-	}
-	tableService.SetPkColumn(entity, entity.Columns)
-	var codeGenService service.CodeGenService
-	codeGenService.GenCode(entity, overwrite)
-	//(genService)
-	util2.Success(c, gin.H{"tableId": tableId})
-}
-func canGenIt(overwrite bool, file string) bool {
-	if overwrite { //允许覆盖
-		lv_log.Warn("--------->您配置了 overwrite 开关的值为true，旧文件会被覆盖！！！！ ")
-		return true
-	} else {                      // 不允许覆盖
-		if lv_file.Exists(file) { //文件已经存在，不允许重新生成
-			lv_log.Warn("=======> 文件已经存在，本次将不会生成新文件！！！！！！！！！！！！ ")
-			return false
-		} else { //文件不存在，允许重新生成
-			return true
-		}
-	}
-}
-func (w *GenApi) DataList(c *gin.Context) {
-	var req *vo.GenTablePageReq
-	err := c.ShouldBind(&req)
-	lv_err.HasErrAndPanic(err)
-	tableService := service.TableService{}
-	rows := make([]model.GenTable, 0)
-	result, total, err := tableService.SelectDbTableList(req)
-	if err == nil && len(result) > 0 {
-		rows = result
-	}
-	c.JSON(http.StatusOK, lv_dto.TableDataInfo{
-		Code:  200,
-		Msg:   "操作成功",
-		Total: total,
-		Rows:  rows,
-	})
-}
-
-// 查询数据库列表
