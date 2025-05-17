@@ -25,7 +25,7 @@ type GenTable struct {
 	FunctionAuthor string `json:"functionAuthor" gorm:"size:32"`
 	GenType        string `json:"genType" gorm:"size:32"`
 	GenPath        string `json:"genPath" gorm:"size:64"`
-	Options        string `json:"options" gorm:"size:32"`
+	Options        string `json:"options" gorm:"size:128"`
 	models.BaseModel
 	HasEditTime string `gorm:"-"` //1需要导入time.Time 0 不需要
 }

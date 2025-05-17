@@ -17,9 +17,8 @@ type ApiResp struct {
 // Deprecated: 不再使用
 func SucessResp(c *gin.Context) *ApiResp {
 	msg := lv_dto.CommonRes{
-		Code:  200,
-		Btype: lv_dto.Buniss_Other,
-		Msg:   "操作成功",
+		Code: 200,
+		Msg:  "操作成功",
 	}
 	var a = ApiResp{
 		r: &msg,
@@ -31,9 +30,8 @@ func SucessResp(c *gin.Context) *ApiResp {
 // ErrorResp 返回一个错误的消息体
 func ErrorResp(c *gin.Context) *ApiResp {
 	msg := lv_dto.CommonRes{
-		Code:  500,
-		Btype: lv_dto.Buniss_Other,
-		Msg:   "操作失败",
+		Code: 500,
+		Msg:  "操作失败",
 	}
 	var a = ApiResp{
 		r: &msg,
@@ -45,9 +43,8 @@ func ErrorResp(c *gin.Context) *ApiResp {
 // 返回一个拒绝访问的消息体
 func ForbiddenResp(c *gin.Context) *ApiResp {
 	msg := lv_dto.CommonRes{
-		Code:  403,
-		Btype: lv_dto.Buniss_Other,
-		Msg:   "无操作权限",
+		Code: 403,
+		Msg:  "无操作权限",
 	}
 	var a = ApiResp{
 		r: &msg,
@@ -71,12 +68,6 @@ func (resp *ApiResp) SetCode(code int) *ApiResp {
 // 设置消息体的数据
 func (resp *ApiResp) SetData(data interface{}) *ApiResp {
 	resp.r.Data = data
-	return resp
-}
-
-// 设置消息体的业务类型
-func (resp *ApiResp) SetBtype(btype lv_dto.BunissType) *ApiResp {
-	resp.r.Btype = btype
 	return resp
 }
 

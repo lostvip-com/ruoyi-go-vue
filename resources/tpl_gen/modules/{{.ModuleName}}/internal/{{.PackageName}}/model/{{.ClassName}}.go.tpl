@@ -32,7 +32,7 @@ type {{.ClassName}} struct {
 }
 
 func (e *{{.ClassName}}) TableName() string {
-	return "{{.TbName}}"
+	return "{{.Table_Name}}"
 }
 
 func (e *{{.ClassName}}) Save() error {
@@ -74,7 +74,7 @@ func (e *{{.ClassName}}) Delete() error {
 }
 
 func (e *{{.ClassName}}) Count() (int64, error) {
-	sql := " select count(*) from {{.TbName}} where del_flag = 0 "
+	sql := " select count(*) from {{.Table_Name}} where del_flag = 0 "
 
 	{{range $index, $column := .Columns -}}
     {{if eq $column.IsQuery "0"}}

@@ -5,7 +5,6 @@ import (
 	"common/util"
 	"github.com/gin-gonic/gin"
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
-	"github.com/lostvip-com/lv_framework/web/lv_dto"
 	"github.com/spf13/cast"
 	"system/dao"
 	"system/model"
@@ -51,24 +50,24 @@ func (w *DictTypeApi) AddSave(c *gin.Context) {
 	var req common_vo.AddDictTypeReq
 
 	if err := c.ShouldBind(&req); err != nil {
-		util.ErrorResp(c).SetBtype(lv_dto.Buniss_Add).SetMsg(err.Error()).Log("字典管理", req).WriteJsonExit()
+		util.Fail(c, err.Error())
 		return
 	}
 	var dictTypeService service.DictTypeService
 	exist, err := dictTypeService.CheckDictTypeUniqueAll(req.DictType)
 	lv_err.HasErrAndPanic(err)
 	if exist {
-		util.ErrorResp(c).SetBtype(lv_dto.Buniss_Add).SetMsg("字典类型已存在").Log("字典管理", req).WriteJsonExit()
+		util.Fail(c, err.Error())
 		return
 	}
 
 	rid, err := dictTypeService.AddSave(&req, c)
 
 	if err != nil || rid <= 0 {
-		util.ErrorResp(c).SetBtype(lv_dto.Buniss_Add).Log("字典管理", req).WriteJsonExit()
+		util.Fail(c, err.Error())
 		return
 	}
-	util.SucessResp(c).SetData(rid).Log("字典管理", req).WriteJsonExit()
+	util.Success(c, nil)
 }
 
 // EditSave 修改页面保存
@@ -76,22 +75,22 @@ func (w *DictTypeApi) EditSave(c *gin.Context) {
 	var req *common_vo.EditDictTypeReq
 
 	if err := c.ShouldBind(&req); err != nil {
-		util.ErrorResp(c).SetBtype(lv_dto.Buniss_Edit).SetMsg(err.Error()).Log("字典类型管理", req).WriteJsonExit()
+		util.Fail(c, err.Error())
 		return
 	}
 	var dictTypeService service.DictTypeService
 	if req.DictId == 0 && dictTypeService.IsDictTypeExist(req.DictType) {
-		util.ErrorResp(c).SetBtype(lv_dto.Buniss_Edit).SetMsg("字典类型已存在").Log("字典类型管理", req).WriteJsonExit()
+		util.Fail(c, "dictType already exist!")
 		return
 	}
 
 	rs, err := dictTypeService.EditSave(req, c)
 
 	if err != nil || rs <= 0 {
-		util.ErrorResp(c).SetBtype(lv_dto.Buniss_Edit).Log("字典类型管理", req).WriteJsonExit()
+		util.Fail(c, err.Error())
 		return
 	}
-	util.SucessResp(c).Log("字典类型管理", req).WriteJsonExit()
+	util.Success(c, nil)
 }
 
 // Remove 删除数据

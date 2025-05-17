@@ -33,9 +33,7 @@ func (w *IndexApi) Index(c *gin.Context) {
 func (w *IndexApi) Download(c *gin.Context) {
 	fileName := c.Query("fileName")
 	if fileName == "" {
-		util.BuildTpl(c, lv_dto.ERROR_PAGE).WriteTpl(gin.H{
-			"desc": "参数错误",
-		})
+		util.Fail(c, "参数错误")
 		return
 	}
 	curDir, err := os.Getwd()
@@ -43,9 +41,7 @@ func (w *IndexApi) Download(c *gin.Context) {
 	file, err := os.Open(filepath)
 	defer file.Close()
 	if err != nil {
-		util.BuildTpl(c, lv_dto.ERROR_PAGE).WriteTpl(gin.H{
-			"desc": "参数错误",
-		})
+		util.Fail(c, "参数错误")
 		return
 	}
 	b, _ := io.ReadAll(file)

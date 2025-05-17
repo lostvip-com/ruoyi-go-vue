@@ -6,7 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/lostvip-com/lv_framework/lv_db"
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
-	"github.com/lostvip-com/lv_framework/web/lv_dto"
 	"github.com/spf13/cast"
 	"net/http"
 	"strings"
@@ -140,7 +139,7 @@ func (w *UserApi) ResetPwdSave(c *gin.Context) {
 func (w *UserApi) EditSave(c *gin.Context) {
 	var req *common_vo.EditUserReq
 	if err := c.ShouldBind(&req); err != nil {
-		util.ErrorResp(c).SetBtype(lv_dto.Buniss_Edit).SetMsg(err.Error()).WriteJsonExit()
+		util.Fail(c, err.Error())
 		return
 	}
 	var userService = service2.GetUserServiceInstance()

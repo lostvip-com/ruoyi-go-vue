@@ -21,7 +21,7 @@ func init() {
 	tool.PUT("/gen", "tool:gen:edit", codeGenApi.EditSave)
 	//column
 	tool.GET("/gen/column/list", "tool:gen:list", codeGenApi.ColumnList)
-	tool.GET("/gen/preview", "", codeGenApi.Preview)
+	tool.GET("/gen/preview/:tableId", "", codeGenApi.Preview)
 	tool.POST("/gen/genCode", "", codeGenApi.GenCode)
 	//执行sql文件
 	tool.POST("/gen/execSqlFile", "", codeGenApi.ExecSqlFile)

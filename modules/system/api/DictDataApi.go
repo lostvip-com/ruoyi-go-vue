@@ -5,7 +5,6 @@ import (
 	"common/models"
 	"common/util"
 	"github.com/gin-gonic/gin"
-	"github.com/lostvip-com/lv_framework/web/lv_dto"
 	"github.com/spf13/cast"
 	"system/dao"
 	"system/service"
@@ -49,17 +48,17 @@ func (w *DictDataApi) AddSave(c *gin.Context) {
 	var req *common_vo.AddDictDataReq
 
 	if err := c.ShouldBind(&req); err != nil {
-		util.ErrorResp(c).SetBtype(lv_dto.Buniss_Add).SetMsg(err.Error()).Log("字典数据管理", req).WriteJsonExit()
+		util.Fail(c, err.Error())
 		return
 	}
 	var dictService service.DictDataService
 	rid, err := dictService.AddSave(req, c)
 
 	if err != nil || rid <= 0 {
-		util.ErrorResp(c).SetBtype(lv_dto.Buniss_Add).Log("字典数据管理", req).WriteJsonExit()
+		util.Fail(c, err.Error())
 		return
 	}
-	util.SucessResp(c).SetData(rid).SetBtype(lv_dto.Buniss_Add).Log("字典数据管理", req).WriteJsonExit()
+	util.Success(c, nil)
 }
 
 // 修改页面保存

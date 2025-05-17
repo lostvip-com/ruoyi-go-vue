@@ -2,7 +2,6 @@ package service
 
 import (
 	"bytes"
-	"encoding/json"
 	"errors"
 	"github.com/lostvip-com/lv_framework/lv_db"
 	"github.com/lostvip-com/lv_framework/lv_global"
@@ -24,35 +23,30 @@ type TableService struct {
 }
 
 // FindById 根据主键查询数据
-func (svc TableService) FindById(id int64) (*vo.GenTableVO, error) {
+func (svc TableService) FindById(tableId int64) (*vo.GenTableVO, error) {
 	var dao dao.GenTableDao
-	vo, err := dao.ListColumn(id)
+	vo, err := dao.ListColumn(tableId)
 	if err != nil {
 		return nil, err
 	}
-	if vo.Options != "" {
-		p := make(map[string]interface{}, 2)
-		if e := json.Unmarshal([]byte(vo.Options), &p); e == nil {
-			treeCode := p["treeCode"].(string)
-			treeParentCode := p["treeParentCode"].(string)
-			treeName := p["treeName"].(string)
-			vo.TreeCode = treeCode
-			vo.TreeParentCode = treeParentCode
-			vo.TreeName = treeName
-		}
-	}
-	//
-
+	//if vo.Options != "" {
+	//	p := make(map[string]interface{}, 2)
+	//	if e := json.Unmarshal([]byte(vo.Options), &p); e == nil {
+	//		treeCode := p["treeCode"].(string)
+	//		treeParentCode := p["treeParentCode"].(string)
+	//		treeName := p["treeName"].(string)
+	//		vo.TreeCode = treeCode
+	//		vo.TreeParentCode = treeParentCode
+	//		vo.TreeName = treeName
+	//	}
+	//}
 	return vo, err
 }
 
 // DeleteById 根据主键删除数据
-func (svc TableService) DeleteById(id int64) bool {
+func (svc TableService) DeleteById(id int64) error {
 	err := (&model.GenTable{TableId: id}).Delete()
-	if err != nil {
-		return true
-	}
-	return false
+	return err
 }
 
 // 批量删除数据记录

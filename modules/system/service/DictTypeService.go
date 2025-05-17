@@ -5,7 +5,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/lostvip-com/lv_framework/utils/lv_conv"
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
-	"github.com/lostvip-com/lv_framework/web/lv_dto"
 	"github.com/spf13/cast"
 	dao2 "system/dao"
 	"system/model"
@@ -131,23 +130,6 @@ func (svc *DictTypeService) IsDictTypeExist(configKey string) bool {
 	count, err := entity.Count()
 	lv_err.HasErrAndPanic(err)
 	return count > 0
-}
-
-// 查询字典类型树
-func (svc *DictTypeService) FindDictTree(params *common_vo.DictTypePageReq) *[]lv_dto.Ztree {
-	var result []lv_dto.Ztree
-	var dao = dao2.GetSysDictTypeDaoInstance()
-	dictList, err := dao.FindAll(params)
-	if err == nil && dictList != nil {
-		for _, item := range dictList {
-			var tmp lv_dto.Ztree
-			tmp.Id = item.DictId
-			tmp.Name = svc.transDictName(item)
-			tmp.Title = item.DictType
-			result = append(result, tmp)
-		}
-	}
-	return &result
 }
 
 func (svc *DictTypeService) transDictName(entity model.SysDictType) string {

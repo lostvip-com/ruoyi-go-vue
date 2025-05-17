@@ -3,7 +3,6 @@ package api
 import (
 	"common/util"
 	"github.com/gin-gonic/gin"
-	"github.com/lostvip-com/lv_framework/web/lv_dto"
 	"github.com/spf13/cast"
 	"system/dao"
 	"system/model"
@@ -59,7 +58,7 @@ func (w *PostApi) ListAjax(c *gin.Context) {
 func (w *PostApi) AddSave(c *gin.Context) {
 	var req *vo.AddPostReq
 	if err := c.ShouldBind(&req); err != nil {
-		util.ErrorResp(c).SetBtype(lv_dto.Buniss_Add).SetMsg(err.Error()).Log("岗位管理", req).WriteJsonExit()
+		util.Fail(c, err.Error())
 		return
 	}
 	var postService = service.GetPostServiceInstance()
@@ -79,7 +78,7 @@ func (w *PostApi) AddSave(c *gin.Context) {
 func (w *PostApi) EditSave(c *gin.Context) {
 	var req *vo.EditSysPostReq
 	if err := c.ShouldBind(&req); err != nil {
-		util.ErrorResp(c).SetBtype(lv_dto.Buniss_Edit).SetMsg(err.Error()).Log("岗位管理", req).WriteJsonExit()
+		util.Fail(c, err.Error())
 		return
 	}
 	var postService = service.GetPostServiceInstance()

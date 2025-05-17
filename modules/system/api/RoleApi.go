@@ -61,28 +61,28 @@ func (w *RoleApi) ListAjax(c *gin.Context) {
 func (w *RoleApi) AddSave(c *gin.Context) {
 	var req *model.SysRole
 	if err := c.ShouldBind(&req); err != nil {
-		util.ErrorResp(c).SetBtype(lv_dto.Buniss_Add).SetMsg(err.Error()).Log("角色管理", req).WriteJsonExit()
+		util.Fail(c, err.Error())
 		return
 	}
 	roleDao := dao.SysRoleDao{}
 	count, err := roleDao.FindCount("", req.RoleName)
 	if count >= 1 {
-		util.ErrorResp(c).SetBtype(lv_dto.Buniss_Add).SetMsg("角色名称已存在").Log("角色管理", req).WriteJsonExit()
+		util.Fail(c, err.Error())
 		return
 	}
 	count, err = roleDao.FindCount(req.RoleKey, "")
 	if count >= 1 {
-		util.ErrorResp(c).SetBtype(lv_dto.Buniss_Add).SetMsg("角色权限已存在").Log("角色管理", req).WriteJsonExit()
+		util.Fail(c, err.Error())
 		return
 	}
 	roleService := service.RoleService{}
 	rid, err := roleService.AddSave(req, c)
 
 	if err != nil || rid <= 0 {
-		util.ErrorResp(c).SetBtype(lv_dto.Buniss_Add).Log("角色管理", req).WriteJsonExit()
+		util.Fail(c, err.Error())
 		return
 	}
-	util.SucessResp(c).SetData(rid).SetBtype(lv_dto.Buniss_Add).Log("角色管理", req).WriteJsonExit()
+	util.Success(c, nil)
 }
 
 func (w *RoleApi) EditSave(c *gin.Context) {

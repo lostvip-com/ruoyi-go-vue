@@ -4,7 +4,6 @@ import (
 	"common/util"
 	"github.com/gin-gonic/gin"
 	"github.com/lostvip-com/lv_framework/utils/lv_conv"
-	"github.com/lostvip-com/lv_framework/web/lv_dto"
 	"github.com/spf13/cast"
 	"net/http"
 	"system/dao"
@@ -54,7 +53,7 @@ func (w *MenuApi) AddSave(c *gin.Context) {
 	var req = new(model.SysMenu)
 
 	if err := c.ShouldBind(&req); err != nil {
-		util.ErrorResp(c).SetBtype(lv_dto.Buniss_Add).SetMsg(err.Error()).Log("菜单管理", req).WriteJsonExit()
+		util.Fail(c, err.Error())
 		return
 	}
 	user := service.GetUserServiceInstance().GetProfile(c)
@@ -63,18 +62,18 @@ func (w *MenuApi) AddSave(c *gin.Context) {
 	}
 	id, err := service.GetMenuServiceInstance().AddSave(req)
 
-	if err != nil || id <= 0 {
-		util.ErrorResp(c).SetBtype(lv_dto.Buniss_Add).SetMsg(err.Error()).Log("菜单管理", req).WriteJsonExit()
+	if err != nil {
+		util.Fail(c, err.Error())
 		return
 	}
-	util.SucessResp(c).SetBtype(lv_dto.Buniss_Add).SetData(id).Log("菜单管理", req).WriteJsonExit()
+	util.Success(c, id)
 }
 
 // EditSave 修改页面保存
 func (w *MenuApi) EditSave(c *gin.Context) {
 	var req = new(model.SysMenu)
 	if err := c.ShouldBind(&req); err != nil {
-		util.ErrorResp(c).SetBtype(lv_dto.Buniss_Edit).SetMsg(err.Error()).Log("菜单管理", req).WriteJsonExit()
+		util.Fail(c, err.Error())
 		return
 	}
 	req.UpdateBy = w.GetCurrUser(c).UserName

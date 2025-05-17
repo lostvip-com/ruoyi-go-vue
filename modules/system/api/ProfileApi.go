@@ -125,22 +125,22 @@ func (w *ProfileApi) UpdateAvatar(c *gin.Context) {
 	var userService service.UserService
 	user := userService.GetProfile(c)
 	curDir, err := os.Getwd()
-
 	if err != nil {
-		util.ErrorResp(c).SetBtype(lv_dto.Buniss_Edit).SetMsg(err.Error()).Log("保存头像", gin.H{"userid": user.UserId}).WriteJsonExit()
+		util.Fail(c, err.Error())
+		return
 	}
 	saveDir := curDir + "/static/upload/"
 	fileHead, err := c.FormFile("avatarfile")
 
 	if err != nil {
-		util.ErrorResp(c).SetBtype(lv_dto.Buniss_Edit).SetMsg("没有获取到上传文件").Log("保存头像", gin.H{"userid": user.UserId}).WriteJsonExit()
+		util.Fail(c, err.Error())
 	}
 	curdate := time.Now().UnixNano()
 	filename := user.UserName + strconv.FormatInt(curdate, 10) + ".png"
 	dts := saveDir + filename
 
 	if err := c.SaveUploadedFile(fileHead, dts); err != nil {
-		util.ErrorResp(c).SetBtype(lv_dto.Buniss_Edit).SetMsg(err.Error()).Log("保存头像", gin.H{"userid": user.UserId}).WriteJsonExit()
+		util.Fail(c, err.Error())
 	}
 
 	avatar := "/upload/" + filename
@@ -148,8 +148,8 @@ func (w *ProfileApi) UpdateAvatar(c *gin.Context) {
 	err = userService.UpdateAvatar(avatar, c)
 
 	if err != nil {
-		util.ErrorResp(c).SetBtype(lv_dto.Buniss_Edit).SetMsg(err.Error()).Log("保存头像", gin.H{"userid": user.UserId}).WriteJsonExit()
+		util.Fail(c, err.Error())
 	} else {
-		util.SucessResp(c).SetBtype(lv_dto.Buniss_Edit).Log("保存头像", gin.H{"userid": user.UserId}).WriteJsonExit()
+		util.Success(c, avatar)
 	}
 }

@@ -31,16 +31,9 @@ func (w *GenCodeApi) Build(c *gin.Context) {
 
 func (w *GenCodeApi) ExecSqlFile(c *gin.Context) {
 	tableId := lv_conv.Int64(c.Query("tableId"))
-
-	if tableId <= 0 {
-		util2.ErrorResp(c).SetBtype(lv_dto.Buniss_Add).SetMsg("参数错误").Log("执行SQL文件错误", gin.H{"tableId": tableId})
-	}
 	genTable := model.GenTable{}
 	po, err := genTable.FindById(tableId)
-	if err != nil {
-		panic(err.Error())
-	}
-
+	lv_err.HasErrAndPanic(err)
 	//err = lv_db.ExecSqlFile(sqlFile)
 	// Loads queries from file
 	batis, err := lv_batis.LoadFromFile(lv_global.Config().GetTmpPath() + "/" + po.Table_Name + "_menu.sql")
@@ -72,18 +65,13 @@ func (w *GenCodeApi) Swagger(c *gin.Context) {
 		//重新生成文档
 		curDir, err := os.Getwd()
 		if err != nil {
-			util2.BuildTpl(c, lv_dto.ERROR_PAGE).WriteTpl(gin.H{
-				"desc": "参数错误",
-			})
-			c.Abort()
+			util2.Fail(c, err.Error())
 			return
 		}
 		genPath := curDir + "/static/swagger"
 		err = w.generateSwaggerFiles(genPath)
 		if err != nil {
-			util2.BuildTpl(c, lv_dto.ERROR_PAGE).WriteTpl(gin.H{
-				"desc": "参数错误",
-			})
+			util2.Fail(c, err.Error())
 			c.Abort()
 			return
 		}
@@ -147,7 +135,7 @@ func (w *GenCodeApi) EditSave(c *gin.Context) {
 
 // Preview 预览代码
 func (w *GenCodeApi) Preview(c *gin.Context) {
-	tableId := lv_conv.Int64(c.Query("tableId"))
+	tableId := lv_conv.Int64(c.Param("tableId"))
 	tableService := service.TableService{}
 	entity, err := tableService.FindById(tableId)
 	if err != nil {
@@ -162,10 +150,7 @@ func (w *GenCodeApi) Preview(c *gin.Context) {
 			retMap[k] = v
 		}
 	}
-	c.JSON(http.StatusOK, lv_dto.CommonRes{
-		Code: 200,
-		Data: retMap,
-	})
+	util2.Success(c, retMap)
 }
 func (w *GenCodeApi) DataList(c *gin.Context) {
 	var req *vo.GenTablePageReq
@@ -233,13 +218,7 @@ func (w *GenCodeApi) GenCode(c *gin.Context) {
 	tableId := lv_conv.Int64(c.Query("tableId"))
 	tableService := service.TableService{}
 	entity, err := tableService.FindById(tableId)
-	if err != nil || entity == nil {
-		c.JSON(http.StatusOK, lv_dto.CommonRes{
-			Code:  500,
-			Btype: lv_dto.Buniss_Other,
-			Msg:   "数据不存在",
-		})
-	}
+	lv_err.HasErrAndPanic(err)
 	tableService.SetPkColumn(entity, entity.Columns)
 	var codeGenService service.CodeGenService
 	codeGenService.GenCode(entity, overwrite)

@@ -25,7 +25,7 @@ func GetOperLogServiceInstance() *OperLogService {
 }
 
 // Add  新增记录
-func (svc OperLogService) Add(c *gin.Context, title, inContent string, outContent *lv_dto.CommonRes) error {
+func (svc OperLogService) Add(c *gin.Context, businessType int, title, inContent string, outContent *lv_dto.CommonRes) error {
 	var userService UserService
 	user := userService.GetProfile(c)
 	if user == nil {
@@ -40,7 +40,7 @@ func (svc OperLogService) Add(c *gin.Context, title, inContent string, outConten
 	operLog.Title = title
 	operLog.OperParam = inContent
 	operLog.JsonResult = outJsonStr
-	operLog.BusinessType = int(outContent.Btype)
+	operLog.BusinessType = businessType
 	//操作类别（0其它 1后台用户 2手机端用户）
 	operLog.OperatorType = 1
 	//操作状态（0正常 1异常）
