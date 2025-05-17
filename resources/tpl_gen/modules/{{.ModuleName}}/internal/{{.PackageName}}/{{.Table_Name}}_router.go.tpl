@@ -14,14 +14,12 @@ import (
 func init() {
 	group_{{.BusinessName}} := router.New( "/{{.PackageName}}/{{.BusinessName}}", auth.TokenCheck())
 
-	{{.BusinessName}} := api.{{.ClassName}}Api{}
-	group_{{.BusinessName}}.GET("/", "{{.PackageName}}:{{.BusinessName}}:view", {{.BusinessName}}.PreList{{.ClassName}})
-	group_{{.BusinessName}}.GET("/preAdd{{.ClassName}}", "{{.PackageName}}:{{.BusinessName}}:add", {{.BusinessName}}.PreAdd{{.ClassName}})
-	group_{{.BusinessName}}.GET("/preEdit{{.ClassName}}", "{{.PackageName}}:{{.BusinessName}}:edit", {{.BusinessName}}.PreEdit{{.ClassName}})
-	// api
-	group_{{.BusinessName}}.POST("/list{{.ClassName}}", "{{.PackageName}}:{{.BusinessName}}:list", {{.BusinessName}}.List{{.ClassName}})
-	group_{{.BusinessName}}.POST("/add{{.ClassName}}", "{{.PackageName}}:{{.BusinessName}}:add", {{.BusinessName}}.Add{{.ClassName}})
-	group_{{.BusinessName}}.POST("/remove{{.ClassName}}", "{{.PackageName}}:{{.BusinessName}}:remove", {{.BusinessName}}.Remove{{.ClassName}})
-	group_{{.BusinessName}}.POST("/edit{{.ClassName}}", "{{.PackageName}}:{{.BusinessName}}:edit",{{.BusinessName}}.Save{{.ClassName}})
-	group_{{.BusinessName}}.POST("/export{{.ClassName}}", "{{.PackageName}}:{{.BusinessName}}:export", {{.BusinessName}}.Export{{.ClassName}})
+	{{.BusinessName}}Api := api.{{.ClassName}}Api{}
+    {{.BusinessName}}.GET("/:id", "{{.PackageName}}:{{.BusinessName}}:info", {{.BusinessName}}Api.GetRoleInfo)
+    {{.BusinessName}}.GET("/list{{.ClassName}}", "{{.PackageName}}:{{.BusinessName}}:list", {{.BusinessName}}Api.List{{.ClassName}})
+	{{.BusinessName}}.GET("/list{{.ClassName}}", "{{.PackageName}}:{{.BusinessName}}:list", {{.BusinessName}}Api.List{{.ClassName}})
+	{{.BusinessName}}.POST("", "{{.PackageName}}:{{.BusinessName}}:new", {{.BusinessName}}Api.Create{{.ClassName}})
+	{{.BusinessName}}.PUT("", "{{.PackageName}}:{{.BusinessName}}:edit",{{.BusinessName}}Api.Update{{.ClassName}})
+    {{.BusinessName}}.DELETE("/ids", "{{.PackageName}}:{{.BusinessName}}:del", {{.BusinessName}}Api.Delete{{.ClassName}})
+	{{.BusinessName}}.POST("/export{{.ClassName}}", "{{.PackageName}}:{{.BusinessName}}:export", {{.BusinessName}}Api.Export{{.ClassName}})
 }

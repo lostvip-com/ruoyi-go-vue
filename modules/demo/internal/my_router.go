@@ -1,7 +1,7 @@
-package demo
+package internal
 
 import (
-	"demo/api"
+	"demo/internal/my/api"
 	"fmt"
 	"github.com/lostvip-com/lv_framework/web/router"
 )

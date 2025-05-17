@@ -31,7 +31,7 @@ go:
 gen:
   author: lv
   #大模块，如lv_framework、main、demo
-  moduleName: things
+  moduleName: demo
   #小模块，业务包
   packageName: iot_driver
   #覆盖旧的代码

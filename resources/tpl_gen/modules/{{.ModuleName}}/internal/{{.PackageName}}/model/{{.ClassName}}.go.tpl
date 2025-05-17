@@ -6,6 +6,7 @@
 package model
 
 import (
+    "common/models"
 	"github.com/lostvip-com/lv_framework/lv_db"
 	"github.com/lostvip-com/lv_framework/lv_db/namedsql"
 	"time"
@@ -28,7 +29,7 @@ type {{.ClassName}} struct {
     {{- end -}}
 {{- end -}}
 {{- end }}
-   
+   models.BaseModel
 }
 
 func (e *{{.ClassName}}) TableName() string {

@@ -16,6 +16,16 @@ import (
     "{{.ModuleName}}/internal/{{.PackageName}}/vo"
 )
 type {{.ClassName}}Service struct{}
+
+var {{.BusinessName}}Service *{{.ClassName}}Service
+
+func Get{{.ClassName}}ServiceInstance() *{{.ClassName}}Service {
+	if {{.BusinessName}}Service == nil {
+		{{.BusinessName}}Service = &{{.ClassName}}Service{}
+	}
+	return {{.BusinessName}}Service
+}
+
 // FindById 根据主键查询数据
 func (svc {{.ClassName}}Service) FindById(id {{.PkColumn.GoType}}) (*model.{{.ClassName}}, error) {
 	var po = new(model.{{.ClassName}})
