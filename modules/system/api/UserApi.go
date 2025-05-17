@@ -74,6 +74,10 @@ func (w *UserApi) ListAjax(c *gin.Context) {
 		util.Fail(c, err.Error())
 		return
 	}
+	if req.DeptId == 0 {
+		user := w.GetCurrUser(c)
+		req.DeptId = user.DeptId
+	}
 	req.BeginTime = c.DefaultQuery("params[beginTime]", "")
 	req.EndTime = c.DefaultQuery("params[endTime]", "")
 
