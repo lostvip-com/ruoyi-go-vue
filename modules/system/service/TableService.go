@@ -23,24 +23,42 @@ type TableService struct {
 }
 
 // FindById 根据主键查询数据
-func (svc TableService) FindById(tableId int64) (*vo.GenTableVO, error) {
-	var dao dao.GenTableDao
-	vo, err := dao.ListColumn(tableId)
+func (svc TableService) FindGenTableById(tableId int64) (*vo.GenTableVO, error) {
+	db := lv_db.GetMasterGorm()
+	var result vo.GenTableVO
+	tb := db.Table("gen_table").Where("table_id=?", tableId)
+	err := tb.Find(&result).Error
 	if err != nil {
 		return nil, err
 	}
-	//if vo.Options != "" {
-	//	p := make(map[string]interface{}, 2)
-	//	if e := json.Unmarshal([]byte(vo.Options), &p); e == nil {
-	//		treeCode := p["treeCode"].(string)
-	//		treeParentCode := p["treeParentCode"].(string)
-	//		treeName := p["treeName"].(string)
-	//		vo.TreeCode = treeCode
-	//		vo.TreeParentCode = treeParentCode
-	//		vo.TreeName = treeName
-	//	}
-	//}
-	return vo, err
+	//表数据列
+	columTb := db.Table("gen_table_column").Where("table_id=?", tableId)
+	var columList []model.GenTableColumn
+	err = columTb.Find(&columList).Error
+	if err != nil {
+		return nil, err
+	}
+	result.Columns = columList
+	return &result, err
+}
+
+func (svc TableService) FindGenTableByName(tbName string) (*vo.GenTableVO, error) {
+	db := lv_db.GetMasterGorm()
+	var result vo.GenTableVO
+	tb := db.Table("gen_table").Where("table_name=?", tbName)
+	err := tb.Find(&result).Error
+	if err != nil {
+		return nil, err
+	}
+	//表数据列
+	columTb := db.Table("gen_table_column").Where("table_id=?", result.TableId)
+	var columList []model.GenTableColumn
+	err = columTb.Find(&columList).Error
+	if err != nil {
+		return nil, err
+	}
+	result.Columns = columList
+	return &result, err
 }
 
 // DeleteById 根据主键删除数据
@@ -129,18 +147,6 @@ func (svc TableService) SelectDbTableListByNames(tableNames []string) ([]model.G
 func (svc TableService) SelectTableByName(tableName string) (*model.GenTable, error) {
 	var dao dao.GenTableDao
 	return dao.SelectTableByName(tableName)
-}
-
-// SelectGenTableById 查询表ID业务信息
-func (svc TableService) SelectGenTableById(tableId int64) (*model.GenTable, error) {
-	var table model.GenTable
-	return table.FindById(tableId)
-}
-
-// SelectGenTableByName 查询表名称业务信息
-func (svc TableService) SelectGenTableByName(tbName string) (*model.GenTable, error) {
-	var table = model.GenTable{Table_Name: tbName}
-	return table.FindOne()
 }
 
 // ImportGenTable 导入表结构

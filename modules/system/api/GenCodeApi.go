@@ -1,7 +1,6 @@
 package api
 
 import (
-	"common/myconf"
 	util2 "common/util"
 	"github.com/gin-gonic/gin"
 	"github.com/lostvip-com/lv_framework/lv_db"
@@ -137,7 +136,7 @@ func (w *GenCodeApi) EditSave(c *gin.Context) {
 func (w *GenCodeApi) Preview(c *gin.Context) {
 	tableId := lv_conv.Int64(c.Param("tableId"))
 	tableService := service.TableService{}
-	entity, err := tableService.FindById(tableId)
+	entity, err := tableService.FindGenTableById(tableId)
 	if err != nil {
 		util2.Fail(c, err.Error())
 	}
@@ -214,16 +213,15 @@ func (w *GenCodeApi) ImportTableSave(c *gin.Context) {
 
 // 生成代码
 func (w *GenCodeApi) GenCode(c *gin.Context) {
-	overwrite := myconf.GetConfigInstance().GetBool("gen.overwrite")
-	tableId := lv_conv.Int64(c.Query("tableId"))
+	tableName := c.Param("tableName")
 	tableService := service.TableService{}
-	entity, err := tableService.FindById(tableId)
+	entity, err := tableService.FindGenTableByName(tableName)
 	lv_err.HasErrAndPanic(err)
 	tableService.SetPkColumn(entity, entity.Columns)
 	var codeGenService service.CodeGenService
-	codeGenService.GenCode(entity, overwrite)
+	codeGenService.GenCode(entity, true)
 	//(genService)
-	util2.Success(c, gin.H{"tableId": tableId})
+	util2.Success(c, nil)
 }
 
 func (w *GenCodeApi) GetGenTableInfo(c *gin.Context) {
@@ -231,7 +229,7 @@ func (w *GenCodeApi) GetGenTableInfo(c *gin.Context) {
 	tableId := cast.ToInt64(tableIdStr)
 	m := make(map[string]any)
 	var svc service.TableService
-	table, err := svc.SelectGenTableById(tableId)
+	table, err := svc.FindGenTableById(tableId)
 	lv_err.HasErrAndPanic(err)
 	var svcCol service.TableColumnService
 	columns, err := svcCol.SelectGenTableColumnListByTableId(tableId)

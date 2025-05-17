@@ -9,26 +9,27 @@ import (
 type GenTableDao struct {
 }
 
-// 根据ID获取记录
-func (r *GenTableDao) ListColumn(tableId int64) (*vo.GenTableVO, error) {
-	db := lv_db.GetMasterGorm()
-	var result vo.GenTableVO
-	tb := db.Table("gen_table").Where("table_id=?", tableId)
-	err := tb.Find(&result).Error
-	if err != nil {
-		return nil, err
-	}
-	//表数据列
-	columTb := db.Table("gen_table_column").Where("table_id=?", tableId)
-	var columList []model.GenTableColumn
-	err = columTb.Find(&columList).Error
-
-	if err != nil {
-		return nil, err
-	}
-	result.Columns = columList
-	return &result, nil
-}
+//
+//// 根据ID获取记录
+//func (r *GenTableDao) ListColumn(tableId int64) (*vo.GenTableVO, error) {
+//	db := lv_db.GetMasterGorm()
+//	var result vo.GenTableVO
+//	tb := db.Table("gen_table").Where("table_id=?", tableId)
+//	err := tb.Find(&result).Error
+//	if err != nil {
+//		return nil, err
+//	}
+//	//表数据列
+//	columTb := db.Table("gen_table_column").Where("table_id=?", tableId)
+//	var columList []model.GenTableColumn
+//	err = columTb.Find(&columList).Error
+//
+//	if err != nil {
+//		return nil, err
+//	}
+//	result.Columns = columList
+//	return &result, nil
+//}
 
 // 根据条件分页查询数据
 func (r *GenTableDao) FindPage(param *vo.GenTablePageReq) ([]model.GenTable, int64, error) {
