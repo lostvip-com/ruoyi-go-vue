@@ -22,7 +22,7 @@ func init() {
 	//column
 	tool.GET("/gen/column/list", "tool:gen:list", codeGenApi.ColumnList)
 	tool.GET("/gen/preview/:tableId", "", codeGenApi.Preview)
-	tool.POST("/gen/genCode/:tableName", "", codeGenApi.GenCode)
+	tool.GET("/gen/genCode/:tableName", "", codeGenApi.GenCode)
 	//执行sql文件
 	tool.POST("/gen/execSqlFile", "", codeGenApi.ExecSqlFile)
 }
