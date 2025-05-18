@@ -26,14 +26,14 @@ type ConfigDefault struct {
 
 func (e ConfigDefault) GetResourcesPath() string {
 	if e.resourcesPath == "" {
-		e.resourcesPath = e.GetValueStr("go.application.resources-path")
+		e.resourcesPath = e.GetValueStr("application.resources-path")
 	}
 	return e.resourcesPath
 }
 
 func (e ConfigDefault) GetUploadPath() string {
 	if e.resourcesPath == "" {
-		e.resourcesPath = e.GetValueStr("go.application.upload-path")
+		e.resourcesPath = e.GetValueStr("application.upload-path")
 	}
 	return e.resourcesPath
 }
@@ -133,11 +133,11 @@ func (e *ConfigDefault) LoadConf() {
 	e.vipperCfg = viper.New()
 	fileNameArr := []string{"bootstrap", "application"}
 	fileExtArr := []string{"yml", "yaml"}
-	filePathArr := []string{"./", "./resources/"}
+	filePathArr := []string{".", "./resources"}
 	for _, fileName := range fileNameArr { //优先查找bootstrap
 		for _, ext := range fileExtArr { //优先查找yaml
 			for _, filePath := range filePathArr { //优先查找当前目录
-				exist := e.MergeYarm(fileName, ext, filePath)
+				exist, _ := e.MergeYarm(fileName, ext, filePath)
 				if exist { //找到文件，不再寻找本目录
 					break
 				}
@@ -146,17 +146,10 @@ func (e *ConfigDefault) LoadConf() {
 	}
 	active := e.GetAppActive()
 	if active != "" {
-		activeFile := "application-" + active
-		for _, ext := range fileExtArr { //优先查找yaml
-			for _, filePath := range filePathArr { //优先查找当前目录
-				exist := e.MergeYarm(activeFile, ext, filePath)
-				if exist { //找到文件，不再寻找本目录
-					break
-				}
-			}
-		}
+		e.mergeActiveYarm(active, fileExtArr, filePathArr)
 	}
-	if e.vipperCfg.GetBool("go.proxy.enable") == true {
+
+	if e.vipperCfg.GetBool("application.proxy.enable") == true {
 		e.proxyEnable = true
 		e.GetProxyMap()
 	} else {
@@ -165,16 +158,34 @@ func (e *ConfigDefault) LoadConf() {
 	}
 }
 
-func (e *ConfigDefault) MergeYarm(fileName, fileExt, path string) bool {
+func (e *ConfigDefault) mergeActiveYarm(active string, fileExtArr []string, filePathArr []string) {
+	foundActive := false
+	activeFile := "application-" + active
+	for _, ext := range fileExtArr { //优先查找yaml
+		for _, filePath := range filePathArr { //优先查找当前目录
+			exist, path := e.MergeYarm(activeFile, ext, filePath)
+			if exist { //找到文件，不再寻找本目录
+				foundActive = true
+				fmt.Println("Active File Found: " + path)
+				break
+			}
+		}
+	}
+	if !foundActive { //配置了active 却未找到
+		fmt.Println("Active File Not Found, application.active:" + active)
+	}
+}
+
+func (e *ConfigDefault) MergeYarm(fileName, fileExt, path string) (bool, string) {
 	filePath := path + "/" + fileName + "." + fileExt
 	if !lv_file.IsFileExist(filePath) {
-		return false //不存在
+		return false, filePath //不存在
 	}
 	e.vipperCfg.SetConfigName(fileName)
 	e.vipperCfg.SetConfigType(fileExt)
 	e.vipperCfg.AddConfigPath(path)
 	e.vipperCfg.MergeInConfig()
-	return true
+	return true, filePath
 }
 
 /**
@@ -216,7 +227,7 @@ var appName string
 
 func (e *ConfigDefault) GetAppName() string {
 	if appName == "" {
-		appName = e.GetValueStr("go.application.name")
+		appName = e.GetValueStr("application.name")
 		if appName == "" {
 			appName = "lostvip"
 		}
@@ -224,60 +235,60 @@ func (e *ConfigDefault) GetAppName() string {
 	return appName
 }
 func (e *ConfigDefault) GetDriver() string {
-	driver := e.GetValueStr("go.datasource.driver")
+	driver := e.GetValueStr("application.datasource.driver")
 	if driver == "" {
 		driver = "sqlite3"
 	}
 	return driver
 }
 func (e *ConfigDefault) GetMaster() string {
-	master := e.GetValueStr("go.datasource.master")
+	master := e.GetValueStr("application.datasource.master")
 	if master == "" {
 		master = "data.lv_db"
 	}
 	return master
 }
 func (e *ConfigDefault) GetSlave() string {
-	return e.GetValueStr("go.datasource.slave")
+	return e.GetValueStr("application.datasource.slave")
 }
 
 // IsDebug todo
 func (e *ConfigDefault) GetLogLevel() string {
 	if e.logLevel == "" {
-		e.logLevel = e.GetValueStr("go.log.level")
+		e.logLevel = e.GetValueStr("application.log.level")
 	}
 	return e.logLevel
 }
 
 func (e *ConfigDefault) GetAutoMigrate() string {
 	if e.autoMigrate == "" {
-		e.autoMigrate = e.GetValueStr("go.datasource.auto-migrate")
+		e.autoMigrate = e.GetValueStr("application.datasource.auto-migrate")
 	}
 	return e.autoMigrate
 }
 
 func (e *ConfigDefault) GetLogOutput() string {
-	output := e.GetValueStr("go.log.output")
+	output := e.GetValueStr("application.log.output")
 	return output
 }
 
 func (e *ConfigDefault) GetAppActive() string {
-	return e.GetValueStr("go.application.active")
+	return e.GetValueStr("application.active")
 }
 
 func (e *ConfigDefault) GetNacosAddrs() string {
-	return e.GetValueStr("go.cloud.nacos.discovery.server-addr")
+	return e.GetValueStr("cloud.nacos.discovery.server-addr")
 }
 
 func (e *ConfigDefault) GetNacosPort() int {
-	port := e.vipperCfg.GetInt("go.cloud.nacos.discovery.port")
+	port := e.vipperCfg.GetInt("cloud.nacos.discovery.port")
 	if port == 0 {
 		port = 8848
 	}
 	return port
 }
 func (e *ConfigDefault) GetNacosNamespace() string {
-	ns := e.GetValueStr("go.cloud.nacos.discovery.namespace")
+	ns := e.GetValueStr("cloud.nacos.discovery.namespace")
 	return ns
 }
 func (e *ConfigDefault) GetGroupDefault() string {
@@ -305,7 +316,7 @@ func (e *ConfigDefault) LoadProxyInfo() *map[string]string {
 	if !e.IsProxyEnable() {
 		return nil
 	}
-	list := e.GetVipperCfg().GetStringSlice("go.proxy.prefix")
+	list := e.GetVipperCfg().GetStringSlice("application.proxy.prefix")
 	e.proxyMap = make(map[string]string)
 	for _, v := range list {
 		index := strings.Index(v, "=")
@@ -313,8 +324,8 @@ func (e *ConfigDefault) LoadProxyInfo() *map[string]string {
 		hostPort := lv_conv.SubStr(v, index+1, len(v))
 		e.proxyMap[key] = hostPort
 	}
-	e.proxyEnable = e.GetBool("go.proxy.enable")
-	fmt.Println("go.proxy:", e.proxyMap)
+	e.proxyEnable = e.GetBool("application.proxy.enable")
+	fmt.Println("application.proxy:", e.proxyMap)
 	fmt.Println("######### 加载代理配置信息 end #############")
 	return &e.proxyMap
 }

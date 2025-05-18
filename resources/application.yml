@@ -3,16 +3,16 @@ server:
   port: ${PORT:8080}
   grpc:
     port: ${PORT_GRPC:57081}
-go:
-  application:
-    active: dev
-    cache-tpl: false # 默认不缓存模板,省内存，方便开发
-    resources-path: resources # 默认资源目录，存放配置文件、静态资源、模板
-    upload-path: resources/static/upload # 默认资源目录，存放配置文件、静态资源、模板
-#  cloud:
-#    nacos:
-#      discovery:       # 服务注册地址
-#        server-addr:  192.168.88.106
-#        port: 8848
 
-copyright: © 2023 lostvip.com Copyright
+application:
+  active: dev
+  cache-tpl: false # 默认不缓存模板,省内存，方便开发
+  resources-path: resources # 默认资源目录，存放配置文件、静态资源、模板
+  upload-path: resources/static/upload # 默认资源目录，存放配置文件、静态资源、模板
+
+#cloud:
+#  nacos:
+#    discovery:       # 服务注册地址
+#      server-addr:  192.168.88.106
+#      port: 8848
+copyright: © 2025 lostvip.com Copyright

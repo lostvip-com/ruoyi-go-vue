@@ -37,7 +37,7 @@ func GetConfigInstance() lv_global.IConfig {
 // LoadConf 预加载部分参数，避免每次判断
 func (e *MyConfig) LoadConf() {
 	e.ConfigDefault.LoadConf() //调用
-	e.SetCacheTpl(e.GetBool("go.application.cache-tpl"))
+	e.SetCacheTpl(e.GetBool("application.cache-tpl"))
 	path := e.GetValueStr("server.context-path")
 	e.SetContextPath(path)
 	////远程

@@ -1,4 +1,4 @@
-go:
+application:
   log:
     level: debug        # debug info warn error
     output: stdout,file # stdout：只写控制台，file:只写文件，默认：双写
