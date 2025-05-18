@@ -2,12 +2,12 @@ package lv_conf
 
 import (
 	"fmt"
+	"github.com/lostvip-com/lv_framework/utils/lv_file"
 	"os"
 	"strings"
 	"text/template"
 
 	"github.com/lostvip-com/lv_framework/utils/lv_conv"
-	"github.com/lostvip-com/lv_framework/utils/lv_file"
 	"github.com/lostvip-com/lv_framework/utils/lv_net"
 	"github.com/spf13/cast"
 	"github.com/spf13/viper"
@@ -131,32 +131,30 @@ func (e *ConfigDefault) parseVal(val string) string {
 
 func (e *ConfigDefault) LoadConf() {
 	e.vipperCfg = viper.New()
-	if lv_file.IsFileExist("bootstrap.yml") || lv_file.IsFileExist("bootstrap.yaml") {
-		e.vipperCfg.SetConfigName("bootstrap")
-		e.vipperCfg.SetConfigType("yaml")
-		e.vipperCfg.AddConfigPath("./")
-		e.vipperCfg.ReadInConfig()
-	} else if lv_file.IsFileExist("resources/bootstrap.yml") || lv_file.IsFileExist("resources/bootstrap.yaml") {
-		e.vipperCfg.SetConfigName("bootstrap")
-		e.vipperCfg.SetConfigType("yaml")
-		e.vipperCfg.AddConfigPath("./resources")
-		e.vipperCfg.ReadInConfig()
-	} else {
-		fmt.Println("未找到配置文件 bootstrap.yml 将使用默认配置！！！")
+	fileNameArr := []string{"bootstrap", "application"}
+	fileExtArr := []string{"yml", "yaml"}
+	filePathArr := []string{"./", "./resources/"}
+	for _, fileName := range fileNameArr { //优先查找bootstrap
+		for _, ext := range fileExtArr { //优先查找yaml
+			for _, filePath := range filePathArr { //优先查找当前目录
+				exist := e.MergeYarm(fileName, ext, filePath)
+				if exist { //找到文件，不再寻找本目录
+					break
+				}
+			}
+		}
 	}
-	//加载第二个配置文件
-	if lv_file.IsFileExist("application.yml") || lv_file.IsFileExist("application.yaml") {
-		e.vipperCfg.SetConfigName("application")
-		e.vipperCfg.SetConfigType("yaml")
-		e.vipperCfg.AddConfigPath("./")
-		e.vipperCfg.MergeInConfig()
-	} else if lv_file.IsFileExist("resources/application.yml") || lv_file.IsFileExist("resources/application.yaml") {
-		e.vipperCfg.SetConfigName("application")
-		e.vipperCfg.SetConfigType("yaml")
-		e.vipperCfg.AddConfigPath("./resources")
-		e.vipperCfg.MergeInConfig()
-	} else {
-		fmt.Println("未找到配置文件 application.yml 将使用默认配置！！！")
+	active := e.GetAppActive()
+	if active != "" {
+		activeFile := "application-" + active
+		for _, ext := range fileExtArr { //优先查找yaml
+			for _, filePath := range filePathArr { //优先查找当前目录
+				exist := e.MergeYarm(activeFile, ext, filePath)
+				if exist { //找到文件，不再寻找本目录
+					break
+				}
+			}
+		}
 	}
 	if e.vipperCfg.GetBool("go.proxy.enable") == true {
 		e.proxyEnable = true
@@ -165,6 +163,18 @@ func (e *ConfigDefault) LoadConf() {
 		fmt.Println("!!！！！！！！！！！！！！!!! porxy feature is disabled ！！！！！！！！！！！！！！！！！！！！！！！")
 		e.proxyEnable = false
 	}
+}
+
+func (e *ConfigDefault) MergeYarm(fileName, fileExt, path string) bool {
+	filePath := path + "/" + fileName + "." + fileExt
+	if !lv_file.IsFileExist(filePath) {
+		return false //不存在
+	}
+	e.vipperCfg.SetConfigName(fileName)
+	e.vipperCfg.SetConfigType(fileExt)
+	e.vipperCfg.AddConfigPath(path)
+	e.vipperCfg.MergeInConfig()
+	return true
 }
 
 /**

@@ -45,13 +45,10 @@ func (mySvr *MyHttpServer) ListenAndServe() {
 	host := lv_global.Config().GetServerIP()
 	path := lv_global.Config().GetContextPath()
 	port := cast.ToString(lv_global.Config().GetServerPort())
-	cache := lv_global.Config().GetValueStr("go.cache")
 	fmt.Println("##############################################################")
 	fmt.Println("go.application.name: " + lv_global.Config().GetAppName())
-	fmt.Println("go.cache: " + cache)
-	if cache == "redis" {
-		fmt.Println("go.redis.host: " + lv_global.Config().GetValueStr("go.redis.host"))
-	}
+	fmt.Println("go.cache: " + lv_global.Config().GetValueStr("go.cache"))
+	fmt.Println("go.redis.host: " + lv_global.Config().GetValueStr("go.redis.host"))
 	fmt.Println("go.datasource.master: " + lv_global.Config().GetMaster())
 	fmt.Println("http://localhost:" + port + strings.ReplaceAll(path, "//", "/"))
 	fmt.Println("http://localhost:" + port + strings.ReplaceAll(path+"/swagger/index.html", "//", "/"))
