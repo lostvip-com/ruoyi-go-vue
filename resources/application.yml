@@ -2,7 +2,7 @@ server:
   host: ${HOST:127.0.0.1}
   port: ${PORT:8080}
   grpc:
-    port: ${PORT_GRPC:57081}
+    port: ${PORT_GRPC:9080}
 
 application:
   active: dev
