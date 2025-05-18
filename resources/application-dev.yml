@@ -6,7 +6,6 @@ application:
     max-size: 100 # 单个日志文件最大100M
     max-backups: 10 # 最多保留10个备份
     max-age: 7 # 保留7天
-  cache: redis # redis ram
   redis:
     host: ${REDIS_HOST:192.168.81.228}
     port: ${REDIS_PORT:6379}
