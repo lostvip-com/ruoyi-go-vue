@@ -27,7 +27,7 @@ func GetOperLogServiceInstance() *OperLogService {
 // Add  新增记录
 func (svc OperLogService) Add(c *gin.Context, businessType int, title, inContent string, outContent *lv_dto.CommonRes) error {
 	var userService UserService
-	user := userService.GetProfile(c)
+	user := userService.GetCurrUser(c)
 	if user == nil {
 		return errors.New("用户未登录")
 	}

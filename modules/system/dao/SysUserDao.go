@@ -36,7 +36,7 @@ func (d SysUserDao) FindPage(param *common_vo.UserPageReq) (*[]map[string]any, i
 	db := lv_db.GetMasterGorm()
 	sqlParams, sql := d.GetSql(param)
 	limitSql := sql + " order by u.user_id desc "
-	limitSql += "  limit " + cast.ToString(param.GetStartNum()) + "," + cast.ToString(param.GetPageSize())
+	limitSql += "  limit " + cast.ToString(param.GetPageSize()) + " offset " + cast.ToString(param.GetStartNum())
 	result, err := namedsql.ListMapAny(db, limitSql, sqlParams, true)
 	countSql := "select count(*) from (" + sql + ") t "
 	total, err := namedsql.Count(db, countSql, sqlParams)

@@ -130,7 +130,9 @@ func (e *LvBatis) GetLimitSql(tagName string, params interface{}) (string, error
 	}
 	sql, err := e.GetSql(tagName, sqlParams)
 	start := cast.ToInt64(pageSize) * (cast.ToInt64(pageNum) - 1)
-	sql = sql + " limit  " + cast.ToString(start) + "," + cast.ToString(pageSize)
+	//sql = sql + " limit  " + cast.ToString(start) + "," + cast.ToString(pageSize)
+	// 改为可以兼容mysql和postgresql的分页方式
+	sql = sql + " limit  " + cast.ToString(pageSize) + " offset " + cast.ToString(start)
 	return sql, err
 }
 

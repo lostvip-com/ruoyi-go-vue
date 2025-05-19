@@ -41,7 +41,7 @@ func (svc *PostService) AddSave(req *vo.AddPostReq, c *gin.Context) (int64, erro
 	entity.CreateTime = time.Now()
 	entity.CreateBy = ""
 	var userService UserService
-	user := userService.GetProfile(c)
+	user := userService.GetCurrUser(c)
 	if user != nil {
 		entity.CreateBy = user.UserName
 	}
@@ -64,7 +64,7 @@ func (svc *PostService) EditSave(req *vo.EditSysPostReq, c *gin.Context) error {
 	entity.UpdateTime = time.Now()
 	entity.UpdateBy = ""
 	var userService UserService
-	user := userService.GetProfile(c)
+	user := userService.GetCurrUser(c)
 
 	if user == nil {
 		entity.UpdateBy = user.UserName
@@ -96,7 +96,7 @@ func (svc *PostService) Export(param *vo.PostPageReq) (string, error) {
 }
 
 // 根据用户ID查询岗位
-func (svc *PostService) SelectPostsByUserId(userId int64) (*[]model.SysPost, error) {
+func (svc *PostService) ListAllPostsAndSelected(userId int64) (*[]model.SysPost, error) {
 	var paramsPost *vo.PostPageReq
 	var d dao.SysPostDao
 	postAll, err := d.ListAll(paramsPost)
@@ -105,11 +105,10 @@ func (svc *PostService) SelectPostsByUserId(userId int64) (*[]model.SysPost, err
 		return nil, errors.New("未查询到岗位数据")
 	}
 	userPost, err := d.FindPostsByUserId(userId)
-
+	if err != nil {
+		return userPost, err
+	}
 	for i := range *postAll {
-		if userPost == nil {
-			break
-		}
 		for j := range *userPost {
 			if (*userPost)[j].PostId == (*postAll)[i].PostId {
 				(*postAll)[i].Selected = true
@@ -117,7 +116,6 @@ func (svc *PostService) SelectPostsByUserId(userId int64) (*[]model.SysPost, err
 			}
 		}
 	}
-
 	return postAll, err
 }
 

@@ -57,7 +57,7 @@ func (w *MenuApi) AddSave(c *gin.Context) {
 		util.Fail(c, err.Error())
 		return
 	}
-	user := service.GetUserServiceInstance().GetProfile(c)
+	user := service.GetUserServiceInstance().GetCurrUser(c)
 	if user != nil {
 		req.CreateBy = user.UserName
 	}

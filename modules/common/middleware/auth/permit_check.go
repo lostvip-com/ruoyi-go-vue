@@ -20,7 +20,7 @@ func PermitCheck(c *gin.Context) {
 	}
 	//获取用户信息
 	userSvc := service.GetUserServiceInstance()
-	userPtr := userSvc.GetProfile(c)
+	userPtr := userSvc.GetCurrUser(c)
 	c.Set("userId", userPtr.UserId) //供api使用
 	c.Set("user", userPtr)          //供api使用
 	if userSvc.IsAdmin(userPtr.UserId) {

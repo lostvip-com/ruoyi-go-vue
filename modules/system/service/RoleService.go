@@ -52,7 +52,7 @@ func (svc *RoleService) AddSave(req *model.SysRole, c *gin.Context) (int64, erro
 	role.DataScope = "2"
 	role.DelFlag = "0"
 	var userService UserService
-	user := userService.GetProfile(c)
+	user := userService.GetCurrUser(c)
 	if user != nil {
 		role.CreateBy = user.UserName
 	}
@@ -128,7 +128,7 @@ func (svc *RoleService) AuthDataScope(req *common_vo.DataScopeReq, c *gin.Contex
 		entity.DataScope = req.DataScope
 	}
 	var userService UserService
-	user := userService.GetProfile(c)
+	user := userService.GetCurrUser(c)
 	if user != nil {
 		entity.UpdateBy = user.UserName
 	}

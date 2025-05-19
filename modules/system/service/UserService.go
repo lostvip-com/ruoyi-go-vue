@@ -63,7 +63,7 @@ func (svc *UserService) AddSave(req *common_vo.AddUserReq, c *gin.Context) (int6
 	newSalt := lv_gen.GenerateSubId(6)
 	u.Password, _ = lv_secret.PasswordHash(newSalt)
 	u.CreateTime = time.Now()
-	createUser := svc.GetProfile(c)
+	createUser := svc.GetCurrUser(c)
 
 	if createUser != nil {
 		u.CreateBy = createUser.UserName
@@ -131,7 +131,7 @@ func (svc *UserService) EditSave(req *common_vo.EditUserReq, c *gin.Context) err
 	userPtr.DeptId = req.DeptId
 	userPtr.Remark = req.Remark
 	userPtr.UpdateTime = time.Now()
-	updateUser := svc.GetProfile(c)
+	updateUser := svc.GetCurrUser(c)
 
 	if updateUser != nil {
 		userPtr.UpdateBy = updateUser.UserName
@@ -236,7 +236,7 @@ func (svc *UserService) CheckPassport(UserName string) bool {
 }
 
 // 获得用户信息详情
-func (svc *UserService) GetProfile(c *gin.Context) *model.SysUser {
+func (svc *UserService) GetCurrUser(c *gin.Context) *model.SysUser {
 	token := lv_net.GetParam(c, "token")
 	key := "login:" + token
 	userId, _ := lv_cache.GetCacheClient().HGet(key, "userId")
@@ -254,7 +254,7 @@ func (svc *UserService) GetProfile(c *gin.Context) *model.SysUser {
 
 // 更新用户信息详情
 func (svc *UserService) UpdateProfile(profile *common_vo.ProfileReq, c *gin.Context) error {
-	user := svc.GetProfile(c)
+	user := svc.GetCurrUser(c)
 
 	if profile.UserName != "" {
 		user.UserName = profile.UserName
@@ -283,7 +283,7 @@ func (svc *UserService) UpdateProfile(profile *common_vo.ProfileReq, c *gin.Cont
 
 // 更新用户头像
 func (svc *UserService) UpdateAvatar(avatar string, c *gin.Context) error {
-	user := svc.GetProfile(c)
+	user := svc.GetCurrUser(c)
 
 	if avatar != "" {
 		user.Avatar = avatar
@@ -300,7 +300,7 @@ func (svc *UserService) UpdateAvatar(avatar string, c *gin.Context) error {
 
 // 修改用户密码
 func (svc *UserService) UpdatePassword(profile *common_vo.PasswordReq, c *gin.Context) error {
-	user := svc.GetProfile(c)
+	user := svc.GetCurrUser(c)
 
 	if profile.OldPassword == "" {
 		return errors.New("旧密码不能为空")

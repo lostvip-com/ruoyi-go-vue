@@ -6,7 +6,7 @@ server:
 
 application:
   active: dev
-  cache: redis # redis ram
+  cache-type: redis # redis ram
   cache-tpl: false # 默认不缓存模板,省内存，方便开发
   resources-path: resources # 默认资源目录，存放配置文件、静态资源、模板
   upload-path: resources/static/upload # 默认资源目录，存放配置文件、静态资源、模板

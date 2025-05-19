@@ -67,14 +67,10 @@ func init() {
 	system.POST("/user/export", "system:user:export", userApi.Export)
 	// 个人中心路由
 	profile := api.ProfileApi{}
-	system.GET("userApi/profile", "", profile.Profile)
-	system.POST("/profile/update", "", profile.Update)
-	system.POST("/profile/resetSavePwd", "", profile.UpdatePassword)
-	system.POST("/profile/checkPhoneOK", "", profile.CheckPhoneOK)
-	system.POST("/profile/checkEmailOK", "", profile.CheckEmailOK)
-	system.POST("/profile/checkUserNameOK", "", profile.CheckUserNameOK)
-	system.POST("/profile/checkPassword", "", profile.CheckPassword)
-	system.POST("/profile/updateAvatar", "", profile.UpdateAvatar)
+	system.GET("/user/profile", "", profile.GetProfile)
+	system.PUT("/profile", "", profile.Update)
+	system.PUT("/profile/add", "", profile.UpdatePassword)
+	system.POST("/profile/avatar", "", profile.UpdateAvatar)
 	// 角色路由
 	roleApi := api.RoleApi{}
 	system.GET("/role/list", "system:role:list", roleApi.ListAjax)

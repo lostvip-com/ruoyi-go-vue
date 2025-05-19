@@ -1,6 +1,7 @@
 package lv_cache
 
 import (
+	"common/global"
 	"github.com/lostvip-com/lv_framework/lv_cache/lv_ram"
 	"github.com/lostvip-com/lv_framework/lv_cache/lv_redis"
 	"github.com/lostvip-com/lv_framework/lv_global"
@@ -28,7 +29,7 @@ var cacheClient ICache //主数据库
 func GetCacheClient() ICache {
 	if cacheClient == nil {
 		var config = lv_global.Config()
-		cacheType := config.GetVipperCfg().GetString("go.cache")
+		var cacheType = config.GetVipperCfg().GetString(global.KEY_CACHE_TYPE)
 		if cacheType == "redis" {
 			cacheClient = lv_redis.GetInstance(0)
 		} else {
