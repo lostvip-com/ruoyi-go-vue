@@ -69,7 +69,7 @@ func init() {
 	profile := api.ProfileApi{}
 	system.GET("/user/profile", "", profile.GetProfile)
 	system.PUT("/profile", "", profile.Update)
-	system.PUT("/profile/add", "", profile.UpdatePassword)
+	system.PUT("/profile/updatePwd", "", profile.UpdatePassword)
 	system.POST("/profile/avatar", "", profile.UpdateAvatar)
 	// 角色路由
 	roleApi := api.RoleApi{}
