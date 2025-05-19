@@ -73,18 +73,13 @@ func (svc {{.ClassName}}Service) ListByPage(params *vo.{{.ClassName}}Req) (*[]vo
 }
 
 // ExportAll 导出excel
-func (svc {{.ClassName}}Service) ExportAll(param *vo.{{.ClassName}}Req) (string, error) {
+func (svc {{.ClassName}}Service) ExportAll(param *vo.{{.ClassName}}Req) (*[]map[string]string,*[]map[string]any, error) {
     var {{.BusinessName}}Dao = dao.Get{{.ClassName}}DaoInstance()
-    var err error
-    var listMap *[]map[string]any
-    if param.PageNum > 0 { //分页导出
-        listMap, _, err = {{.BusinessName}}Dao.ListMapByPage(param)
-    } else { //全部导出
-        listMap, err = {{.BusinessName}}Dao.ListAll(param, true)
-    }
-    lv_err.HasErrAndPanic(err)
-	heads := []string{ {{range $index, $column := .Columns}} {{if eq $index 0}}"{{$column.ColumnComment}}"{{else}},"{{$column.ColumnComment}}"{{end}}{{end}}}
-	keys  := []string{ {{range $index, $column := .Columns}} {{if eq $index 0}}"{{$column.HtmlField}}"{{else}},"{{$column.HtmlField}}"{{end}}{{end}}}
-	url, err := lv_office.DownlaodExcelByListMap(&heads, &keys, listMap)
-	return url, err
+    listMap, _, err := {{.BusinessName}}Dao.ListMapByPage(param)
+    headerMap := []map[string]string{
+        {{- range $index, $column := .Columns}}
+           map[string]string{"key": "{{$column.HtmlField}}", "title": "{{$column.ColumnComment}}", "width": "15"},
+        {{- end }}
+    	}
+	return &headerMap, listMap,err
 }

@@ -68,10 +68,7 @@ func (d {{.ClassName}}Dao) Find(where, order string) (*[]model.{{.ClassName}}, e
 }
 
 // Find 通过主键批量删除
-func (d {{.ClassName}}Dao) DeleteByIds(ida []int64) int64 {
+func (d {{.ClassName}}Dao) DeleteByIds(ida []int64) (int64,error) {
 	db := lv_db.GetMasterGorm().Table("{{.Table_Name}}").Where("{{.PkColumn.ColumnName}} in ? ", ida).Update("del_flag", 1)
-    if db.Error != nil {
-        panic(db.Error)
-    }
-    return db.RowsAffected
+    return db.RowsAffected, db.Error
 }
