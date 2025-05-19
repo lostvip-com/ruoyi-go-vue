@@ -3,7 +3,7 @@
 // 生成日期:2025-05-17 13:18:47 &#43;0000 UTC
 // 生成人:lv
 // ==========================================================================
-package iot_driver
+package internal
 
 import (
         "github.com/lostvip-com/lv_framework/web/router"

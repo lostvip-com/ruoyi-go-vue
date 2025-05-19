@@ -40,11 +40,11 @@ func (svc {{.ClassName}}Service) DeleteById(id {{.PkColumn.GoType}}) error {
 }
 
 // DeleteByIds 批量删除数据记录
-func (svc {{.ClassName}}Service) DeleteByIds(ids string) int64 {
+func (svc {{.ClassName}}Service) DeleteByIds(ids string) (int64,error) {
 	ida := lv_conv.ToInt64Array(ids, ",")
-    var d dao.{{.ClassName}}Dao
-	rowsAffected := d.DeleteByIds(ida)
-	return rowsAffected
+    var {{.BusinessName}}Dao = dao.Get{{.ClassName}}DaoInstance()
+	rows,err := {{.BusinessName}}Dao.DeleteByIds(ida)
+	return rows,err
 }
 
 // AddSave 添加数据
@@ -61,7 +61,7 @@ func (svc {{.ClassName}}Service) EditSave(form *model.{{.ClassName}})  (*model.{
     if err!=nil{
         return nil,err
     }
-	_ = lv_reflect.CopyProperties(req, po)
+	_ = lv_reflect.CopyProperties(form, po)
 	err = po.Updates()
 	return po,err
 }

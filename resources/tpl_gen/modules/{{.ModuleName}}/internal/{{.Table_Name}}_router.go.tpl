@@ -3,7 +3,7 @@
 // 生成日期:{{.CreateTime}}
 // 生成人:{{.FunctionAuthor}}
 // ==========================================================================
-package {{.PackageName}}
+package internal
 
 import (
         "github.com/lostvip-com/lv_framework/web/router"

@@ -40,11 +40,11 @@ func (svc SysJobLogService) DeleteById(id int64) error {
 }
 
 // DeleteByIds 批量删除数据记录
-func (svc SysJobLogService) DeleteByIds(ids string) int64 {
+func (svc SysJobLogService) DeleteByIds(ids string) (int64,error) {
 	ida := lv_conv.ToInt64Array(ids, ",")
-    var d dao.SysJobLogDao
-	rowsAffected := d.DeleteByIds(ida)
-	return rowsAffected
+    var logDao = dao.GetSysJobLogDaoInstance()
+	rows,err := logDao.DeleteByIds(ida)
+	return rows,err
 }
 
 // AddSave 添加数据
@@ -61,7 +61,7 @@ func (svc SysJobLogService) EditSave(form *model.SysJobLog)  (*model.SysJobLog, 
     if err!=nil{
         return nil,err
     }
-	_ = lv_reflect.CopyProperties(req, po)
+	_ = lv_reflect.CopyProperties(form, po)
 	err = po.Updates()
 	return po,err
 }

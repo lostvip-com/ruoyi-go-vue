@@ -6,12 +6,9 @@ import (
     "{{.ModuleName}}/internal/{{.PackageName}}/service"
     "{{.ModuleName}}/internal/{{.PackageName}}/model"
     "{{.ModuleName}}/internal/{{.PackageName}}/vo"
-    sysService "system/service"
 	"github.com/spf13/cast"
 	"github.com/gin-gonic/gin"
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
-	"github.com/lostvip-com/lv_framework/web/lv_dto"
-
 )
 
 type {{.ClassName}}Api struct {
@@ -27,10 +24,7 @@ func (w {{.ClassName}}Api) GetRoleInfo(c *gin.Context) {
 	id := c.Param("id")
 	role := new(model.{{.ClassName}})
 	{{.BusinessName}}, err := role.FindById(cast.ToInt64(id))
-	if err != nil {
-		util.Fail(c, err.Error())
-		return
-	}
+	lv_err.HasErrAndPanic(err)
 	util.Success(c, {{.BusinessName}})
 }
 // List{{.ClassName}} 新增页面保存
@@ -50,9 +44,9 @@ func (w {{.ClassName}}Api) Create{{.ClassName}}(c *gin.Context) {
 	lv_err.HasErrAndPanic(err)
     w.FillInCreate(c, &form.BaseModel)
 	var svc = service.Get{{.ClassName}}ServiceInstance()
-	id, err := svc.AddSave(form)
+	po,err := svc.AddSave(form)
 	lv_err.HasErrAndPanic(err)
-	util.Success(c, id)
+	util.Success(c, po)
 }
 
 // Save{{.ClassName}} 修改页面保存
@@ -62,20 +56,17 @@ func (w {{.ClassName}}Api) Update{{.ClassName}}(c *gin.Context) {
 	lv_err.HasErrAndPanic(err)
     w.FillInUpdate(c, &form.BaseModel)
 	var svc = service.Get{{.ClassName}}ServiceInstance()
-	err = svc.EditSave(form)
+	po,err := svc.EditSave(form)
 	lv_err.HasErrAndPanic(err)
-	util.Success(c, nil)
+	util.Success(c, po)
 }
 
 // Remove{{.ClassName}} 删除数据
 func (w {{.ClassName}}Api) Delete{{.ClassName}}(c *gin.Context) {
     var ids = c.Param("ids")
-	err := service.Get{{.ClassName}}ServiceInstance().DeleteByIds(ids)
-	if err != nil {
-		util.Fail(c, err.Error())
-		return
-	}
-	util.Success(c, nil)
+	rows,err := service.Get{{.ClassName}}ServiceInstance().DeleteByIds(ids)
+	lv_err.HasErrAndPanic(err)
+	util.Success(c, rows)
 }
 
 // 导出
