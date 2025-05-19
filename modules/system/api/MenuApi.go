@@ -1,6 +1,7 @@
 package api
 
 import (
+	api2 "common/api"
 	"common/util"
 	"github.com/gin-gonic/gin"
 	"github.com/lostvip-com/lv_framework/utils/lv_conv"
@@ -13,7 +14,7 @@ import (
 )
 
 type MenuApi struct {
-	BaseApi
+	api2.BaseApi
 }
 
 func (w *MenuApi) GetMenuInfo(c *gin.Context) {

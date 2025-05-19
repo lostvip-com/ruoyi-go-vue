@@ -1,6 +1,7 @@
 package api
 
 import (
+	api2 "common/api"
 	"common/common_vo"
 	"common/models"
 	"common/util"
@@ -12,7 +13,7 @@ import (
 )
 
 type DeptApi struct {
-	BaseApi
+	api2.BaseApi
 }
 
 /*排除节点*/

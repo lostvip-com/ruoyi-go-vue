@@ -1,6 +1,7 @@
 package api
 
 import (
+	api2 "common/api"
 	"common/util"
 	"github.com/gin-gonic/gin"
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
@@ -10,7 +11,7 @@ import (
 )
 
 type HomeApi struct {
-	BaseApi
+	api2.BaseApi
 }
 
 func (w *HomeApi) GetUserInfo(c *gin.Context) {

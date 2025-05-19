@@ -1,6 +1,7 @@
 package api
 
 import (
+	api2 "common/api"
 	"common/common_vo"
 	"common/global"
 	"common/util"
@@ -13,7 +14,7 @@ import (
 )
 
 type ConfigApi struct {
-	BaseApi
+	api2.BaseApi
 }
 
 func (w *ConfigApi) GetConfigInfo(c *gin.Context) {

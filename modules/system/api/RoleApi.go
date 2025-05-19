@@ -1,6 +1,7 @@
 package api
 
 import (
+	api2 "common/api"
 	"common/common_vo"
 	"common/util"
 	"github.com/gin-gonic/gin"
@@ -17,7 +18,7 @@ import (
 )
 
 type RoleApi struct {
-	BaseApi
+	api2.BaseApi
 }
 
 func (w *RoleApi) GetRoleOptionSelect(c *gin.Context) {

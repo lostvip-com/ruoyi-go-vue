@@ -48,43 +48,39 @@ func (svc {{.ClassName}}Service) DeleteByIds(ids string) int64 {
 }
 
 // AddSave 添加数据
-func (svc {{.ClassName}}Service) AddSave(req *vo.Add{{.ClassName}}Req) ({{.PkColumn.GoType}}, error) {
-	var entity = new(model.{{.ClassName}})
-	lv_reflect.CopyProperties(req, entity)
-	entity.CreateTime = time.Now()
-	entity.UpdateTime = entity.CreateTime
-	entity.CreateBy = req.CreateBy
-	err := entity.Save()
+func (svc {{.ClassName}}Service) AddSave(form *model.{{.ClassName}}) (*model.{{.ClassName}}, error) {
+	err := form.Save()
 	lv_err.HasErrAndPanic(err)
-	return entity.{{.PkColumn.GoField}}, err
+	return form, err
 }
 
 // EditSave 修改数据
-func (svc {{.ClassName}}Service) EditSave(req *vo.Edit{{.ClassName}}Req) error {
+func (svc {{.ClassName}}Service) EditSave(form *model.{{.ClassName}})  (*model.{{.ClassName}}, error) {
 	var po = new(model.{{.ClassName}})
-	po,err := po.FindById(req.{{.PkColumn.GoField}})
-    lv_err.HasErrAndPanic(err)
-	lv_reflect.CopyProperties(req, po)
-	po.UpdateTime = time.Now()
-	po.UpdateBy = req.UpdateBy
-	return po.Updates()
+	po,err := po.FindById(form.{{.PkColumn.GoField}})
+    if err!=nil{
+        return nil,err
+    }
+	_ = lv_reflect.CopyProperties(req, po)
+	err = po.Updates()
+	return po,err
 }
 
 // ListByPage 根据条件分页查询数据
 func (svc {{.ClassName}}Service) ListByPage(params *vo.{{.ClassName}}Req) (*[]vo.{{.ClassName}}Resp,int64, error) {
-	var d dao.{{.ClassName}}Dao
-	return d.ListByPage(params)
+	var {{.BusinessName}}Dao = dao.Get{{.ClassName}}DaoInstance()
+	return {{.BusinessName}}Dao.ListByPage(params)
 }
 
 // ExportAll 导出excel
 func (svc {{.ClassName}}Service) ExportAll(param *vo.{{.ClassName}}Req) (string, error) {
-    var d dao.{{.ClassName}}Dao
+    var {{.BusinessName}}Dao = dao.Get{{.ClassName}}DaoInstance()
     var err error
     var listMap *[]map[string]any
     if param.PageNum > 0 { //分页导出
-        listMap, _, err = d.ListMapByPage(param)
+        listMap, _, err = {{.BusinessName}}Dao.ListMapByPage(param)
     } else { //全部导出
-        listMap, err = d.ListAll(param, true)
+        listMap, err = {{.BusinessName}}Dao.ListAll(param, true)
     }
     lv_err.HasErrAndPanic(err)
 	heads := []string{ {{range $index, $column := .Columns}} {{if eq $index 0}}"{{$column.ColumnComment}}"{{else}},"{{$column.ColumnComment}}"{{end}}{{end}}}

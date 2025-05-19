@@ -15,7 +15,14 @@ import (
 )
 
 type {{.ClassName}}Dao struct { }
+var {{.BusinessName}}Dao *{{.ClassName}}Dao
 
+func Get{{.ClassName}}DaoInstance() *{{.ClassName}}Dao {
+	if {{.BusinessName}}Dao == nil {
+		{{.BusinessName}}Dao = &{{.ClassName}}Dao{}
+	}
+	return {{.BusinessName}}Dao
+}
 // ListMapByPage 根据条件分页查询数据
 func (d {{.ClassName}}Dao) ListMapByPage(req *vo.{{.ClassName}}Req) (*[]map[string]any, int64, error) {
 	ibatis := lv_batis.NewInstance("{{.PackageName}}/{{.Table_Name}}_mapper.sql") //under the mapper directory

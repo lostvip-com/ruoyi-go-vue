@@ -1,6 +1,7 @@
 package api
 
 import (
+	api2 "common/api"
 	util2 "common/util"
 	"github.com/gin-gonic/gin"
 	"github.com/lostvip-com/lv_framework/lv_db"
@@ -20,7 +21,7 @@ import (
 )
 
 type GenCodeApi struct {
-	BaseApi
+	api2.BaseApi
 }
 
 // 表单构建

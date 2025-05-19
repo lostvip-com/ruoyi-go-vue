@@ -9,10 +9,11 @@ import (
         "github.com/lostvip-com/lv_framework/web/router"
         "common/middleware/auth"
         "{{.ModuleName}}/internal/{{.PackageName}}/api"
+
 )
 
 func init() {
-	group_{{.BusinessName}} := router.New( "/{{.PackageName}}/{{.BusinessName}}", auth.TokenCheck())
+	{{.BusinessName}} := router.New( "/{{.PackageName}}/{{.BusinessName}}", auth.TokenCheck())
 
 	{{.BusinessName}}Api := api.{{.ClassName}}Api{}
     {{.BusinessName}}.GET("/:id", "{{.PackageName}}:{{.BusinessName}}:info", {{.BusinessName}}Api.GetRoleInfo)

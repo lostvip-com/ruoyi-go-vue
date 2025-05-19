@@ -10,33 +10,6 @@ import (
   "time"
 )
 
-//新增页面请求参数
-type Add{{.ClassName}}Req struct {
-{{- range $index, $column := .Columns}}
-    {{- if and (eq $column.IsInsert "1") (ne $column.IsPk "1")}}
-    {{  $column.GoField}} {{$column.GoType}} `form:"{{$column.HtmlField}}"
-    {{- if eq $column.IsRequired "1"}} binding:"required" {{end -}}
-    {{- if eq $column.ColumnType "date"}} time_format:"2006-01-02" {{end}}
-    {{- if eq $column.ColumnType "datetime"}} time_format:"2006-01-02 15:04:05" {{end}}`
-    {{- end}}
-{{- end}}
-    CreateBy string
-}
-
-//修改页面请求参数
-type Edit{{.ClassName}}Req struct {
-    {{.PkColumn.GoField}}  {{.PkColumn.GoType}}  `form:"{{.PkColumn.HtmlField}}" binding:"required"`
-  {{ range $index, $column := .Columns}}
-    {{- if and (eq $column.IsInsert "1") (ne $column.IsPk "1")}}
-    {{  $column.GoField}} {{$column.GoType}} `form:"{{$column.HtmlField}}"
-    {{- if eq $column.IsRequired "1"}}binding:"required" {{end}}
-    {{- if eq $column.ColumnType "date"}} time_format:"2006-01-02" {{end}}
-    {{- if eq $column.ColumnType "datetime"}} time_format:"2006-01-02 15:04:05" {{end}}`
-   	{{- end }}
-{{- end}}
-    UpdateBy string
-}
-
 //分页请求参数 {{$pkColumn := .PkColumn}}
 type {{.ClassName}}Req struct {
 {{- range $index, $column := .Columns }}
@@ -47,9 +20,9 @@ type {{.ClassName}}Req struct {
   {{$column.GoField}} {{$column.GoType}} `form:"{{$column.HtmlField}}"` //{{$column.ColumnComment}}
 {{- end -}}
 {{- end}}
-    BeginTime  string `form:"beginTime"`  //开始时间
-    EndTime    string `form:"endTime"`    //结束时间
-    lv_dto.Paging
+  BeginTime string `form:"beginTime" json:"beginTime"` //数据范围
+  EndTime   string `form:"endTime" json:"endTime"`     //开始时间
+  lv_dto.Paging
 }
 
 
@@ -58,9 +31,9 @@ type {{.ClassName}}Resp struct {
   {{.PkColumn.GoField}}    {{.PkColumn.GoType}}  `json:"{{.PkColumn.HtmlField}}"`
   {{- range $index, $column := .Columns}}
     {{- if and (eq $column.IsInsert "1") (ne $column.IsPk "1")}}
-        {{ $column.GoField}} {{$column.GoType}} `json:"{{$column.HtmlField}}"
-        {{- if eq $column.ColumnType "date"}} time_format:"2006-01-02" {{end}}
-        {{- if eq $column.ColumnType "datetime"}} time_format:"2006-01-02 15:04:05" {{end}}`
+      {{ $column.GoField}} {{$column.GoType}} `json:"{{$column.HtmlField}}"
+      {{- if eq $column.ColumnType "date"}} time_format:"2006-01-02" {{end}}
+      {{- if eq $column.ColumnType "datetime"}} time_format:"2006-01-02 15:04:05" {{end}}`
     {{- end }}
   {{- end}}
   UpdateBy string      `json:"updateBy"`

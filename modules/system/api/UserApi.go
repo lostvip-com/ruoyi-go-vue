@@ -1,6 +1,7 @@
 package api
 
 import (
+	api2 "common/api"
 	"common/common_vo"
 	util "common/util"
 	"github.com/gin-gonic/gin"
@@ -15,7 +16,7 @@ import (
 )
 
 type UserApi struct {
-	BaseApi
+	api2.BaseApi
 }
 
 // 删除数据

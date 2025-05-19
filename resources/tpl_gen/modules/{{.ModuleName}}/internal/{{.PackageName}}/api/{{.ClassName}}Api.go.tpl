@@ -2,12 +2,16 @@ package api
 
 import (
 	"common/util"
+	"common/api"
+    "{{.ModuleName}}/internal/{{.PackageName}}/service"
+    "{{.ModuleName}}/internal/{{.PackageName}}/model"
+    "{{.ModuleName}}/internal/{{.PackageName}}/vo"
+    sysService "system/service"
+	"github.com/spf13/cast"
 	"github.com/gin-gonic/gin"
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
 	"github.com/lostvip-com/lv_framework/web/lv_dto"
-	sysService "system/service"
-	"{{.ModuleName}}/internal/{{.PackageName}}/service"
-	"{{.ModuleName}}/internal/{{.PackageName}}/vo"
+
 )
 
 type {{.ClassName}}Api struct {

@@ -1,6 +1,7 @@
 package api
 
 import (
+	api2 "common/api"
 	"common/global"
 	"common/util"
 	"github.com/gin-gonic/gin"
@@ -16,7 +17,7 @@ import (
 )
 
 type MonitorApi struct {
-	BaseApi
+	api2.BaseApi
 }
 
 func (m MonitorApi) CacheHandler(c *gin.Context) {
