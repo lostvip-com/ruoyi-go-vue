@@ -19,4 +19,4 @@ main/main
 .vscode
 *.exe
 restart-prod.sh
-tmp
+#tmp
