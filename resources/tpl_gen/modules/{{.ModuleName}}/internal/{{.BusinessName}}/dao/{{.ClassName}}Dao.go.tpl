@@ -10,8 +10,8 @@ import (
 	"github.com/lostvip-com/lv_framework/lv_db/lv_batis"
 	"github.com/lostvip-com/lv_framework/lv_db/lv_dao"
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
-    "{{.ModuleName}}/internal/{{.PackageName}}/vo"
-    "{{.ModuleName}}/internal/{{.PackageName}}/model"
+    "{{.ModuleName}}/internal/{{.BusinessName}}/vo"
+    "{{.ModuleName}}/internal/{{.BusinessName}}/model"
 )
 
 type {{.ClassName}}Dao struct { }
@@ -25,7 +25,7 @@ func Get{{.ClassName}}DaoInstance() *{{.ClassName}}Dao {
 }
 // ListMapByPage 根据条件分页查询数据
 func (d {{.ClassName}}Dao) ListMapByPage(req *vo.{{.ClassName}}Req) (*[]map[string]any, int64, error) {
-	ibatis := lv_batis.NewInstance("{{.PackageName}}/{{.Table_Name}}_mapper.sql") //under the mapper directory
+	ibatis := lv_batis.NewInstance("{{.BusinessName}}/{{.Table_Name}}_mapper.sql") //under the mapper directory
 	// 约定用方法名ListByPage对应sql文件中的同名tagName
 	limitSQL, err := ibatis.GetLimitSql("List{{.ClassName}}", req)
 	//查询数据
@@ -38,7 +38,7 @@ func (d {{.ClassName}}Dao) ListMapByPage(req *vo.{{.ClassName}}Req) (*[]map[stri
 
 // ListByPage 根据条件分页查询数据
 func (d {{.ClassName}}Dao) ListByPage(req *vo.{{.ClassName}}Req) (*[]vo.{{.ClassName}}Resp, int64, error) {
-	ibatis := lv_batis.NewInstance("{{.PackageName}}/{{.Table_Name}}_mapper.sql") //under the mapper directory
+	ibatis := lv_batis.NewInstance("{{.BusinessName}}/{{.Table_Name}}_mapper.sql") //under the mapper directory
 	// 对应sql文件中的同名tagName
 	limitSQL, err := ibatis.GetLimitSql("List{{.ClassName}}", req)
 	//查询数据
@@ -51,7 +51,7 @@ func (d {{.ClassName}}Dao) ListByPage(req *vo.{{.ClassName}}Req) (*[]vo.{{.Class
 
 // ListAll 导出excel使用
 func (d {{.ClassName}}Dao) ListAll(req *vo.{{.ClassName}}Req, isCamel bool) (*[]map[string]any, error) {
-	ibatis := lv_batis.NewInstance("{{.PackageName}}/{{.Table_Name}}_mapper.sql")
+	ibatis := lv_batis.NewInstance("{{.BusinessName}}/{{.Table_Name}}_mapper.sql")
 	// 约定用方法名ListByPage对应sql文件中的同名tagName
 	sql, err := ibatis.GetSql("List{{.ClassName}}", req)
 	lv_err.HasErrAndPanic(err)

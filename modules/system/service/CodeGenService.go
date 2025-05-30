@@ -138,7 +138,7 @@ func (e *CodeGenService) replaceTplVar(tab *vo.GenTableVO, tpl *TplInfo) {
 	tpl.pathDist = strings.ReplaceAll(tpl.pathSrc, global.DIR_TPL_CODE_GEN, global.DIR_DIST_CODE)
 
 	tpl.pathDist = strings.ReplaceAll(tpl.pathDist, "{{.ModuleName}}", tab.ModuleName)
-	tpl.pathDist = strings.ReplaceAll(tpl.pathDist, "{{.PackageName}}", tab.PackageName)
+	tpl.pathDist = strings.ReplaceAll(tpl.pathDist, "{{.BusinessName}}", tab.PackageName)
 	tpl.pathDist = strings.ReplaceAll(tpl.pathDist, "{{.BusinessName}}", tab.BusinessName)
 	tpl.pathDist = strings.ReplaceAll(tpl.pathDist, "{{.ClassName}}", tab.ClassName)
 	tpl.pathDist = strings.ReplaceAll(tpl.pathDist, "{{.FuncName}}", tab.FunctionName)
@@ -149,7 +149,7 @@ func (e *CodeGenService) replaceTplVar(tab *vo.GenTableVO, tpl *TplInfo) {
 	//替换文件名中的占位符
 	tpl.nameDist = tpl.nameSrc[0 : len(tpl.nameSrc)-4]
 	tpl.nameDist = strings.ReplaceAll(tpl.nameDist, "{{.ModuleName}}", tab.ModuleName)
-	tpl.nameDist = strings.ReplaceAll(tpl.nameDist, "{{.PackageName}}", tab.PackageName)
+	tpl.nameDist = strings.ReplaceAll(tpl.nameDist, "{{.BusinessName}}", tab.PackageName)
 	tpl.nameDist = strings.ReplaceAll(tpl.nameDist, "{{.BusinessName}}", tab.BusinessName)
 	tpl.nameDist = strings.ReplaceAll(tpl.nameDist, "{{.ClassName}}", tab.ClassName)
 	tpl.nameDist = strings.ReplaceAll(tpl.nameDist, "{{.FuncName}}", tab.FunctionName)

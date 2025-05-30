@@ -3,9 +3,9 @@ package api
 import (
 	"common/util"
 	"common/api"
-    "{{.ModuleName}}/internal/{{.PackageName}}/service"
-    "{{.ModuleName}}/internal/{{.PackageName}}/model"
-    "{{.ModuleName}}/internal/{{.PackageName}}/vo"
+    "{{.ModuleName}}/internal/{{.BusinessName}}/service"
+    "{{.ModuleName}}/internal/{{.BusinessName}}/model"
+    "{{.ModuleName}}/internal/{{.BusinessName}}/vo"
 	"github.com/spf13/cast"
 	"github.com/gin-gonic/gin"
 	"github.com/lostvip-com/lv_framework/utils/lv_err"

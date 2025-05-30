@@ -11,9 +11,9 @@ import (
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
 	"github.com/lostvip-com/lv_framework/utils/lv_office"
 	"github.com/lostvip-com/lv_framework/utils/lv_reflect"
-    "{{.ModuleName}}/internal/{{.PackageName}}/model"
-    "{{.ModuleName}}/internal/{{.PackageName}}/dao"
-    "{{.ModuleName}}/internal/{{.PackageName}}/vo"
+    "{{.ModuleName}}/internal/{{.BusinessName}}/model"
+    "{{.ModuleName}}/internal/{{.BusinessName}}/dao"
+    "{{.ModuleName}}/internal/{{.BusinessName}}/vo"
 )
 type {{.ClassName}}Service struct{}
 
