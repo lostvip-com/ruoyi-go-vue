@@ -9,11 +9,10 @@ static/upload/*
 .vscode/
 docs/swarm/*
 vender/
-tmp/
-logs/
+logs
 composer.lock
 gitpush.sh
-bin/
+bin
 cbuild
 .DS_Store
 main/main
