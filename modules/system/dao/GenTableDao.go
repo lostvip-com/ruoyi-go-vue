@@ -73,18 +73,10 @@ func (r *GenTableDao) SelectDbTableList(req *vo.GenTablePageReq) ([]model.GenTab
 		if req.TableComment != "" {
 			tb.Where("lower(table_comment) like lower(?)", "%"+req.TableComment+"%")
 		}
-
-		if req.BeginTime != "" {
-			tb.Where("date_format(create_time,'%y%m%d') >= date_format(?,'%y%m%d') ", req.BeginTime)
-		}
-
-		if req.EndTime != "" {
-			tb.Where("date_format(create_time,'%y%m%d') <= date_format(?,'%y%m%d') ", req.EndTime)
-		}
 	}
 	var total int64
 	tb.Count(&total)
-	tb.Select("table_name TbName, table_comment TableComment, create_time CreateTime,update_time UpdateTime")
+	tb.Select("table_name Table_Name, table_comment TableComment, create_time CreateTime,update_time UpdateTime")
 	tb.Limit(req.GetPageSize()).Offset(req.GetStartNum())
 	var result []model.GenTable
 	err := tb.Find(&result).Error
@@ -95,7 +87,7 @@ func (r *GenTableDao) SelectDbTableList(req *vo.GenTablePageReq) ([]model.GenTab
 func (r *GenTableDao) SelectDbTableListByNames(tableNames []string) ([]model.GenTable, error) {
 	db := lv_db.GetMasterGorm()
 	tb := db.Table("information_schema.tables")
-	tb.Select("0 as TableId, table_name as TbName,ifnull(table_comment,table_name) as TableComment")
+	tb.Select("0 as TableId, table_name as Table_Name,ifnull(table_comment,table_name) as TableComment")
 	tb.Where("table_name NOT LIKE 'qrtz_%'")
 	tb.Where("table_name NOT LIKE 'gen_%'")
 	tb.Where("table_schema = (select database())")
@@ -112,7 +104,7 @@ func (r *GenTableDao) SelectDbTableListByNames(tableNames []string) ([]model.Gen
 func (r *GenTableDao) SelectTableByName(tableName string) (*model.GenTable, error) {
 	db := lv_db.GetMasterGorm()
 	tb := db.Table("information_schema.tables")
-	tb.Select("0 as TableId, table_name TbName, table_comment TableComment")
+	tb.Select("0 as TableId, table_name Table_Name, table_comment TableComment")
 	tb.Where("table_comment <> ''")
 	tb.Where("table_schema = (select database())")
 	if tableName != "" {

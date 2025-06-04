@@ -158,7 +158,7 @@ func (svc TableService) ImportGenTable(tableList *[]model.GenTable, operName str
 			for _, table := range *tableList {
 				tableName := table.Table_Name
 				svc.InitTable(&table, operName)
-				err = tx.Table(table.TableName()).Save(&table).Error
+				err = tx.Save(&table).Error
 				if err != nil {
 					return err
 				}
@@ -166,9 +166,8 @@ func (svc TableService) ImportGenTable(tableList *[]model.GenTable, operName str
 					tx.Rollback()
 					return errors.New("保存数据失败")
 				}
-				colSvc := TableColumnService{}
-				genTableColumns, err := colSvc.SelectDbTableColumnsByName(tableName)
-
+				daoGen := dao.GenTableColumnDao{}
+				genTableColumns, err := daoGen.SelectDbTableColumnsByName(tableName)
 				if err != nil || len(genTableColumns) <= 0 {
 					tx.Rollback()
 					return errors.New("获取列数据失败")

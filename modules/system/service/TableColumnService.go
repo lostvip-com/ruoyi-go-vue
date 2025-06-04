@@ -52,9 +52,3 @@ func (svc TableColumnService) SelectGenTableColumnListByTableId(tableId int64) (
 	var tool dao2.GenTableColumnDao
 	return tool.SelectGenTableColumnListByTableId(tableId)
 }
-
-// 根据表名称查询列信息
-func (svc TableColumnService) SelectDbTableColumnsByName(tableName string) ([]model.GenTableColumn, error) {
-	var tool dao2.GenTableColumnDao
-	return tool.SelectDbTableColumnsByName(tableName)
-}
