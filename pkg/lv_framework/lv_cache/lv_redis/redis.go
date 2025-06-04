@@ -30,9 +30,9 @@ func GetInstance(indexDb int) *RedisClient {
 
 func NewRedisClient(indexDb int) *RedisClient {
 	conf := lv_conf.ConfigDefault{}
-	addr := conf.GetValueStr("go.redis.host")
-	port := conf.GetValueStr("go.redis.port")
-	password := conf.GetValueStr("go.redis.password")
+	addr := conf.GetValueStr("application.redis.host")
+	port := conf.GetValueStr("application.redis.port")
+	password := conf.GetValueStr("application.redis.password")
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     addr + ":" + port,
 		Password: password, // 没有密码，默认值
@@ -48,8 +48,8 @@ func NewRedisClient(indexDb int) *RedisClient {
 			  port: %v
 			  password: %v
              `
-		host := conf.GetValueStr("go.redis.host")
-		lv_log.Error(fmt.Sprintf(msg, host, conf.GetValueStr("go.redis.port"), conf.GetValueStr("go.redis.password")))
+		host := conf.GetValueStr("application.redis.host")
+		lv_log.Error(fmt.Sprintf(msg, host, conf.GetValueStr("application.redis.port"), conf.GetValueStr("application.redis.password")))
 		panic("redis 错误:" + host + " port:" + port)
 	}
 	return redisClient
