@@ -7,9 +7,9 @@ package model
 
 import (
     "common/models"
-	"github.com/lostvip-com/lv_framework/lv_db"
-	"github.com/lostvip-com/lv_framework/lv_db/namedsql"
-	"time"
+    "github.com/lostvip-com/lv_framework/lv_db"
+    "github.com/lostvip-com/lv_framework/lv_db/namedsql"
+    "time"
 )
 
 // {{.ClassName}} {{.TableComment}}
@@ -29,20 +29,20 @@ type {{.ClassName}} struct {
     {{- end -}}
 {{- end -}}
 {{- end }}
-   models.BaseModel
+    models.BaseModel
 }
 
 func (e *{{.ClassName}}) TableName() string {
-	return "{{.Table_Name}}"
+    return "{{.Table_Name}}"
 }
 
 func (e *{{.ClassName}}) Save() error {
-	return lv_db.GetMasterGorm().Save(e).Error
+    return lv_db.GetMasterGorm().Save(e).Error
 }
 
 func (e *{{.ClassName}}) FindById(id int64) (*{{.ClassName}},error) {
-	err := lv_db.GetMasterGorm().Take(e,id).Error
-	return e,err
+    err := lv_db.GetMasterGorm().Take(e,id).Error
+    return e,err
 }
 
 func (e *{{.ClassName}}) FindOne() (*{{.ClassName}},error) {
@@ -67,31 +67,30 @@ func (e *{{.ClassName}}) FindOne() (*{{.ClassName}},error) {
 }
 
 func (e *{{.ClassName}}) Updates() error {
-	return lv_db.GetMasterGorm().Table(e.TableName()).Updates(e).Error
+    return lv_db.GetMasterGorm().Table(e.TableName()).Updates(e).Error
 }
 
 func (e *{{.ClassName}}) Delete() error {
-	return lv_db.GetMasterGorm().Delete(e).Error
+    return lv_db.GetMasterGorm().Delete(e).Error
 }
 
 func (e *{{.ClassName}}) Count() (int64, error) {
-	sql := " select count(*) from {{.Table_Name}} where del_flag = 0 "
+    sql := " select count(*) from {{.Table_Name}} where del_flag = 0 "
+  {{range $index, $column := .Columns -}}
+  {{if eq $column.IsQuery "0"}}
+      {{- continue -}}
+  {{- end -}}
+  {{ if contains $column.GoType "int"}}
+    if e.{{$column.GoField}} != 0 {
+        sql += " and {{$column.ColumnName}} = @{{$column.GoField}} "
+    }
+  {{- end -}}
+  {{ if eq $column.GoType "string" }}
+     if e.{{$column.GoField}} != "" {
+        sql += " and {{$column.ColumnName}} = @{{$column.GoField}} "
+     }
+  {{- end -}}
+  {{- end }}
 
-	{{range $index, $column := .Columns -}}
-    {{if eq $column.IsQuery "0"}}
-        {{- continue -}}
-    {{- end -}}
-    {{ if contains $column.GoType "int"}}
-        if e.{{$column.GoField}} != 0 {
-            sql += " and {{$column.ColumnName}} = @{{$column.GoField}} "
-        }
-    {{- end -}}
-    {{ if eq $column.GoType "string" }}
-         if e.{{$column.GoField}} != "" {
-            sql += " and {{$column.ColumnName}} = @{{$column.GoField}} "
-         }
-    {{- end -}}
-    {{- end }}
-
-	return namedsql.Count(lv_db.GetMasterGorm(), sql, e)
+    return namedsql.Count(lv_db.GetMasterGorm(), sql, e)
 }

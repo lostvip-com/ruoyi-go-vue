@@ -6,10 +6,10 @@
 package dao
 
 import (
-	"github.com/lostvip-com/lv_framework/lv_db"
-	"github.com/lostvip-com/lv_framework/lv_db/lv_batis"
-	"github.com/lostvip-com/lv_framework/lv_db/lv_dao"
-	"github.com/lostvip-com/lv_framework/utils/lv_err"
+    "github.com/lostvip-com/lv_framework/lv_db"
+    "github.com/lostvip-com/lv_framework/lv_db/lv_batis"
+    "github.com/lostvip-com/lv_framework/lv_db/lv_dao"
+    "github.com/lostvip-com/lv_framework/utils/lv_err"
     "{{.ModuleName}}/internal/{{.BusinessName}}/vo"
     "{{.ModuleName}}/internal/{{.BusinessName}}/model"
 )
@@ -18,10 +18,10 @@ type {{.ClassName}}Dao struct { }
 var {{.BusinessName}}Dao *{{.ClassName}}Dao
 
 func Get{{.ClassName}}DaoInstance() *{{.ClassName}}Dao {
-	if {{.BusinessName}}Dao == nil {
-		{{.BusinessName}}Dao = &{{.ClassName}}Dao{}
-	}
-	return {{.BusinessName}}Dao
+    if {{.BusinessName}}Dao == nil {
+        {{.BusinessName}}Dao = &{{.ClassName}}Dao{}
+    }
+    return {{.BusinessName}}Dao
 }
 // ListMapByPage 根据条件分页查询数据
 func (d {{.ClassName}}Dao) ListMapByPage(req *vo.{{.ClassName}}Req) (*[]map[string]any, int64, error) {

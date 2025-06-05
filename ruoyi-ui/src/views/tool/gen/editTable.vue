@@ -24,20 +24,20 @@
             min-width="10%"
             :show-overflow-tooltip="true"
           />
-          <el-table-column label="Java类型" min-width="11%">
+          <el-table-column label="go类型" min-width="11%">
             <template slot-scope="scope">
               <el-select v-model="scope.row.javaType">
-                <el-option label="Long" value="Long" />
-                <el-option label="String" value="String" />
-                <el-option label="Integer" value="Integer" />
-                <el-option label="Double" value="Double" />
-                <el-option label="BigDecimal" value="BigDecimal" />
-                <el-option label="Date" value="Date" />
-                <el-option label="Boolean" value="Boolean" />
+                <el-option label="int" value="int" />
+                <el-option label="int64" value="int64" />
+                <el-option label="string" value="string" />
+                <el-option label="float" value="float" />
+                <el-option label="float64" value="float64" />
+                <el-option label="time.Time" value="time.Time" />
+                <el-option label="bool" value="bool" />
               </el-select>
             </template>
           </el-table-column>
-          <el-table-column label="java属性" min-width="10%">
+          <el-table-column label="struct属性" min-width="10%">
             <template slot-scope="scope">
               <el-input v-model="scope.row.javaField"></el-input>
             </template>
