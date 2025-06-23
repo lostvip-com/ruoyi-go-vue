@@ -98,7 +98,6 @@ main[]()
 > 1. 配置GO_PROXY环境变量，如：export GO_PROXY=https://goproxy.cn
 安装相关依赖！
 ### 1. 修改应该的数据库及缓存配置
-* sqlite：默认使用sqlite数据库，可不做任何修改
 * mysql： 导入docs中的sql文件，修改application.yml中的mysql相关信息
 
 ### 2. cd 进入main目录启动应用
