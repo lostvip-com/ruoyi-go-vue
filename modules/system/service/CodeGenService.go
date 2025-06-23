@@ -3,14 +3,15 @@ package service
 import (
 	"bytes"
 	"common/global"
-	"github.com/lostvip-com/lv_framework/lv_log"
-	"github.com/lostvip-com/lv_framework/utils/lv_err"
-	"github.com/lostvip-com/lv_framework/utils/lv_file"
 	"html/template"
 	"os"
 	"path/filepath"
 	"strings"
 	"system/vo"
+
+	"github.com/lostvip-com/lv_framework/lv_log"
+	"github.com/lostvip-com/lv_framework/utils/lv_err"
+	"github.com/lostvip-com/lv_framework/utils/lv_file"
 )
 
 // ////////////////////////////////////////////////////////////////
@@ -28,16 +29,21 @@ type TplInfo struct {
 	nameDist string
 }
 
+var funcMap = template.FuncMap{
+	"contains":   Contains,
+	"upperFirst": UpperFirst,
+	"subStr":     Substr,
+}
+
 func (e *CodeGenService) ListTpl(dir string) []TplInfo {
-	list := []TplInfo{}
-	filepath.Walk(dir, func(path string, f os.FileInfo, err error) error {
+	var list []TplInfo
+	err := filepath.Walk(dir, func(path string, f os.FileInfo, err error) error {
 		if f == nil {
 			return err
 		}
 		if f.IsDir() {
 			return nil
 		}
-		//fmt.Println("file:", filepath.Dir(path), filepath.Base(path))
 		if strings.HasSuffix(path, ".tpl") {
 			tpl := TplInfo{pathSrc: filepath.Dir(path), nameSrc: filepath.Base(path)}
 			list = append(list, tpl)
@@ -46,18 +52,17 @@ func (e *CodeGenService) ListTpl(dir string) []TplInfo {
 		}
 		return nil
 	})
+	if err != nil {
+		return nil
+	}
 	return list
 }
 
 func (e *CodeGenService) PreviewCode(tab *vo.GenTableVO) map[string]map[string]string {
 	mapAll := make(map[string]map[string]string)
-	//内部模板
 	listTpl := e.ListTpl(global.DIR_TPL_CODE_GEN)
-	funcs := template.FuncMap{
-		"contains": Contains,
-	}
 	for _, tpl := range listTpl {
-		t1, err := template.New(tpl.nameSrc).Funcs(funcs).ParseFiles(tpl.pathSrc + "/" + tpl.nameSrc)
+		t1, err := template.New(tpl.nameSrc).Funcs(funcMap).ParseFiles(tpl.pathSrc + "/" + tpl.nameSrc)
 		e.replaceTplVar(tab, &tpl)
 		lv_err.HasErrAndPanic(err)
 		var b1 bytes.Buffer
@@ -74,12 +79,8 @@ func (e *CodeGenService) PreviewCode(tab *vo.GenTableVO) map[string]map[string]s
 func (e *CodeGenService) GenCode(tab *vo.GenTableVO, overwrite bool) {
 	//内部模板
 	srcTpl := e.ListTpl(global.DIR_TPL_CODE_GEN)
-	// 创建函数映射
-	funcs := template.FuncMap{
-		"contains": Contains,
-	}
 	for _, tpl := range srcTpl {
-		t1, err := template.New(tpl.nameSrc).Funcs(funcs).ParseFiles(tpl.pathSrc + "/" + tpl.nameSrc)
+		t1, err := template.New(tpl.nameSrc).Funcs(funcMap).ParseFiles(tpl.pathSrc + "/" + tpl.nameSrc)
 		if err != nil {
 			lv_log.Error(err)
 			continue
@@ -105,7 +106,7 @@ func (e *CodeGenService) GenCode(tab *vo.GenTableVO, overwrite bool) {
 }
 
 // 读取模板
-func (svc CodeGenService) LoadTemplate(templateName string, data interface{}) (string, error) {
+func (e *CodeGenService) LoadTemplate(templateName string, data interface{}) (string, error) {
 	cur, err := os.Getwd()
 	if err != nil {
 		return "", err
@@ -115,13 +116,7 @@ func (svc CodeGenService) LoadTemplate(templateName string, data interface{}) (s
 		return "", err
 	}
 	templateStr := string(b)
-
-	// 创建函数映射
-	funcs := template.FuncMap{
-		"contains": Contains,
-	}
-
-	tmpl, err := template.New(templateName).Funcs(funcs).Parse(templateStr) //建立一个模板，内容是"hello, {{OssUrl}}"
+	tmpl, err := template.New(templateName).Funcs(funcMap).Parse(templateStr) //建立一个模板，内容是"hello, {{OssUrl}}"
 	if err != nil {
 		return "", err
 	}
