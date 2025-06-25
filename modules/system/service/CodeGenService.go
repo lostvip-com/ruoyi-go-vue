@@ -38,6 +38,7 @@ var funcMap = template.FuncMap{
 func (e *CodeGenService) ListTpl() []TplInfo {
 	var list []TplInfo
 	for _, dir := range global.BaseFilePathArr {
+		dir = dir + string(os.PathSeparator) + "tpl_gen"
 		if !lv_file.IsFileExist(dir) {
 			continue
 		}

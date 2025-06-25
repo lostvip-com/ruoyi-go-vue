@@ -21,7 +21,7 @@ func TestGenTpl(t *testing.T) {
 	distName := "index.vue"
 	tpl := service.TplInfo{
 		PathSrc:  lv_file.GetCurrentPath() + "/../resources/tpl_gen/vue3/src/views/{{.ModuleName}}/{{.BusinessName}}",
-		NameSrc:  distName,
+		NameSrc:  distName + ".tpl",
 		PathDist: target,
 		NameDist: distName,
 	}

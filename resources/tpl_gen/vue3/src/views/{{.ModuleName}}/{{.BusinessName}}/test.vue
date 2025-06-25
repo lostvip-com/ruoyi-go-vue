@@ -1,3 +1,0 @@
-{{.BusinessName}}
-
-{% .BusinessName %}
