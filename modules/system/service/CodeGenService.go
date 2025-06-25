@@ -10,7 +10,6 @@ import (
 	"system/vo"
 
 	"github.com/lostvip-com/lv_framework/lv_log"
-	"github.com/lostvip-com/lv_framework/utils/lv_err"
 	"github.com/lostvip-com/lv_framework/utils/lv_file"
 )
 
@@ -62,18 +61,26 @@ func (e *CodeGenService) PreviewCode(tab *vo.GenTableVO) map[string]map[string]s
 	mapAll := make(map[string]map[string]string)
 	listTpl := e.ListTpl(global.DIR_TPL_CODE_GEN)
 	for _, tpl := range listTpl {
-		t1, err := template.New(tpl.nameSrc).Funcs(funcMap).ParseFiles(tpl.pathSrc + "/" + tpl.nameSrc)
-		e.replaceTplVar(tab, &tpl)
-		lv_err.HasErrAndPanic(err)
-		var b1 bytes.Buffer
-		err = t1.Execute(&b1, tab)
-		groupKey := filepath.Ext(tpl.nameDist) //获取后缀做为分组key 如 java,go,sql
-		if mapAll[groupKey] == nil {           //是否存在此组
+		b1, groupKey, err := e.GenCodeTpl(tab, tpl)
+		if err != nil {
+			lv_log.Error(err)
+			continue
+		}
+		if mapAll[groupKey] == nil { //是否存在此组
 			mapAll[groupKey] = make(map[string]string)
 		}
 		mapAll[groupKey][tpl.nameDist] = b1.String()
 	}
 	return mapAll
+}
+
+func (e *CodeGenService) GenCodeTpl(tab *vo.GenTableVO, tpl TplInfo) (bytes.Buffer, string, error) {
+	t1, err := template.New(tpl.nameSrc).Funcs(funcMap).ParseFiles(filepath.Join(tpl.pathSrc, tpl.nameSrc))
+	e.replaceTplVar(tab, &tpl)
+	var b1 bytes.Buffer
+	err = t1.Execute(&b1, tab)
+	groupKey := filepath.Ext(tpl.nameDist) //获取后缀做为分组key 如 java,go,sql
+	return b1, groupKey, err
 }
 
 func (e *CodeGenService) GenCode(tab *vo.GenTableVO, overwrite bool) {
@@ -102,7 +109,6 @@ func (e *CodeGenService) GenCode(tab *vo.GenTableVO, overwrite bool) {
 		}
 		lv_log.Info("生成文件:", err, targetPath)
 	}
-
 }
 
 // 读取模板
