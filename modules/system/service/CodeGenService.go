@@ -3,14 +3,13 @@ package service
 import (
 	"bytes"
 	"common/global"
+	"github.com/lostvip-com/lv_framework/lv_log"
+	"github.com/lostvip-com/lv_framework/utils/lv_file"
 	"html/template"
 	"os"
 	"path/filepath"
 	"strings"
 	"system/vo"
-
-	"github.com/lostvip-com/lv_framework/lv_log"
-	"github.com/lostvip-com/lv_framework/utils/lv_file"
 )
 
 // ////////////////////////////////////////////////////////////////
@@ -21,139 +20,138 @@ type CodeGenService struct {
 }
 
 type TplInfo struct {
-	pathSrc string
-	nameSrc string
+	PathSrc string
+	NameSrc string
 
-	pathDist string
-	nameDist string
+	PathDist string
+	NameDist string
 }
 
 var funcMap = template.FuncMap{
 	"contains":   Contains,
 	"upperFirst": UpperFirst,
-	"subStr":     Substr,
+	"substr":     Substr,
+	"replace":    strings.Replace,
+	"index":      strings.Index,
 }
 
-func (e *CodeGenService) ListTpl(dir string) []TplInfo {
+func (e *CodeGenService) ListTpl() []TplInfo {
 	var list []TplInfo
-	err := filepath.Walk(dir, func(path string, f os.FileInfo, err error) error {
-		if f == nil {
-			return err
+	for _, dir := range global.BaseFilePathArr {
+		if !lv_file.IsFileExist(dir) {
+			continue
 		}
-		if f.IsDir() {
+		err := filepath.Walk(dir, func(path string, f os.FileInfo, err error) error {
+			if f == nil {
+				return err
+			}
+			if f.IsDir() {
+				return nil
+			}
+			if strings.HasSuffix(path, ".tpl") {
+				tpl := TplInfo{PathSrc: filepath.Dir(path), NameSrc: filepath.Base(path)}
+				list = append(list, tpl)
+			} else {
+				lv_log.Warn("。。。。。。skip! not end with .tpl " + path)
+			}
+			return nil
+		})
+		if err != nil {
 			return nil
 		}
-		if strings.HasSuffix(path, ".tpl") {
-			tpl := TplInfo{pathSrc: filepath.Dir(path), nameSrc: filepath.Base(path)}
-			list = append(list, tpl)
-		} else {
-			lv_log.Warn("。。。。。。skip! not end with .tpl " + path)
-		}
-		return nil
-	})
-	if err != nil {
-		return nil
 	}
 	return list
 }
 
 func (e *CodeGenService) PreviewCode(tab *vo.GenTableVO) map[string]map[string]string {
 	mapAll := make(map[string]map[string]string)
-	listTpl := e.ListTpl(global.DIR_TPL_CODE_GEN)
+	listTpl := e.ListTpl()
 	for _, tpl := range listTpl {
-		b1, groupKey, err := e.GenCodeTpl(tab, tpl)
+		b1, err := e.GenCodeByTpl(tab, &tpl)
 		if err != nil {
 			lv_log.Error(err)
 			continue
 		}
-		if mapAll[groupKey] == nil { //是否存在此组
+		groupKey := filepath.Ext(tpl.NameDist) //获取后缀做为分组key 如 java,go,sql
+		if mapAll[groupKey] == nil {           //是否存在此组
 			mapAll[groupKey] = make(map[string]string)
 		}
-		mapAll[groupKey][tpl.nameDist] = b1.String()
+		mapAll[groupKey][tpl.NameDist] = b1.String()
 	}
 	return mapAll
 }
 
-func (e *CodeGenService) GenCodeTpl(tab *vo.GenTableVO, tpl TplInfo) (bytes.Buffer, string, error) {
-	t1, err := template.New(tpl.nameSrc).Funcs(funcMap).ParseFiles(filepath.Join(tpl.pathSrc, tpl.nameSrc))
-	e.replaceTplVar(tab, &tpl)
+func (e *CodeGenService) GenCodeByTpl(tab *vo.GenTableVO, tpl *TplInfo) (*bytes.Buffer, error) {
+	e.replaceTplVar(tpl, tab)
+	file := filepath.Join(tpl.PathSrc, tpl.NameSrc)
+	t1, err := template.New(tpl.NameSrc).Funcs(funcMap).ParseFiles(file)
+	if err != nil {
+		return nil, err
+	}
 	var b1 bytes.Buffer
 	err = t1.Execute(&b1, tab)
-	groupKey := filepath.Ext(tpl.nameDist) //获取后缀做为分组key 如 java,go,sql
-	return b1, groupKey, err
+	return &b1, err
 }
 
 func (e *CodeGenService) GenCode(tab *vo.GenTableVO, overwrite bool) {
 	//内部模板
-	srcTpl := e.ListTpl(global.DIR_TPL_CODE_GEN)
+	srcTpl := e.ListTpl()
 	for _, tpl := range srcTpl {
-		t1, err := template.New(tpl.nameSrc).Funcs(funcMap).ParseFiles(tpl.pathSrc + "/" + tpl.nameSrc)
-		if err != nil {
-			lv_log.Error(err)
-			continue
-		}
-		var b1 bytes.Buffer
-		err = t1.Execute(&b1, tab)
-		//路径替换
-		basePath := lv_file.GetCurrentPath()
-		if err != nil {
-			lv_log.Error(err)
-			continue
-		}
-		e.replaceTplVar(tab, &tpl)
-		targetPath := basePath + tpl.pathDist + "/" + tpl.nameDist
+		buff, err := e.GenCodeByTpl(tab, &tpl)
+		targetPath := lv_file.GetCurrentPath() + tpl.PathDist + "/" + tpl.NameDist
 		if overwrite {
-			targetPath, err = lv_file.FileCreate(b1, targetPath)
+			targetPath, err = lv_file.FileCreate(buff, targetPath)
 		} else if !lv_file.IsFileExist(targetPath) {
-			targetPath, err = lv_file.FileCreate(b1, targetPath)
+			targetPath, err = lv_file.FileCreate(buff, targetPath)
 		}
 		lv_log.Info("生成文件:", err, targetPath)
 	}
 }
 
 // 读取模板
-func (e *CodeGenService) LoadTemplate(templateName string, data interface{}) (string, error) {
-	cur, err := os.Getwd()
-	if err != nil {
-		return "", err
-	}
-	b, err := os.ReadFile(cur + "/resources/template/" + templateName)
-	if err != nil {
-		return "", err
-	}
-	templateStr := string(b)
-	tmpl, err := template.New(templateName).Funcs(funcMap).Parse(templateStr) //建立一个模板，内容是"hello, {{OssUrl}}"
-	if err != nil {
-		return "", err
-	}
-	buffer := bytes.NewBufferString("")
-	err = tmpl.Execute(buffer, data) //将string与模板合成，变量name的内容会替换掉{{OssUrl}}
-	return buffer.String(), err
-}
+//func (e *CodeGenService) LoadTemplate(templateName string, data interface{}) (string, error) {
+//	cur, err := os.Getwd()
+//	if err != nil {
+//		return "", err
+//	}
+//	b, err := os.ReadFile(filepath.Join(cur, "resources", "template", templateName))
+//	if err != nil {
+//		return "", err
+//	}
+//	templateStr := string(b)
+//	tmpl, err := template.New(templateName).Funcs(funcMap).Parse(templateStr) //建立一个模板，内容是"hello, {{OssUrl}}"
+//	if err != nil {
+//		return "", err
+//	}
+//	buffer := bytes.NewBufferString("")
+//	err = tmpl.Execute(buffer, data) //将string与模板合成，变量name的内容会替换掉{{OssUrl}}
+//	return buffer.String(), err
+//}
 
 /**
  * 替换模板变量中的路径变量
  */
-func (e *CodeGenService) replaceTplVar(tab *vo.GenTableVO, tpl *TplInfo) {
+func (e *CodeGenService) replaceTplVar(tpl *TplInfo, tab *vo.GenTableVO) {
 	//替换路径中的占位符
-	tpl.pathDist = strings.ReplaceAll(tpl.pathSrc, global.DIR_TPL_CODE_GEN, global.DIR_DIST_CODE)
-
-	tpl.pathDist = strings.ReplaceAll(tpl.pathDist, "{{.ModuleName}}", tab.ModuleName)
-	tpl.pathDist = strings.ReplaceAll(tpl.pathDist, "{{.BusinessName}}", tab.PackageName)
-	tpl.pathDist = strings.ReplaceAll(tpl.pathDist, "{{.BusinessName}}", tab.BusinessName)
-	tpl.pathDist = strings.ReplaceAll(tpl.pathDist, "{{.ClassName}}", tab.ClassName)
-	tpl.pathDist = strings.ReplaceAll(tpl.pathDist, "{{.FuncName}}", tab.FunctionName)
-	tpl.pathDist = strings.ReplaceAll(tpl.pathDist, "{{.FunctionName}}", tab.FunctionName)
-	tpl.pathDist = strings.ReplaceAll(tpl.pathDist, "{{.Table_Name}}", tab.Table_Name)
-	tpl.pathDist = strings.ReplaceAll(tpl.pathDist, "{{.Tmp}}", "tmp")
-	_ = lv_file.PathCreateIfNotExist(tpl.pathDist)
+	if tpl.PathDist == "" {
+		tpl.PathDist = strings.ReplaceAll(tpl.PathSrc, "resources"+string(os.PathSeparator)+"tpl_gen"+string(os.PathSeparator), "")
+	}
+	tpl.PathDist = strings.ReplaceAll(tpl.PathDist, "{{.PackageName}}", tab.PackageName)
+	tpl.PathDist = strings.ReplaceAll(tpl.PathDist, "{{.ModuleName}}", tab.ModuleName)
+	tpl.PathDist = strings.ReplaceAll(tpl.PathDist, "{{.BusinessName}}", tab.BusinessName)
+	tpl.PathDist = strings.ReplaceAll(tpl.PathDist, "{{.ClassName}}", tab.ClassName)
+	tpl.PathDist = strings.ReplaceAll(tpl.PathDist, "{{.FuncName}}", tab.FunctionName)
+	tpl.PathDist = strings.ReplaceAll(tpl.PathDist, "{{.FunctionName}}", tab.FunctionName)
+	tpl.PathDist = strings.ReplaceAll(tpl.PathDist, "{{.Table_Name}}", tab.Table_Name)
+	tpl.PathDist = strings.ReplaceAll(tpl.PathDist, "{{.Tmp}}", "tmp")
+	_ = lv_file.PathCreateIfNotExist(tpl.PathDist)
 	//替换文件名中的占位符
-	tpl.nameDist = tpl.nameSrc[0 : len(tpl.nameSrc)-4]
-	tpl.nameDist = strings.ReplaceAll(tpl.nameDist, "{{.ModuleName}}", tab.ModuleName)
-	tpl.nameDist = strings.ReplaceAll(tpl.nameDist, "{{.BusinessName}}", tab.PackageName)
-	tpl.nameDist = strings.ReplaceAll(tpl.nameDist, "{{.BusinessName}}", tab.BusinessName)
-	tpl.nameDist = strings.ReplaceAll(tpl.nameDist, "{{.ClassName}}", tab.ClassName)
-	tpl.nameDist = strings.ReplaceAll(tpl.nameDist, "{{.FuncName}}", tab.FunctionName)
-	tpl.nameDist = strings.ReplaceAll(tpl.nameDist, "{{.FunctionName}}", tab.FunctionName)
-	tpl.nameDist = strings.ReplaceAll(tpl.nameDist, "{{.Table_Name}}", tab.Table_Name)
+	tpl.NameDist = tpl.NameSrc[0 : len(tpl.NameSrc)-4]
+	tpl.NameDist = strings.ReplaceAll(tpl.NameDist, "{{.ModuleName}}", tab.ModuleName)
+	tpl.NameDist = strings.ReplaceAll(tpl.NameDist, "{{.BusinessName}}", tab.PackageName)
+	tpl.NameDist = strings.ReplaceAll(tpl.NameDist, "{{.BusinessName}}", tab.BusinessName)
+	tpl.NameDist = strings.ReplaceAll(tpl.NameDist, "{{.ClassName}}", tab.ClassName)
+	tpl.NameDist = strings.ReplaceAll(tpl.NameDist, "{{.FuncName}}", tab.FunctionName)
+	tpl.NameDist = strings.ReplaceAll(tpl.NameDist, "{{.FunctionName}}", tab.FunctionName)
+	tpl.NameDist = strings.ReplaceAll(tpl.NameDist, "{{.Table_Name}}", tab.Table_Name)
 }

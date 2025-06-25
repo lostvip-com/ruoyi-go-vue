@@ -20,7 +20,7 @@ type LvLogImpl struct {
 func InitLog(fileName string) *LvLogImpl {
 	e := new(LvLogImpl)
 	if lv_global.Config() == nil {
-		cfg := new(lv_conf.ConfigDefault)
+		cfg := new(lv_conf.CfgDefault)
 		lv_global.RegisterCfg(cfg)
 	}
 	if e.Log == nil {

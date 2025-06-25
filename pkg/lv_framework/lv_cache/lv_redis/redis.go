@@ -29,7 +29,7 @@ func GetInstance(indexDb int) *RedisClient {
 }
 
 func NewRedisClient(indexDb int) *RedisClient {
-	conf := lv_conf.ConfigDefault{}
+	conf := lv_conf.CfgDefault{}
 	addr := conf.GetValueStr("application.redis.host")
 	port := conf.GetValueStr("application.redis.port")
 	password := conf.GetValueStr("application.redis.password")

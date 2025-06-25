@@ -1,45 +1,42 @@
+{{$tagS := "{{"}}
+{{$tagE := "}}"}}
 <template>
   <div class="app-container">
     <!-- 查询表单 -->
     <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
       {{range $column := .Columns}}
-      {{if $column.Query}}
+      {{if eq "1" $column.IsQuery}}
         {{$dictType := $column.DictType}}
-        {{$parentheseIndex := strings.Index $column.ColumnComment "（"}}
-        {{if ne $parentheseIndex -1}}
-          {{$comment := substr $column.ColumnComment 0 $parentheseIndex}}
-        {{else}}
-          {{$comment := $column.ColumnComment}}
-        {{end}}
+        {{$comment := $column.ColumnComment}}
         <!-- 输入框 -->
         {{if eq $column.HtmlType "input"}}
-          <el-form-item label="{{$comment}}" prop="{{$column.JavaField}}">
-            <el-input v-model="queryParams.{{$column.JavaField}}" placeholder="请输入{{$comment}}" clearable @keyup.enter="handleQuery" />
+          <el-form-item label="{{$comment}}" prop="{{$column.GoField}}">
+            <el-input v-model="queryParams.{{$column.GoField}}" placeholder="请输入{{$comment}}" clearable @keyup.enter="handleQuery" />
           </el-form-item>
         <!-- 下拉/单选框（带字典） -->
         {{else if and (or (eq $column.HtmlType "select") (eq $column.HtmlType "radio")) (ne $dictType "")}}
-          <el-form-item label="{{$comment}}" prop="{{$column.JavaField}}">
-            <el-select v-model="queryParams.{{$column.JavaField}}" placeholder="请选择{{$comment}}" clearable>
+          <el-form-item label="{{$comment}}" prop="{{$column.GoField}}">
+            <el-select v-model="queryParams.{{$column.GoField}}" placeholder="请选择{{$comment}}" clearable>
               <el-option v-for="dict in {{$dictType}}" :key="dict.value" :label="dict.label" :value="dict.value"/>
             </el-select>
           </el-form-item>
         <!-- 下拉/单选框（无字典） -->
         {{else if and (or (eq $column.HtmlType "select") (eq $column.HtmlType "radio")) $dictType}}
-          <el-form-item label="{{$comment}}" prop="{{$column.JavaField}}">
-            <el-select v-model="queryParams.{{$column.JavaField}}" placeholder="请选择{{$comment}}" clearable>
+          <el-form-item label="{{$comment}}" prop="{{$column.GoField}}">
+            <el-select v-model="queryParams.{{$column.GoField}}" placeholder="请选择{{$comment}}" clearable>
               <el-option label="请选择字典生成" value="" />
             </el-select>
           </el-form-item>
         <!-- 日期选择（非范围） -->
         {{else if and (eq $column.HtmlType "datetime") (ne $column.QueryType "BETWEEN")}}
-          <el-form-item label="{{$comment}}" prop="{{$column.JavaField}}">
-            <el-date-picker clearable v-model="queryParams.{{$column.JavaField}}" type="date" value-format="YYYY-MM-DD" placeholder="请选择{{$comment}}" />
+          <el-form-item label="{{$comment}}" prop="{{$column.GoField}}">
+            <el-date-picker clearable v-model="queryParams.{{$column.GoField}}" type="date" value-format="YYYY-MM-DD" placeholder="请选择{{$comment}}" />
           </el-form-item>
         <!-- 日期范围选择 -->
         {{else if and (eq $column.HtmlType "datetime") (eq $column.QueryType "BETWEEN")}}
           <el-form-item label="{{$comment}}" style="width: 308px">
             <el-date-picker
-              v-model="daterange{{upperFirst $column.JavaField}}"
+              v-model="daterange{{upperFirst $column.GoField}}"
               value-format="YYYY-MM-DD"
               type="daterange"
               range-separator="-"
@@ -65,7 +62,7 @@
           plain
           icon="Plus"
           @click="handleAdd"
-          v-hasPermi="['{{.PermissionPrefix}}:add']"
+          v-hasPermi="['{{.BusinessName}}:add']"
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -75,7 +72,7 @@
           icon="Edit"
           :disabled="single"
           @click="handleUpdate"
-          v-hasPermi="['{{.PermissionPrefix}}:edit']"
+          v-hasPermi="['{{.BusinessName}}:edit']"
         >修改</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -85,7 +82,7 @@
           icon="Delete"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['{{.PermissionPrefix}}:remove']"
+          v-hasPermi="['{{.BusinessName}}:remove']"
         >删除</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -94,7 +91,7 @@
           plain
           icon="Download"
           @click="handleExport"
-          v-hasPermi="['{{.PermissionPrefix}}:export']"
+          v-hasPermi="['{{.BusinessName}}:export']"
         >导出</el-button>
       </el-col>
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
@@ -104,51 +101,46 @@
     <el-table v-loading="loading" :data="{{.BusinessName}}List" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       {{range $column := .Columns}}
-        {{$javaField := $column.JavaField}}
-        {{$parentheseIndex := strings.Index $column.ColumnComment "（"}}
-        {{if ne $parentheseIndex -1}}
-          {{$comment := substr $column.ColumnComment 0 $parentheseIndex}}
-        {{else}}
-          {{$comment := $column.ColumnComment}}
-        {{end}}
+        {{$GoField := $column.GoField}}
+        {{$comment := $column.ColumnComment}}
         <!-- 主键列 -->
-        {{if $column.Pk}}
-          <el-table-column label="{{$comment}}" align="center" prop="{{$javaField}}" />
+        {{if eq "1" $column.IsPk}}
+          <el-table-column label="{{$comment}}" align="center" prop="{{$GoField}}" />
         <!-- 日期列 -->
-        {{else if and $column.List (eq $column.HtmlType "datetime")}}
-          <el-table-column label="{{$comment}}" align="center" prop="{{$javaField}}" width="180">
+        {{else if (eq $column.HtmlType "datetime")}}
+          <el-table-column label="{{$comment}}" align="center" prop="{{$GoField}}" width="180">
             <template #default="scope">
-              <span>{{ parseTime(scope.row.{{$javaField}}, '{y}-{m}-{d}') }}</span>
+              <span>{{$tagS}} parseTime(scope.row.{{$GoField}}, '{y}-{m}-{d}') {{$tagE}}</span>
             </template>
           </el-table-column>
         <!-- 图片列 -->
-        {{else if and $column.List (eq $column.HtmlType "imageUpload")}}
-          <el-table-column label="{{$comment}}" align="center" prop="{{$javaField}}" width="100">
+        {{else if (eq $column.HtmlType "imageUpload")}}
+          <el-table-column label="{{$comment}}" align="center" prop="{{$GoField}}" width="100">
             <template #default="scope">
-              <image-preview :src="scope.row.{{$javaField}}" :width="50" :height="50"/>
+              <image-preview :src="scope.row.{{$GoField}}" :width="50" :height="50"/>
             </template>
           </el-table-column>
         <!-- 字典列 -->
-        {{else if and $column.List (ne $column.DictType "")}}
-          <el-table-column label="{{$comment}}" align="center" prop="{{$javaField}}">
+        {{else if (ne $column.DictType "")}}
+          <el-table-column label="{{$comment}}" align="center" prop="{{$GoField}}">
             <template #default="scope">
               {{if eq $column.HtmlType "checkbox"}}
-                <dict-tag :options="{{$column.DictType}}" :value="scope.row.{{$javaField}} ? scope.row.{{$javaField}}.split(',') : []"/>
+                <dict-tag :options="{{$column.DictType}}" :value="scope.row.{{$GoField}} ? scope.row.{{$GoField}}.split(',') : []"/>
               {{else}}
-                <dict-tag :options="{{$column.DictType}}" :value="scope.row.{{$javaField}}"/>
+                <dict-tag :options="{{$column.DictType}}" :value="scope.row.{{$GoField}}"/>
               {{end}}
             </template>
           </el-table-column>
         <!-- 普通列 -->
-        {{else if and $column.List (ne $javaField "")}}
-          <el-table-column label="{{$comment}}" align="center" prop="{{$javaField}}" />
+        {{else if and  (ne $GoField "")}}
+          <el-table-column label="{{$comment}}" align="center" prop="{{$GoField}}" />
         {{end}}
       {{end}}
       <!-- 操作列 -->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
-          <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['{{.PermissionPrefix}}:edit']">修改</el-button>
-          <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['{{.PermissionPrefix}}:remove']">删除</el-button>
+          <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['{{.BusinessName}}:edit']">修改</el-button>
+          <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['{{.BusinessName}}:remove']">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -166,15 +158,10 @@
     <el-dialog :title="title" v-model="open" width="500px" append-to-body>
       <el-form ref="{{.BusinessName}}Ref" :model="form" :rules="rules" label-width="80px">
         {{range $column := .Columns}}
-          {{$field := $column.JavaField}}
-          {{if and $column.Insert (not $column.Pk)}}
-            {{if or $column.UsableColumn (not $column.SuperColumn)}}
-              {{$parentheseIndex := strings.Index $column.ColumnComment "（"}}
-              {{if ne $parentheseIndex -1}}
-                {{$comment := substr $column.ColumnComment 0 $parentheseIndex}}
-              {{else}}
-                {{$comment := $column.ColumnComment}}
-              {{end}}
+          {{$field := $column.GoField}}
+          {{if and (eq "1" $column.IsInsert) (ne "1" $column.IsPk)}}
+
+              {{$comment := $column.ColumnComment}}
               {{$dictType := $column.DictType}}
               <!-- 输入框 -->
               {{if eq $column.HtmlType "input"}}
@@ -204,7 +191,7 @@
                       v-for="dict in {{$dictType}}"
                       :key="dict.value"
                       :label="dict.label"
-                      {{if or (eq $column.JavaType "Integer") (eq $column.JavaType "Long")}}
+                      {{if or (eq $column.GoType "Integer") (eq $column.GoType "Long")}}
                         :value="parseInt(dict.value)"
                       {{else}}
                         :value="dict.value"
@@ -216,11 +203,7 @@
               {{else if and (eq $column.HtmlType "checkbox") (ne $dictType "")}}
                 <el-form-item label="{{$comment}}" prop="{{$field}}">
                   <el-checkbox-group v-model="form.{{$field}}">
-                    <el-checkbox
-                      v-for="dict in {{$dictType}}"
-                      :key="dict.value"
-                      :label="dict.value"
-                    >{{dict.label}}</el-checkbox>
+                    <el-checkbox v-for="dict in {{$dictType}}" :key="dict.value" :label="dict.value">{{$tagS}} dict.label {{$tagE}} </el-checkbox>
                   </el-checkbox-group>
                 </el-form-item>
               <!-- 单选框（带字典） -->
@@ -230,12 +213,12 @@
                     <el-radio
                       v-for="dict in {{$dictType}}"
                       :key="dict.value"
-                      {{if or (eq $column.JavaType "Integer") (eq $column.JavaType "Long")}}
+                      {{if or (eq $column.GoType "Integer") (eq $column.GoType "Long")}}
                         :label="parseInt(dict.value)"
                       {{else}}
                         :label="dict.value"
                       {{end}}
-                    >{{dict.label}}</el-radio>
+                    >{{$tagS}} dict.label {{$tagE}} </el-radio>
                   </el-radio-group>
                 </el-form-item>
               <!-- 日期选择 -->
@@ -254,53 +237,9 @@
                   <el-input v-model="form.{{$field}}" type="textarea" placeholder="请输入内容" />
                 </el-form-item>
               {{end}}
-            {{end}}
           {{end}}
         {{end}}
         <!-- 子表部分（示例） -->
-        {{if .Table.Sub}}
-          <el-divider content-position="center">{{.SubTable.FunctionName}}信息</el-divider>
-          <el-row :gutter="10" class="mb8">
-            <el-col :span="1.5">
-              <el-button type="primary" icon="Plus" @click="handleAdd{{.SubClassName}}">添加</el-button>
-            </el-col>
-            <el-col :span="1.5">
-              <el-button type="danger" icon="Delete" @click="handleDelete{{.SubClassName}}">删除</el-button>
-            </el-col>
-          </el-row>
-          <el-table :data="{{.SubClassName}}List" :row-class-name="row{{.SubClassName}}Index" @selection-change="handle{{.SubClassName}}SelectionChange" ref="{{.SubClassName}}">
-            <el-table-column type="selection" width="50" align="center" />
-            <el-table-column label="序号" align="center" prop="index" width="50"/>
-            {{range $column := .SubTable.Columns}}
-              {{$javaField := $column.JavaField}}
-              {{$parentheseIndex := strings.Index $column.ColumnComment "（"}}
-              {{if ne $parentheseIndex -1}}
-                {{$comment := substr $column.ColumnComment 0 $parentheseIndex}}
-              {{else}}
-                {{$comment := $column.ColumnComment}}
-              {{end}}
-              {{if or $column.Pk (eq $javaField .SubTableFkclassName)}}
-              {{else if and $column.List (eq $column.HtmlType "input")}}
-                <el-table-column label="{{$comment}}" prop="{{$javaField}}" width="150">
-                  <template #default="scope">
-                    <el-input v-model="scope.row.{{$javaField}}" placeholder="请输入{{$comment}}" />
-                  </template>
-                </el-table-column>
-              {{else if and $column.List (eq $column.HtmlType "datetime")}}
-                <el-table-column label="{{$comment}}" prop="{{$javaField}}" width="240">
-                  <template #default="scope">
-                    <el-date-picker clearable
-                      v-model="scope.row.{{$javaField}}"
-                      type="date"
-                      value-format="YYYY-MM-DD"
-                      placeholder="请选择{{$comment}}"
-                    ></el-date-picker>
-                  </template>
-                </el-table-column>
-              {{end}}
-            {{end}}
-          </el-table>
-        {{end}}
       </el-form>
       <template #footer>
         <div class="dialog-footer">
@@ -316,30 +255,20 @@
 import { list{{.BusinessName}}, get{{.BusinessName}}, del{{.BusinessName}}, add{{.BusinessName}}, update{{.BusinessName}} } from "@/api/{{.ModuleName}}/{{.BusinessName}}";
 
 const { proxy } = getCurrentInstance();
-{{if ne .Dicts ""}}
-  {{$dictsNoSymbol := strings.Replace .Dicts "'" "" -1}}
-  const { {{$dictsNoSymbol}} } = proxy.useDict({{.Dicts}});
-{{end}}
-
 // 响应式数据声明
 const {{.BusinessName}}List = ref([]);
-{{if .Table.Sub}}
-const {{.SubClassName}}List = ref([]);
-{{end}}
+
 const open = ref(false);
 const loading = ref(true);
 const showSearch = ref(true);
 const ids = ref([]);
-{{if .Table.Sub}}
-const checked{{.SubClassName}} = ref([]);
-{{end}}
 const single = ref(true);
 const multiple = ref(true);
 const total = ref(0);
 const title = ref("");
 {{range $column := .Columns}}
 {{if and (eq $column.HtmlType "datetime") (eq $column.QueryType "BETWEEN")}}
-const daterange{{upperFirst $column.JavaField}} = ref([]);
+const daterange{{upperFirst $column.GoField}} = ref([]);
 {{end}}
 {{end}}
 
@@ -349,17 +278,17 @@ const data = reactive({
     pageNum: 1,
     pageSize: 10,
     {{range $column := .Columns}}
-    {{if $column.Query}}
-    {{$column.JavaField}}: null{{if ne $loop.Last}},{{end}}
+    {{if eq "1" $column.IsQuery}}
+    {{$column.GoField}}: null,
     {{end}}
     {{end}}
   },
   rules: {
     {{range $column := .Columns}}
-    {{if $column.Required}}
-    {{$column.JavaField}}: [
-      { required: true, message: "{{substr $column.ColumnComment 0 (strings.Index $column.ColumnComment "（")}}不能为空", trigger: {{if or (eq $column.HtmlType "select") (eq $column.HtmlType "radio")}}"change"{{else}}"blur"{{end}} }
-    ]{{if ne $loop.Last}},{{end}}
+    {{if eq "1" $column.IsRequired}}
+    {{$column.GoField}}: [
+      { required: true, message: "{{$column.ColumnComment}}不能为空", trigger: {{if or (eq $column.HtmlType "select") (eq $column.HtmlType "radio")}}"change"{{else}}"blur"{{end}} }
+    ]
     {{end}}
     {{end}}
   }
@@ -378,7 +307,7 @@ function getList() {
   {{end}}
   {{range $column := .Columns}}
   {{if and (eq $column.HtmlType "datetime") (eq $column.QueryType "BETWEEN")}}
-  const attrName = "{{upperFirst $column.JavaField}}";
+  const attrName = "{{upperFirst $column.GoField}}";
   if (daterange${attrName}.value.length > 0) {
     queryParams.value.params["begin${attrName}"] = daterange${attrName}.value[0];
     queryParams.value.params["end${attrName}"] = daterange${attrName}.value[1];
@@ -403,15 +332,13 @@ function reset() {
   form.value = {
     {{range $column := .Columns}}
     {{if eq $column.HtmlType "checkbox"}}
-    {{$column.JavaField}}: []{{if ne $loop.Last}},{{end}}
+    {{$column.GoField}}: []
     {{else}}
-    {{$column.JavaField}}: null{{if ne $loop.Last}},{{end}}
+    {{$column.GoField}}: null
     {{end}}
     {{end}}
   };
-  {{if .Table.Sub}}
-  {{.SubClassName}}List.value = [];
-  {{end}}
+
   proxy.resetForm("{{.BusinessName}}Ref");
 }
 
@@ -425,7 +352,7 @@ function handleQuery() {
 function resetQuery() {
   {{range $column := .Columns}}
   {{if and (eq $column.HtmlType "datetime") (eq $column.QueryType "BETWEEN")}}
-  daterange{{upperFirst $column.JavaField}}.value = [];
+  daterange{{upperFirst $column.GoField}}.value = [];
   {{end}}
   {{end}}
   proxy.resetForm("queryRef");
@@ -434,7 +361,7 @@ function resetQuery() {
 
 // 多选框选中数据
 function handleSelectionChange(selection) {
-  ids.value = selection.map(item => item.{{.PkColumn.JavaField}});
+  ids.value = selection.map(item => item.{{.PkColumn.GoField}});
   single.value = selection.length !== 1;
   multiple.value = !selection.length;
 }
@@ -449,17 +376,15 @@ function handleAdd() {
 /** 修改按钮操作 */
 function handleUpdate(row) {
   reset();
-  const _{{.PkColumn.JavaField}} = row?.{{.PkColumn.JavaField}} || ids.value;
-  get{{.BusinessName}}(_{{.PkColumn.JavaField}}).then(response => {
+  const _{{.PkColumn.GoField}} = row?.{{.PkColumn.GoField}} || ids.value;
+  get{{.BusinessName}}(_{{.PkColumn.GoField}}).then(response => {
     form.value = response.data;
     {{range $column := .Columns}}
     {{if eq $column.HtmlType "checkbox"}}
-    form.value.{{$column.JavaField}} = form.value.{{$column.JavaField}}?.split(",") || [];
+    form.value.{{$column.GoField}} = form.value.{{$column.GoField}}?.split(",") || [];
     {{end}}
     {{end}}
-    {{if .Table.Sub}}
-    {{.SubClassName}}List.value = response.data.{{.SubClassName}}List || [];
-    {{end}}
+
     open.value = true;
     title.value = "修改{{.FunctionName}}";
   });
@@ -471,13 +396,11 @@ function submitForm() {
     if (valid) {
       {{range $column := .Columns}}
       {{if eq $column.HtmlType "checkbox"}}
-      form.value.{{$column.JavaField}} = form.value.{{$column.JavaField}}?.join(",") || "";
+      form.value.{{$column.GoField}} = form.value.{{$column.GoField}}?.join(",") || "";
       {{end}}
       {{end}}
-      {{if .Table.Sub}}
-      form.value.{{.SubClassName}}List = {{.SubClassName}}List.value;
-      {{end}}
-      if (form.value.{{.PkColumn.JavaField}} != null) {
+
+      if (form.value.{{.PkColumn.GoField}} != null) {
         update{{.BusinessName}}(form.value).then(response => {
           proxy.$message.success("修改成功");
           open.value = false;
@@ -496,52 +419,19 @@ function submitForm() {
 
 /** 删除按钮操作 */
 function handleDelete(row) {
-  const _{{.PkColumn.JavaField}}s = row?.{{.PkColumn.JavaField}} || ids.value;
-  proxy.$confirm('是否确认删除{{.FunctionName}}编号为"' + _{{.PkColumn.JavaField}}s + '"的数据项？', '提示', {
+  const _{{.PkColumn.GoField}}s = row?.{{.PkColumn.GoField}} || ids.value;
+  proxy.$confirm('是否确认删除{{.FunctionName}}编号为"' + _{{.PkColumn.GoField}}s + '"的数据项？', '提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'warning'
   }).then(() => {
-    return del{{.BusinessName}}(_{{.PkColumn.JavaField}}s);
+    return del{{.BusinessName}}(_{{.PkColumn.GoField}}s);
   }).then(() => {
     getList();
     proxy.$message.success("删除成功");
   }).catch(() => {});
 }
 
-{{if .Table.Sub}}
-/** {{.SubTable.FunctionName}}序号 */
-function row{{.SubClassName}}Index({ row, rowIndex }) {
-  row.index = rowIndex + 1;
-}
-
-/** {{.SubTable.FunctionName}}添加按钮操作 */
-function handleAdd{{.SubClassName}}() {
-  let obj = {};
-  {{range $column := .SubTable.Columns}}
-  {{if and (not $column.Pk) (ne $column.JavaField .SubTableFkclassName)}}
-  obj.{{$column.JavaField}} = "";
-  {{end}}
-  {{end}}
-  {{.SubClassName}}List.value.push(obj);
-}
-
-/** {{.SubTable.FunctionName}}删除按钮操作 */
-function handleDelete{{.SubClassName}}() {
-  if (checked{{.SubClassName}}.value.length === 0) {
-    proxy.$message.error("请先选择要删除的{{.SubTable.FunctionName}}数据");
-  } else {
-    {{.SubClassName}}List.value = {{.SubClassName}}List.value.filter(item => 
-      !checked{{.SubClassName}}.value.includes(item.index)
-    );
-  }
-}
-
-/** 子表复选框选中数据 */
-function handle{{.SubClassName}}SelectionChange(selection) {
-  checked{{.SubClassName}}.value = selection.map(item => item.index);
-}
-{{end}}
 
 /** 导出按钮操作 */
 function handleExport() {

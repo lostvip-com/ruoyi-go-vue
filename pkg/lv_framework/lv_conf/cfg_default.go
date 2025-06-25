@@ -1,6 +1,7 @@
 package lv_conf
 
 import (
+	"common/global"
 	"fmt"
 	"github.com/lostvip-com/lv_framework/utils/lv_file"
 	"os"
@@ -13,7 +14,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-type ConfigDefault struct {
+type CfgDefault struct {
 	vipperCfg     *viper.Viper
 	proxyMap      map[string]string
 	proxyEnable   bool
@@ -24,50 +25,50 @@ type ConfigDefault struct {
 	autoMigrate   string
 }
 
-func (e ConfigDefault) GetResourcesPath() string {
+func (e *CfgDefault) GetResourcesPath() string {
 	if e.resourcesPath == "" {
 		e.resourcesPath = e.GetValueStr("application.resources-path")
 	}
 	return e.resourcesPath
 }
 
-func (e ConfigDefault) GetUploadPath() string {
+func (e *CfgDefault) GetUploadPath() string {
 	if e.resourcesPath == "" {
 		e.resourcesPath = e.GetValueStr("application.upload-path")
 	}
 	return e.resourcesPath
 }
-func (e ConfigDefault) GetTmpPath() string {
+func (e *CfgDefault) GetTmpPath() string {
 	return "tmp" //固定临时文件目录
 }
-func (e ConfigDefault) GetGrpcPort() string {
+func (e *CfgDefault) GetGrpcPort() string {
 	return e.GetValueStr("server.grpc.port")
 }
-func (e ConfigDefault) GetHost() string {
+func (e *CfgDefault) GetHost() string {
 	return e.GetValueStr("server.host")
 }
-func (e *ConfigDefault) IsProxyEnabled() bool {
+func (e *CfgDefault) IsProxyEnabled() bool {
 	return false
 }
 
-func (e *ConfigDefault) GetFuncMap() template.FuncMap {
+func (e *CfgDefault) GetFuncMap() template.FuncMap {
 	mp := template.FuncMap{}
 	return mp
 }
 
-func (e *ConfigDefault) IsCacheTpl() bool {
+func (e *CfgDefault) IsCacheTpl() bool {
 	return e.cacheTpl
 }
 
-func (e *ConfigDefault) SetCacheTpl(cache bool) {
+func (e *CfgDefault) SetCacheTpl(cache bool) {
 	e.cacheTpl = cache
 }
 
-func (e *ConfigDefault) GetVipperCfg() *viper.Viper {
+func (e *CfgDefault) GetVipperCfg() *viper.Viper {
 	return e.vipperCfg
 }
 
-func (e *ConfigDefault) GetValueStrDefault(key string, defaultVal string) string {
+func (e *CfgDefault) GetValueStrDefault(key string, defaultVal string) string {
 	val := e.GetValueStr(key)
 	if val == "" {
 		val = defaultVal
@@ -75,7 +76,7 @@ func (e *ConfigDefault) GetValueStrDefault(key string, defaultVal string) string
 	return val
 }
 
-func (e *ConfigDefault) GetValueStr(key string) string {
+func (e *CfgDefault) GetValueStr(key string) string {
 
 	if e.vipperCfg == nil {
 		e.LoadConf()
@@ -100,7 +101,7 @@ func (e *ConfigDefault) GetValueStr(key string) string {
 	return val
 }
 
-func (e *ConfigDefault) GetBool(key string) bool {
+func (e *CfgDefault) GetBool(key string) bool {
 	if e.vipperCfg == nil {
 		e.LoadConf()
 	}
@@ -113,7 +114,7 @@ func (e *ConfigDefault) GetBool(key string) bool {
 	}
 }
 
-func (e *ConfigDefault) parseVal(val string) string {
+func (e *CfgDefault) parseVal(val string) string {
 	if strings.HasPrefix(val, "$") { //存在动态表达式
 		val = strings.TrimSpace(val)             //去空格
 		val = lv_conv.SubStr(val, 2, len(val)-1) //去掉 ${}
@@ -129,16 +130,18 @@ func (e *ConfigDefault) parseVal(val string) string {
 	return val
 }
 
-func (e *ConfigDefault) LoadConf() {
+func (e *CfgDefault) LoadConf() {
+	currPath := lv_file.GetCurrentPath()
+	fmt.Println("----> current path:" + currPath)
 	e.vipperCfg = viper.New()
 	fileNameArr := []string{"bootstrap", "application"}
 	fileExtArr := []string{"yml", "yaml"}
-	filePathArr := []string{".", "./resources"}
 	for _, fileName := range fileNameArr { //优先查找bootstrap
 		for _, ext := range fileExtArr { //优先查找yaml
-			for _, filePath := range filePathArr { //优先查找当前目录
-				exist, _ := e.MergeYarm(fileName, ext, filePath)
+			for _, filePath := range global.BaseFilePathArr { //优先查找当前目录
+				exist, yamlPath := e.MergeYarm(fileName, ext, filePath)
 				if exist { //找到文件，不再寻找本目录
+					fmt.Println("----> yaml path:" + yamlPath)
 					break
 				}
 			}
@@ -146,7 +149,7 @@ func (e *ConfigDefault) LoadConf() {
 	}
 	active := e.GetAppActive()
 	if active != "" {
-		e.mergeActiveYarm(active, fileExtArr, filePathArr)
+		e.mergeActiveYarm(active, fileExtArr, global.BaseFilePathArr)
 	}
 
 	if e.vipperCfg.GetBool("application.proxy.enable") == true {
@@ -158,7 +161,7 @@ func (e *ConfigDefault) LoadConf() {
 	}
 }
 
-func (e *ConfigDefault) mergeActiveYarm(active string, fileExtArr []string, filePathArr []string) {
+func (e *CfgDefault) mergeActiveYarm(active string, fileExtArr []string, filePathArr []string) {
 	foundActive := false
 	activeFile := "application-" + active
 	for _, ext := range fileExtArr { //优先查找yaml
@@ -176,7 +179,7 @@ func (e *ConfigDefault) mergeActiveYarm(active string, fileExtArr []string, file
 	}
 }
 
-func (e *ConfigDefault) MergeYarm(fileName, fileExt, path string) (bool, string) {
+func (e *CfgDefault) MergeYarm(fileName, fileExt, path string) (bool, string) {
 	filePath := path + "/" + fileName + "." + fileExt
 	if !lv_file.IsFileExist(filePath) {
 		return false, filePath //不存在
@@ -191,7 +194,7 @@ func (e *ConfigDefault) MergeYarm(fileName, fileExt, path string) (bool, string)
 /**
  * app port
  */
-func (e *ConfigDefault) GetServerPort() int {
+func (e *CfgDefault) GetServerPort() int {
 	port := e.GetValueStr("server.port")
 	if port == "" {
 		port = "8080"
@@ -202,7 +205,7 @@ func (e *ConfigDefault) GetServerPort() int {
 /**
  * app port
  */
-func (e *ConfigDefault) GetServerIP() string {
+func (e *CfgDefault) GetServerIP() string {
 	ip := e.GetValueStr("server.ip")
 	if ip == "" {
 		ip = lv_net.GetLocaHost()
@@ -210,22 +213,22 @@ func (e *ConfigDefault) GetServerIP() string {
 	return ip
 }
 
-func (e *ConfigDefault) GetContextPath() string {
+func (e *CfgDefault) GetContextPath() string {
 	return e.contextPath
 }
 
-func (e *ConfigDefault) SetContextPath(ctxPath string) {
+func (e *CfgDefault) SetContextPath(ctxPath string) {
 	e.contextPath = ctxPath
 }
 
-func (e *ConfigDefault) GetConf(key string) string {
+func (e *CfgDefault) GetConf(key string) string {
 	v := e.GetValueStr(key)
 	return v
 }
 
 var appName string
 
-func (e *ConfigDefault) GetAppName() string {
+func (e *CfgDefault) GetAppName() string {
 	if appName == "" {
 		appName = e.GetValueStr("application.name")
 		if appName == "" {
@@ -234,84 +237,84 @@ func (e *ConfigDefault) GetAppName() string {
 	}
 	return appName
 }
-func (e *ConfigDefault) GetDriver() string {
+func (e *CfgDefault) GetDriver() string {
 	driver := e.GetValueStr("application.datasource.driver")
 	if driver == "" {
 		driver = "sqlite3"
 	}
 	return driver
 }
-func (e *ConfigDefault) GetMaster() string {
+func (e *CfgDefault) GetMaster() string {
 	master := e.GetValueStr("application.datasource.master")
 	if master == "" {
 		master = "data.lv_db"
 	}
 	return master
 }
-func (e *ConfigDefault) GetSlave() string {
+func (e *CfgDefault) GetSlave() string {
 	return e.GetValueStr("application.datasource.slave")
 }
 
 // IsDebug todo
-func (e *ConfigDefault) GetLogLevel() string {
+func (e *CfgDefault) GetLogLevel() string {
 	if e.logLevel == "" {
 		e.logLevel = e.GetValueStr("application.log.level")
 	}
 	return e.logLevel
 }
 
-func (e *ConfigDefault) GetAutoMigrate() string {
+func (e *CfgDefault) GetAutoMigrate() string {
 	if e.autoMigrate == "" {
 		e.autoMigrate = e.GetValueStr("application.datasource.auto-migrate")
 	}
 	return e.autoMigrate
 }
 
-func (e *ConfigDefault) GetLogOutput() string {
+func (e *CfgDefault) GetLogOutput() string {
 	output := e.GetValueStr("application.log.output")
 	return output
 }
 
-func (e *ConfigDefault) GetAppActive() string {
+func (e *CfgDefault) GetAppActive() string {
 	return e.GetValueStr("application.active")
 }
 
-func (e *ConfigDefault) GetNacosAddrs() string {
+func (e *CfgDefault) GetNacosAddrs() string {
 	return e.GetValueStr("cloud.nacos.discovery.server-addr")
 }
 
-func (e *ConfigDefault) GetNacosPort() int {
+func (e *CfgDefault) GetNacosPort() int {
 	port := e.vipperCfg.GetInt("cloud.nacos.discovery.port")
 	if port == 0 {
 		port = 8848
 	}
 	return port
 }
-func (e *ConfigDefault) GetNacosNamespace() string {
+func (e *CfgDefault) GetNacosNamespace() string {
 	ns := e.GetValueStr("cloud.nacos.discovery.namespace")
 	return ns
 }
-func (e *ConfigDefault) GetGroupDefault() string {
+func (e *CfgDefault) GetGroupDefault() string {
 	return "DEFAULT_GROUP"
 }
-func (e *ConfigDefault) GetDataId() string {
+func (e *CfgDefault) GetDataId() string {
 	key := e.GetAppName() + "-" + e.GetAppActive() + ".yml"
 	fmt.Println(" dataId: " + key)
 	return key
 }
 
-func (e *ConfigDefault) IsProxyEnable() bool {
+func (e *CfgDefault) IsProxyEnable() bool {
 	return e.proxyEnable
 }
 
-func (e *ConfigDefault) GetProxyMap() *map[string]string {
+func (e *CfgDefault) GetProxyMap() *map[string]string {
 	if e.proxyEnable && e.proxyMap == nil {
 		e.LoadProxyInfo()
 	}
 	return &e.proxyMap
 }
 
-func (e *ConfigDefault) LoadProxyInfo() *map[string]string {
+func (e *CfgDefault) LoadProxyInfo() *map[string]string {
 	fmt.Println("######### 加载代理配置信息 start #############")
 	if !e.IsProxyEnable() {
 		return nil
@@ -330,6 +333,6 @@ func (e *ConfigDefault) LoadProxyInfo() *map[string]string {
 	return &e.proxyMap
 }
 
-func (e *ConfigDefault) GetPartials() []string {
+func (e *CfgDefault) GetPartials() []string {
 	return []string{}
 } //

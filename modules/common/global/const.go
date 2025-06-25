@@ -1,13 +1,12 @@
 package global
 
-import "os"
-
 const ErrTimes2Lock = 20
 
 // KeyOssUrl 获取oss地址Key
 const KeyOssUrl = "sys.resource.url"
-const DIR_DIST_CODE = ""
-const DIR_TPL_CODE_GEN = "resources" + string(os.PathSeparator) + "tpl_gen"
+
+// 配置文件目录搜索顺序
+var BaseFilePathArr = []string{".", "./resources", "../", "../resources"}
 
 const (
 	TimeFormat = "2006-01-02 15:04:05"

@@ -7,7 +7,8 @@ use (
 	./modules/common
 	./modules/system
 	./modules/demo
-	. //根目录也做为一个module
+	./cmd
+	./test
 )
 
 // 方便本地库与github库的代码切换

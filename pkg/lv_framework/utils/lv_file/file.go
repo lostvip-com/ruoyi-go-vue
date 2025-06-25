@@ -65,7 +65,7 @@ func IsPathExist(addr string) bool {
 	return s.IsDir()
 }
 
-func FileCreate(content bytes.Buffer, name string) (string, error) {
+func FileCreate(content *bytes.Buffer, name string) (string, error) {
 	absPath, err := filepath.Abs(name)
 	if err != nil {
 		return name, err
