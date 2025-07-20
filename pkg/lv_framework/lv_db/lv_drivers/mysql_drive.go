@@ -2,62 +2,52 @@ package lv_drivers
 
 import (
 	"fmt"
+
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
 )
 
-// DbConn mysql配置结构体
-type DbConn struct {
-	User   string
-	Pwd    string
-	Host   string
-	Port   string
-	DbName string
-	//
-	DbType string
+type MySQLDriver struct {
+	config *DbConfig
 	gormDB *gorm.DB
 }
 
-/**
- * 测试并关闭数据库连接
- */
-func (e *DbConn) TestConnInstance(User, Pwd, Host, Port, DbName string) {
-	myDbConn := &DbConn{User: User, Pwd: Pwd, Host: Host, Port: Port, DbName: DbName}
-	g, err := myDbConn.Setup()
-	if err != nil {
-		panic(err)
-	}
-	sqlDB, err := g.DB()
-	sqlDB.Close()
-}
-func (e *DbConn) GetGormDB() *gorm.DB {
-	if e.gormDB == nil {
-		e.gormDB, _ = e.Setup()
-	}
-	return e.gormDB
+func (d *MySQLDriver) GetGormDB() *gorm.DB {
+	return d.gormDB
 }
 
-// Setup 配置步骤
-//
-//root:root!@tcp(60.205.205.242:13307)/main.com?charset=utf8&parseTime=True&loc=Local&timeout=1000ms
-func (e *DbConn) Setup() (*gorm.DB, error) {
-	var err error
+func (d *MySQLDriver) TestConnInstance() {
+	//TODO implement me
+	panic("implement me")
+}
+
+// 实现Driver接口
+func (d *MySQLDriver) Setup() (*gorm.DB, error) {
 	url := "%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local&timeout=5000ms"
-	url = fmt.Sprintf(url, e.User, e.Pwd, e.Host, e.Port, e.DbName)
-	dialector := mysql.Open(url)
-	e.gormDB, err = gorm.Open(dialector, &gorm.Config{NamingStrategy: schema.NamingStrategy{SingularTable: true}})
+	url = fmt.Sprintf(url, d.config.User, d.config.Password, d.config.Host, d.config.Port, d.config.DbName)
+
+	// 添加选项处理
+	if len(d.config.Options) > 0 {
+		url += "&" + buildOptions(d.config.Options)
+	}
+
+	db, err := gorm.Open(mysql.Open(url), &gorm.Config{
+		NamingStrategy: schema.NamingStrategy{
+			SingularTable: true,
+		},
+	})
 	if err != nil {
 		panic("连接数据库失败" + err.Error())
 	}
-	sqlDB, err := e.gormDB.DB() //dr
+	sqlDB, err := d.gormDB.DB() //dr
 	if err != nil {
 		panic("连接数据库失败")
 	}
 	sqlDB.SetMaxIdleConns(5)
 	sqlDB.SetMaxOpenConns(50)
 	//e.GormSqlite.LogMode(true) // ====================打印sql
-	return e.gormDB, err
+	return db, err
 }
 
 //
