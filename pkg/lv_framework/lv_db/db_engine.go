@@ -85,7 +85,7 @@ func createGorm(driverName, url string) *gorm.DB {
 		dialector = sqlite.Open(url)
 	}
 
-	showSql := lv_global.Config().GetBool("go.datasource.show-sql")
+	showSql := lv_global.Config().GetBool("application.datasource.show-sql")
 	config := &gorm.Config{NamingStrategy: schema.NamingStrategy{SingularTable: true}} //表名用单数
 	if showSql {
 		config.Logger = logger.Default.LogMode(logger.Info)

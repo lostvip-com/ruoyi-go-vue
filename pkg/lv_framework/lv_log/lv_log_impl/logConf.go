@@ -20,7 +20,7 @@ type LvLogImpl struct {
 func InitLog(fileName string) *LvLogImpl {
 	e := new(LvLogImpl)
 	if lv_global.Config() == nil {
-		cfg := new(lv_conf.ConfigDefault)
+		cfg := new(lv_conf.CfgDefault)
 		lv_global.RegisterCfg(cfg)
 	}
 	if e.Log == nil {
@@ -50,9 +50,9 @@ func InitLog(fileName string) *LvLogImpl {
 	default:
 		panic("Log level is not support: " + level)
 	}
-	maxSize := lv_global.Config().GetValueStr("go.log.max-size")
-	maxBackups := lv_global.Config().GetValueStr("go.log.max-backups")
-	maxAge := lv_global.Config().GetValueStr("go.log.max-age")
+	maxSize := lv_global.Config().GetValueStr("application.log.max-size")
+	maxBackups := lv_global.Config().GetValueStr("application.log.max-backups")
+	maxAge := lv_global.Config().GetValueStr("application.log.max-age")
 	if maxSize == "" {
 		maxSize = "200"
 	}
@@ -62,7 +62,7 @@ func InitLog(fileName string) *LvLogImpl {
 	if maxAge == "" {
 		maxAge = "7"
 	}
-	logPath := lv_file.GetCurrentPath() + "/" + lv_global.Config().GetValueStr("go.log.path")
+	logPath := lv_file.GetCurrentPath() + "/" + lv_global.Config().GetValueStr("application.log.path")
 	err := lv_file.PathCreateIfNotExist(logPath)
 	if err != nil {
 		panic(err)
@@ -75,7 +75,7 @@ func InitLog(fileName string) *LvLogImpl {
 		Compress:   true,                   // disabled by default,是否需要压缩滚动日志, 使用的 gzip 压缩
 	}
 	var writers []io.Writer
-	output := lv_global.Config().GetValueStr("go.log.output")
+	output := lv_global.Config().GetValueStr("application.log.output")
 	if strings.Contains(output, "stdout") { //只写控制台
 		writers = append(writers, os.Stdout)
 	}

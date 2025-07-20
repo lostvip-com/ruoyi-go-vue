@@ -98,8 +98,7 @@ main[]()
 > 1. 配置GO_PROXY环境变量，如：export GO_PROXY=https://goproxy.cn
 安装相关依赖！
 ### 1. 修改应该的数据库及缓存配置
-* sqlite：默认使用sqlite数据库，可不做任何修改
-* mysql： 导入docs中的sql文件，修改application.yml中的mysql相关信息
+* mysql： 导入bak目录中的sql文件，修改application.yml中的mysql相关信息
 
 ### 2. cd 进入main目录启动应用
 * 方式一 ：常规启动
@@ -152,11 +151,13 @@ xgo -ldflags "-w -s"  -out svc-$(date '+%Y%m%d_%H%M%S') --targets=linux/arm-7 .
 ## 项目支持
 
 
-## QQ交流群
+## 交流社区
 
-如有兴趣一起完善，进QQ群 43862272
+## 交流社区
+| 微信公众号 lostvip666 | QQ群 43862272 |
+|-----------------------|---------------|
+| ![微信公众号二维码](bak/readme/wechat-mp-258.jpg) | ![QQ群二维码](bak/readme/qq.png) |
 
-<img alt="" height="389" src="bak/readme/qq.png" width="300" />
 
 *  Github(主) <p><a href="https://github.com/lostvip-com/ruoyi-go">https://github.com/lostvip-com/ruoyi-go</a></p>
 *  Gitcode<p> <a href="https://gitcode.com/lostvip-com1/ruoyi-go/tree/main">https://gitcode.com/lostvip-com1/ruoyi-go/tree/main</a></p>

@@ -1,14 +1,14 @@
 package api
 
 import (
-	"common/util"
-	"common/api"
-    "{{.ModuleName}}/internal/{{.BusinessName}}/service"
-    "{{.ModuleName}}/internal/{{.BusinessName}}/model"
-    "{{.ModuleName}}/internal/{{.BusinessName}}/vo"
-	"github.com/spf13/cast"
-	"github.com/gin-gonic/gin"
-	"github.com/lostvip-com/lv_framework/utils/lv_err"
+  "common/util"
+  "common/api"
+  "{{.ModuleName}}/internal/{{.BusinessName}}/service"
+  "{{.ModuleName}}/internal/{{.BusinessName}}/model"
+  "{{.ModuleName}}/internal/{{.BusinessName}}/vo"
+  "github.com/spf13/cast"
+  "github.com/gin-gonic/gin"
+  "github.com/lostvip-com/lv_framework/utils/lv_err"
 )
 
 type {{.ClassName}}Api struct {

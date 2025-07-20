@@ -3,13 +3,6 @@ package service
 import (
 	"bytes"
 	"errors"
-	"github.com/lostvip-com/lv_framework/lv_db"
-	"github.com/lostvip-com/lv_framework/lv_global"
-	"github.com/lostvip-com/lv_framework/utils/lv_conv"
-	"github.com/lostvip-com/lv_framework/utils/lv_err"
-	"github.com/lostvip-com/lv_framework/utils/lv_reflect"
-	"github.com/spf13/cast"
-	"gorm.io/gorm"
 	"os"
 	"strings"
 	"system/dao"
@@ -17,6 +10,14 @@ import (
 	"system/vo"
 	"text/template"
 	"time"
+
+	"github.com/lostvip-com/lv_framework/lv_db"
+	"github.com/lostvip-com/lv_framework/lv_global"
+	"github.com/lostvip-com/lv_framework/utils/lv_conv"
+	"github.com/lostvip-com/lv_framework/utils/lv_err"
+	"github.com/lostvip-com/lv_framework/utils/lv_reflect"
+	"github.com/spf13/cast"
+	"gorm.io/gorm"
 )
 
 type TableService struct {
@@ -158,7 +159,7 @@ func (svc TableService) ImportGenTable(tableList *[]model.GenTable, operName str
 			for _, table := range *tableList {
 				tableName := table.Table_Name
 				svc.InitTable(&table, operName)
-				err = tx.Table(table.TableName()).Save(&table).Error
+				err = tx.Save(&table).Error
 				if err != nil {
 					return err
 				}
@@ -166,9 +167,8 @@ func (svc TableService) ImportGenTable(tableList *[]model.GenTable, operName str
 					tx.Rollback()
 					return errors.New("保存数据失败")
 				}
-				colSvc := TableColumnService{}
-				genTableColumns, err := colSvc.SelectDbTableColumnsByName(tableName)
-
+				daoGen := dao.GenTableColumnDao{}
+				genTableColumns, err := daoGen.SelectDbTableColumnsByName(tableName)
 				if err != nil || len(genTableColumns) <= 0 {
 					tx.Rollback()
 					return errors.New("获取列数据失败")
@@ -572,4 +572,26 @@ var COLUMNNAME_NOT_QUERY = []string{"id", "create_by", "create_time", "del_flag"
 
 func Contains(str, subStr string) bool {
 	return strings.Contains(str, subStr)
+}
+func UpperFirst(s string) string {
+	if len(s) == 0 {
+		return s
+	}
+	return strings.ToUpper(s[:1]) + s[1:]
+}
+func Substr(s string, start, length int) string {
+	if len(s) == 0 {
+		return s
+	}
+	if start < 0 {
+		start = 0
+	}
+	if start > len(s) {
+		start = len(s)
+	}
+	end := start + length
+	if end > len(s) {
+		end = len(s)
+	}
+	return s[start:end]
 }

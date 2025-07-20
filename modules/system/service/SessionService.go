@@ -6,6 +6,7 @@ import (
 	"github.com/lostvip-com/lv_framework/lv_cache"
 	"github.com/lostvip-com/lv_framework/lv_log"
 	"github.com/lostvip-com/lv_framework/utils/lv_conv"
+	"github.com/lostvip-com/lv_framework/utils/lv_err"
 	"github.com/lostvip-com/lv_framework/utils/lv_secret"
 	"github.com/lostvip-com/lv_framework/utils/lv_time"
 	"system/model"
@@ -62,7 +63,8 @@ func (svc *SessionService) SaveSessionToRedis(tokenId string, user *model.SysLog
 	//fieldMap["tenantId"] = user.TenantId //租户ID
 	key := global.LoginCacheKey + tokenId
 	err := lv_cache.GetCacheClient().HSet(key, fieldMap)
-	err = lv_cache.GetCacheClient().Expire(key, time.Hour)
+	lv_err.HasErrAndPanic(err)
+	err = lv_cache.GetCacheClient().Expire(key, 12*time.Hour)
 	return err
 }
 

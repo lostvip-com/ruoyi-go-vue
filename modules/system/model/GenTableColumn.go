@@ -16,7 +16,7 @@ type GenTableColumn struct {
 	ColumnType    string `gorm:"type:string;size:32;comment:列类型;" json:"columnType"`
 	ColumnSize    int    `gorm:"type:int;comment:列类长度;" json:"columnSize"`
 	GoType        string `gorm:"type:string;size:32;comment:Go类型;为兼容若依前段json映射为javaType"   json:"javaType"`
-	GoField       string `gorm:"type:string;size:32;comment:Go字段名;为兼容若依前段json映射为javaField" json:"javaField"`
+	GoField       string `gorm:"type:string;size:32;comment:Go字段名;为兼容若依前段json映射为GoField" json:"GoField"`
 	HtmlField     string `gorm:"type:string;size:32;comment:html字段名;" json:"htmlField"`
 	IsPk          string `gorm:"type:char,size:1;comment:是否主键（1是）;" json:"isPk"`
 	IsIncrement   string `gorm:"type:char;size:1;comment:是否自增（1是）;" json:"isIncrement"`
