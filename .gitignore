@@ -19,4 +19,5 @@ main/main
 .vscode
 *.exe
 restart-prod.sh
+node_modules
 #tmp

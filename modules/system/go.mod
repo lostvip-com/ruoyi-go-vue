@@ -2,7 +2,6 @@ module system
 
 require (
 	github.com/gin-gonic/gin v1.10.0
-	github.com/lostvip-com/lv_framework v1.1.7
 	github.com/mssola/user_agent v0.5.1
 	github.com/shirou/gopsutil v2.19.12+incompatible
 	github.com/spf13/cast v1.7.0

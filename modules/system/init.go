@@ -6,7 +6,6 @@ import (
 	"github.com/lostvip-com/lv_framework/lv_log"
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
 	_ "system/api"
-	"system/model"
 )
 
 //自动建表
@@ -18,10 +17,8 @@ func init() {
 	if migrate == "create" || migrate == "update" || migrate == "true" {
 		lv_log.Warn("######### 开始同步表结构: ############## migrate" + migrate)
 		err := lv_db.GetMasterGorm().AutoMigrate(
-			//cm_model.SysDept{}, model.SysPost{}, model.SysUser{}, model.SysDictType{}, cm_model.SysDictData{},
-			//model.SysMenu{}, model.SysRole{}, model.SysUserOnline{}, model.SysOperLog{}
-			model.GenTable{},
-			model.GenTableColumn{},
+		//cm_model.SysDept{}, model.SysPost{}, model.SysUser{}, model.SysDictType{}, cm_model.SysDictData{},
+		//model.SysMenu{}, model.SysRole{}, model.SysUserOnline{}, model.SysOperLog{}
 		)
 		lv_err.HasErrAndPanic(err)
 	} else {

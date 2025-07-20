@@ -63,7 +63,7 @@ go 1.24
 
 require (
 	github.com/golang-jwt/jwt v3.2.2+incompatible
-	github.com/lostvip-com/lv_framework v1.1.8
+
 )
 
 require github.com/goccy/go-json v0.10.3 // indirect
