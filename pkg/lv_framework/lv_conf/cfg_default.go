@@ -1,17 +1,15 @@
 package lv_conf
 
 import (
-	"common/global"
 	"fmt"
-	"github.com/lostvip-com/lv_framework/utils/lv_file"
-	"os"
-	"strings"
-	"text/template"
-
 	"github.com/lostvip-com/lv_framework/utils/lv_conv"
+	"github.com/lostvip-com/lv_framework/utils/lv_file"
 	"github.com/lostvip-com/lv_framework/utils/lv_net"
 	"github.com/spf13/cast"
 	"github.com/spf13/viper"
+	"os"
+	"strings"
+	"text/template"
 )
 
 type CfgDefault struct {
@@ -138,7 +136,7 @@ func (e *CfgDefault) LoadConf() {
 	fileExtArr := []string{"yml", "yaml"}
 	for _, fileName := range fileNameArr { //优先查找bootstrap
 		for _, ext := range fileExtArr { //优先查找yaml
-			for _, filePath := range global.BaseFilePathArr { //优先查找当前目录
+			for _, filePath := range BaseFilePathArr { //优先查找当前目录
 				exist, yamlPath := e.MergeYarm(fileName, ext, filePath)
 				if exist { //找到文件，不再寻找本目录
 					fmt.Println("----> yaml path:" + yamlPath)
@@ -149,7 +147,7 @@ func (e *CfgDefault) LoadConf() {
 	}
 	active := e.GetAppActive()
 	if active != "" {
-		e.mergeActiveYarm(active, fileExtArr, global.BaseFilePathArr)
+		e.mergeActiveYarm(active, fileExtArr, BaseFilePathArr)
 	}
 
 	if e.vipperCfg.GetBool("application.proxy.enable") == true {

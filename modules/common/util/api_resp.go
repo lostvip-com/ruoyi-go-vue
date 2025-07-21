@@ -25,11 +25,7 @@ func WriteTpl(c *gin.Context, tpl string, params ...gin.H) {
 
 // Fail 返回一个成功的消息体
 func Fail(c *gin.Context, msg string) {
-	ret := lv_dto.CommonRes{
-		Code: 500,
-		Msg:  msg,
-	}
-	c.AbortWithStatusJSON(http.StatusOK, &ret)
+	c.AbortWithStatusJSON(http.StatusOK, &lv_dto.CommonRes{Code: 500, Msg: msg})
 }
 
 func FailNoAuth(c *gin.Context, msg string) {
