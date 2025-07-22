@@ -5,7 +5,6 @@ require (
 	github.com/mssola/user_agent v0.5.1
 	github.com/shirou/gopsutil v2.19.12+incompatible
 	github.com/spf13/cast v1.7.0
-	github.com/xuri/excelize/v2 v2.8.1
 	gorm.io/gorm v1.25.7
 	xorm.io/builder v0.3.13
 )
