@@ -1,1 +1,2 @@
-docker buildx build --platform linux/arm/v7 -t ruoyi-go-vue:arm .
+docker build -t cgo-arm7 .
+docker run --rm -v "$PWD":/workspace cgo-arm7 go build -o myapp-arm7 ./cmd

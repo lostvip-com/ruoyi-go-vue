@@ -23,7 +23,7 @@ type ICache interface {
 	Expire(key string, duration time.Duration) error
 }
 
-var cacheClient ICache //主数据库
+var cacheClient ICache = nil //主数据库
 
 func GetCacheClient() ICache {
 	if cacheClient == nil {

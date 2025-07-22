@@ -62,7 +62,7 @@ func (svc *SessionService) SaveSessionToRedis(tokenId string, user *model.SysLog
 	fieldMap["deptName"] = deptName
 	//fieldMap["tenantId"] = user.TenantId //租户ID
 	key := global.LoginCacheKey + tokenId
-	err := lv_cache.GetCacheClient().HSet(key, fieldMap)
+	err := lv_cache.GetCacheClient().HMSet(key, fieldMap, 12*time.Hour)
 	lv_err.HasErrAndPanic(err)
 	err = lv_cache.GetCacheClient().Expire(key, 12*time.Hour)
 	return err
