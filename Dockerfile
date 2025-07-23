@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y \
 
 ENV GOOS=linux
 ENV GOARCH=arm
-ENV GOARM=7            # 依旧 7，软浮点
+ENV GOARM=7
 ENV CGO_ENABLED=1
 ENV CC=arm-linux-gnueabi-gcc
 ENV CXX=arm-linux-gnueabi-g++
