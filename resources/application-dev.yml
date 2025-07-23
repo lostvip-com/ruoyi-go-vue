@@ -6,17 +6,18 @@ application:
     max-size: 100 # 单个日志文件最大100M
     max-backups: 10 # 最多保留10个备份
     max-age: 7 # 保留7天
-  redis:
-    host: ${REDIS_HOST:192.168.81.228}
-    port: ${REDIS_PORT:6379}
-    password: ${REDIS_PWD:dpctest}
+  cache-type: ram
+#  redis:
+#    host: ${REDIS_HOST:172.16.61.62}
+#    port: ${REDIS_PORT:6379}
+#    password: ${REDIS_PWD:dpctest}
   datasource:
     show-sql: true   # 打印SQL到日志
     auto-migrate: update # update/none 同步表结构，见 init.go
 #   driver: sqlite3
 #   master: data.db
     driver: mysql
-    master: ${MYSQL_MASTER:"root:qwer1234@tcp(192.168.81.228:13306)/ry_vue_go?charset=utf8"}
+    master: ${MYSQL_MASTER:"root:qwer1234@tcp(172.16.61.62:3306)/lostvip?charset=utf8"}
 #代理转发
 #  proxy:
 #    enable: true
