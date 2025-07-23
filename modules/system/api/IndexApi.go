@@ -13,20 +13,37 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"system/service"
 )
 
 type IndexApi struct{}
 
 // 注销
 func (w *IndexApi) Index(c *gin.Context) {
-	var user service.SessionService
-	tokenStr := lv_net.GetParam(c, "token")
-	err := user.SignOut(tokenStr)
-	if err != nil {
-		return
-	}
-	util.Success(c, nil)
+	index := `
+			<!DOCTYPE html>
+			<html>
+			  <head>
+				<meta charset="utf-8" />
+				<!-- 0 秒后直接跳转 -->
+				<meta http-equiv="refresh" content="0; url=/static/index.html" />
+				<title>loading…</title>
+				<style>
+					html,body{height:100%;margin:0}
+					body{
+					  display:flex;
+					  align-items:center;      /* 垂直居中 */
+					  justify-content:center;  /* 水平居中 */
+					  font-family:sans-serif;
+					}
+				  </style>
+			  </head>
+			  <body>
+				loading ...
+			  </body>
+			</html>
+          `
+	c.Header("Content-Type", "text/html; charset=utf-8")
+	c.String(200, index)
 }
 
 // 下载 public/upload 文件头像之类
