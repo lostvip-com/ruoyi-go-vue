@@ -1,5 +1,5 @@
 ############################################
-# 硬浮点板子使用
+# 软浮点板子使用
 # # ls /lib/ld*
 # # /lib/ld-2.25.so     /lib/ld-linux.so.3
 #  如果有 ld-linux-armhf.so.3 则可使用此镜像 （硬浮点）
@@ -14,6 +14,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # 设置交叉编译环境变量
+ENV GOPROXY=https://goproxy.cn,direct
 ENV GOOS=linux
 ENV GOARCH=arm
 ENV GOARM=7

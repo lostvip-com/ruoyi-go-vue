@@ -15,6 +15,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # 设置交叉编译环境变量
+ENV GOPROXY=https://goproxy.cn,direct
 ENV GOOS=linux
 ENV GOARCH=arm
 ENV GOARM=7
