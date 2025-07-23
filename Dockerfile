@@ -7,20 +7,19 @@
 #############################################
 FROM golang:1.24-bullseye
 
-# 安装 musl armv7 工具链（静态链接更干净）
+# 安装软浮点工具链
 RUN apt-get update && apt-get install -y \
-    musl-tools musl-dev musl:armhf \
-    gcc-arm-linux-gnueabihf \
+        gcc-arm-linux-gnueabi \
+        libc6-dev-armel-cross \
     && rm -rf /var/lib/apt/lists/*
 
-# 设置交叉编译环境变量
-ENV GOPROXY=https://goproxy.cn,direct
 ENV GOOS=linux
 ENV GOARCH=arm
-ENV GOARM=7
+ENV GOARM=7            # 依旧 7，软浮点
 ENV CGO_ENABLED=1
-ENV CC=arm-linux-gnueabihf-gcc
-ENV CXX=arm-linux-gnueabihf-g++
+ENV CC=arm-linux-gnueabi-gcc
+ENV CXX=arm-linux-gnueabi-g++
 ENV CGO_LDFLAGS="-static"
 
+ENV GOPROXY=https://goproxy.cn,direct
 WORKDIR /workspace
