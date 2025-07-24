@@ -2,7 +2,6 @@ package myconf
 
 import (
 	functions2 "common/functions"
-	"common/permit"
 	"github.com/gin-gonic/gin"
 	"github.com/lostvip-com/lv_framework/lv_conf"
 	"github.com/lostvip-com/lv_framework/lv_global"
@@ -82,8 +81,8 @@ func (e *MyConfig) GetFuncMap() template.FuncMap {
 		//新的规则
 		"Ctx":        functions2.GetCtx,
 		"CtxPath":    functions2.CtxPath,
-		"HasPerm":    permit.HasPermi,
-		"PermButton": permit.PermButton,
+		"HasPerm":    functions2.HasPermi,
+		"PermButton": functions2.PermButton,
 
 		"DictSelect": functions2.DictSelect,
 		"DictRadio":  functions2.DictRadio,
@@ -95,12 +94,12 @@ func (e *MyConfig) GetFuncMap() template.FuncMap {
 		"Copyright":  functions2.GetCopyright,
 		"OssUrl":     functions2.GetOssUrl,
 		"FmtTime":    lv_time.GetTimeStr,
-		"upperFirst": permit.UpperFirst,
-		"substr":     permit.Substr,
+		"upperFirst": functions2.UpperFirst,
+		"substr":     functions2.Substr,
 		"replace":    strings.Replace,
 		"index":      strings.Index,
 		//兼容旧的
-		"hasPermi":          permit.HasPermi,              //兼容旧的
+		"hasPermi":          functions2.HasPermi,          //兼容旧的
 		"getDictTypeSelect": functions2.GetDictTypeSelect, //兼容旧的名称
 		"getDictTypeRadio":  functions2.DictRadio,         //兼容旧的名称
 		"contains":          functions2.Contains,          //兼容旧的名称

@@ -1,4 +1,4 @@
-package permit
+package functions
 
 import (
 	"github.com/lostvip-com/lv_framework/utils/lv_conv"
