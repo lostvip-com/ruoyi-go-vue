@@ -16,7 +16,6 @@
         <el-form-item prop="tplWebType">
           <template #label>前端类型</template>
           <el-select v-model="info.tplWebType">
-            <el-option label="Vue2 Element UI 模版" value="element-ui" />
             <el-option label="Vue3 Element Plus 模版" value="element-plus" />
           </el-select>
         </el-form-item>
@@ -26,7 +25,7 @@
         <el-form-item prop="packageName">
           <template #label>
             生成包路径
-            <el-tooltip content="生成在哪个java包下，例如 com.ruoyi.system" placement="top">
+            <el-tooltip content="仅适用于java项目，例如 com.ruoyi.system" placement="top">
               <el-icon><question-filled /></el-icon>
             </el-tooltip>
           </template>
@@ -255,7 +254,7 @@ const props = defineProps({
 // 表单校验
 const rules = ref({
   tplCategory: [{ required: true, message: "请选择生成模板", trigger: "blur" }],
-  packageName: [{ required: true, message: "请输入生成包路径", trigger: "blur" }],
+  packageName: [{ required: false, message: "请输入生成包路径", trigger: "blur" }],
   moduleName: [{ required: true, message: "请输入生成模块名", trigger: "blur" }],
   businessName: [{ required: true, message: "请输入生成业务名", trigger: "blur" }],
   functionName: [{ required: true, message: "请输入生成功能名", trigger: "blur" }]
