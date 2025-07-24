@@ -103,6 +103,9 @@ func (e *MyConfig) GetFuncMap() template.FuncMap {
 		"getDictTypeSelect": functions2.GetDictTypeSelect, //兼容旧的名称
 		"getDictTypeRadio":  functions2.DictRadio,         //兼容旧的名称
 		"contains":          functions2.Contains,          //兼容旧的名称
+		"raw": func(s string) template.HTML {
+			return template.HTML(s)
+		},
 	}
 
 	return mp

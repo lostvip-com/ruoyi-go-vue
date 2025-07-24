@@ -1,5 +1,7 @@
 {{$tagS := "{{"}}
 {{$tagE := "}}"}}
+
+
 <template>
   <div class="app-container">
     <!-- 查询表单 -->
@@ -195,8 +197,8 @@
   </div>
 </template>
 
-<script setup name="{{.BusinessName}}">
-import { list{{.BusinessName}}, get{{.BusinessName}}, del{{.BusinessName}}, add{{.BusinessName}}, update{{.BusinessName}} } from "@/api/{{.ModuleName}}/{{.BusinessName}}";
+{{raw "<"}}script setup name="{{.BusinessName}}"{{raw ">"}}
+import request from '@/utils/request'
 
 const { proxy } = getCurrentInstance();
 // 响应式数据声明
@@ -259,7 +261,7 @@ function getList() {
           }
       {{end}}
   {{- end }}
-  list{{.BusinessName}}(queryParams.value).then(response => {
+  list{{.ClassName}}(queryParams.value).then(response => {
     {{.BusinessName}}List.value = response.rows;
     total.value = response.total;
     loading.value = false;
@@ -311,7 +313,7 @@ function handleSelectionChange(selection) {
   multiple.value = !selection.length;
 }
 
-/** 新增按钮操作 */
+/** 新增 {{.ClassName}} 按钮操作 */
 function handleAdd() {
   reset();
   open.value = true;
@@ -321,7 +323,7 @@ function handleAdd() {
 /** 修改按钮操作 */
 function handleUpdate(row) {
   reset();
-  const id = row?.{{.PkColumn.GoField}} || ids.value;
+  const id = row.{{.PkColumn.GoField}} || ids.value;
   get{{.ClassName}}(id).then(response => {
     form.value = response.data;
     {{- range $column := .Columns -}}
@@ -364,7 +366,7 @@ function submitForm() {
 
 /** 删除按钮操作 */
 function handleDelete(row) {
-  const ids = row?.{{.PkColumn.GoField}} || ids.value;
+  const ids = row.{{.PkColumn.GoField}} || ids.value;
   proxy.$confirm('是否确认删除{{.FunctionName}}编号为"' + ids + '"的数据项？', '提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
@@ -387,4 +389,4 @@ function handleExport() {
 
 // 初始化加载数据
 getList();
-</script>
+{{raw "<"}}/script{{raw ">"}}
