@@ -321,8 +321,8 @@ function handleAdd() {
 /** 修改按钮操作 */
 function handleUpdate(row) {
   reset();
-  const _{{.PkColumn.GoField}} = row?.{{.PkColumn.GoField}} || ids.value;
-  get{{.BusinessName}}(_{{.PkColumn.GoField}}).then(response => {
+  const id = row?.{{.PkColumn.GoField}} || ids.value;
+  get{{.ClassName}}(id).then(response => {
     form.value = response.data;
     {{- range $column := .Columns -}}
         {{- if eq $column.HtmlType "checkbox"}}
@@ -346,13 +346,13 @@ function submitForm() {
       {{- end -}}
 
       if (form.value.{{.PkColumn.GoField}} != null) {
-        update{{.BusinessName}}(form.value).then(response => {
+        update{{.ClassName}}(form.value).then(response => {
           proxy.$message.success("修改成功");
           open.value = false;
           getList();
         });
       } else {
-        add{{.BusinessName}}(form.value).then(response => {
+        add{{.ClassName}}(form.value).then(response => {
           proxy.$message.success("新增成功");
           open.value = false;
           getList();
@@ -364,13 +364,13 @@ function submitForm() {
 
 /** 删除按钮操作 */
 function handleDelete(row) {
-  const _{{.PkColumn.GoField}}s = row?.{{.PkColumn.GoField}} || ids.value;
-  proxy.$confirm('是否确认删除{{.FunctionName}}编号为"' + _{{.PkColumn.GoField}}s + '"的数据项？', '提示', {
+  const ids = row?.{{.PkColumn.GoField}} || ids.value;
+  proxy.$confirm('是否确认删除{{.FunctionName}}编号为"' + ids + '"的数据项？', '提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'warning'
   }).then(() => {
-    return del{{.BusinessName}}(_{{.PkColumn.GoField}}s);
+    return del{{.ClassName}}(ids);
   }).then(() => {
     getList();
     proxy.$message.success("删除成功");
