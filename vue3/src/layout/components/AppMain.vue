@@ -1,43 +1,36 @@
 <template>
   <section class="app-main">
-    <transition name="fade-transform" mode="out-in">
-      <keep-alive :include="cachedViews">
-        <router-view v-if="!$route.meta.link" :key="key" />
-      </keep-alive>
-    </transition>
+    <router-view v-slot="{ Component, route }">
+      <transition name="fade-transform" mode="out-in">
+        <keep-alive :include="tagsViewStore.cachedViews">
+          <component v-if="!route.meta.link" :is="Component" :key="route.path"/>
+        </keep-alive>
+      </transition>
+    </router-view>
     <iframe-toggle />
+    <copyright />
   </section>
 </template>
 
-<script>
+<script setup>
+import copyright from "./Copyright/index"
 import iframeToggle from "./IframeToggle/index"
+import useTagsViewStore from '@/store/modules/tagsView'
 
-export default {
-  name: 'AppMain',
-  components: { iframeToggle },
-  computed: {
-    cachedViews() {
-      return this.$store.state.tagsView.cachedViews
-    },
-    key() {
-      return this.$route.path
-    }
-  },
-  watch: {
-    $route() {
-      this.addIframe()
-    }
-  },
-  mounted() {
-    this.addIframe()
-  },
-  methods: {
-    addIframe() {
-      const {name} = this.$route
-      if (name && this.$route.meta.link) {
-        this.$store.dispatch('tagsView/addIframeView', this.$route)
-      }
-    }
+const route = useRoute()
+const tagsViewStore = useTagsViewStore()
+
+onMounted(() => {
+  addIframe()
+})
+
+watchEffect(() => {
+  addIframe()
+})
+
+function addIframe() {
+  if (route.meta.link) {
+    useTagsViewStore().addIframeView(route)
   }
 }
 </script>
@@ -49,6 +42,10 @@ export default {
   width: 100%;
   position: relative;
   overflow: hidden;
+}
+
+.app-main:has(.copyright) {
+  padding-bottom: 36px;
 }
 
 .fixed-header + .app-main {
@@ -89,3 +86,4 @@ export default {
   border-radius: 3px;
 }
 </style>
+

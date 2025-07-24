@@ -1,100 +1,68 @@
-<script>
-import draggable from 'vuedraggable'
+<template>
+  <el-col :span="element.span" :class="className" @click.stop="activeItem(element)">
+    <el-form-item :label="element.label" :label-width="element.labelWidth ? element.labelWidth + 'px' : null"
+      :required="element.required" v-if="element.layout === 'colFormItem'">
+      <render :key="element.tag" :conf="element" v-model="element.defaultValue" />
+    </el-form-item>
+    <el-row :gutter="element.gutter" :class="element.class" @click.stop="activeItem(element)" v-else>
+      <span class="component-name"> {{ element.componentName }} </span>
+      <draggable group="componentsGroup" :animation="340" :list="element.children" class="drag-wrapper" item-key="label"
+        ref="draggableItemRef" :component-data="getComponentData()">
+        <template #item="scoped">
+          <draggable-item :key="scoped.element.renderKey" :drawing-list="element.children" :element="scoped.element"
+            :index="index" :active-id="activeId" :form-conf="formConf" @activeItem="activeItem(scoped.element)"
+            @copyItem="copyItem(scoped.element, element.children)"
+            @deleteItem="deleteItem(scoped.index, element.children)" />
+        </template>
+      </draggable>
+    </el-row>
+    <span class="drawing-item-copy" title="复制" @click.stop="copyItem(element)">
+      <el-icon><CopyDocument /></el-icon>
+    </span>
+    <span class="drawing-item-delete" title="删除" @click.stop="deleteItem(index)">
+      <el-icon><Delete /></el-icon>
+    </span>
+  </el-col>
+</template>
+<script setup name="DraggableItem">
+import draggable from "vuedraggable/dist/vuedraggable.common"
 import render from '@/utils/generator/render'
 
-const components = {
-  itemBtns(h, element, index, parent) {
-    const { copyItem, deleteItem } = this.$listeners
-    return [
-      <span class="drawing-item-copy" title="复制" onClick={event => {
-        copyItem(element, parent); event.stopPropagation()
-      }}>
-        <i class="el-icon-copy-document" />
-      </span>,
-      <span class="drawing-item-delete" title="删除" onClick={event => {
-        deleteItem(index, parent); event.stopPropagation()
-      }}>
-        <i class="el-icon-delete" />
-      </span>
-    ]
-  }
-}
-const layouts = {
-  colFormItem(h, element, index, parent) {
-    const { activeItem } = this.$listeners
-    let className = this.activeId === element.formId ? 'drawing-item active-from-item' : 'drawing-item'
-    if (this.formConf.unFocusedComponentBorder) className += ' unfocus-bordered'
-    return (
-      <el-col span={element.span} class={className}
-        nativeOnClick={event => { activeItem(element); event.stopPropagation() }}>
-        <el-form-item label-width={element.labelWidth ? `${element.labelWidth}px` : null}
-          label={element.label} required={element.required}>
-          <render key={element.renderKey} conf={element} onInput={ event => {
-            this.$set(element, 'defaultValue', event)
-          }} />
-        </el-form-item>
-        {components.itemBtns.apply(this, arguments)}
-      </el-col>
-    )
+const props = defineProps({
+  element: Object,
+  index: Number,
+  drawingList: Array,
+  activeId: {
+    type: [String, Number]
   },
-  rowFormItem(h, element, index, parent) {
-    const { activeItem } = this.$listeners
-    const className = this.activeId === element.formId ? 'drawing-row-item active-from-item' : 'drawing-row-item'
-    let child = renderChildren.apply(this, arguments)
-    if (element.type === 'flex') {
-      child = <el-row type={element.type} justify={element.justify} align={element.align}>
-              {child}
-            </el-row>
-    }
-    return (
-      <el-col span={element.span}>
-        <el-row gutter={element.gutter} class={className}
-          nativeOnClick={event => { activeItem(element); event.stopPropagation() }}>
-          <span class="component-name">{element.componentName}</span>
-          <draggable list={element.children} animation={340} group="componentsGroup" class="drag-wrapper">
-            {child}
-          </draggable>
-          {components.itemBtns.apply(this, arguments)}
-        </el-row>
-      </el-col>
-    )
+  formConf: Object
+})
+const className = ref('')
+const draggableItemRef = ref(null)
+const emits = defineEmits(['activeItem', 'copyItem', 'deleteItem'])
+
+function activeItem(item) {
+  emits('activeItem', item)
+}
+function copyItem(item, parent) {
+  emits('copyItem', item, parent ?? props.drawingList)
+}
+function deleteItem(item, parent) {
+  emits('deleteItem', item, parent ?? props.drawingList)
+}
+
+function getComponentData() {
+  return {
+    gutter: props.element.gutter,
+    justify: props.element.justify,
+    align: props.element.align
   }
 }
 
-function renderChildren(h, element, index, parent) {
-  if (!Array.isArray(element.children)) return null
-  return element.children.map((el, i) => {
-    const layout = layouts[el.layout]
-    if (layout) {
-      return layout.call(this, h, el, i, element.children)
-    }
-    return layoutIsNotFound()
-  })
-}
-
-function layoutIsNotFound() {
-  throw new Error(`没有与${this.element.layout}匹配的layout`)
-}
-
-export default {
-  components: {
-    render,
-    draggable
-  },
-  props: [
-    'element',
-    'index',
-    'drawingList',
-    'activeId',
-    'formConf'
-  ],
-  render(h) {
-    const layout = layouts[this.element.layout]
-
-    if (layout) {
-      return layout.call(this, h, this.element, this.index, this.drawingList)
-    }
-    return layoutIsNotFound()
+watch(() => props.activeId, (val) => {
+  className.value = (props.element.layout === 'rowFormItem' ? 'drawing-row-item' : 'drawing-item') + (val === props.element.formId ? ' active-from-item' : '')
+  if (props.formConf.unFocusedComponentBorder) {
+    className.value += ' unfocus-bordered'
   }
-}
+}, { immediate: true })
 </script>

@@ -1,8 +1,8 @@
-import store from '@/store'
+import useUserStore from '@/store/modules/user'
 
 function authPermission(permission) {
-  const all_permission = "*:*:*";
-  const permissions = store.getters && store.getters.permissions
+  const all_permission = "*:*:*"
+  const permissions = useUserStore().permissions
   if (permission && permission.length > 0) {
     return permissions.some(v => {
       return all_permission === v || v === permission
@@ -13,8 +13,8 @@ function authPermission(permission) {
 }
 
 function authRole(role) {
-  const super_admin = "admin";
-  const roles = store.getters && store.getters.roles
+  const super_admin = "admin"
+  const roles = useUserStore().roles
   if (role && role.length > 0) {
     return roles.some(v => {
       return super_admin === v || v === role
@@ -27,7 +27,7 @@ function authRole(role) {
 export default {
   // 验证用户是否具备某权限
   hasPermi(permission) {
-    return authPermission(permission);
+    return authPermission(permission)
   },
   // 验证用户是否含有指定权限，只需包含其中一个
   hasPermiOr(permissions) {
@@ -43,7 +43,7 @@ export default {
   },
   // 验证用户是否具备某角色
   hasRole(role) {
-    return authRole(role);
+    return authRole(role)
   },
   // 验证用户是否含有指定角色，只需包含其中一个
   hasRoleOr(roles) {

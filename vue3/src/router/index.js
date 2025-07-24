@@ -1,8 +1,4 @@
-import Vue from 'vue'
-import Router from 'vue-router'
-
-Vue.use(Router)
-
+import { createWebHistory, createRouter } from 'vue-router'
 /* Layout */
 import Layout from '@/layout'
 
@@ -37,7 +33,7 @@ export const constantRoutes = [
     children: [
       {
         path: '/redirect/:path(.*)',
-        component: () => import('@/views/redirect')
+        component: () => import('@/views/redirect/index.vue')
       }
     ]
   },
@@ -52,7 +48,7 @@ export const constantRoutes = [
     hidden: true
   },
   {
-    path: '/404',
+    path: "/:pathMatch(.*)*",
     component: () => import('@/views/error/404'),
     hidden: true
   },
@@ -64,10 +60,10 @@ export const constantRoutes = [
   {
     path: '',
     component: Layout,
-    redirect: 'index',
+    redirect: '/index',
     children: [
       {
-        path: 'index',
+        path: '/index',
         component: () => import('@/views/index'),
         name: 'Index',
         meta: { title: '首页', icon: 'dashboard', affix: true }
@@ -81,7 +77,7 @@ export const constantRoutes = [
     redirect: 'noredirect',
     children: [
       {
-        path: 'profile',
+        path: 'profile/:activeTab?',
         component: () => import('@/views/system/user/profile/index'),
         name: 'Profile',
         meta: { title: '个人中心', icon: 'user' }
@@ -164,20 +160,15 @@ export const dynamicRoutes = [
   }
 ]
 
-// 防止连续点击多次路由报错
-let routerPush = Router.prototype.push;
-let routerReplace = Router.prototype.replace;
-// push
-Router.prototype.push = function push(location) {
-  return routerPush.call(this, location).catch(err => err)
-}
-// replace
-Router.prototype.replace = function push(location) {
-  return routerReplace.call(this, location).catch(err => err)
-}
-
-export default new Router({
-  mode: 'history', // 去掉url中的#
-  scrollBehavior: () => ({ y: 0 }),
-  routes: constantRoutes
+const router = createRouter({
+  history: createWebHistory(),
+  routes: constantRoutes,
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition
+    }
+    return { top: 0 }
+  },
 })
+
+export default router

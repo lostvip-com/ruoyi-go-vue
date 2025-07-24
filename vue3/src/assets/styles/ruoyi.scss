@@ -1,69 +1,56 @@
 /**
-* 通用css样式布局处理
-* Copyright (c) 2019 ruoyi
-*/
+ * 通用css样式布局处理
+ * Copyright (c) 2019 ruoyi
+ */
 
 /** 基础通用 **/
 .pt5 {
   padding-top: 5px;
 }
-
 .pr5 {
   padding-right: 5px;
 }
-
 .pb5 {
   padding-bottom: 5px;
 }
-
 .mt5 {
   margin-top: 5px;
 }
-
 .mr5 {
   margin-right: 5px;
 }
-
 .mb5 {
   margin-bottom: 5px;
 }
-
 .mb8 {
   margin-bottom: 8px;
 }
-
 .ml5 {
   margin-left: 5px;
 }
-
 .mt10 {
   margin-top: 10px;
 }
-
 .mr10 {
   margin-right: 10px;
 }
-
 .mb10 {
   margin-bottom: 10px;
 }
 .ml10 {
-	margin-left: 10px;
+  margin-left: 10px;
 }
-
 .mt20 {
   margin-top: 20px;
 }
-
 .mr20 {
   margin-right: 20px;
 }
-
 .mb20 {
   margin-bottom: 20px;
 }
 .ml20 {
-	margin-left: 20px;
+  margin-left: 20px;
 }
 
 .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
@@ -73,15 +60,14 @@
   color: inherit;
 }
 
-.el-message-box__status + .el-message-box__message{
-  word-break: break-word;
+.el-form .el-form-item__label {
+  font-weight: 700;
 }
-
 .el-dialog:not(.is-fullscreen) {
   margin-top: 6vh !important;
 }
 
-.el-dialog__wrapper.scrollbar .el-dialog .el-dialog__body {
+.el-dialog.scrollbar .el-dialog__body {
   overflow: auto;
   overflow-x: hidden;
   max-height: 70vh;
@@ -92,13 +78,12 @@
   .el-table__header-wrapper, .el-table__fixed-header-wrapper {
     th {
       word-break: break-word;
-      background-color: #f8f8f9;
+      background-color: #f8f8f9 !important;
       color: #515a6e;
-      height: 40px;
+      height: 40px !important;
       font-size: 13px;
     }
   }
-
   .el-table__body-wrapper {
     .el-button [class*="el-icon-"] + span {
       margin-left: 1px;
@@ -108,11 +93,11 @@
 
 /** 表单布局 **/
 .form-header {
-  font-size: 15px;
-  color: #6379bb;
-  border-bottom: 1px solid #ddd;
-  margin: 8px 10px 25px 10px;
-  padding-bottom: 5px
+  font-size:15px;
+  color:#6379bb;
+  border-bottom:1px solid #ddd;
+  margin:8px 10px 25px 10px;
+  padding-bottom:5px
 }
 
 /** 表格布局 **/
@@ -120,35 +105,54 @@
   display: flex;
   justify-content: flex-end;
   margin-top: 20px;
+  background-color: transparent !important;
+}
+
+/* 弹窗中的分页器 */
+.el-dialog .pagination-container {
+  position: static !important;
+  margin: 10px 0 0 0;
+  padding: 0 !important;
+  
+  .el-pagination {
+    position: static;
+  }
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .pagination-container {
+    .el-pagination {
+      > .el-pagination__jump {
+        display: none !important;
+      }
+      > .el-pagination__sizes {
+        display: none !important;
+      }
+    }
+  }
 }
 
 /* tree border */
 .tree-border {
   margin-top: 5px;
-  border: 1px solid #e5e6e7;
-  background: #FFFFFF none;
-  border-radius: 4px;
+  border: 1px solid var(--el-border-color-light, #e5e6e7);
+  background: var(--el-bg-color, #FFFFFF) none;
+  border-radius:4px;
+  width: 100%;
 }
 
-@media (max-width: 768px) {
-  .pagination-container .el-pagination > .el-pagination__jump {
-    display: none !important;
-  }
-  .pagination-container .el-pagination > .el-pagination__sizes {
-    display: none !important;
-  }
-}
-
-.el-table .fixed-width .el-button--mini {
+.el-table .fixed-width .el-button--small {
   padding-left: 0;
   padding-right: 0;
   width: inherit;
 }
 
 /** 表格更多操作下拉样式 */
-.el-table .el-dropdown-link,.el-table .el-dropdown-selfdefine {
-	cursor: pointer;
-	margin-left: 5px;
+.el-table .el-dropdown-link {
+  cursor: pointer;
+  color: #409EFF;
+  margin-left: 10px;
 }
 
 .el-table .el-dropdown, .el-icon-arrow-down {
@@ -185,12 +189,12 @@
 }
 
 .el-card__header {
-  padding: 14px 15px 7px;
+  padding: 14px 15px 7px !important;
   min-height: 40px;
 }
 
 .el-card__body {
-  padding: 15px 20px 20px 20px;
+  padding: 15px 20px 20px 20px !important;
 }
 
 .card-box {
@@ -258,10 +262,9 @@
 }
 
 .avatar-upload-preview {
-  position: relative;
+  position: absolute;
   top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(50%, -50%);
   width: 200px;
   height: 200px;
   border-radius: 50%;
@@ -270,18 +273,18 @@
 }
 
 /* 拖拽列样式 */
-.sortable-ghost {
+.sortable-ghost{
   opacity: .8;
-  color: #fff !important;
-  background: #42b983 !important;
+  color: #fff!important;
+  background: #42b983!important;
 }
 
+/* 表格右侧工具栏样式 */
 .top-right-btn {
-  position: relative;
-  float: right;
+  margin-left: auto;
 }
 
 /* 分割面板样式 */
 .splitpanes.default-theme .splitpanes__pane {
-  background-color: #fff!important;
+  background-color: var(--splitpanes-default-bg) !important;
 }

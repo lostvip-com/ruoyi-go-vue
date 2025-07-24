@@ -3,7 +3,7 @@
     <el-row :gutter="10">
       <el-col :span="12" class="card-box">
         <el-card>
-          <div slot="header"><span><i class="el-icon-cpu"></i> CPU</span></div>
+          <template #header><Cpu style="width: 1em; height: 1em; vertical-align: middle;" /> <span style="vertical-align: middle;">CPU</span></template>
           <div class="el-table el-table--enable-row-hover el-table--medium">
             <table cellspacing="0" style="width: 100%;">
               <thead>
@@ -37,7 +37,7 @@
 
       <el-col :span="12" class="card-box">
         <el-card>
-          <div slot="header"><span><i class="el-icon-tickets"></i> 内存</span></div>
+          <template #header><Tickets style="width: 1em; height: 1em; vertical-align: middle;" /> <span style="vertical-align: middle;">内存</span></template>
           <div class="el-table el-table--enable-row-hover el-table--medium">
             <table cellspacing="0" style="width: 100%;">
               <thead>
@@ -76,9 +76,7 @@
 
       <el-col :span="24" class="card-box">
         <el-card>
-          <div slot="header">
-            <span><i class="el-icon-monitor"></i> 服务器信息</span>
-          </div>
+          <template #header><Monitor style="width: 1em; height: 1em; vertical-align: middle;" /> <span style="vertical-align: middle;">服务器信息</span></template>
           <div class="el-table el-table--enable-row-hover el-table--medium">
             <table cellspacing="0" style="width: 100%;">
               <tbody>
@@ -102,9 +100,7 @@
 
       <el-col :span="24" class="card-box">
         <el-card>
-          <div slot="header">
-            <span><i class="el-icon-coffee-cup"></i> Java虚拟机信息</span>
-          </div>
+          <template #header><CoffeeCup style="width: 1em; height: 1em; vertical-align: middle;" /> <span style="vertical-align: middle;">Java虚拟机信息</span></template>
           <div class="el-table el-table--enable-row-hover el-table--medium">
             <table cellspacing="0" style="width: 100%;table-layout:fixed;">
               <tbody>
@@ -140,9 +136,7 @@
 
       <el-col :span="24" class="card-box">
         <el-card>
-          <div slot="header">
-            <span><i class="el-icon-receiving"></i> 磁盘状态</span>
-          </div>
+          <template #header><MessageBox style="width: 1em; height: 1em; vertical-align: middle;" /> <span style="vertical-align: middle;">磁盘状态</span></template>
           <div class="el-table el-table--enable-row-hover el-table--medium">
             <table cellspacing="0" style="width: 100%;">
               <thead>
@@ -175,33 +169,19 @@
   </div>
 </template>
 
-<script>
-import { getServer } from "@/api/monitor/server";
+<script setup>
+import { getServer } from '@/api/monitor/server'
 
-export default {
-  name: "Server",
-  data() {
-    return {
-      // 服务器信息
-      server: []
-    };
-  },
-  created() {
-    this.getList();
-    this.openLoading();
-  },
-  methods: {
-    /** 查询服务器信息 */
-    getList() {
-      getServer().then(response => {
-        this.server = response.data;
-        this.$modal.closeLoading();
-      });
-    },
-    // 打开加载层
-    openLoading() {
-      this.$modal.loading("正在加载服务监控数据，请稍候！");
-    }
-  }
-};
+const server = ref([])
+const { proxy } = getCurrentInstance()
+
+function getList() {
+  proxy.$modal.loading("正在加载服务监控数据，请稍候！")
+  getServer().then(response => {
+    server.value = response.data
+    proxy.$modal.closeLoading()
+  })
+}
+
+getList()
 </script>
