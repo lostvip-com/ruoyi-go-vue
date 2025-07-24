@@ -3,10 +3,12 @@ package service
 import (
 	"bytes"
 	"common/global"
+	"common/myconf"
 	"github.com/lostvip-com/lv_framework/lv_log"
 	"github.com/lostvip-com/lv_framework/utils/lv_file"
 	"html/template"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 	"system/vo"
@@ -25,14 +27,6 @@ type TplInfo struct {
 
 	PathDist string
 	NameDist string
-}
-
-var funcMap = template.FuncMap{
-	"contains":   Contains,
-	"upperFirst": UpperFirst,
-	"substr":     Substr,
-	"replace":    strings.Replace,
-	"index":      strings.Index,
 }
 
 func (e *CodeGenService) ListTpl() []TplInfo {
@@ -85,6 +79,7 @@ func (e *CodeGenService) PreviewCode(tab *vo.GenTableVO) map[string]map[string]s
 func (e *CodeGenService) GenCodeByTpl(tab *vo.GenTableVO, tpl *TplInfo) (*bytes.Buffer, error) {
 	e.replaceTplVar(tpl, tab)
 	file := filepath.Join(tpl.PathSrc, tpl.NameSrc)
+	funcMap := myconf.GetConfigInstance().GetFuncMap()
 	t1, err := template.New(tpl.NameSrc).Funcs(funcMap).ParseFiles(file)
 	if err != nil {
 		return nil, err
@@ -99,7 +94,7 @@ func (e *CodeGenService) GenCode(tab *vo.GenTableVO, overwrite bool) {
 	srcTpl := e.ListTpl()
 	for _, tpl := range srcTpl {
 		buff, err := e.GenCodeByTpl(tab, &tpl)
-		targetPath := lv_file.GetCurrentPath() + tpl.PathDist + "/" + tpl.NameDist
+		targetPath := path.Join(lv_file.GetCurrentPath(), tpl.PathDist, tpl.NameDist)
 		if overwrite {
 			targetPath, err = lv_file.FileCreate(buff, targetPath)
 		} else if !lv_file.IsFileExist(targetPath) {

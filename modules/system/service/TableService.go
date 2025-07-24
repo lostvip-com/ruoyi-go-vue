@@ -2,6 +2,7 @@ package service
 
 import (
 	"bytes"
+	"common/myconf"
 	"errors"
 	"os"
 	"strings"
@@ -497,12 +498,8 @@ func (svc TableService) LoadTemplate(templateName string, data interface{}) (str
 		return "", err
 	}
 	templateStr := string(b)
-
 	// 创建函数映射
-	funcs := template.FuncMap{
-		"contains": Contains,
-	}
-
+	funcs := myconf.GetConfigInstance().GetFuncMap()
 	tmpl, err := template.New(templateName).Funcs(funcs).Parse(templateStr) //建立一个模板，内容是"hello, {{OssUrl}}"
 	if err != nil {
 		return "", err
@@ -569,29 +566,3 @@ var COLUMNNAME_NOT_LIST = []string{"id", "create_by", "create_time", "del_flag",
 
 // 页面不需要查询字段
 var COLUMNNAME_NOT_QUERY = []string{"id", "create_by", "create_time", "del_flag", "update_by", "update_time", "remark"}
-
-func Contains(str, subStr string) bool {
-	return strings.Contains(str, subStr)
-}
-func UpperFirst(s string) string {
-	if len(s) == 0 {
-		return s
-	}
-	return strings.ToUpper(s[:1]) + s[1:]
-}
-func Substr(s string, start, length int) string {
-	if len(s) == 0 {
-		return s
-	}
-	if start < 0 {
-		start = 0
-	}
-	if start > len(s) {
-		start = len(s)
-	}
-	end := start + length
-	if end > len(s) {
-		end = len(s)
-	}
-	return s[start:end]
-}

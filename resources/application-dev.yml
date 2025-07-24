@@ -6,11 +6,11 @@ application:
     max-size: 100 # 单个日志文件最大100M
     max-backups: 10 # 最多保留10个备份
     max-age: 7 # 保留7天
-  cache-type: ram
-#  redis:
-#    host: ${REDIS_HOST:172.16.61.62}
-#    port: ${REDIS_PORT:6379}
-#    password: ${REDIS_PWD:dpctest}
+  cache-type: redis
+  redis:
+    host: ${REDIS_HOST:172.16.61.62}
+    port: ${REDIS_PORT:6379}
+    password: ${REDIS_PWD:dpctest}
   datasource:
     show-sql: true   # 打印SQL到日志
     auto-migrate: update # update/none 同步表结构，见 init.go

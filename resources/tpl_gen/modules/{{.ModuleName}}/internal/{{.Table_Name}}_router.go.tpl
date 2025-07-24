@@ -1,6 +1,6 @@
 // ==========================================================================
 // LV自动生成路由代码,只生成一次,按需修改,再次生成不会覆盖.
-// 生成日期:{{.CreateTime}}
+// 生成日期:{{FmtTime .CreateTime}}
 // 生成人:{{.FunctionAuthor}}
 // ==========================================================================
 package internal
@@ -16,7 +16,6 @@ func init() {
     {{.BusinessName}} := router.New( "/{{.BusinessName}}/{{.BusinessName}}", auth.TokenCheck())
     {{.BusinessName}}Api := api.{{.ClassName}}Api{}
     {{.BusinessName}}.GET("/:id", "{{.BusinessName}}:{{.BusinessName}}:info", {{.BusinessName}}Api.GetRoleInfo)
-    {{.BusinessName}}.GET("/list{{.ClassName}}", "{{.BusinessName}}:{{.BusinessName}}:list", {{.BusinessName}}Api.List{{.ClassName}})
     {{.BusinessName}}.GET("/list{{.ClassName}}", "{{.BusinessName}}:{{.BusinessName}}:list", {{.BusinessName}}Api.List{{.ClassName}})
     {{.BusinessName}}.POST("", "{{.BusinessName}}:{{.BusinessName}}:new", {{.BusinessName}}Api.Create{{.ClassName}})
     {{.BusinessName}}.PUT("", "{{.BusinessName}}:{{.BusinessName}}:edit",{{.BusinessName}}Api.Update{{.ClassName}})

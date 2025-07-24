@@ -2,13 +2,16 @@ package myconf
 
 import (
 	functions2 "common/functions"
+	"common/permit"
 	"github.com/gin-gonic/gin"
 	"github.com/lostvip-com/lv_framework/lv_conf"
 	"github.com/lostvip-com/lv_framework/lv_global"
 	"github.com/lostvip-com/lv_framework/lv_log"
 	"github.com/lostvip-com/lv_framework/utils/lv_logic"
+	"github.com/lostvip-com/lv_framework/utils/lv_time"
 	"html/template"
 	"os"
+	"strings"
 )
 
 var cfg *MyConfig
@@ -79,21 +82,25 @@ func (e *MyConfig) GetFuncMap() template.FuncMap {
 		//新的规则
 		"Ctx":        functions2.GetCtx,
 		"CtxPath":    functions2.CtxPath,
-		"HasPerm":    functions2.HasPermi,
-		"PermButton": functions2.PermButton,
+		"HasPerm":    permit.HasPermi,
+		"PermButton": permit.PermButton,
 
 		"DictSelect": functions2.DictSelect,
 		"DictRadio":  functions2.DictRadio,
 		"DictLabel":  functions2.DictLabel,
 		"DictType":   functions2.DictType,
 
-		"AddInt":    functions2.AddInt,
-		"Contains":  functions2.Contains,
-		"Copyright": functions2.GetCopyright,
-		"OssUrl":    functions2.GetOssUrl,
-
+		"AddInt":     functions2.AddInt,
+		"Contains":   functions2.Contains,
+		"Copyright":  functions2.GetCopyright,
+		"OssUrl":     functions2.GetOssUrl,
+		"FmtTime":    lv_time.GetTimeStr,
+		"upperFirst": permit.UpperFirst,
+		"substr":     permit.Substr,
+		"replace":    strings.Replace,
+		"index":      strings.Index,
 		//兼容旧的
-		"hasPermi":          functions2.HasPermi,          //兼容旧的
+		"hasPermi":          permit.HasPermi,              //兼容旧的
 		"getDictTypeSelect": functions2.GetDictTypeSelect, //兼容旧的名称
 		"getDictTypeRadio":  functions2.DictRadio,         //兼容旧的名称
 		"contains":          functions2.Contains,          //兼容旧的名称
