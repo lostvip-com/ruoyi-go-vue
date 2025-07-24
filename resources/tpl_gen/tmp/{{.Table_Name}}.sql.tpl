@@ -1,9 +1,9 @@
 /*
 ==========================================================================
 LV自动生成菜单SQL,只生成一次,按需修改.
-生成日期：{{.table.CreateTime}}
-生成路径: tmp/sql/{{.table.BusinessName}}/{{.table.Table_Name}}_menu.sql
-生成人：{{.table.FunctionAuthor}}
+生成日期：{{FmtTime .CreateTime}}
+生成路径: tmp/sql/{{.BusinessName}}/{{.Table_Name}}_menu.sql
+生成人：{{.FunctionAuthor}}
 ==========================================================================
 */
 
