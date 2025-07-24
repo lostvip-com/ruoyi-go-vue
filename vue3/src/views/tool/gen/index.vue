@@ -56,33 +56,13 @@
         >创建</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          type="info"
-          plain
-          icon="Upload"
-          @click="openImportTable"
-          v-hasPermi="['tool:gen:import']"
-        >导入</el-button>
+        <el-button type="info" plain icon="Upload" @click="openImportTable" v-hasPermi="['tool:gen:import']">导入</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="Edit"
-          :disabled="single"
-          @click="handleEditTable"
-          v-hasPermi="['tool:gen:edit']"
-        >修改</el-button>
+        <el-button type="success"  plain icon="Edit"  :disabled="single" @click="handleEditTable" v-hasPermi="['tool:gen:edit']">修改</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="Delete"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['tool:gen:remove']"
-        >删除</el-button>
+        <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete" v-hasPermi="['tool:gen:remove']">删除</el-button>
       </el-col>
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
@@ -116,25 +96,19 @@
           <el-tooltip content="生成代码" placement="top">
             <el-button link type="primary" icon="Download" @click="handleGenTable(scope.row)" v-hasPermi="['tool:gen:code']"></el-button>
           </el-tooltip>
+
+          <el-tooltip content="导入菜单" placement="top">
+              <el-button link type="warning" icon="DocumentAdd" @click="handleCreateMenu(scope.row)" v-hasPermi="['tool:gen:code']"></el-button>
+          </el-tooltip>
+
         </template>
       </el-table-column>
     </el-table>
-    <pagination
-      v-show="total>0"
-      :total="total"
-      v-model:page="queryParams.pageNum"
-      v-model:limit="queryParams.pageSize"
-      @pagination="getList"
-    />
+    <pagination v-show="total>0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize"  @pagination="getList"/>
     <!-- 预览界面 -->
     <el-dialog :title="preview.title" v-model="preview.open" width="80%" top="5vh" append-to-body class="scrollbar">
       <el-tabs v-model="preview.activeName">
-        <el-tab-pane
-          v-for="(value, key) in preview.data"
-          :label="key"
-          :name="key"
-          :key="value"
-        >
+        <el-tab-pane v-for="(value, key) in preview.data" :label="key"  :name="key" :key="value">
           <el-link :underline="false" icon="DocumentCopy" v-copyText="value" v-copyText:callback="copyTextSuccess" style="float:right">&nbsp;复制</el-link>
           <pre>{{ value }}</pre>
         </el-tab-pane>
@@ -146,7 +120,7 @@
 </template>
 
 <script setup name="Gen">
-import { listTable, previewTable, delTable, genCode, synchDb } from "@/api/tool/gen"
+import { listTable, previewTable, delTable, genCode, synchDb,createMenu } from "@/api/tool/gen"
 import router from "@/router"
 import importTable from "./importTable"
 import createTable from "./createTable"
@@ -303,6 +277,14 @@ function handleDelete(row) {
     proxy.$modal.msgSuccess("删除成功")
   }).catch(() => {})
 }
-
+/** 插入数据库操作 */
+function handleCreateMenu(row) {
+  const tableName = row.tableName
+  proxy.$modal.confirm('确认为表"' + tableName + '"添加菜单？').then(function () {
+    return createMenu({"tableName":tableName})
+  }).then(() => {
+    proxy.$modal.msgSuccess("同步成功")
+  }).catch(() => {})
+}
 getList()
 </script>

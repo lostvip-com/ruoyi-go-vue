@@ -1,6 +1,6 @@
 // ==========================================================================
 // LV自动生成数据库操作代码，无需手动修改，重新生成会自动覆盖.
-// 生成日期: 2025-07-24 02:41:35 &#43;0000 UTC
+// 生成日期: 2025-07-24 07:57:14 &#43;0000 UTC
 // 生成人: lv
 // ==========================================================================
 package model
@@ -12,7 +12,7 @@ import (
     "time"
 )
 
-// IotProduct IotProduct
+// IotProduct 产品管理
 type IotProduct struct {
     Id  int64  `gorm:"type:bigint(20);primary_key;auto_increment;主键;" json:"id"`
     Key  string  `gorm:"type:varchar(32);comment:产品编码,对应可监控类型ID;" json:"key"`

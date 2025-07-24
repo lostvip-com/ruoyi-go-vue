@@ -7,13 +7,16 @@ import (
 	"github.com/lostvip-com/lv_framework/lv_db"
 	"github.com/lostvip-com/lv_framework/lv_db/lv_batis"
 	"github.com/lostvip-com/lv_framework/lv_global"
+	"github.com/lostvip-com/lv_framework/lv_log"
 	"github.com/lostvip-com/lv_framework/utils/lv_conv"
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
+	"github.com/lostvip-com/lv_framework/utils/lv_file"
 	"github.com/lostvip-com/lv_framework/web/lv_dto"
 	"github.com/spf13/cast"
 	"net/http"
 	"os"
 	"os/exec"
+	"path"
 	"strings"
 	"system/model"
 	"system/service"
@@ -29,32 +32,31 @@ func (w *GenCodeApi) Build(c *gin.Context) {
 	util2.BuildTpl(c, "tool/build").WriteTpl()
 }
 
-func (w *GenCodeApi) ExecSqlFile(c *gin.Context) {
-	tableId := lv_conv.Int64(c.Query("tableId"))
-	genTable := model.GenTable{}
-	po, err := genTable.FindById(tableId)
-	lv_err.HasErrAndPanic(err)
-	//err = lv_db.ExecSqlFile(sqlFile)
+func (w *GenCodeApi) CreateMenu(c *gin.Context) {
+	tableName := c.Query("tableName")
+	if tableName == "" {
+		util2.Fail(c, "param wrong")
+		return
+	}
 	// Loads queries from file
-	batis, err := lv_batis.LoadFromFile(lv_global.Config().GetTmpPath() + "/" + po.Table_Name + "_menu.sql")
+	sqlFile := path.Join(lv_global.Config().GetTmpPath(), tableName+"_menu.sql")
+	exist := lv_file.IsFileExist(sqlFile)
+	if !exist {
+		sqlFile = path.Join("../"+lv_global.Config().GetTmpPath(), tableName+"_menu.sql")
+		exist = lv_file.IsFileExist(sqlFile)
+		if !exist { //检查上组目录中是否存在
+			util2.Fail(c, "未找到文件")
+			return
+		}
+	}
+	lv_log.Info(lv_file.GetCurrentPath()+"---------file:", sqlFile)
+	batis, err := lv_batis.LoadFromFile(sqlFile)
+	lv_err.HasErrAndPanic(err)
 	// Run queries
 	tb := lv_db.GetMasterGorm()
 	//cfg := global.GetConfigInstance()
-	batis.Exec(tb, "menu")
-	menuName := po.FunctionName
-	sysmenu := model.SysMenu{}
-	sysmenu.MenuName = menuName
-	err = sysmenu.FindLastOne()
+	_, err = batis.ExecMultiSqlInTransaction(tb, "create_menu")
 	lv_err.HasErrAndPanic(err)
-	pmenuId := sysmenu.MenuId
-	_, err = batis.Exec(tb, "menu_button_create", pmenuId)
-	_, err = batis.Exec(tb, "menu_button_retrieve", pmenuId)
-	_, err = batis.Exec(tb, "menu_button_update", pmenuId)
-	_, err = batis.Exec(tb, "menu_button_delete", pmenuId)
-	_, err = batis.Exec(tb, "menu_button_export", pmenuId)
-	if err != nil {
-		panic(err)
-	}
 	util2.Success(c, nil)
 }
 

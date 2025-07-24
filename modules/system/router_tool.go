@@ -24,5 +24,5 @@ func init() {
 	tool.GET("/gen/preview/:tableId", "", codeGenApi.Preview)
 	tool.GET("/gen/genCode/:tableName", "", codeGenApi.GenCode)
 	//执行sql文件
-	tool.POST("/gen/execSqlFile", "", codeGenApi.ExecSqlFile)
+	tool.POST("/gen/createMenu", "tool:gen:add", codeGenApi.CreateMenu)
 }

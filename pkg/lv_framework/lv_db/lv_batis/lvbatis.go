@@ -153,13 +153,50 @@ func (d LvBatis) LookupQuery(name string) (query string, err error) {
 	return
 }
 
-// Exec is a wrapper for database/sql's Exec(), using dotsql named query.
+// 默认只能执行单条sql，除非mysql配置为allowMultiQueries=true
 func (d LvBatis) Exec(db Execer, name string, args ...interface{}) (*gorm.DB, error) {
 	query, err := d.LookupQuery(name)
 	if err != nil {
 		return nil, err
 	}
 	return db.Exec(query, args...), err
+}
+
+// ExecMultiSql 在事务中执行多个SQL语句
+func (d LvBatis) ExecMultiSqlInTransaction(db *gorm.DB, name string, args ...interface{}) (*gorm.DB, error) {
+	query, err := d.LookupQuery(name)
+	if err != nil {
+		return nil, err
+	}
+	// 开启事务
+	tx := db.Begin()
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	var result *gorm.DB
+	// 按分号拆分SQL语句
+	statements := strings.Split(query, ";")
+	for _, stmt := range statements {
+		trimmedStmt := strings.TrimSpace(stmt)
+		if trimmedStmt != "" {
+			result = tx.Exec(trimmedStmt, args...)
+			if result.Error != nil {
+				tx.Rollback()
+				return nil, result.Error
+			}
+		}
+	}
+	// 提交事务
+	if err := tx.Commit().Error; err != nil {
+		return nil, err
+	}
+	return result, nil
 }
 
 // ExecContext is a wrapper for database/sql's ExecContext(), using dotsql named query.

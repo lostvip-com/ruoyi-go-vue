@@ -83,3 +83,12 @@ export function synchDb(tableName) {
     method: 'get'
   })
 }
+  // 创建菜单
+export function createMenu(data) {
+  return request({
+    url: '/tool/gen/createMenu',
+    method: 'post',
+    // data: data
+    params: data
+  })
+}
