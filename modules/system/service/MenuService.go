@@ -4,13 +4,11 @@ import (
 	"errors"
 	"github.com/lostvip-com/lv_framework/lv_db"
 	"github.com/lostvip-com/lv_framework/lv_db/lv_dao"
-	"github.com/lostvip-com/lv_framework/utils/lv_conv"
 	"github.com/lostvip-com/lv_framework/web/lv_dto"
 	"github.com/spf13/cast"
 	"gorm.io/gorm"
 	"strconv"
 	"strings"
-	"system/dao"
 	"system/model"
 	"system/vo"
 	"time"
@@ -44,7 +42,6 @@ func (svc *MenuService) SelectListPage(params *vo.SelectMenuPageReq) (*[]model.S
 	return svc.SelectListPage(params)
 }
 
-// 根据主键删除数据
 func (svc *MenuService) DeleteById(menuId int64) error {
 	err := lv_db.GetMasterGorm().Transaction(func(tx *gorm.DB) error {
 		err := tx.Exec("delete from sys_menu where menu_id=?", menuId).Error
@@ -61,14 +58,12 @@ func (svc *MenuService) DeleteById(menuId int64) error {
 	return err
 }
 
-// 添加数据
 func (svc *MenuService) AddSave(req *model.SysMenu) (int64, error) {
 	req.CreateTime = time.Now()
 	err := req.Save()
 	return req.MenuId, err
 }
 
-// 修改数据
 func (svc *MenuService) Edit(req *model.SysMenu) error {
 	entity := &model.SysMenu{MenuId: req.MenuId}
 	err := entity.FindOne()
@@ -89,17 +84,6 @@ func (svc *MenuService) Edit(req *model.SysMenu) error {
 	entity.UpdateTime = time.Now()
 	err = entity.Update()
 	return err
-}
-
-// 批量删除数据记录
-func (svc *MenuService) DeleteByIds(ids string) int64 {
-	idarr := lv_conv.ToInt64Array(ids, ",")
-	var dao dao.MenuDao
-	result, err := dao.DeleteBatch(idarr...)
-	if err != nil {
-		return 0
-	}
-	return result
 }
 
 // SelectMenuTree 加载所有菜单列表树
