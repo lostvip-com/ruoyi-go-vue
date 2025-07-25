@@ -50,8 +50,11 @@ go get github.com/lostvip-com/lv-framework
 ~~~
 
 ## 修改日志
+#### v1.2.2 工具包调整 2025-07-25
+* 1. lv_batis包中增加ExecMultiSqlInTransaction方法，支持直接执行包含多条sql语句的文件
 
-#### v1.1.9 工具包调整 2025-02-11
-* 1.移除iptocity.go
-* 2.lv_net包添加判断是否内网的方法
+#### v1.2.1 工具包调整 2025-07-24
+* 1.替换除gorm中对cgo的依赖，使用纯go实现的sqlite驱动，方便交叉编译。
+* 2.优化配置文件加载顺序。
+* 3.移除无用的依赖项
 
