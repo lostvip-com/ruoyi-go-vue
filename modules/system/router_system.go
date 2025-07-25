@@ -96,7 +96,7 @@ func init() {
 	system.GET("/menu/roleMenuTreeselect/:roleId", "system:menu:list", menuApi.TreeSelectByRole)
 	system.POST("/menu", "system:menu:add", menuApi.AddSave)
 	system.PUT("/menu", "system:menu:edit", menuApi.EditSave)
-	system.DELETE("/menu", "system:menu:remove", menuApi.Remove)
+	system.DELETE("/menu/:menuId", "system:menu:remove", menuApi.RemoveMenu)
 	//system.GET("/menu/treeData", "", menuApi.MenuTreeData)
 	// 岗位路由
 	postApi := api.PostApi{}

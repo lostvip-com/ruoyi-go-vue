@@ -4,7 +4,6 @@ import (
 	api2 "common/api"
 	"common/util"
 	"github.com/gin-gonic/gin"
-	"github.com/lostvip-com/lv_framework/utils/lv_conv"
 	"github.com/spf13/cast"
 	"net/http"
 	"system/dao"
@@ -86,12 +85,11 @@ func (w *MenuApi) EditSave(c *gin.Context) {
 	util.Success(c, req)
 }
 
-// Remove 删除数据
-func (w *MenuApi) Remove(c *gin.Context) {
-	id := lv_conv.Int64(c.Query("menuId"))
-	err := service.GetMenuServiceInstance().DeleteById(id)
+func (w *MenuApi) RemoveMenu(c *gin.Context) {
+	var menuId = cast.ToInt64(c.Param("menuId"))
+	err := service.GetMenuServiceInstance().DeleteById(menuId)
 	if err == nil {
-		util.Success(c, gin.H{"id": id})
+		util.Success(c, gin.H{"id": menuId})
 	} else {
 		util.Fail(c, err.Error())
 	}

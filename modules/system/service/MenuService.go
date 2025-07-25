@@ -7,6 +7,7 @@ import (
 	"github.com/lostvip-com/lv_framework/utils/lv_conv"
 	"github.com/lostvip-com/lv_framework/web/lv_dto"
 	"github.com/spf13/cast"
+	"gorm.io/gorm"
 	"strconv"
 	"strings"
 	"system/dao"
@@ -44,11 +45,19 @@ func (svc *MenuService) SelectListPage(params *vo.SelectMenuPageReq) (*[]model.S
 }
 
 // 根据主键删除数据
-func (svc *MenuService) DeleteById(id int64) error {
-	err := (&model.SysMenu{MenuId: id}).Delete()
-	if err == nil {
-		lv_db.GetMasterGorm().Exec("delete from sys_menu where parent_id=?", id)
-	}
+func (svc *MenuService) DeleteById(menuId int64) error {
+	err := lv_db.GetMasterGorm().Transaction(func(tx *gorm.DB) error {
+		err := tx.Exec("delete from sys_menu where menu_id=?", menuId).Error
+		if err != nil {
+			return err
+		}
+		err = tx.Exec("delete from sys_role_menu where menu_id=?", menuId).Error
+		if err != nil {
+			return err
+		}
+		err = tx.Exec("delete from sys_menu where parent_id=?", menuId).Error
+		return err
+	})
 	return err
 }
 
