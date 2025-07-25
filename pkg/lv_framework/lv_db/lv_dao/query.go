@@ -8,12 +8,16 @@ import (
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
 )
 
-func CountCol(table, column, value string) (int64, error) {
+func CountColumnDelFlag0(table, column, value string) (int64, error) {
 	var total int64
 	err := lv_db.GetMasterGorm().Table(table).Where("del_flag=0 and "+column+"=?", value).Count(&total).Error
 	return total, err
 }
-
+func CountColumnAll(table, column, value string) (int64, error) {
+	var total int64
+	err := lv_db.GetMasterGorm().Table(table).Where(column+"=?", value).Count(&total).Error
+	return total, err
+}
 func ListMapByNamedSql(sql string, req any, isCamel bool) (*[]map[string]any, error) {
 	d := lv_db.GetMasterGorm()
 	return namedsql.ListMap(d, sql, req, isCamel)

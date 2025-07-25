@@ -344,6 +344,14 @@ func (svc *MenuService) BuildChildMenus(ParentId int64, lists []model.SysMenu) [
 	return List
 }
 
+func (svc *MenuService) IsMenuNameExist(name string) bool {
+	count, err := lv_dao.CountColumnAll("sys_menu", "menu_name", name)
+	if err != nil {
+		panic(err)
+	}
+	return count > 0
+}
+
 func getRouteName(menu *model.SysMenu) string {
 	var name = FirstUpper(menu.Path)
 	if isMenuFrame(menu) {

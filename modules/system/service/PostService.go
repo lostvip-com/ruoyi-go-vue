@@ -121,8 +121,8 @@ func (svc *PostService) ListAllPostsAndSelected(userId int64) (*[]model.SysPost,
 
 // IsPostCodeExist 检查岗位编码是否唯一
 func (svc *PostService) IsPostCodeExist(postCode string) (exist bool) {
-	//total, err := d.CountCol("post_code", postCode)
-	total, err := lv_dao.CountCol("sys_post", "post_code", postCode)
+	//total, err := d.CountColumnDelFlag0("post_code", postCode)
+	total, err := lv_dao.CountColumnDelFlag0("sys_post", "post_code", postCode)
 	lv_err.HasErrAndPanic(err)
 	if total > 0 {
 		exist = true

@@ -38,9 +38,17 @@ func (w *GenCodeApi) CreateMenu(c *gin.Context) {
 		util2.Fail(c, "param wrong")
 		return
 	}
+	var tableService service.TableService
+	entity, err := tableService.FindGenTableByName(tableName)
+	lv_err.HasErrAndPanic(err)
+	exist := service.GetMenuServiceInstance().IsMenuNameExist(entity.FunctionName)
+	if exist {
+		util2.Fail(c, "生成代码失败，生成菜单名称已存在")
+		return
+	}
 	// Loads queries from file
 	sqlFile := path.Join(lv_global.Config().GetTmpPath(), tableName+"_menu.sql")
-	exist := lv_file.IsFileExist(sqlFile)
+	exist = lv_file.IsFileExist(sqlFile)
 	if !exist {
 		sqlFile = path.Join("../"+lv_global.Config().GetTmpPath(), tableName+"_menu.sql")
 		exist = lv_file.IsFileExist(sqlFile)
