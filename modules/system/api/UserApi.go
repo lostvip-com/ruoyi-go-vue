@@ -68,6 +68,43 @@ func (w *UserApi) GetUserInfo(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+func (w *UserApi) GetUserInfoToCreate(c *gin.Context) {
+	userId := w.GetCurrUserId(c)
+	user := new(model.SysUser)
+	user, err := user.FindById(userId)
+	if err != nil {
+		util.Fail(c, err.Error())
+		return
+	}
+	var roleIds []int64
+	var postIds []int64
+	// 暂时返回全部角色，后面再根据角色权限进行过滤
+	roles, err := dao.GetRoleDaoInstance().FindAll(nil)
+	if err != nil {
+		util.Fail(c, err.Error())
+		return
+	}
+	for _, it := range roles {
+		roleIds = append(roleIds, it.RoleId)
+	}
+	posts, err := dao.GetSysPostDaoInstance().ListAll(nil)
+	if posts != nil {
+		for _, it := range *posts {
+			postIds = append(postIds, it.PostId)
+		}
+	}
+	var result = gin.H{
+		"msg":     "success",
+		"code":    http.StatusOK,
+		"data":    user,
+		"roles":   roles,
+		"posts":   posts,
+		"postIds": postIds,
+		"roleIds": roleIds,
+	}
+	c.JSON(http.StatusOK, result)
+}
+
 // ListAjax 用户列表分页数据
 func (w *UserApi) ListAjax(c *gin.Context) {
 	var req *common_vo.UserPageReq

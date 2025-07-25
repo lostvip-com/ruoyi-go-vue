@@ -52,7 +52,8 @@ func init() {
 	system.DELETE("/dept/:deptId", "system:dept:remove", deptApi.Remove)
 	// 用户管理路由
 	userApi := api.UserApi{}
-	system.GET("/user/:userId", "system:user:list", userApi.GetUserInfo)
+	system.GET("/user/:userId", "system:user:query", userApi.GetUserInfo)
+	system.GET("/user/", "system:user:query", userApi.GetUserInfoToCreate)
 	system.GET("/user/list", "system:user:list", userApi.ListAjax)
 	system.POST("/user", "system:user:add", userApi.AddSave)
 	system.PUT("/user", "system:user:edit", userApi.EditSave)
