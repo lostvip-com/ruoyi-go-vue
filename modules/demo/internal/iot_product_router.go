@@ -14,8 +14,8 @@ import (
 func init() {
 	product := router.New("/demo/product", auth.TokenCheck())
 	productApi := api.IotProductApi{}
-	product.GET("/:id", "demo:product:query", productApi.GetRoleInfo)
-	product.GET("/listIotProduct", "demo:product:query", productApi.ListIotProduct)
+	product.GET("/:id", "demo:product:info", productApi.GetRoleInfo)
+	product.GET("/listIotProduct", "demo:product:list", productApi.ListIotProduct)
 	product.POST("", "demo:product:new", productApi.CreateIotProduct)
 	product.PUT("", "demo:product:edit", productApi.UpdateIotProduct)
 	product.DELETE("/ids", "demo:product:del", productApi.DeleteIotProduct)

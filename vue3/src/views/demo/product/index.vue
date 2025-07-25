@@ -1,17 +1,17 @@
 <template>
   <div class="app-container">
     
-    <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px"><el-form-item label="产品编码,对应可监控类型ID" prop="Key">
-            <el-input v-model="queryParams.Key" placeholder="请输入产品编码,对应可监控类型ID" clearable @keyup.enter="handleQuery" />
+    <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px"><el-form-item label="产品编码,对应可监控类型ID" prop="key">
+            <el-input v-model="queryParams.key" placeholder="请输入产品编码,对应可监控类型ID" clearable @keyup.enter="handleQuery" />
           </el-form-item>
-        <el-form-item label="名字" prop="Name">
-            <el-input v-model="queryParams.Name" placeholder="请输入名字" clearable @keyup.enter="handleQuery" />
+        <el-form-item label="名字" prop="name">
+            <el-input v-model="queryParams.name" placeholder="请输入名字" clearable @keyup.enter="handleQuery" />
           </el-form-item>
-        <el-form-item label="云产品ID" prop="CloudProductId">
-            <el-input v-model="queryParams.CloudProductId" placeholder="请输入云产品ID" clearable @keyup.enter="handleQuery" />
+        <el-form-item label="云产品ID" prop="cloudProductId">
+            <el-input v-model="queryParams.cloudProductId" placeholder="请输入云产品ID" clearable @keyup.enter="handleQuery" />
           </el-form-item>
-        <el-form-item label="云实例ID" prop="CloudInstanceId">
-            <el-input v-model="queryParams.CloudInstanceId" placeholder="请输入云实例ID" clearable @keyup.enter="handleQuery" />
+        <el-form-item label="云实例ID" prop="cloudInstanceId">
+            <el-input v-model="queryParams.cloudInstanceId" placeholder="请输入云实例ID" clearable @keyup.enter="handleQuery" />
           </el-form-item>
         
       <el-form-item>
@@ -39,18 +39,18 @@
 
     
     <el-table v-loading="loading" :data="productList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" /><el-table-column label="主键" align="center" prop="Id" />
-        <el-table-column label="产品编码,对应可监控类型ID" align="center" prop="Key" /><el-table-column label="名字" align="center" prop="Name" /><el-table-column label="云产品ID" align="center" prop="CloudProductId" /><el-table-column label="云实例ID" align="center" prop="CloudInstanceId" /><el-table-column label="平台" align="center" prop="Platform" /><el-table-column label="协议" align="center" prop="Protocol" /><el-table-column label="节点类型" align="center" prop="NodeType" /><el-table-column label="网络类型" align="center" prop="NetType" /><el-table-column label="数据类型" align="center" prop="DataFormat" /><el-table-column label="最后一次同步时间" align="center" prop="LastSyncTime" /><el-table-column label="工厂名称" align="center" prop="Factory" /><el-table-column label="描述" align="center" prop="Description" /><el-table-column label="产品状态" align="center" prop="Status" /><el-table-column label="扩展字段" align="center" prop="Extra" /><el-table-column label="删除标记" align="center" prop="DelFlag" /><el-table-column label="创建日期" align="center" prop="CreateTime" width="180">
+      <el-table-column type="selection" width="55" align="center" /><el-table-column label="主键" align="center" prop="id" />
+        <el-table-column label="产品编码,对应可监控类型ID" align="center" prop="key" /><el-table-column label="名字" align="center" prop="name" /><el-table-column label="云产品ID" align="center" prop="cloudProductId" /><el-table-column label="云实例ID" align="center" prop="cloudInstanceId" /><el-table-column label="平台" align="center" prop="platform" /><el-table-column label="协议" align="center" prop="protocol" /><el-table-column label="节点类型" align="center" prop="nodeType" /><el-table-column label="网络类型" align="center" prop="netType" /><el-table-column label="数据类型" align="center" prop="dataFormat" /><el-table-column label="最后一次同步时间" align="center" prop="lastSyncTime" /><el-table-column label="工厂名称" align="center" prop="factory" /><el-table-column label="描述" align="center" prop="description" /><el-table-column label="产品状态" align="center" prop="status" /><el-table-column label="扩展字段" align="center" prop="extra" /><el-table-column label="删除标记" align="center" prop="delFlag" /><el-table-column label="创建日期" align="center" prop="createTime" width="180">
             <template #default="scope">
-              <span>{{ parseTime(scope.row.CreateTime, '{y}-{m}-{d}') }}</span>
+              <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
             </template>
           </el-table-column>
-        <el-table-column label="更新日期" align="center" prop="UpdateTime" width="180">
+        <el-table-column label="更新日期" align="center" prop="updateTime" width="180">
             <template #default="scope">
-              <span>{{ parseTime(scope.row.UpdateTime, '{y}-{m}-{d}') }}</span>
+              <span>{{ parseTime(scope.row.updateTime, '{y}-{m}-{d}') }}</span>
             </template>
           </el-table-column>
-        <el-table-column label="更新者" align="center" prop="UpdateBy" /><el-table-column label="创建者" align="center" prop="CreateBy" /><el-table-column label="生产厂商" align="center" prop="Manufacturer" /><el-table-column label="租户id" align="center" prop="TenantId" /><el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+        <el-table-column label="更新者" align="center" prop="updateBy" /><el-table-column label="创建者" align="center" prop="createBy" /><el-table-column label="生产厂商" align="center" prop="manufacturer" /><el-table-column label="租户id" align="center" prop="tenantId" /><el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
           <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['product:edit']">修改</el-button>
           <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['product:remove']">删除</el-button>
@@ -63,47 +63,47 @@
     <el-dialog :title="title" v-model="open" width="500px" append-to-body>
         <el-form ref="productRef" :model="form" :rules="rules" label-width="80px">
         
-                <el-form-item label="产品编码,对应可监控类型ID" prop="Key">
-                  <el-input v-model="form.Key" placeholder="请输入产品编码,对应可监控类型ID" />
+                <el-form-item label="产品编码,对应可监控类型ID" prop="key">
+                  <el-input v-model="form.key" placeholder="请输入产品编码,对应可监控类型ID" />
                 </el-form-item>
-                <el-form-item label="名字" prop="Name">
-                  <el-input v-model="form.Name" placeholder="请输入名字" />
+                <el-form-item label="名字" prop="name">
+                  <el-input v-model="form.name" placeholder="请输入名字" />
                 </el-form-item>
-                <el-form-item label="云产品ID" prop="CloudProductId">
-                  <el-input v-model="form.CloudProductId" placeholder="请输入云产品ID" />
+                <el-form-item label="云产品ID" prop="cloudProductId">
+                  <el-input v-model="form.cloudProductId" placeholder="请输入云产品ID" />
                 </el-form-item>
-                <el-form-item label="云实例ID" prop="CloudInstanceId">
-                  <el-input v-model="form.CloudInstanceId" placeholder="请输入云实例ID" />
+                <el-form-item label="云实例ID" prop="cloudInstanceId">
+                  <el-input v-model="form.cloudInstanceId" placeholder="请输入云实例ID" />
                 </el-form-item>
-                <el-form-item label="平台" prop="Platform">
-                  <el-input v-model="form.Platform" placeholder="请输入平台" />
+                <el-form-item label="平台" prop="platform">
+                  <el-input v-model="form.platform" placeholder="请输入平台" />
                 </el-form-item>
-                <el-form-item label="协议" prop="Protocol">
-                  <el-input v-model="form.Protocol" placeholder="请输入协议" />
+                <el-form-item label="协议" prop="protocol">
+                  <el-input v-model="form.protocol" placeholder="请输入协议" />
                 </el-form-item>
-                <el-form-item label="数据类型" prop="DataFormat">
-                  <el-input v-model="form.DataFormat" placeholder="请输入数据类型" />
+                <el-form-item label="数据类型" prop="dataFormat">
+                  <el-input v-model="form.dataFormat" placeholder="请输入数据类型" />
                 </el-form-item>
-                <el-form-item label="最后一次同步时间" prop="LastSyncTime">
-                  <el-input v-model="form.LastSyncTime" placeholder="请输入最后一次同步时间" />
+                <el-form-item label="最后一次同步时间" prop="lastSyncTime">
+                  <el-input v-model="form.lastSyncTime" placeholder="请输入最后一次同步时间" />
                 </el-form-item>
-                <el-form-item label="工厂名称" prop="Factory">
-                  <el-input v-model="form.Factory" placeholder="请输入工厂名称" />
+                <el-form-item label="工厂名称" prop="factory">
+                  <el-input v-model="form.factory" placeholder="请输入工厂名称" />
                 </el-form-item>
-                <el-form-item label="描述" prop="Description">
-                  <el-input v-model="form.Description" type="textarea" placeholder="请输入内容" />
+                <el-form-item label="描述" prop="description">
+                  <el-input v-model="form.description" type="textarea" placeholder="请输入内容" />
                 </el-form-item>
-                <el-form-item label="扩展字段" prop="Extra">
-                  <el-input v-model="form.Extra" placeholder="请输入扩展字段" />
+                <el-form-item label="扩展字段" prop="extra">
+                  <el-input v-model="form.extra" placeholder="请输入扩展字段" />
                 </el-form-item>
-                <el-form-item label="删除标记" prop="DelFlag">
-                  <el-input v-model="form.DelFlag" placeholder="请输入删除标记" />
+                <el-form-item label="删除标记" prop="delFlag">
+                  <el-input v-model="form.delFlag" placeholder="请输入删除标记" />
                 </el-form-item>
-                <el-form-item label="生产厂商" prop="Manufacturer">
-                  <el-input v-model="form.Manufacturer" placeholder="请输入生产厂商" />
+                <el-form-item label="生产厂商" prop="manufacturer">
+                  <el-input v-model="form.manufacturer" placeholder="请输入生产厂商" />
                 </el-form-item>
-                <el-form-item label="租户id" prop="TenantId">
-                  <el-input v-model="form.TenantId" placeholder="请输入租户id" />
+                <el-form-item label="租户id" prop="tenantId">
+                  <el-input v-model="form.tenantId" placeholder="请输入租户id" />
                 </el-form-item>
       </el-form>
       <template #footer>
@@ -137,16 +137,16 @@ const data = reactive({
   queryParams: {
     pageNum: 1,
     pageSize: 10,
-          Key: null,
-          Name: null,
-          CloudProductId: null,
-          CloudInstanceId: null,
+          key: null,
+          name: null,
+          cloudProductId: null,
+          cloudInstanceId: null,
   },
   rules: {
-        Name: [
+        name: [
           { required: true, message: "名字不能为空", trigger:"blur" }
         ],
-        Status: [
+        status: [
           { required: true, message: "产品状态不能为空", trigger:"change" }
         ],
   }
@@ -183,28 +183,28 @@ function delIotProduct(id) {
 // 表单重置
 function reset() {
   form.value = {
-            Id: undefined,
-            Key: undefined,
-            Name: undefined,
-            CloudProductId: undefined,
-            CloudInstanceId: undefined,
-            Platform: undefined,
-            Protocol: undefined,
-            NodeType: undefined,
-            NetType: undefined,
-            DataFormat: undefined,
-            LastSyncTime: undefined,
-            Factory: undefined,
-            Description: undefined,
-            Status: undefined,
-            Extra: undefined,
-            DelFlag: undefined,
-            CreateTime: undefined,
-            UpdateTime: undefined,
-            UpdateBy: undefined,
-            CreateBy: undefined,
-            Manufacturer: undefined,
-            TenantId: undefined,};
+            id: undefined,
+            key: undefined,
+            name: undefined,
+            cloudProductId: undefined,
+            cloudInstanceId: undefined,
+            platform: undefined,
+            protocol: undefined,
+            nodeType: undefined,
+            netType: undefined,
+            dataFormat: undefined,
+            lastSyncTime: undefined,
+            factory: undefined,
+            description: undefined,
+            status: undefined,
+            extra: undefined,
+            delFlag: undefined,
+            createTime: undefined,
+            updateTime: undefined,
+            updateBy: undefined,
+            createBy: undefined,
+            manufacturer: undefined,
+            tenantId: undefined,};
 
   proxy.resetForm("productRef");
 }
@@ -223,7 +223,7 @@ function resetQuery() {
 
 // 多选框选中数据
 function handleSelectionChange(selection) {
-  ids.value = selection.map(item => item.Id);
+  ids.value = selection.map(item => item.id);
   single.value = selection.length !== 1;
   multiple.value = !selection.length;
 }
@@ -238,7 +238,7 @@ function handleAdd() {
 /** 修改按钮操作 */
 function handleUpdate(row) {
   reset();
-  const id = row.Id || ids.value;
+  const id = row.id || ids.value;
   request({
       url: '/demo/product/' + id,
       method: 'get'
@@ -252,24 +252,27 @@ function handleUpdate(row) {
 function submitForm() {
   proxy.$refs["productRef"].validate(valid => {
     if (valid) {let url = '/demo/product';
-      if (form.value.Id != null) {
+      if (form.value.id != null) {
         request({ url: url, method: 'put', data: form.value}).then(response => {
                 proxy.$message.success("修改成功");
+                open.value = false;
+                getList();
             });
       } else {
-        request({ url:url ,method: 'post',data: form.value}).then(response => {
+        request({ url: url,method: 'post',data: form.value}).then(response => {
                 proxy.$message.success("新增成功");
+                open.value = false;
+                getList();
             });
       }
-      open.value = false;
-      getList();
+
     }
   });
 }
 
 /** 删除按钮操作 */
 function handleDelete(row) {
-  const ids = row.Id || ids.value;
+  const ids = row.id || ids.value;
   proxy.$confirm('是否确认删除产品编号为"' + ids + '"的数据项？', '提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',

@@ -22,48 +22,50 @@ type {{.ClassName}}Api struct {
 
 func (w {{.ClassName}}Api) GetRoleInfo(c *gin.Context) {
 	id := c.Param("id")
-	role := new(model.{{.ClassName}})
+	role := model.{{.ClassName}}{}
 	{{.BusinessName}}, err := role.FindById(cast.ToInt64(id))
 	lv_err.HasErrAndPanic(err)
 	util.Success(c, {{.BusinessName}})
 }
 // List{{.ClassName}} 查询列表
 func (w {{.ClassName}}Api) List{{.ClassName}}(c *gin.Context) {
-	req := new(vo.{{.ClassName}}Req)
+	req := vo.{{.ClassName}}Req{}
     if err := c.ShouldBind(&req); err != nil {
         util.Fail(c, err.Error())
+        return
     }
     req.BeginTime = c.DefaultQuery("params[beginTime]", "")
     req.EndTime = c.DefaultQuery("params[endTime]", "")
 
 	var svc = service.Get{{.ClassName}}ServiceInstance()
-	result, total, _ := svc.ListByPage(req)
+	result, total, _ := svc.ListByPage(&req)
 	util.SuccessPage(c, result, total)
 }
 
 // Create{{.ClassName}} 新增页面保存
 func (w {{.ClassName}}Api) Create{{.ClassName}}(c *gin.Context) {
-	form := new(model.{{.ClassName}})
+	form := model.{{.ClassName}}{}
     if err := c.ShouldBind(&form); err != nil {
         util.Fail(c, err.Error())
+        return
     }
     w.FillInCreate(c, &form.BaseModel)
 	var svc = service.Get{{.ClassName}}ServiceInstance()
-	po,err := svc.AddSave(form)
+	po,err := svc.AddSave(&form)
 	lv_err.HasErrAndPanic(err)
 	util.Success(c, po)
 }
 
 // Save{{.ClassName}} 修改页面保存
 func (w {{.ClassName}}Api) Update{{.ClassName}}(c *gin.Context) {
-	form := new(model.{{.ClassName}})
-	err := c.ShouldBind(form)
+	form := model.{{.ClassName}}{}
     if err := c.ShouldBind(&form); err != nil {
         util.Fail(c, err.Error())
+        return
     }
     w.FillInUpdate(c, &form.BaseModel)
 	var svc = service.Get{{.ClassName}}ServiceInstance()
-	po,err := svc.EditSave(form)
+	po,err := svc.EditSave(&form)
 	lv_err.HasErrAndPanic(err)
 	util.Success(c, po)
 }
@@ -78,15 +80,16 @@ func (w {{.ClassName}}Api) Delete{{.ClassName}}(c *gin.Context) {
 
 //Export{{.ClassName}} 导出
 func (w {{.ClassName}}Api) Export{{.ClassName}}(c *gin.Context) {
-	req := new(vo.{{.ClassName}}Req)
+	req := vo.{{.ClassName}}Req{}
     if err := c.ShouldBind(&req); err != nil {
         util.Fail(c, err.Error())
+        return
     }
     req.BeginTime = c.DefaultQuery("params[beginTime]", "")
     req.EndTime = c.DefaultQuery("params[endTime]", "")
 
 	var svc = service.Get{{.ClassName}}ServiceInstance()
-    headerMap, listMap, err := svc.ExportAll(req)
+    headerMap, listMap, err := svc.ExportAll(&req)
     lv_err.HasErrAndPanic(err)
     ex := util.NewMyExcel()
     ex.ExportToWeb(c, *headerMap, *listMap)

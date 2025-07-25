@@ -17,13 +17,13 @@ insert into sys_menu (menu_name, parent_id, order_num, path, component, is_frame
 values('产品查询', @parentId, '1',  '#', '', 1, 0, 'F', '0', '0', 'demo:product:query',        '#', 'admin', sysdate(), '', null, '');
 
 insert into sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
-values('产品新增', @parentId, '2',  '#', '', 1, 0, 'F', '0', '0', 'demo:product:add',          '#', 'admin', sysdate(), '', null, '');
+values('产品新增', @parentId, '2',  '#', '', 1, 0, 'F', '0', '0', 'demo:product:new',          '#', 'admin', sysdate(), '', null, '');
 
 insert into sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
 values('产品修改', @parentId, '3',  '#', '', 1, 0, 'F', '0', '0', 'demo:product:edit',         '#', 'admin', sysdate(), '', null, '');
 
 insert into sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
-values('产品删除', @parentId, '4',  '#', '', 1, 0, 'F', '0', '0', 'demo:product:remove',       '#', 'admin', sysdate(), '', null, '');
+values('产品删除', @parentId, '4',  '#', '', 1, 0, 'F', '0', '0', 'demo:product:del',       '#', 'admin', sysdate(), '', null, '');
 
 insert into sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
 values('产品导出', @parentId, '5',  '#', '', 1, 0, 'F', '0', '0', 'demo:product:export',       '#', 'admin', sysdate(), '', null, '');

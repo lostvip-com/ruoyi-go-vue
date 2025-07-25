@@ -9,32 +9,32 @@
         {{- $dictType := $column.DictType -}}
         {{- $comment := $column.ColumnComment -}}
         {{- if eq $column.HtmlType "input" -}}
-          <el-form-item label="{{$comment}}" prop="{{$column.GoField}}">
-            <el-input v-model="queryParams.{{$column.GoField}}" placeholder="请输入{{$comment}}" clearable @keyup.enter="handleQuery" />
+          <el-form-item label="{{$comment}}" prop="{{$column.HtmlField}}">
+            <el-input v-model="queryParams.{{$column.HtmlField}}" placeholder="请输入{{$comment}}" clearable @keyup.enter="handleQuery" />
           </el-form-item>
         <!-- 下拉/单选框（带字典） -->
         {{- else if and (or (eq $column.HtmlType "select") (eq $column.HtmlType "radio")) (ne $dictType "") -}}
-          <el-form-item label="{{$comment}}" prop="{{$column.GoField}}">
-            <el-select v-model="queryParams.{{$column.GoField}}" placeholder="请选择{{$comment}}" clearable>
+          <el-form-item label="{{$comment}}" prop="{{$column.HtmlField}}">
+            <el-select v-model="queryParams.{{$column.HtmlField}}" placeholder="请选择{{$comment}}" clearable>
               <el-option v-for="dict in {{$dictType}}" :key="dict.value" :label="dict.label" :value="dict.value"/>
             </el-select>
           </el-form-item>
         <!-- 下拉/单选框（无字典） -->
         {{- else if and (or (eq $column.HtmlType "select") (eq $column.HtmlType "radio")) $dictType -}}
-          <el-form-item label="{{$comment}}" prop="{{$column.GoField}}">
-            <el-select v-model="queryParams.{{$column.GoField}}" placeholder="请选择{{$comment}}" clearable>
+          <el-form-item label="{{$comment}}" prop="{{$column.HtmlField}}">
+            <el-select v-model="queryParams.{{$column.HtmlField}}" placeholder="请选择{{$comment}}" clearable>
               <el-option label="请选择字典生成" value="" />
             </el-select>
           </el-form-item>
         <!-- 日期选择（非范围） -->
         {{- else if and (eq $column.HtmlType "datetime") (ne $column.QueryType "BETWEEN") -}}
-          <el-form-item label="{{$comment}}" prop="{{$column.GoField}}">
-            <el-date-picker clearable v-model="queryParams.{{$column.GoField}}" type="date" value-format="YYYY-MM-DD" placeholder="请选择{{$comment}}" />
+          <el-form-item label="{{$comment}}" prop="{{$column.HtmlField}}">
+            <el-date-picker clearable v-model="queryParams.{{$column.HtmlField}}" type="date" value-format="YYYY-MM-DD" placeholder="请选择{{$comment}}" />
           </el-form-item>
         <!-- 日期范围选择 -->
         {{- else if and (eq $column.HtmlType "datetime") (eq $column.QueryType "BETWEEN") -}}
           <el-form-item label="{{$comment}}" style="width: 308px">
-            <el-date-picker v-model="daterange{{upperFirst $column.GoField}}" value-format="YYYY-MM-DD" type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
+            <el-date-picker v-model="daterange{{upperFirst $column.HtmlField}}" value-format="YYYY-MM-DD" type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
           </el-form-item>
         {{- end -}}
       {{- end -}}
@@ -67,37 +67,37 @@
     <el-table v-loading="loading" :data="{{.BusinessName}}List" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       {{- range $column := .Columns -}}
-        {{- $GoField := $column.GoField -}}
+        {{- $HtmlField := $column.HtmlField -}}
         {{- $comment := $column.ColumnComment -}}
         <!-- 主键列 -->
         {{- if eq "1" $column.IsPk -}}
-          <el-table-column label="{{$comment}}" align="center" prop="{{$GoField}}" />
+          <el-table-column label="{{$comment}}" align="center" prop="{{$HtmlField}}" />
         <!-- 日期列 -->
         {{- else if (eq $column.HtmlType "datetime") -}}
-          <el-table-column label="{{$comment}}" align="center" prop="{{$GoField}}" width="180">
+          <el-table-column label="{{$comment}}" align="center" prop="{{$HtmlField}}" width="180">
             <template #default="scope">
-              <span>{{$tagS}} parseTime(scope.row.{{$GoField}}, '{y}-{m}-{d}') {{$tagE}}</span>
+              <span>{{$tagS}} parseTime(scope.row.{{$HtmlField}}, '{y}-{m}-{d}') {{$tagE}}</span>
             </template>
           </el-table-column>
         <!-- 图片列 -->
         {{- else if (eq $column.HtmlType "imageUpload") -}}
-          <el-table-column label="{{$comment}}" align="center" prop="{{$GoField}}" width="100">
+          <el-table-column label="{{$comment}}" align="center" prop="{{$HtmlField}}" width="100">
             <template #default="scope">
-              <image-preview :src="scope.row.{{$GoField}}" :width="50" :height="50"/>
+              <image-preview :src="scope.row.{{$HtmlField}}" :width="50" :height="50"/>
             </template>
           </el-table-column>
         {{- else if (ne $column.DictType "") -}}
-          <el-table-column label="{{$comment}}" align="center" prop="{{$GoField}}">
+          <el-table-column label="{{$comment}}" align="center" prop="{{$HtmlField}}">
             <template #default="scope">
               {{- if eq $column.HtmlType "checkbox" -}}
-                <dict-tag :options="{{$column.DictType}}" :value="scope.row.{{$GoField}} ? scope.row.{{$GoField}}.split(',') : []"/>
+                <dict-tag :options="{{$column.DictType}}" :value="scope.row.{{$HtmlField}} ? scope.row.{{$HtmlField}}.split(',') : []"/>
               {{- else -}}
-                <dict-tag :options="{{$column.DictType}}" :value="scope.row.{{$GoField}}"/>
+                <dict-tag :options="{{$column.DictType}}" :value="scope.row.{{$HtmlField}}"/>
               {{- end -}}
             </template>
           </el-table-column>
-        {{- else if and  (ne $GoField "") -}}
-          <el-table-column label="{{$comment}}" align="center" prop="{{$GoField}}" />
+        {{- else if and  (ne $HtmlField "") -}}
+          <el-table-column label="{{$comment}}" align="center" prop="{{$HtmlField}}" />
         {{- end -}}
       {{- end  -}}
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -113,7 +113,7 @@
     <el-dialog :title="title" v-model="open" width="500px" append-to-body>
         <el-form ref="{{.BusinessName}}Ref" :model="form" :rules="rules" label-width="80px">
         {{ range $column := .Columns }}
-          {{- $field := $column.GoField  -}}
+          {{- $field := $column.HtmlField  -}}
           {{ if and (eq "1" $column.IsInsert) (ne "1" $column.IsPk) }}
               {{- $comment := $column.ColumnComment -}}
               {{- $dictType := $column.DictType}}
@@ -202,7 +202,7 @@ const total = ref(0);
 const title = ref("");
 {{- range $column := .Columns -}}
   {{- if and (eq $column.HtmlType "datetime") (eq $column.QueryType "BETWEEN")}}
-    const daterange{{upperFirst $column.GoField}} = ref([]);
+    const daterange{{upperFirst $column.HtmlField}} = ref([]);
   {{- end -}}
 {{- end }}
 
@@ -213,14 +213,14 @@ const data = reactive({
     pageSize: 10,
     {{- range $column := .Columns -}}
         {{- if eq "1" $column.IsQuery}}
-          {{$column.GoField}}: null,
+          {{$column.HtmlField}}: null,
         {{- end -}}
     {{- end }}
   },
   rules: {
     {{- range $column := .Columns -}}
     {{- if eq "1" $column.IsRequired}}
-        {{$column.GoField}}: [
+        {{$column.HtmlField}}: [
           { required: true, message: "{{$column.ColumnComment}}不能为空", trigger: {{- if or (eq $column.HtmlType "select") (eq $column.HtmlType "radio")}}"change"{{else}}"blur"{{end}} }
         ],
     {{- end -}}
@@ -241,7 +241,7 @@ function getList() {
   {{- end -}}
   {{- range $column := .Columns -}}
       {{- if and (eq $column.HtmlType "datetime") (eq $column.QueryType "BETWEEN") }}
-          const attrName = "{{upperFirst $column.GoField}}";
+          const attrName = "{{upperFirst $column.HtmlField}}";
           if (daterange${attrName}.value.length > 0) {
             queryParams.value.params["begin${attrName}"] = daterange${attrName}.value[0];
             queryParams.value.params["end${attrName}"] = daterange${attrName}.value[1];
@@ -277,9 +277,9 @@ function reset() {
   form.value = {
     {{- range $column := .Columns -}}
         {{- if eq $column.HtmlType "checkbox" }}
-            {{$column.GoField}}: [],
+            {{$column.HtmlField}}: [],
         {{- else }}
-            {{$column.GoField}}: undefined,
+            {{$column.HtmlField}}: undefined,
         {{- end }}
     {{- end -}}
   };
@@ -297,7 +297,7 @@ function handleQuery() {
 function resetQuery() {
   {{- range $column := .Columns -}}
       {{- if and (eq $column.HtmlType "datetime") (eq $column.QueryType "BETWEEN")}}
-      daterange{{upperFirst $column.GoField}}.value = [];
+      daterange{{upperFirst $column.HtmlField}}.value = [];
       {{- end}}
   {{- end }}
   proxy.resetForm("queryRef");
@@ -306,7 +306,7 @@ function resetQuery() {
 
 // 多选框选中数据
 function handleSelectionChange(selection) {
-  ids.value = selection.map(item => item.{{.PkColumn.GoField}});
+  ids.value = selection.map(item => item.{{.PkColumn.HtmlField}});
   single.value = selection.length !== 1;
   multiple.value = !selection.length;
 }
@@ -321,7 +321,7 @@ function handleAdd() {
 /** 修改按钮操作 */
 function handleUpdate(row) {
   reset();
-  const id = row.{{.PkColumn.GoField}} || ids.value;
+  const id = row.{{.PkColumn.HtmlField}} || ids.value;
   request({
       url: '/{{.ModuleName}}/{{.BusinessName}}/' + id,
       method: 'get'
@@ -329,7 +329,7 @@ function handleUpdate(row) {
     form.value = response.data;
     {{- range $column := .Columns -}}
         {{- if eq $column.HtmlType "checkbox"}}
-            form.value.{{$column.GoField}} = form.value.{{$column.GoField}}?.split(",") || [];
+            form.value.{{$column.HtmlField}} = form.value.{{$column.HtmlField}}?.split(",") || [];
         {{end}}
     {{- end -}}
 
@@ -344,29 +344,32 @@ function submitForm() {
     if (valid) {
       {{- range $column := .Columns -}}
           {{- if eq $column.HtmlType "checkbox"}}
-          form.value.{{$column.GoField}} = form.value.{{$column.GoField}}?.join(",") || "";
+          form.value.{{$column.HtmlField}} = form.value.{{$column.HtmlField}}?.join(",") || "";
           {{- end}}
       {{- end -}}
 
       let url = '/{{.ModuleName}}/{{.BusinessName}}';
-      if (form.value.{{.PkColumn.GoField}} != null) {
+      if (form.value.{{.PkColumn.HtmlField}} != null) {
         request({ url: url, method: 'put', data: form.value}).then(response => {
                 proxy.$message.success("修改成功");
+                open.value = false;
+                getList();
             });
       } else {
         request({ url: url,method: 'post',data: form.value}).then(response => {
                 proxy.$message.success("新增成功");
+                open.value = false;
+                getList();
             });
       }
-      open.value = false;
-      getList();
+
     }
   });
 }
 
 /** 删除按钮操作 */
 function handleDelete(row) {
-  const ids = row.{{.PkColumn.GoField}} || ids.value;
+  const ids = row.{{.PkColumn.HtmlField}} || ids.value;
   proxy.$confirm('是否确认删除{{.FunctionName}}编号为"' + ids + '"的数据项？', '提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
