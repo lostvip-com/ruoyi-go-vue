@@ -50,7 +50,7 @@ func (w *ProfileApi) GetProfile(c *gin.Context) {
 func (w *ProfileApi) Update(c *gin.Context) {
 	var req common_vo.ProfileReq
 
-	if err := c.ShouldBind(&req); err != nil {
+	if err := c.ShouldBindJSON(&req); err != nil {
 		lv_log.Error(err)
 		util.Fail(c, "参数错误！")
 		return

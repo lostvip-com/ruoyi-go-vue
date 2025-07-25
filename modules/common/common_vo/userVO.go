@@ -8,10 +8,10 @@ import (
 
 // 修改用户资料请求参数
 type ProfileReq struct {
-	UserName    string `form:"userName"  binding:"required,min=1,max=30"`
-	Phonenumber string `form:"phonenumber"  binding:"required,len=11"`
-	Email       string `form:"email"  binding:"required,email"`
-	Sex         string `form:"sex"  binding:"required"`
+	NickName    string `json:"nickName"  binding:"required,min=1,max=30"`
+	Phonenumber string `json:"phonenumber"  binding:"required,len=11"`
+	Email       string `json:"email"  binding:"required,email"`
+	Sex         string `json:"sex"  binding:"required"`
 }
 
 // 修改密码请求参数

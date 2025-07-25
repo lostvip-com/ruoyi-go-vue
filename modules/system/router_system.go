@@ -68,9 +68,9 @@ func init() {
 	// 个人中心路由
 	profile := api.ProfileApi{}
 	system.GET("/user/profile", "", profile.GetProfile)
-	system.PUT("/profile", "", profile.Update)
-	system.PUT("/profile/updatePwd", "", profile.UpdatePassword)
-	system.POST("/profile/avatar", "", profile.UpdateAvatar)
+	system.PUT("/user/profile", "", profile.Update)
+	system.PUT("/user/profile/updatePwd", "", profile.UpdatePassword)
+	system.POST("/user/profile/avatar", "", profile.UpdateAvatar)
 	// 角色路由
 	roleApi := api.RoleApi{}
 	system.GET("/role/list", "system:role:list", roleApi.ListAjax)

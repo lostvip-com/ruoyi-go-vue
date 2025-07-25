@@ -255,11 +255,9 @@ func (svc *UserService) GetCurrUser(c *gin.Context) *model.SysUser {
 // 更新用户信息详情
 func (svc *UserService) UpdateProfile(profile *common_vo.ProfileReq, c *gin.Context) error {
 	user := svc.GetCurrUser(c)
-
-	if profile.UserName != "" {
-		user.UserName = profile.UserName
+	if profile.NickName != "" {
+		user.NickName = profile.NickName
 	}
-
 	if profile.Email != "" {
 		user.Email = profile.Email
 	}
