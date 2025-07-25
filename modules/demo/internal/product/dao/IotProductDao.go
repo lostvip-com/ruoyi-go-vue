@@ -1,6 +1,6 @@
 // ==========================================================================
 // LV自动生成model扩展代码列表、增、删，改、查、导出，只生成一次，按需修改,再次生成不会覆盖.
-// 生成日期：2025-07-24 07:57:14 &#43;0000 UTC
+// 生成日期：2025-07-25 02:44:32 &#43;0000 UTC
 // 生成人：lv
 // ==========================================================================
 package dao
@@ -25,7 +25,7 @@ func GetIotProductDaoInstance() *IotProductDao {
 }
 // ListMapByPage 根据条件分页查询数据
 func (d IotProductDao) ListMapByPage(req *vo.IotProductReq) (*[]map[string]any, int64, error) {
-	ibatis := lv_batis.NewInstance("product/iot_product_mapper.sql") //under the mapper directory
+	ibatis := lv_batis.NewInstance("demo/iot_product_mapper.sql") //under the mapper directory
 	// 约定用方法名ListByPage对应sql文件中的同名tagName
 	limitSQL, err := ibatis.GetLimitSql("ListIotProduct", req)
 	//查询数据
@@ -38,7 +38,7 @@ func (d IotProductDao) ListMapByPage(req *vo.IotProductReq) (*[]map[string]any, 
 
 // ListByPage 根据条件分页查询数据
 func (d IotProductDao) ListByPage(req *vo.IotProductReq) (*[]vo.IotProductResp, int64, error) {
-	ibatis := lv_batis.NewInstance("product/iot_product_mapper.sql") //under the mapper directory
+	ibatis := lv_batis.NewInstance("demo/iot_product_mapper.sql") //under the mapper directory
 	// 对应sql文件中的同名tagName
 	limitSQL, err := ibatis.GetLimitSql("ListIotProduct", req)
 	//查询数据
@@ -51,7 +51,7 @@ func (d IotProductDao) ListByPage(req *vo.IotProductReq) (*[]vo.IotProductResp, 
 
 // ListAll 导出excel使用
 func (d IotProductDao) ListAll(req *vo.IotProductReq, isCamel bool) (*[]map[string]any, error) {
-	ibatis := lv_batis.NewInstance("product/iot_product_mapper.sql")
+	ibatis := lv_batis.NewInstance("demo/iot_product_mapper.sql")
 	// 约定用方法名ListByPage对应sql文件中的同名tagName
 	sql, err := ibatis.GetSql("ListIotProduct", req)
 	lv_err.HasErrAndPanic(err)

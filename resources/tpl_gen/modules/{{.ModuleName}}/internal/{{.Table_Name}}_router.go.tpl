@@ -13,12 +13,12 @@ import (
 )
 
 func init() {
-    {{.BusinessName}} := router.New( "/{{.BusinessName}}/{{.BusinessName}}", auth.TokenCheck())
+    {{.BusinessName}} := router.New( "/{{.ModuleName}}/{{.BusinessName}}", auth.TokenCheck())
     {{.BusinessName}}Api := api.{{.ClassName}}Api{}
-    {{.BusinessName}}.GET("/:id", "{{.BusinessName}}:{{.BusinessName}}:info", {{.BusinessName}}Api.GetRoleInfo)
-    {{.BusinessName}}.GET("/list{{.ClassName}}", "{{.BusinessName}}:{{.BusinessName}}:list", {{.BusinessName}}Api.List{{.ClassName}})
-    {{.BusinessName}}.POST("", "{{.BusinessName}}:{{.BusinessName}}:new", {{.BusinessName}}Api.Create{{.ClassName}})
-    {{.BusinessName}}.PUT("", "{{.BusinessName}}:{{.BusinessName}}:edit",{{.BusinessName}}Api.Update{{.ClassName}})
-    {{.BusinessName}}.DELETE("/ids", "{{.BusinessName}}:{{.BusinessName}}:del", {{.BusinessName}}Api.Delete{{.ClassName}})
+    {{.BusinessName}}.GET("/:id", "{{.ModuleName}}:{{.BusinessName}}:info", {{.BusinessName}}Api.GetRoleInfo)
+    {{.BusinessName}}.GET("/list{{.ClassName}}", "{{.ModuleName}}:{{.BusinessName}}:list", {{.BusinessName}}Api.List{{.ClassName}})
+    {{.BusinessName}}.POST("", "{{.ModuleName}}:{{.BusinessName}}:new", {{.BusinessName}}Api.Create{{.ClassName}})
+    {{.BusinessName}}.PUT("", "{{.ModuleName}}:{{.BusinessName}}:edit",{{.BusinessName}}Api.Update{{.ClassName}})
+    {{.BusinessName}}.DELETE("/ids", "{{.ModuleName}}:{{.BusinessName}}:del", {{.BusinessName}}Api.Delete{{.ClassName}})
     {{.BusinessName}}.POST("/export{{.ClassName}}", "{{.BusinessName}}:{{.BusinessName}}:export", {{.BusinessName}}Api.Export{{.ClassName}})
 }
