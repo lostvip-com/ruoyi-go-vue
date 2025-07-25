@@ -78,11 +78,11 @@ func TokenCheck() func(ctx *gin.Context) {
 
 		userId := token.Claims.(jwt.MapClaims)["user_id"]
 		deptId := token.Claims.(jwt.MapClaims)["dept_id"]
-		userName := token.Claims.(jwt.MapClaims)["user_name"]
+		username := token.Claims.(jwt.MapClaims)["user_name"]
 		// 此处已经通过了, 可以把Claims中的有效信息拿出来放入上下文使用
 		ctx.Set("userId", userId)
 		ctx.Set("deptId", deptId)
-		ctx.Set("userName", userName)
+		ctx.Set("username", username)
 		ctx.Next()
 	}
 }
