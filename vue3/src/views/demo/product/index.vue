@@ -1,8 +1,8 @@
 <template>
   <div class="app-container">
     
-    <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px"><el-form-item label="产品编码,对应可监控类型ID" prop="key">
-            <el-input v-model="queryParams.key" placeholder="请输入产品编码,对应可监控类型ID" clearable @keyup.enter="handleQuery" />
+    <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px"><el-form-item label="产品编码" prop="key">
+            <el-input v-model="queryParams.key" placeholder="请输入产品编码" clearable @keyup.enter="handleQuery" />
           </el-form-item>
         <el-form-item label="名字" prop="name">
             <el-input v-model="queryParams.name" placeholder="请输入名字" clearable @keyup.enter="handleQuery" />
@@ -40,7 +40,13 @@
     
     <el-table v-loading="loading" :data="productList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" /><el-table-column label="主键" align="center" prop="id" />
-        <el-table-column label="产品编码,对应可监控类型ID" align="center" prop="key" /><el-table-column label="名字" align="center" prop="name" /><el-table-column label="云产品ID" align="center" prop="cloudProductId" /><el-table-column label="云实例ID" align="center" prop="cloudInstanceId" /><el-table-column label="平台" align="center" prop="platform" /><el-table-column label="协议" align="center" prop="protocol" /><el-table-column label="节点类型" align="center" prop="nodeType" /><el-table-column label="网络类型" align="center" prop="netType" /><el-table-column label="数据类型" align="center" prop="dataFormat" /><el-table-column label="最后一次同步时间" align="center" prop="lastSyncTime" /><el-table-column label="工厂名称" align="center" prop="factory" /><el-table-column label="描述" align="center" prop="description" /><el-table-column label="产品状态" align="center" prop="status" /><el-table-column label="扩展字段" align="center" prop="extra" /><el-table-column label="删除标记" align="center" prop="delFlag" /><el-table-column label="创建日期" align="center" prop="createTime" width="180">
+        <el-table-column label="产品编码" align="center" prop="key" /><el-table-column label="名字" align="center" prop="name" /><el-table-column label="云产品ID" align="center" prop="cloudProductId" /><el-table-column label="云实例ID" align="center" prop="cloudInstanceId" /><el-table-column label="平台" align="center" prop="platform" /><el-table-column label="协议" align="center" prop="protocol" /><el-table-column label="节点类型" align="center" prop="nodeType">
+            <template #default="scope"><dict-tag :options="sys_user_sex" :value="scope.row.nodeType"/></template>
+          </el-table-column><el-table-column label="网络类型" align="center" prop="netType">
+            <template #default="scope"><dict-tag :options="sys_user_sex" :value="scope.row.netType"/></template>
+          </el-table-column><el-table-column label="数据类型" align="center" prop="dataFormat" /><el-table-column label="最后同步时间" align="center" prop="lastSyncTime" /><el-table-column label="工厂名称" align="center" prop="factory" /><el-table-column label="描述" align="center" prop="description" /><el-table-column label="产品状态" align="center" prop="status">
+            <template #default="scope"><dict-tag :options="sys_common_status" :value="scope.row.status"/></template>
+          </el-table-column><el-table-column label="扩展字段" align="center" prop="extra" /><el-table-column label="删除标记" align="center" prop="delFlag" /><el-table-column label="创建日期" align="center" prop="createTime" width="180">
             <template #default="scope">
               <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
             </template>
@@ -63,8 +69,8 @@
     <el-dialog :title="title" v-model="open" width="500px" append-to-body>
         <el-form ref="productRef" :model="form" :rules="rules" label-width="80px">
         
-                <el-form-item label="产品编码,对应可监控类型ID" prop="key">
-                  <el-input v-model="form.key" placeholder="请输入产品编码,对应可监控类型ID" />
+                <el-form-item label="产品编码" prop="key">
+                  <el-input v-model="form.key" placeholder="请输入产品编码" />
                 </el-form-item>
                 <el-form-item label="名字" prop="name">
                   <el-input v-model="form.name" placeholder="请输入名字" />
@@ -81,11 +87,23 @@
                 <el-form-item label="协议" prop="protocol">
                   <el-input v-model="form.protocol" placeholder="请输入协议" />
                 </el-form-item>
+                <el-form-item label="节点类型" prop="nodeType">
+                  <el-select v-model="form.nodeType" placeholder="请选择节点类型">
+                    <el-option v-for="dict in sys_user_sex" :key="dict.value" :label="dict.label" :value="dict.value" ></el-option>
+                  </el-select>
+                </el-form-item>
+          
+                <el-form-item label="网络类型" prop="netType">
+                  <el-select v-model="form.netType" placeholder="请选择网络类型">
+                    <el-option v-for="dict in sys_user_sex" :key="dict.value" :label="dict.label" :value="dict.value" ></el-option>
+                  </el-select>
+                </el-form-item>
+          
                 <el-form-item label="数据类型" prop="dataFormat">
                   <el-input v-model="form.dataFormat" placeholder="请输入数据类型" />
                 </el-form-item>
-                <el-form-item label="最后一次同步时间" prop="lastSyncTime">
-                  <el-input v-model="form.lastSyncTime" placeholder="请输入最后一次同步时间" />
+                <el-form-item label="最后同步时间" prop="lastSyncTime">
+                  <el-input v-model="form.lastSyncTime" placeholder="请输入最后同步时间" />
                 </el-form-item>
                 <el-form-item label="工厂名称" prop="factory">
                   <el-input v-model="form.factory" placeholder="请输入工厂名称" />
@@ -93,17 +111,19 @@
                 <el-form-item label="描述" prop="description">
                   <el-input v-model="form.description" type="textarea" placeholder="请输入内容" />
                 </el-form-item>
+                <el-form-item label="产品状态" prop="status">
+                  <el-radio-group v-model="form.status">
+                    <el-radio v-for="dict in sys_common_status" :key="dict.value":label="dict.value">
+                      {{ dict.label }}
+                      </el-radio>
+                  </el-radio-group>
+                </el-form-item>
+              
                 <el-form-item label="扩展字段" prop="extra">
                   <el-input v-model="form.extra" placeholder="请输入扩展字段" />
                 </el-form-item>
-                <el-form-item label="删除标记" prop="delFlag">
-                  <el-input v-model="form.delFlag" placeholder="请输入删除标记" />
-                </el-form-item>
                 <el-form-item label="生产厂商" prop="manufacturer">
                   <el-input v-model="form.manufacturer" placeholder="请输入生产厂商" />
-                </el-form-item>
-                <el-form-item label="租户id" prop="tenantId">
-                  <el-input v-model="form.tenantId" placeholder="请输入租户id" />
                 </el-form-item>
       </el-form>
       <template #footer>

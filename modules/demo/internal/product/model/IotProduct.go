@@ -1,6 +1,6 @@
 // ==========================================================================
 // LV自动生成数据库操作代码，无需手动修改，重新生成会自动覆盖.
-// 生成日期: 2025-07-25 02:44:32 &#43;0000 UTC
+// 生成日期: 2025-07-25 07:15:20 &#43;0000 UTC
 // 生成人: lv
 // ==========================================================================
 package model
@@ -15,7 +15,7 @@ import (
 // IotProduct 产品管理
 type IotProduct struct {
     Id  int64  `gorm:"type:bigint(20);primary_key;auto_increment;主键;" json:"id"`
-    Key  string  `gorm:"type:varchar(32);comment:产品编码,对应可监控类型ID;" json:"key"`
+    Key  string  `gorm:"type:varchar(32);comment:产品编码;" json:"key"`
     Name  string  `gorm:"type:varchar(32);comment:名字;" json:"name"`
     CloudProductId  string  `gorm:"type:varchar(32);comment:云产品ID;" json:"cloudProductId"`
     CloudInstanceId  string  `gorm:"type:varchar(32);comment:云实例ID;" json:"cloudInstanceId"`
@@ -24,7 +24,7 @@ type IotProduct struct {
     NodeType  string  `gorm:"type:varchar(32);comment:节点类型;" json:"nodeType"`
     NetType  string  `gorm:"type:varchar(32);comment:网络类型;" json:"netType"`
     DataFormat  string  `gorm:"type:varchar(32);comment:数据类型;" json:"dataFormat"`
-    LastSyncTime  int64  `gorm:"type:bigint(20);comment:最后一次同步时间;" json:"lastSyncTime"`
+    LastSyncTime  int64  `gorm:"type:bigint(20);comment:最后同步时间;" json:"lastSyncTime"`
     Factory  string  `gorm:"type:varchar(32);comment:工厂名称;" json:"factory"`
     Description  string  `gorm:"type:text;comment:描述;" json:"description"`
     Status  string  `gorm:"type:varchar(32);comment:产品状态;" json:"status"`

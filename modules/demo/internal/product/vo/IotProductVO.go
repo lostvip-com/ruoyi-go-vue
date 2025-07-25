@@ -1,6 +1,6 @@
 // ==========================================================================
 // LV自动生成model扩展代码列表 按需修改
-// 生成日期: 2025-07-25 02:44:32 &#43;0000 UTC
+// 生成日期: 2025-07-25 07:15:20 &#43;0000 UTC
 // 生成人: lv
 // ==========================================================================
 package vo
@@ -12,7 +12,7 @@ import (
 
 //分页请求参数 
 type IotProductReq struct {
-  Key string `form:"key"` //产品编码,对应可监控类型ID
+  Key string `form:"key"` //产品编码
   Name string `form:"name"` //名字
   CloudProductId string `form:"cloudProductId"` //云产品ID
   CloudInstanceId string `form:"cloudInstanceId"` //云实例ID
@@ -39,9 +39,7 @@ type IotProductResp struct {
       Description string `json:"description"`
       Status string `json:"status"`
       Extra string `json:"extra"`
-      DelFlag int `json:"delFlag"`
       Manufacturer string `json:"manufacturer"`
-      TenantId int64 `json:"tenantId"`
   UpdateBy string      `json:"updateBy"`
   UpdateTime time.Time `json:"updateTime" time_format:"2006-01-02 15:04:05"`
   CreateTime time.Time `json:"createTime" time_format:"2006-01-02 15:04:05"`

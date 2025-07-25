@@ -1,6 +1,6 @@
 // ==========================================================================
 // LV自动生成业务逻辑层相关代码: 只生成一次,按需修改,再次生成不会覆盖.
-// date  : 2025-07-25 02:44:32 &#43;0000 UTC
+// date  : 2025-07-25 07:15:20 &#43;0000 UTC
 // author: lv
 // ==========================================================================
 package service
@@ -76,7 +76,7 @@ func (svc IotProductService) ExportAll(param *vo.IotProductReq) (*[]map[string]s
     listMap, _, err := productDao.ListMapByPage(param)
     headerMap := []map[string]string{
            map[string]string{"key": "id", "title": "主键", "width": "15"},
-           map[string]string{"key": "key", "title": "产品编码,对应可监控类型ID", "width": "15"},
+           map[string]string{"key": "key", "title": "产品编码", "width": "15"},
            map[string]string{"key": "name", "title": "名字", "width": "15"},
            map[string]string{"key": "cloudProductId", "title": "云产品ID", "width": "15"},
            map[string]string{"key": "cloudInstanceId", "title": "云实例ID", "width": "15"},
@@ -85,7 +85,7 @@ func (svc IotProductService) ExportAll(param *vo.IotProductReq) (*[]map[string]s
            map[string]string{"key": "nodeType", "title": "节点类型", "width": "15"},
            map[string]string{"key": "netType", "title": "网络类型", "width": "15"},
            map[string]string{"key": "dataFormat", "title": "数据类型", "width": "15"},
-           map[string]string{"key": "lastSyncTime", "title": "最后一次同步时间", "width": "15"},
+           map[string]string{"key": "lastSyncTime", "title": "最后同步时间", "width": "15"},
            map[string]string{"key": "factory", "title": "工厂名称", "width": "15"},
            map[string]string{"key": "description", "title": "描述", "width": "15"},
            map[string]string{"key": "status", "title": "产品状态", "width": "15"},
