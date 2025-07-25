@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-func TestGenTpl(t *testing.T) {
+func TestGenTpl1(t *testing.T) {
 	cfg := myconf.GetConfigInstance()
 	lv_db.GetMasterGorm()
 	fmt.Println(cfg)

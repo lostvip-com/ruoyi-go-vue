@@ -40,7 +40,7 @@ func (svc *SessionService) SignIn(loginnName, password string) (*model.SysUser, 
 	pwd, _ := lv_secret.PasswordHash(password)
 	lv_log.Error("------------" + pwd)
 	//校验密码
-	if lv_secret.PasswordVerify(password, user.Password) {
+	if !lv_secret.PasswordVerify(password, user.Password) {
 		return nil, errors.New("密码错误")
 	}
 	return &user, nil

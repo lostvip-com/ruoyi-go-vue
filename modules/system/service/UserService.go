@@ -3,7 +3,6 @@ package service
 import (
 	"common/common_vo"
 	"errors"
-
 	"github.com/gin-gonic/gin"
 	"github.com/lostvip-com/lv_framework/lv_cache"
 	"github.com/lostvip-com/lv_framework/lv_db"
@@ -308,36 +307,20 @@ func (svc *UserService) UpdatePassword(profile *common_vo.PasswordReq, c *gin.Co
 		return errors.New("新密码不能为空")
 	}
 
-	if profile.Confirm == "" {
-		return errors.New("确认密码不能为空")
-	}
-
 	if profile.NewPassword == profile.OldPassword {
 		return errors.New("新旧密码不能相同")
 	}
-
-	if profile.Confirm != profile.NewPassword {
-		return errors.New("确认密码不一致")
-	}
-
 	//校验密码
 	oldPwd, _ := lv_secret.PasswordHash(profile.OldPassword)
-	if oldPwd != user.Password {
-		return errors.New("原密码不正确")
+	//校验密码
+	if !lv_secret.PasswordVerify(oldPwd, user.Password) {
+		return errors.New("原密码错误")
 	}
-
 	//新校验密码
-	newPwd := lv_gen.GenerateSubId(6)
-	newPwd, _ = lv_secret.PasswordHash(newPwd)
+	newPwd, _ := lv_secret.PasswordHash(profile.NewPassword)
 	user.Password = newPwd
-
 	err := user.Updates()
-	if err != nil {
-		return errors.New("保存数据失败")
-	}
-
-	//SaveUserToSession(user, c)
-	return nil
+	return err
 }
 
 func (svc *UserService) ResetPassword(params *common_vo.ResetPwdReq) error {

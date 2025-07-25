@@ -16,9 +16,8 @@ type ProfileReq struct {
 
 // 修改密码请求参数
 type PasswordReq struct {
-	OldPassword string `form:"oldPassword" binding:"required,min=5,max=30"`
-	NewPassword string `form:"newPassword" binding:"required,min=5,max=30"`
-	Confirm     string `form:"confirm" binding:"required,min=5,max=30"`
+	OldPassword string `json:"oldPassword" binding:"required,min=5,max=30"`
+	NewPassword string `json:"newPassword" binding:"required,min=5,max=30"`
 }
 
 // 重置密码请求参数
