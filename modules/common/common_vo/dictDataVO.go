@@ -6,20 +6,20 @@ import (
 
 // AddDictDataReq 新增页面请求参数
 type AddDictDataReq struct {
-	DictLabel string `form:"dictLabel"  binding:"required"`
-	DictValue string `form:"dictValue"  binding:"required"`
-	DictType  string `form:"dictType"  binding:"required"`
-	DictSort  int    `form:"dictSort"  binding:"required"`
-	CssClass  string `form:"cssClass"`
-	ListClass string `form:"listClass" binding:"required"`
-	IsDefault string `form:"isDefault" binding:"required"`
-	Status    string `form:"status"    binding:"required"`
-	Remark    string `form:"remark"`
+	DictLabel string `json:"dictLabel" form:"dictLabel"  binding:"required"`
+	DictValue string `json:"dictValue" form:"dictValue"  binding:"required"`
+	DictType  string `json:"dictType" form:"dictType"  binding:"required"`
+	DictSort  int    `json:"dictSort" form:"dictSort" binding:"required"`
+	CssClass  string `json:"cssClass" form:"cssClass"`
+	ListClass string `json:"listClass" form:"listClass" binding:"required"`
+	IsDefault string `json:"isDefault" form:"isDefault"`
+	Status    string `json:"status" form:"status"    binding:"required"`
+	Remark    string `json:"remark" form:"remark"`
 }
 
 // EditDictDataReq 修改页面请求参数
 type EditDictDataReq struct {
-	DictCode  int64  `form:"dictCode" binding:"required"`
+	DictCode  int    `form:"dictCode" binding:"required"`
 	DictLabel string `form:"dictLabel"  binding:"required"`
 	DictValue string `form:"dictValue"  binding:"required"`
 	DictType  string `form:"dictType"`

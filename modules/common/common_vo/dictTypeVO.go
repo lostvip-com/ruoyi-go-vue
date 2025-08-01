@@ -14,7 +14,7 @@ type AddDictTypeReq struct {
 
 // EditDictTypeReq 修改页面请求参数
 type EditDictTypeReq struct {
-	DictId   int64  `form:"dictId" binding:"required"`
+	DictId   int    `form:"dictId" binding:"required"`
 	DictName string `form:"dictName"  binding:"required"`
 	DictType string `form:"dictType"  binding:"required"`
 	Status   string `form:"status"  binding:"required"`
@@ -33,7 +33,7 @@ type DictTypePageReq struct {
 
 // 检查字典类型请求参数
 type CheckDictTypeReq struct {
-	DictId   int64  `form:"dictId"  binding:"required"`
+	DictId   int    `form:"dictId"  binding:"required"`
 	DictType string `form:"dictType"  binding:"required"`
 }
 

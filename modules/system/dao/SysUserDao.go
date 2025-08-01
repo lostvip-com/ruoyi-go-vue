@@ -23,16 +23,16 @@ func GetUserDaoInstance() *SysUserDao {
 	}
 	return userDao
 }
-func (e SysUserDao) DeleteByIds(ida []int64) int64 {
+func (e SysUserDao) DeleteByIds(ida []int) int {
 	db := lv_db.GetOrmDefault().Table("sys_user").Where("user_id in ? and user_id!=1 ", ida).Update("del_flag", 1)
 	if db.Error != nil {
 		panic(db.Error)
 	}
-	return db.RowsAffected
+	return int(db.RowsAffected)
 }
 
 // 根据条件分页查询用户列表
-func (d SysUserDao) FindPage(param *common_vo.UserPageReq) (*[]map[string]any, int64, error) {
+func (d SysUserDao) FindPage(param *common_vo.UserPageReq) (*[]map[string]any, int, error) {
 	db := lv_db.GetOrmDefault()
 	sqlParams, sql := d.GetSql(param)
 	limitSql := sql + " order by u.user_id desc "
@@ -40,7 +40,7 @@ func (d SysUserDao) FindPage(param *common_vo.UserPageReq) (*[]map[string]any, i
 	result, err := namedsql.ListMapAny(db, limitSql, sqlParams, true)
 	countSql := "select count(*) from (" + sql + ") t "
 	total, err := namedsql.Count(db, countSql, sqlParams)
-	return result, total, err
+	return result, int(total), err
 }
 
 func (d SysUserDao) GetSql(param *common_vo.UserPageReq) (map[string]interface{}, string) {
@@ -100,7 +100,7 @@ func (d SysUserDao) SelectExportList(param *common_vo.UserPageReq) (*[]map[strin
 }
 
 // 根据条件分页查询已分配用户角色列表
-func (d SysUserDao) SelectAllocatedList(roleId int64, UserName, phonenumber string) (*[]map[string]any, error) {
+func (d SysUserDao) SelectAllocatedList(roleId int, UserName, phonenumber string) (*[]map[string]any, error) {
 	db := lv_db.GetOrmDefault()
 	sqlParams := make(map[string]interface{})
 	sql := `
@@ -126,7 +126,7 @@ func (d SysUserDao) SelectAllocatedList(roleId int64, UserName, phonenumber stri
 }
 
 // 根据条件分页查询未分配用户角色列表
-func (d SysUserDao) SelectUnallocatedList(roleId int64, UserName, phonenumber string) (*[]map[string]any, error) {
+func (d SysUserDao) SelectUnallocatedList(roleId int, UserName, phonenumber string) (*[]map[string]any, error) {
 	db := lv_db.GetOrmDefault()
 	sqlParams := make(map[string]interface{})
 	sql := `
@@ -149,11 +149,11 @@ func (d SysUserDao) SelectUnallocatedList(roleId int64, UserName, phonenumber st
 }
 
 // CountPhone 检查手机号是否已使用 ,存在返回true,否则false
-func (d SysUserDao) CountPhone(phone string) (int64, error) {
+func (d SysUserDao) CountPhone(phone string) (int, error) {
 	db := lv_db.GetOrmDefault()
 	var total int64
 	err := db.Table("sys_user").Where("phonenumber = ?", phone).Count(&total).Error
-	return total, err
+	return int(total), err
 }
 
 // SelectUserByUserName 根据登录名查询用户信息

@@ -6,15 +6,15 @@ import (
 )
 
 type SysMenu struct {
-	MenuId   int64  `json:"menuId" gorm:"column:menu_id;primaryKey"`
+	MenuId   int    `json:"menuId" gorm:"column:menu_id;primaryKey"`
 	MenuName string `json:"menuName" gorm:"menu_name"`
-	ParentId int64  `json:"parentId" gorm:"parent_id"`
-	OrderNum int64  `json:"orderNum" gorm:"order_num"`
+	ParentId int    `json:"parentId" gorm:"parent_id"`
+	OrderNum int    `json:"orderNum" gorm:"order_num"`
 	Path     string `json:"path" gorm:"path"`
 
 	Component string `json:"component" gorm:"component"`
 	Query     string `json:"query" gorm:"query"`
-	RouteName string `json:"query" gorm:"route_name"`
+	RouteName string `json:"routeName" gorm:"route_name"`
 	IsFrame   string `json:"isFrame" gorm:"is_frame"`
 	IsCache   string `json:"isCache" gorm:"is_cache"`
 
@@ -41,7 +41,7 @@ func (e *SysMenu) Save() error {
 }
 
 // 查
-func (e *SysMenu) FindById(id int64) (*SysMenu, error) {
+func (e *SysMenu) FindById(id int) (*SysMenu, error) {
 	err := lv_db.GetOrmDefault().Take(e, id).Error
 	return e, err
 }

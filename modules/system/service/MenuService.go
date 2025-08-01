@@ -1,10 +1,11 @@
 package service
 
 import (
+	"context"
 	"errors"
 	"github.com/lostvip-com/lv_framework/lv_db"
 	"github.com/lostvip-com/lv_framework/lv_db/lv_dao"
-	"github.com/lostvip-com/lv_framework/web/lv_dto"
+	"github.com/lostvip-com/lv_framework/utils/lv_reflect"
 	"github.com/spf13/cast"
 	"gorm.io/gorm"
 	"strconv"
@@ -28,7 +29,7 @@ func GetMenuServiceInstance() *MenuService {
 }
 
 // 根据主键查询数据
-func (svc *MenuService) FindById(id int64) (*model.SysMenu, error) {
+func (svc *MenuService) FindById(id int) (*model.SysMenu, error) {
 	return svc.FindById(id)
 }
 
@@ -37,28 +38,23 @@ func (svc *MenuService) FindAll(params *vo.SelectMenuPageReq) ([]model.SysMenu, 
 	return svc.FindAll(params)
 }
 
-// 根据条件分页查询数据
-func (svc *MenuService) SelectListPage(params *vo.SelectMenuPageReq) (*[]model.SysMenu, *lv_dto.Paging, error) {
-	return svc.SelectListPage(params)
-}
-
-func (svc *MenuService) DeleteById(menuId int64) error {
-	err := lv_db.GetOrmDefault().Transaction(func(tx *gorm.DB) error {
-		err := tx.Exec("delete from sys_menu where menu_id=?", menuId).Error
+func (svc *MenuService) DeleteById(menuId int) error {
+	// 添加上下文超时控制
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	err := lv_db.GetOrmDefault().WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		//子菜单
+		err := tx.Exec("delete from sys_menu where parent_id=?", menuId).Error
 		if err != nil {
 			return err
 		}
-		err = tx.Exec("delete from sys_role_menu where menu_id=?", menuId).Error
-		if err != nil {
-			return err
-		}
-		err = tx.Exec("delete from sys_menu where parent_id=?", menuId).Error
+		err = tx.Exec("delete from sys_menu where menu_id=?", menuId).Error
 		return err
 	})
 	return err
 }
 
-func (svc *MenuService) AddSave(req *model.SysMenu) (int64, error) {
+func (svc *MenuService) AddSave(req *model.SysMenu) (int, error) {
 	req.CreateTime = time.Now()
 	err := req.Save()
 	return req.MenuId, err
@@ -70,24 +66,14 @@ func (svc *MenuService) Edit(req *model.SysMenu) error {
 	if err != nil {
 		return err
 	}
-	entity.MenuName = req.MenuName
-	entity.Visible = req.Visible
-	entity.ParentId = req.ParentId
-	entity.Remark = req.Remark
-	entity.MenuType = req.MenuType
-	entity.Component = req.Component
-	entity.Perms = req.Perms
-	entity.IsFrame = req.IsFrame
-	entity.Visible = req.Visible
-	entity.IsCache = req.IsCache
-	entity.OrderNum = req.OrderNum
+	lv_reflect.CopyProp(req, entity, true)
 	entity.UpdateTime = time.Now()
 	err = entity.Update()
 	return err
 }
 
 // SelectMenuTree 加载所有菜单列表树
-func (svc *MenuService) SelectMenuTree(userId int64, menu *model.SysMenu) ([]model.SysMenu, error) {
+func (svc *MenuService) SelectMenuTree(userId int, menu *model.SysMenu) ([]model.SysMenu, error) {
 	var menus []model.SysMenu
 	sql := "select distinct m.menu_id, m.parent_id, m.menu_name, m.path, m.component, m.`query`, m.visible, m.status, ifnull(m.perms,'') as perms, m.is_frame, m.is_cache, m.menu_type, m.icon, m.order_num, m.create_time "
 	sql += "from sys_menu m "
@@ -118,7 +104,7 @@ func (svc *MenuService) SelectMenuTree(userId int64, menu *model.SysMenu) ([]mod
 	return menus, err
 }
 
-func fillChildrenTree(parent *vo.RouterVO, pcFlatMap map[int64][]vo.RouterVO) {
+func fillChildrenTree(parent *vo.RouterVO, pcFlatMap map[int][]vo.RouterVO) {
 	children := pcFlatMap[parent.MenuId] // 获取本节点的子节点
 	parent.Children = children
 	//lv_log.Info("当前节点:", parent.MenuId, "children: ", len(children)) // 调试日志
@@ -149,8 +135,8 @@ func (svc *MenuService) GenMenus(parent *model.SysMenu, allMenus []model.SysMenu
 		return
 	}
 }
-func (svc *MenuService) InitParentChildMap(menus []model.SysMenu) map[int64][]vo.RouterVO {
-	childrenMap := make(map[int64][]vo.RouterVO)
+func (svc *MenuService) InitParentChildMap(menus []model.SysMenu) map[int][]vo.RouterVO {
+	childrenMap := make(map[int][]vo.RouterVO)
 	num := len(menus)
 	for i := 0; i < num; i++ {
 		menu := menus[i]
@@ -212,7 +198,7 @@ func (svc *MenuService) BuildMenuTreeSelect(lists []model.SysMenu) []vo.MenuTree
 	return menuTreeSelect
 }
 
-func (svc *MenuService) BuildChildMenusTreeSelect(parentId int64, menus []model.SysMenu) []vo.MenuTreeSelect {
+func (svc *MenuService) BuildChildMenusTreeSelect(parentId int, menus []model.SysMenu) []vo.MenuTreeSelect {
 	var List []vo.MenuTreeSelect
 	for i := 0; i < len(menus); i++ {
 		var menu = menus[i]
@@ -255,7 +241,7 @@ func (svc *MenuService) FindRouterTreeAll() ([]model.SysMenu, error) {
 }
 
 // FindRouterTreeAllByUserId 获取所有菜单（非管理员获取已经授权的菜单）
-func (svc *MenuService) FindRouterTreeAllByUserId(id int64) ([]model.SysMenu, error) {
+func (svc *MenuService) FindRouterTreeAllByUserId(id int) ([]model.SysMenu, error) {
 	var menus []model.SysMenu
 	sql := ` select distinct m.* from sys_menu m 
              left join sys_role_menu rm on m.menu_id = rm.menu_id 
@@ -307,7 +293,7 @@ func (svc *MenuService) BuildMenus(lists []model.SysMenu) []vo.MenuVo {
 	return menuVos
 }
 
-func (svc *MenuService) BuildChildMenus(ParentId int64, lists []model.SysMenu) []vo.MenuVo {
+func (svc *MenuService) BuildChildMenus(ParentId int, lists []model.SysMenu) []vo.MenuVo {
 	var List []vo.MenuVo
 	for i := 0; i < len(lists); i++ {
 		var menu = &lists[i]

@@ -14,7 +14,7 @@ func TestGenTpl1(t *testing.T) {
 	cfg := myconf.GetConfigInstance()
 	lv_db.GetOrmDefault()
 	fmt.Println(cfg)
-	tableId := int64(7)
+	tableId := 7
 	tableService := service.TableService{}
 	entity, _ := tableService.FindGenTableById(tableId)
 	target := filepath.Join(lv_file.GetCurrentPath(), "tmp")

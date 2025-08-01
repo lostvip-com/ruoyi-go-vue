@@ -8,7 +8,6 @@ import (
 	"github.com/lostvip-com/lv_framework/lv_db/lv_batis"
 	"github.com/lostvip-com/lv_framework/lv_global"
 	"github.com/lostvip-com/lv_framework/lv_log"
-	"github.com/lostvip-com/lv_framework/utils/lv_conv"
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
 	"github.com/lostvip-com/lv_framework/utils/lv_file"
 	"github.com/lostvip-com/lv_framework/web/lv_dto"
@@ -145,7 +144,7 @@ func (w *GenCodeApi) EditSave(c *gin.Context) {
 
 // Preview 预览代码
 func (w *GenCodeApi) Preview(c *gin.Context) {
-	tableId := lv_conv.Int64(c.Param("tableId"))
+	tableId := cast.ToInt(c.Param("tableId"))
 	tableService := service.TableService{}
 	entity, err := tableService.FindGenTableById(tableId)
 	if err != nil {
@@ -182,7 +181,7 @@ func (w *GenCodeApi) DataList(c *gin.Context) {
 	})
 }
 func (w *GenCodeApi) ColumnList(c *gin.Context) {
-	tableId := lv_conv.Int64(c.Query("tableId"))
+	tableId := cast.ToInt(c.Query("tableId"))
 	rows := make([]model.GenTableColumn, 0)
 	tableService := service.TableColumnService{}
 	result, err := tableService.SelectGenTableColumnListByTableId(tableId)
@@ -237,7 +236,7 @@ func (w *GenCodeApi) GenCode(c *gin.Context) {
 
 func (w *GenCodeApi) GetGenTableInfo(c *gin.Context) {
 	tableIdStr := c.Param("tableId")
-	tableId := cast.ToInt64(tableIdStr)
+	tableId := cast.ToInt(tableIdStr)
 	m := make(map[string]any)
 	var svc service.TableService
 	table, err := svc.FindGenTableById(tableId)

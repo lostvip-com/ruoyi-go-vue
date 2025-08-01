@@ -57,7 +57,7 @@ func init() {
 	system.GET("/user/list", "system:user:list", userApi.ListAjax)
 	system.POST("/user", "system:user:add", userApi.AddSave)
 	system.PUT("/user", "system:user:edit", userApi.EditSave)
-	system.DELETE("/user/:userIds", "system:user:remove", userApi.Remove)
+	system.DELETE("/user/:userIds", "system:user:remove", userApi.RemoveUsers)
 	system.PUT("/user/resetPwd", "system:user:resetPwd", userApi.ResetPwdSave)
 	system.PUT("/user/changeStatus", "system:user:edit", userApi.ChangeStatus)
 	system.PUT("/user/authRole", "system:user:edit", userApi.PutAuthUserRoleIds)

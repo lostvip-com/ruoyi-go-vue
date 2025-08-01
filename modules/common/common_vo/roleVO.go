@@ -6,7 +6,7 @@ import (
 )
 
 type SysRoleFlag struct {
-	RoleId     int64     `json:"roleId" `
+	RoleId     int       `json:"roleId" `
 	RoleName   string    `json:"roleName" `
 	RoleKey    string    `json:"roleKey" `
 	RoleSort   int       `json:"roleSort" `
@@ -23,11 +23,11 @@ type SysRoleFlag struct {
 
 // DataScopeReq 数据权限保存请求参数
 type DataScopeReq struct {
-	RoleId    int64   `form:"roleId"  binding:"required"`
-	RoleName  string  `form:"roleName"  binding:"required"`
-	RoleKey   string  `form:"roleKey"  binding:"required"`
-	DataScope string  `form:"dataScope"  binding:"required"`
-	DeptIds   []int64 `json:"deptIds"`
+	RoleId    int    `form:"roleId"  binding:"required"`
+	RoleName  string `form:"roleName"  binding:"required"`
+	RoleKey   string `form:"roleKey"  binding:"required"`
+	DataScope string `form:"dataScope"  binding:"required"`
+	DeptIds   []int  `json:"deptIds"`
 }
 
 // RolePageReq 分页请求参数
@@ -43,6 +43,6 @@ type RolePageReq struct {
 	SortName  string `form:"sortName"`  //排序字段
 	SortOrder string `form:"sortOrder"` //排序方式
 	//
-	TenantId int64 `form:"tenantId"`
+	TenantId int `form:"tenantId"`
 	lv_dto.Paging
 }

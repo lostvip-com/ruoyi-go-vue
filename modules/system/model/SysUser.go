@@ -14,8 +14,8 @@ import (
 
 // SysUser 用户信息
 type SysUser struct {
-	UserId      int64      `gorm:"size:20;primary_key;auto_increment;用户ID;"     json:"userId"  form:"userId"`
-	DeptId      int64      `gorm:"size:20;comment:部门ID;" json:"deptId" form:"deptId"`
+	UserId      int        `gorm:"size:20;primary_key;auto_increment;用户ID;"     json:"userId"  form:"userId"`
+	DeptId      int        `gorm:"size:20;comment:部门ID;" json:"deptId" form:"deptId"`
 	UserName    string     `gorm:"size:32;comment:登录账号;" json:"userName" form:"UserName"`
 	NickName    string     `gorm:"size:32;comment:用户昵称;" json:"nickName" form:"nickName"`
 	UserType    string     `gorm:"size:2;comment:用户类型（00系统用户）;" json:"userType" form:"userType"`
@@ -54,7 +54,7 @@ func (e *SysUser) GetById() error {
 }
 
 // 查
-func (e *SysUser) FindById(uerId int64) (*SysUser, error) {
+func (e *SysUser) FindById(uerId int) (*SysUser, error) {
 	tb := lv_db.GetOrmDefault()
 	err := tb.Take(e, uerId).Error
 	return e, err

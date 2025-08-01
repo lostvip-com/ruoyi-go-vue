@@ -1,7 +1,7 @@
 package service
 
 import (
-	"system/model"
+	"common/schedule"
 	"system/vo"
 )
 
@@ -18,7 +18,7 @@ func GetJobServiceInstance() *JobService {
 	return jobService
 }
 
-func (e *JobService) FindJobList(params *vo.JobReq) (*[]model.SysJob, int64, error) {
+func (e *JobService) FindJobList(params *vo.JobReq) (*[]schedule.SysJob, int, error) {
 	var total int64
 	db := e.GetDb().Table("sys_job")
 	if params.JobName != "" {
@@ -37,15 +37,15 @@ func (e *JobService) FindJobList(params *vo.JobReq) (*[]model.SysJob, int64, err
 		return nil, 0, err
 	}
 	db.Order("job_id DESC")
-	var list []model.SysJob
+	var list []schedule.SysJob
 	if params.PageNum >= 1 && params.PageSize > 0 {
 		offset := (params.PageNum - 1) * params.PageSize
 		db.Offset(offset).Limit(params.PageSize)
 	}
 	err := db.Find(&list).Error
-	return &list, total, err
+	return &list, int(total), err
 }
-func (e *JobService) FindJobLogList(params *vo.JobReq) (*[]model.SysJobLog, int64, error) {
+func (e *JobService) FindJobLogList(params *vo.JobReq) (*[]schedule.SysJobLog, int, error) {
 	var total int64
 	db := e.GetDb().Table("sys_job_log")
 	if params.JobName != "" {
@@ -67,11 +67,11 @@ func (e *JobService) FindJobLogList(params *vo.JobReq) (*[]model.SysJobLog, int6
 	}
 	db.Order("job_log_id DESC")
 
-	var list []model.SysJobLog
+	var list []schedule.SysJobLog
 	if params.PageNum >= 1 && params.PageSize > 0 {
 		offset := (params.PageNum - 1) * params.PageSize
 		db.Offset(offset).Limit(params.PageSize)
 	}
 	err := db.Find(&list).Error
-	return &list, total, err
+	return &list, int(total), err
 }

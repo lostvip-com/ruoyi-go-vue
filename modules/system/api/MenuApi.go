@@ -19,7 +19,7 @@ type MenuApi struct {
 func (w *MenuApi) GetMenuInfo(c *gin.Context) {
 	var menuId = c.Param("menuId")
 	menu := new(model.SysMenu)
-	menu, err := menu.FindById(cast.ToInt64(menuId))
+	menu, err := menu.FindById(cast.ToInt(menuId))
 	if err != nil {
 		util.Fail(c, err.Error())
 		return
@@ -86,7 +86,7 @@ func (w *MenuApi) EditSave(c *gin.Context) {
 }
 
 func (w *MenuApi) RemoveMenu(c *gin.Context) {
-	var menuId = cast.ToInt64(c.Param("menuId"))
+	var menuId = cast.ToInt(c.Param("menuId"))
 	err := service.GetMenuServiceInstance().DeleteById(menuId)
 	if err == nil {
 		util.Success(c, gin.H{"id": menuId})
@@ -127,7 +127,7 @@ func (w *MenuApi) TreeSelectByRole(c *gin.Context) {
 		return
 	}
 	role := new(model.SysRole)
-	role, err = role.FindById(cast.ToInt64(roleId))
+	role, err = role.FindById(cast.ToInt(roleId))
 	checkedKeys, _ := svc.SelectMenuListByRoleId(roleId, role.MenuCheckStrictly)
 	var arrTree = svc.BuildMenuTreeSelect(menus)
 	c.JSON(http.StatusOK, gin.H{

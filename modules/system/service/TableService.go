@@ -3,7 +3,10 @@ package service
 import (
 	"bytes"
 	"common/myconf"
+	"common/util"
+	"context"
 	"errors"
+	"github.com/lostvip-com/lv_framework/utils/lv_logic"
 	"os"
 	"strings"
 	"system/dao"
@@ -14,7 +17,6 @@ import (
 
 	"github.com/lostvip-com/lv_framework/lv_db"
 	"github.com/lostvip-com/lv_framework/lv_global"
-	"github.com/lostvip-com/lv_framework/utils/lv_conv"
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
 	"github.com/lostvip-com/lv_framework/utils/lv_reflect"
 	"github.com/spf13/cast"
@@ -25,7 +27,7 @@ type TableService struct {
 }
 
 // FindById 根据主键查询数据
-func (svc TableService) FindGenTableById(tableId int64) (*vo.GenTableVO, error) {
+func (svc TableService) FindGenTableById(tableId int) (*vo.GenTableVO, error) {
 	db := lv_db.GetOrmDefault()
 	var result vo.GenTableVO
 	tb := db.Table("gen_table").Where("table_id=?", tableId)
@@ -64,14 +66,14 @@ func (svc TableService) FindGenTableByName(tbName string) (*vo.GenTableVO, error
 }
 
 // DeleteById 根据主键删除数据
-func (svc TableService) DeleteById(id int64) error {
+func (svc TableService) DeleteById(id int) error {
 	err := (&model.GenTable{TableId: id}).Delete()
 	return err
 }
 
 // 批量删除数据记录
 func (svc TableService) DeleteByIds(ids string) error {
-	idarr := lv_conv.ToInt64Array(ids, ",")
+	idarr := util.ToIntArray(ids, ",")
 	err := lv_db.GetOrmDefault().Exec("delete from gen_table where table_id in (?)", idarr).Error
 	err = lv_db.GetOrmDefault().Exec("delete from gen_table_column where table_id in (?)", idarr).Error
 	return err
@@ -86,7 +88,9 @@ func (svc TableService) SaveEdit(req *vo.EditGenTableVO) error {
 	}
 	_ = lv_reflect.CopyProperties(req, table)
 	table.UpdateTime = time.Now()
-	err = lv_db.GetOrmDefault().Transaction(func(tx *gorm.DB) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	err = lv_db.GetOrmDefault().WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		var err error
 		err = table.Updates()
 		var columnList = req.Columns
@@ -128,13 +132,13 @@ func (svc TableService) SetPkColumn(table *vo.GenTableVO, columns []model.GenTab
 }
 
 // 根据条件分页查询数据
-func (svc TableService) FindPage(param *vo.GenTablePageReq) ([]model.GenTable, int64, error) {
+func (svc TableService) FindPage(param *vo.GenTablePageReq) ([]model.GenTable, int, error) {
 	var table dao.GenTableDao
 	return table.FindPage(param)
 }
 
 // 查询据库列表
-func (svc TableService) SelectDbTableList(param *vo.GenTablePageReq) ([]model.GenTable, int64, error) {
+func (svc TableService) SelectDbTableList(param *vo.GenTablePageReq) ([]model.GenTable, int, error) {
 	var dao dao.GenTableDao
 	return dao.SelectDbTableList(param)
 }
@@ -155,7 +159,9 @@ func (svc TableService) SelectTableByName(tableName string) (*model.GenTable, er
 func (svc TableService) ImportGenTable(tableList *[]model.GenTable, operName string) error {
 	var err error
 	if tableList != nil && operName != "" {
-		err = lv_db.GetOrmDefault().Transaction(func(tx *gorm.DB) error {
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+		err = lv_db.GetOrmDefault().WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 			var err error
 			for _, table := range *tableList {
 				tableName := table.Table_Name
@@ -197,7 +203,6 @@ func (svc TableService) ImportGenTable(tableList *[]model.GenTable, operName str
 func (svc TableService) InitTable(table *model.GenTable, createBy string) {
 	table.ClassName = svc.ConvertClassName(table.Table_Name)
 	table.BusinessName = svc.GetBusinessName(table.Table_Name)
-	table.FunctionName = table.BusinessName
 	table.PackageName = lv_global.Config().GetVipperCfg().GetString("gen.packageName")
 	table.ModuleName = lv_global.Config().GetVipperCfg().GetString("gen.moduleName")
 	table.FunctionAuthor = lv_global.Config().GetVipperCfg().GetString("gen.author")
@@ -208,6 +213,8 @@ func (svc TableService) InitTable(table *model.GenTable, createBy string) {
 	table.TableComment = strings.ReplaceAll(table.TableComment, "表", "")
 	if table.TableComment == "" {
 		table.TableComment = table.ClassName
+		funcName := lv_logic.IfTrue(len(table.TableComment) < 10, table.TableComment, table.TableComment[0:10])
+		table.FunctionName = cast.ToString(funcName)
 	}
 }
 
@@ -249,7 +256,7 @@ func (svc TableService) InitColumnField(column *model.GenTableColumn, table *mod
 		} else if strings.Contains(tmp, "double") || strings.HasPrefix(tmp, "decimal") {
 			column.GoType = "float64"
 		} else if strings.Contains(tmp, "bigint") {
-			column.GoType = "int64"
+			column.GoType = "int"
 		} else if strings.Contains(tmp, "int") {
 			column.GoType = "int"
 		} else {
@@ -262,7 +269,7 @@ func (svc TableService) InitColumnField(column *model.GenTableColumn, table *mod
 			} else if len(arr) == 1 && cast.ToInt(arr[0]) <= 10 {
 				column.GoType = "int"
 			} else {
-				column.GoType = "int64"
+				column.GoType = "int"
 			}
 		}
 

@@ -89,7 +89,7 @@ func (w *ProfileApi) UpdateAvatar(c *gin.Context) {
 	if err := c.SaveUploadedFile(fileHead, dts); err != nil {
 		util.Fail(c, err.Error())
 	}
-	httpUrl := "/upload/profile/" + filename //http访问路径，静态根目录是static ->访问： /upload/profile/filename
+	httpUrl := "static/upload/profile/" + filename //http访问路径，静态根目录是static ->访问： /upload/profile/filename
 	err = userService.UpdateAvatar(httpUrl, c)
 	if err != nil {
 		util.Fail(c, err.Error())

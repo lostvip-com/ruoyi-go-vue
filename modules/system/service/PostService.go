@@ -1,10 +1,10 @@
 package service
 
 import (
+	"common/util"
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/lostvip-com/lv_framework/lv_db/lv_dao"
-	"github.com/lostvip-com/lv_framework/utils/lv_conv"
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
 	"system/dao"
 	"system/model"
@@ -25,13 +25,13 @@ func GetPostServiceInstance() *PostService {
 }
 
 func (svc *PostService) DeleteByIds(ids string) error {
-	ida := lv_conv.ToInt64Array(ids, ",")
+	ida := util.ToIntArray(ids, ",")
 	var d dao.SysPostDao
 	_, err := d.DeleteByIds(ida)
 	return err
 }
 
-func (svc *PostService) AddSave(req *vo.AddPostReq, c *gin.Context) (int64, error) {
+func (svc *PostService) AddSave(req *vo.AddPostReq, c *gin.Context) (int, error) {
 	var entity model.SysPost
 	entity.PostName = req.PostName
 	entity.PostCode = req.PostCode
@@ -80,7 +80,7 @@ func (svc *PostService) FindAll(params *vo.PostPageReq) (*[]model.SysPost, error
 }
 
 // 根据条件分页查询角色数据
-func (svc *PostService) FindPage(params *vo.PostPageReq) (*[]map[string]any, int64, error) {
+func (svc *PostService) FindPage(params *vo.PostPageReq) (*[]map[string]any, int, error) {
 	var d dao.SysPostDao
 	return d.FindPage(params)
 }
@@ -96,7 +96,7 @@ func (svc *PostService) Export(param *vo.PostPageReq) (string, error) {
 }
 
 // 根据用户ID查询岗位
-func (svc *PostService) ListAllPostsAndSelected(userId int64) (*[]model.SysPost, error) {
+func (svc *PostService) ListAllPostsAndSelected(userId int) (*[]model.SysPost, error) {
 	var paramsPost *vo.PostPageReq
 	var d dao.SysPostDao
 	postAll, err := d.ListAll(paramsPost)

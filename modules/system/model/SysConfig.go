@@ -8,7 +8,7 @@ import (
 
 // SysConfig 参数配置
 type SysConfig struct {
-	ConfigId    int64  `gorm:"type:int(11);primary_key;auto_increment;参数主键;" json:"configId" form:"configId"`
+	ConfigId    int    `gorm:"type:int(11);primary_key;auto_increment;参数主键;" json:"configId" form:"configId"`
 	ConfigName  string `gorm:"type:varchar(100);comment:参数名称;" json:"configName" form:"configName"`
 	ConfigKey   string `gorm:"type:varchar(100);comment:参数键名;" json:"configKey" form:"configKey"`
 	ConfigValue string `gorm:"type:varchar(500);comment:参数键值;" json:"configValue" form:"configValue"`
@@ -27,7 +27,7 @@ func (e *SysConfig) Save() error {
 }
 
 // 查
-func (e *SysConfig) FindById(id int64) (*SysConfig, error) {
+func (e *SysConfig) FindById(id int) (*SysConfig, error) {
 	err := lv_db.GetOrmDefault().Table(e.TableName()).First(e, id).Error
 	return e, err
 }

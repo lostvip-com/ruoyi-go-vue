@@ -34,5 +34,5 @@ func (w *OperateLogApi) Clean(c *gin.Context) {
 
 func (w *OperateLogApi) DelectOperlog(context *gin.Context) {
 	var operId = context.Param("operId")
-	service.GetOperLogServiceInstance().DeleteById(cast.ToInt64(operId))
+	service.GetOperLogServiceInstance().DeleteById(cast.ToInt(operId))
 }

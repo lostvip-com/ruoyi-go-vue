@@ -6,25 +6,25 @@ import (
 
 // DeptPageReq 分页请求参数
 type DeptPageReq struct {
-	ParentId  int64  `form:"parentId"` //父部门ID
+	ParentId  int    `form:"parentId"` //父部门ID
 	NodeType  string `form:"nodeType"`
 	DeptName  string `form:"deptName"`  //部门名称
 	Status    string `form:"status"`    //状态
 	BeginTime string `form:"beginTime"` //开始时间
 	EndTime   string `form:"endTime"`   //结束时间
-	TenantId  int64  `form:"tenantId"`  //结束时间
+	TenantId  int    `form:"tenantId"`  //结束时间
 	lv_dto.Paging
 }
 
 // 检查菜单名称请求参数
 type CheckDeptNameReq struct {
-	DeptId   int64  `form:"deptId"  binding:"required"`
-	ParentId int64  `form:"parentId"  binding:"required"`
+	DeptId   int    `form:"deptId"  binding:"required"`
+	ParentId int    `form:"parentId"  binding:"required"`
 	DeptName string `form:"deptName"  binding:"required"`
 }
 
 // 检查菜单名称请求参数
 type CheckDeptNameALLReq struct {
-	ParentId int64  `form:"parentId"  binding:"required"`
+	ParentId int    `form:"parentId"  binding:"required"`
 	DeptName string `form:"deptName"  binding:"required"`
 }

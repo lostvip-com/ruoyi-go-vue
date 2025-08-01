@@ -90,7 +90,7 @@ func (svc *DeptService) FindAll(param *common_vo.DeptPageReq) (*[]models.SysDept
 }
 
 // 根据角色ID查询部门
-func (svc *DeptService) SelectRoleDeptTree(roleId int64) ([]any, error) {
+func (svc *DeptService) SelectRoleDeptTree(roleId int) ([]any, error) {
 	sql := ` select concat(d.dept_id, d.dept_name) as DeptName 
              from sys_dept d 
              left join sys_role_dept rd  on d.dept_id = rd.dept_id 
@@ -114,14 +114,14 @@ func (svc *DeptService) SelectRoleDeptTree(roleId int64) ([]any, error) {
 }
 
 // 删除部门管理信息
-func (svc *DeptService) DeleteDeptById(deptId int64) error {
+func (svc *DeptService) DeleteDeptById(deptId int) error {
 	var entity models.SysDept
 	err := entity.UpdateDelFlag(deptId)
 	return err
 }
 
 // FindById 根据部门ID查询信息
-func (svc *DeptService) FindById(deptId int64) (*models.SysDept, error) {
+func (svc *DeptService) FindById(deptId int) (*models.SysDept, error) {
 	var dept = new(models.SysDept)
 	dept, err := dept.FindById(deptId)
 	lv_err.HasErrAndPanic(err)
@@ -135,7 +135,7 @@ func (svc *DeptService) FindById(deptId int64) (*models.SysDept, error) {
 	return dept, err
 }
 
-func (svc *DeptService) FindChildren(parentId int64) ([]*models.SysDept, error) {
+func (svc *DeptService) FindChildren(parentId int) ([]*models.SysDept, error) {
 	db := lv_db.GetOrmDefault()
 	var rs []*models.SysDept
 	err := db.Table("sys_dept").Where("parent_id=?", parentId).Find(&rs).Error
@@ -143,7 +143,7 @@ func (svc *DeptService) FindChildren(parentId int64) ([]*models.SysDept, error) 
 }
 
 // 查询部门管理数据
-func (svc *DeptService) SelectDeptList(parentId int64, deptName, status string, tenantId int64) (*[]models.SysDept, error) {
+func (svc *DeptService) SelectDeptList(parentId int, deptName, status string, tenantId int) (*[]models.SysDept, error) {
 	var dao dao.SysDeptDao
 	return dao.SelectDeptList(parentId, deptName, status, tenantId)
 }
@@ -172,7 +172,7 @@ func (svc *DeptService) SelectDeptTreeList() []vo.TreeSelect {
 	return deptResults
 }
 
-func (svc *DeptService) getChildList(depts []models.SysDept, deptId int64) []vo.TreeSelect {
+func (svc *DeptService) getChildList(depts []models.SysDept, deptId int) []vo.TreeSelect {
 	var tlist []vo.TreeSelect
 	for i := 0; i < len(depts); i++ {
 		dept1 := depts[i]
@@ -195,7 +195,7 @@ func (svc *DeptService) getChildList(depts []models.SysDept, deptId int64) []vo.
 }
 
 // 查询部门是否存在用户
-func (svc *DeptService) CheckDeptExistUser(deptId int64) bool {
+func (svc *DeptService) CheckDeptExistUser(deptId int) bool {
 	sql := " select count(*) from sys_user where del_flag = 0 "
 	param := map[string]any{}
 	param["deptId"] = deptId
@@ -212,7 +212,7 @@ func (svc *DeptService) CheckDeptExistUser(deptId int64) bool {
 }
 
 // 查询部门人数
-func (svc *DeptService) SelectDeptCount(deptId, parentId int64) int64 {
+func (svc *DeptService) SelectDeptCount(deptId, parentId int) int {
 	sql := " select count(*) from sys_dept where del_flag = 0 "
 	param := map[string]any{}
 	if deptId > 0 {
@@ -227,5 +227,5 @@ func (svc *DeptService) SelectDeptCount(deptId, parentId int64) int64 {
 	if err != nil {
 		panic(err)
 	}
-	return count
+	return int(count)
 }

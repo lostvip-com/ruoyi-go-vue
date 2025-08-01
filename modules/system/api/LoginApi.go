@@ -93,7 +93,7 @@ func (w *LoginApi) Login(c *gin.Context) {
 	loginInfo.Status = "0" //成功
 	dept, err := service.GetDeptServiceInstance().FindById(user.DeptId)
 	lv_err.HasErrAndPanic(err)
-	svc.SaveSessionToRedis(tokenId, loginInfo, roles, dept.DeptName)
+	svc.SaveSessionToRedis(tokenId, roles, dept.DeptName, user)
 	svc.SaveLogs(loginInfo, "login success") //记录日志
 	if err != nil {
 		lv_log.Error(err.Error())

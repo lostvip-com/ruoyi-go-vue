@@ -21,13 +21,13 @@ func GetSysPostDaoInstance() *SysPostDao {
 	return sysPostDao
 }
 
-func (e SysPostDao) DeleteByIds(ida []int64) (int64, error) {
+func (e SysPostDao) DeleteByIds(ida []int) (int, error) {
 	db := lv_db.GetOrmDefault().Table("sys_post").Delete("post_id in ? ", ida)
-	return db.RowsAffected, db.Error
+	return int(db.RowsAffected), db.Error
 }
 
 // 根据条件分页查询用户列表
-func (d SysPostDao) FindPage(param *vo.PostPageReq) (*[]map[string]any, int64, error) {
+func (d SysPostDao) FindPage(param *vo.PostPageReq) (*[]map[string]any, int, error) {
 	db := lv_db.GetOrmDefault()
 	sqlParams, sql := d.GetSql(param)
 	limitSql := sql + " order by u.post_id desc "
@@ -38,7 +38,7 @@ func (d SysPostDao) FindPage(param *vo.PostPageReq) (*[]map[string]any, int64, e
 	}
 	countSql := "select count(*) from (" + sql + ") t "
 	total, err := namedsql.Count(db, countSql, sqlParams)
-	return result, total, err
+	return result, int(total), err
 }
 
 func (d SysPostDao) GetSql(param *vo.PostPageReq) (map[string]interface{}, string) {
@@ -89,7 +89,7 @@ func (d SysPostDao) ListAllMap(param *vo.PostPageReq, camel bool) (*[]map[string
 }
 
 // 根据用户ID查询岗位
-func (dao SysPostDao) FindPostsByUserId(userId int64) (*[]model.SysPost, error) {
+func (dao SysPostDao) FindPostsByUserId(userId int) (*[]model.SysPost, error) {
 	db := lv_db.GetOrmDefault()
 	if db == nil {
 		return nil, errors.New("获取数据库连接失败")
@@ -106,7 +106,8 @@ func (dao SysPostDao) FindPostsByUserId(userId int64) (*[]model.SysPost, error) 
 }
 
 // CountCol 按字段值统计数量
-func (dao SysPostDao) CountCol(column, value string) (total int64, err error) {
-	err = lv_db.GetOrmDefault().Table("sys_post").Where(column+"=?", value).Count(&total).Error
-	return
+func (dao SysPostDao) CountCol(column, value string) (int, error) {
+	var total int64
+	err := lv_db.GetOrmDefault().Table("sys_post").Where(column+"=?", value).Count(&total).Error
+	return int(total), err
 }

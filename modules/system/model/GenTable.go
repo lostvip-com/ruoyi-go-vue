@@ -9,9 +9,9 @@ import (
 )
 
 type GenTable struct {
-	TableId int64 `gorm:"type:int(20);primary_key;auto_increment;参数主键;" json:"tableId" form:"tableId"`
+	TableId int `gorm:"type:int(20);primary_key;auto_increment;参数主键;" json:"tableId" form:"tableId"`
 
-	ParentMenuId   int64  `json:"parentMenuId" gorm:"size:20;comment:上级菜单ID;"`
+	ParentMenuId   int    `json:"parentMenuId" gorm:"size:20;comment:上级菜单ID;"`
 	Table_Name     string `json:"tableName,omitempty" gorm:"size:32"`
 	TableComment   string `json:"tableComment" gorm:"size:32"`
 	SubTableName   string `json:"subTableName" gorm:"size:32"`
@@ -54,7 +54,7 @@ func (e *GenTable) Save() error {
 }
 
 // FindById 查
-func (e *GenTable) FindById(id int64) (*GenTable, error) {
+func (e *GenTable) FindById(id int) (*GenTable, error) {
 	err := lv_db.GetOrmDefault().Take(e, id).Error
 	return e, err
 }
@@ -89,7 +89,7 @@ func (e *GenTable) Delete() error {
 	return lv_db.GetOrmDefault().Delete(e).Error
 }
 
-func (e *GenTable) Count() (int64, error) {
+func (e *GenTable) Count() (int, error) {
 	sql := " select count(*) from gen_table where del_flag = 0 "
 
 	if e.Table_Name != "" {
@@ -105,5 +105,6 @@ func (e *GenTable) Count() (int64, error) {
 		sql += " and tpl_category = @TplCategory "
 	}
 
-	return namedsql.Count(lv_db.GetOrmDefault(), sql, e)
+	total, err := namedsql.Count(lv_db.GetOrmDefault(), sql, e)
+	return int(total), err
 }

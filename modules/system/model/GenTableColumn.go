@@ -9,8 +9,8 @@ import (
 )
 
 type GenTableColumn struct {
-	ColumnId      int64  `gorm:"size:20;primary_key;auto_increment;编号;" json:"columnId"`
-	TableId       int64  `gorm:"size:20;comment:归属表编号;" json:"tableId"`
+	ColumnId      int    `gorm:"size:20;primary_key;auto_increment;编号;" json:"columnId"`
+	TableId       int    `gorm:"size:20;comment:归属表编号;" json:"tableId"`
 	ColumnName    string `gorm:"type:string;size:32;comment:列名称;" json:"columnName"`
 	ColumnComment string `gorm:"type:string;size:32;comment:列描述;" json:"columnComment"`
 	ColumnType    string `gorm:"type:string;size:32;comment:列类型;" json:"columnType"`
@@ -56,7 +56,7 @@ func (e *GenTableColumn) Save() error {
 }
 
 // 查
-func (e *GenTableColumn) FindById(id int64) (*GenTableColumn, error) {
+func (e *GenTableColumn) FindById(id int) (*GenTableColumn, error) {
 	err := lv_db.GetOrmDefault().Take(e, id).Error
 	return e, err
 }
@@ -91,7 +91,7 @@ func (e *GenTableColumn) Delete() error {
 	return lv_db.GetOrmDefault().Delete(e).Error
 }
 
-func (e *GenTableColumn) Count() (int64, error) {
+func (e *GenTableColumn) Count() (int, error) {
 	sql := " select count(*) from gen_table_column where del_flag = 0 "
 
 	if e.TableId != 0 {
@@ -107,5 +107,6 @@ func (e *GenTableColumn) Count() (int64, error) {
 		sql += " and column_type = @ColumnType "
 	}
 
-	return namedsql.Count(lv_db.GetOrmDefault(), sql, e)
+	total, err := namedsql.Count(lv_db.GetOrmDefault(), sql, e)
+	return int(total), err
 }

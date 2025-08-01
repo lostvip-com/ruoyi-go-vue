@@ -13,7 +13,7 @@ import (
 
 // SysDictType 字典类型
 type SysDictType struct {
-	DictId   int64  `gorm:"size:20;primary_key;auto_increment;字典主键;" json:"dictId"`
+	DictId   int    `gorm:"size:20;primary_key;auto_increment;字典主键;" json:"dictId"`
 	DictName string `gorm:"type:varchar(100);comment:字典名称;" json:"dictName"`
 	DictType string `gorm:"type:varchar(100);comment:字典类型;" json:"dictType"`
 	Status   string `gorm:"type:char(1);comment:状态（0正常 1停用）;" json:"status"`
@@ -31,7 +31,7 @@ func (e *SysDictType) Save() error {
 }
 
 // 查
-func (e *SysDictType) FindById(id int64) (*SysDictType, error) {
+func (e *SysDictType) FindById(id int) (*SysDictType, error) {
 	err := lv_db.GetOrmDefault().Take(e, id).Error
 	return e, err
 }
@@ -63,10 +63,11 @@ func (e *SysDictType) Delete() error {
 	return lv_db.GetOrmDefault().Delete(e).Error
 }
 
-func (e *SysDictType) Count() (int64, error) {
+func (e *SysDictType) Count() (int, error) {
 	sql := " select count(*) from sys_dict_type where 1=1 "
 	if e.DictType != "" {
 		sql += " and dict_type = @DictType "
 	}
-	return namedsql.Count(lv_db.GetOrmDefault(), sql, e)
+	total, err := namedsql.Count(lv_db.GetOrmDefault(), sql, e)
+	return int(total), err
 }

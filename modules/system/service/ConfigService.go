@@ -3,10 +3,10 @@ package service
 import (
 	"common/common_vo"
 	"common/global"
+	"common/util"
 	"github.com/lostvip-com/lv_framework/lv_cache"
 	"github.com/lostvip-com/lv_framework/lv_db"
 	"github.com/lostvip-com/lv_framework/lv_db/namedsql"
-	"github.com/lostvip-com/lv_framework/utils/lv_conv"
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
 	"github.com/lostvip-com/lv_framework/utils/lv_reflect"
 	"github.com/spf13/cast"
@@ -50,14 +50,14 @@ func (svc *ConfigService) RemoveCache(po *model.SysConfig) error {
 }
 
 // FindConfigById 根据主键查询数据
-func (svc *ConfigService) FindConfigById(id int64) (*model.SysConfig, error) {
+func (svc *ConfigService) FindConfigById(id int) (*model.SysConfig, error) {
 	po := &model.SysConfig{ConfigId: id}
 	po, err := po.FindOne()
 	return po, err
 }
 
 // DeleteConfigById 根据主键删除数据
-func (svc *ConfigService) DeleteConfigById(id int64) error {
+func (svc *ConfigService) DeleteConfigById(id int) error {
 	entity := &model.SysConfig{ConfigId: id}
 	po, err := entity.FindOne()
 	lv_err.HasErrAndPanic(err)
@@ -70,10 +70,10 @@ func (svc *ConfigService) DeleteConfigById(id int64) error {
 
 // DeleteByIds 批量删除数据记录
 func (svc *ConfigService) DeleteByIds(ids string) {
-	idArr := lv_conv.ToInt64Array(ids, ",")
+	idArr := util.ToIntArray(ids, ",")
 	cfg := new(model.SysConfig)
 	for _, id := range idArr {
-		cfg, err := cfg.FindById(cast.ToInt64(id))
+		cfg, err := cfg.FindById(cast.ToInt(id))
 		lv_err.HasErrAndPanic(err)
 		err = cfg.Delete()
 		if err != nil {
@@ -96,19 +96,20 @@ func (svc *ConfigService) EditSave(param *model.SysConfig) {
 }
 
 // 批量删除
-func (d *ConfigService) Count(configKey string) (total int64, err error) {
-	err = lv_db.GetOrmDefault().Table("sys_config").Where("config_key=?", configKey).Count(&total).Error
-	return total, err
+func (d *ConfigService) Count(configKey string) (int, error) {
+	var total int64
+	err := lv_db.GetOrmDefault().Table("sys_config").Where("config_key=?", configKey).Count(&total).Error
+	return int(total), err
 }
 
 // 批量删除
-func (d *ConfigService) DeleteBatch(ids ...int64) error {
+func (d *ConfigService) DeleteBatch(ids ...int) error {
 	err := lv_db.GetOrmDefault().Delete(&model.SysConfig{}, ids).Error
 	return err
 }
 
 // 根据条件分页查询用户列表
-func (d ConfigService) FindPage(param *common_vo.SelectConfigPageReq) (*[]map[string]any, int64, error) {
+func (d ConfigService) FindPage(param *common_vo.SelectConfigPageReq) (*[]map[string]any, int, error) {
 	db := lv_db.GetOrmDefault()
 	sqlParams, sql := d.GetSql(param)
 	countSql := "select count(*) from (" + sql + ") t "
@@ -118,7 +119,7 @@ func (d ConfigService) FindPage(param *common_vo.SelectConfigPageReq) (*[]map[st
 	limitSql += "  limit " + cast.ToString(param.GetStartNum()) + "," + cast.ToString(param.GetPageSize())
 	result, err := namedsql.ListMap(db, limitSql, sqlParams, true)
 	lv_err.HasErrAndPanic(err)
-	return result, total, err
+	return result, int(total), err
 }
 
 func (d ConfigService) GetSql(param *common_vo.SelectConfigPageReq) (map[string]interface{}, string) {

@@ -6,14 +6,14 @@ import (
 
 // 检查菜单名称请求参数
 type CheckMenuNameReq struct {
-	MenuId   int64  `form:"menuId"  binding:"required"`
-	ParentId int64  `form:"parentId"  binding:"required"`
+	MenuId   int    `form:"menuId"  binding:"required"`
+	ParentId int    `form:"parentId"  binding:"required"`
 	MenuName string `form:"menuName"  binding:"required"`
 }
 
 // 检查菜单名称请求参数
 type CheckMenuNameALLReq struct {
-	ParentId int64  `form:"parentId"  binding:"required"`
+	ParentId int    `form:"parentId"  binding:"required"`
 	MenuName string `form:"menuName"  binding:"required"`
 }
 
@@ -29,33 +29,6 @@ type SelectMenuPageReq struct {
 	SortOrder string `form:"sortOrder"` //排序方式
 	Status    string `form:"status"`    //状态
 	lv_dto.Paging
-}
-
-// 新增页面请求参数
-type AddMenuReq struct {
-	ParentId int64  `form:"parentId"`
-	MenuType string `form:"menuType"  binding:"required"`
-	MenuName string `form:"menuName"  binding:"required"`
-	OrderNum int    `form:"orderNum" binding:"required"`
-	Url      string `form:"url"`
-	Icon     string `form:"icon"`
-	Target   string `form:"target"`
-	Perms    string `form:"perms""`
-	Visible  string `form:"visible"`
-}
-
-// 修改页面请求参数
-type EditMenuReq struct {
-	MenuId   int64  `form:"menuId" binding:"required"`
-	ParentId int64  `form:"parentId" `
-	MenuType string `form:"menuType"  binding:"required"`
-	MenuName string `form:"menuName"  binding:"required"`
-	OrderNum int    `form:"orderNum" binding:"required"`
-	Url      string `form:"url"`
-	Icon     string `form:"icon"`
-	Target   string `form:"target"`
-	Perms    string `form:"perms""`
-	Visible  string `form:"visible"`
 }
 
 type MenuVo struct {
@@ -78,7 +51,7 @@ type MetaVo struct {
 }
 
 type MenuTreeSelect struct {
-	Id       int64            `json:"id"`
+	Id       int              `json:"id"`
 	Label    string           `json:"label"`
 	Children []MenuTreeSelect `json:"children,omitempty"`
 }

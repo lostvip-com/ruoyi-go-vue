@@ -11,7 +11,7 @@ type GenTableDao struct {
 
 //
 //// 根据ID获取记录
-//func (r *GenTableDao) ListColumn(tableId int64) (*vo.GenTableVO, error) {
+//func (r *GenTableDao) ListColumn(tableId int) (*vo.GenTableVO, error) {
 //	db := lv_db.GetOrmDefault()
 //	var result vo.GenTableVO
 //	tb := db.Table("gen_table").Where("table_id=?", tableId)
@@ -32,7 +32,7 @@ type GenTableDao struct {
 //}
 
 // 根据条件分页查询数据
-func (r *GenTableDao) FindPage(param *vo.GenTablePageReq) ([]model.GenTable, int64, error) {
+func (r *GenTableDao) FindPage(param *vo.GenTablePageReq) ([]model.GenTable, int, error) {
 	db := lv_db.GetOrmDefault()
 	tb := db.Table(" gen_table t")
 
@@ -55,11 +55,11 @@ func (r *GenTableDao) FindPage(param *vo.GenTablePageReq) ([]model.GenTable, int
 	tb.Limit(param.GetPageSize()).Offset(param.GetStartNum())
 	var result []model.GenTable
 	err := tb.Find(&result).Error
-	return result, total, err
+	return result, int(total), err
 }
 
 // 查询据库列表
-func (r *GenTableDao) SelectDbTableList(req *vo.GenTablePageReq) ([]model.GenTable, int64, error) {
+func (r *GenTableDao) SelectDbTableList(req *vo.GenTablePageReq) ([]model.GenTable, int, error) {
 	db := lv_db.GetOrmDefault()
 	tb := db.Table("information_schema.tables")
 	tb.Where("table_schema = (select database())")
@@ -80,7 +80,7 @@ func (r *GenTableDao) SelectDbTableList(req *vo.GenTablePageReq) ([]model.GenTab
 	tb.Limit(req.GetPageSize()).Offset(req.GetStartNum())
 	var result []model.GenTable
 	err := tb.Find(&result).Error
-	return result, total, err
+	return result, int(total), err
 }
 
 // 查询据库列表

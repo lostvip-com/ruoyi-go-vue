@@ -12,7 +12,7 @@ import (
 
 // SysDictData 字典数据
 type SysDictData struct {
-	DictCode  int64  `gorm:"size:20;primary_key;auto_increment;字典编码;" json:"dictCode"`
+	DictCode  int    `gorm:"size:20;primary_key;auto_increment;字典编码;" json:"dictCode"`
 	DictSort  int    `gorm:"type:int(11);comment:字典排序;" json:"dictSort"`
 	DictLabel string `gorm:"type:varchar(100);comment:字典标签;" json:"dictLabel"`
 	DictValue string `gorm:"type:varchar(100);comment:字典键值;" json:"dictValue"`
@@ -35,7 +35,7 @@ func (e *SysDictData) Save() error {
 }
 
 // 查
-func (e *SysDictData) FindById(id int64) (*SysDictData, error) {
+func (e *SysDictData) FindById(id int) (*SysDictData, error) {
 	err := lv_db.GetOrmDefault().Take(e, id).Error
 	return e, err
 }
@@ -67,7 +67,7 @@ func (e *SysDictData) Delete() error {
 	return lv_db.GetOrmDefault().Delete(e).Error
 }
 
-func (e *SysDictData) Count() (int64, error) {
+func (e *SysDictData) Count() (int, error) {
 	sql := " select count(*) from sys_dict_data where del_flag = 0 "
 
 	if e.DictSort != 0 {
@@ -83,5 +83,6 @@ func (e *SysDictData) Count() (int64, error) {
 		sql += " and dict_type = @DictType "
 	}
 
-	return namedsql.Count(lv_db.GetOrmDefault(), sql, e)
+	total, err := namedsql.Count(lv_db.GetOrmDefault(), sql, e)
+	return int(total), err
 }

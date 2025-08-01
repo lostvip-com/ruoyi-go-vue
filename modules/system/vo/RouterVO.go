@@ -11,8 +11,8 @@ type RouterVO struct {
 	Children   []RouterVO `json:"children"`
 	Meta       Meta       `json:"meta"`
 
-	MenuId   int64 `json:"menuId"` // 菜单ID
-	ParentId int64 `json:"parentId"`
+	MenuId   int `json:"menuId"` // 菜单ID
+	ParentId int `json:"parentId"`
 }
 
 type Meta struct {

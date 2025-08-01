@@ -37,16 +37,16 @@ func (e *{{.ClassName}}) TableName() string {
 }
 
 func (e *{{.ClassName}}) Save() error {
-    return lv_db.GetMasterGorm().Save(e).Error
+    return lv_db.GetOrmDefault().Save(e).Error
 }
 
 func (e *{{.ClassName}}) FindById(id int64) (*{{.ClassName}},error) {
-    err := lv_db.GetMasterGorm().Take(e,id).Error
+    err := lv_db.GetOrmDefault().Take(e,id).Error
     return e,err
 }
 
 func (e *{{.ClassName}}) FindOne() (*{{.ClassName}},error) {
-    tb := lv_db.GetMasterGorm().Table(e.TableName())
+    tb := lv_db.GetOrmDefault().Table(e.TableName())
 {{range $index, $column := .Columns -}}
 {{if eq $column.IsQuery "0"}}
     {{- continue -}}
@@ -67,11 +67,11 @@ func (e *{{.ClassName}}) FindOne() (*{{.ClassName}},error) {
 }
 
 func (e *{{.ClassName}}) Updates() error {
-    return lv_db.GetMasterGorm().Table(e.TableName()).Updates(e).Error
+    return lv_db.GetOrmDefault().Table(e.TableName()).Updates(e).Error
 }
 
 func (e *{{.ClassName}}) Delete() error {
-    return lv_db.GetMasterGorm().Delete(e).Error
+    return lv_db.GetOrmDefault().Delete(e).Error
 }
 
 func (e *{{.ClassName}}) Count() (int64, error) {
@@ -92,5 +92,5 @@ func (e *{{.ClassName}}) Count() (int64, error) {
   {{- end -}}
   {{- end }}
 
-    return namedsql.Count(lv_db.GetMasterGorm(), sql, e)
+    return namedsql.Count(lv_db.GetOrmDefault(), sql, e)
 }

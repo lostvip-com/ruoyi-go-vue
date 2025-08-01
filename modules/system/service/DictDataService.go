@@ -4,9 +4,9 @@ import (
 	"common/common_vo"
 	"common/models"
 	"common/session"
+	"common/util"
 	"errors"
 	"github.com/gin-gonic/gin"
-	"github.com/lostvip-com/lv_framework/utils/lv_conv"
 	"github.com/lostvip-com/lv_framework/utils/lv_reflect"
 	dao2 "system/dao"
 	"time"
@@ -24,20 +24,20 @@ func GetDictDataServiceInstance() *DictDataService {
 	return dictDataService
 }
 
-func (svc *DictDataService) GetById(id int64) (*models.SysDictData, error) {
+func (svc *DictDataService) GetById(id int) (*models.SysDictData, error) {
 	entity := &models.SysDictData{DictCode: id}
 	_, err := entity.FindOne()
 	return entity, err
 }
 
-func (svc *DictDataService) FindById(id int64) (*models.SysDictData, error) {
+func (svc *DictDataService) FindById(id int) (*models.SysDictData, error) {
 	entity := &models.SysDictData{DictCode: id}
 	_, err := entity.FindOne()
 	return entity, err
 }
 
 // 根据主键删除数据
-func (svc *DictDataService) DeleteById(id int64) bool {
+func (svc *DictDataService) DeleteById(id int) bool {
 	err := (&models.SysDictData{DictCode: id}).Delete()
 	if err == nil {
 		return true
@@ -47,14 +47,14 @@ func (svc *DictDataService) DeleteById(id int64) bool {
 
 // 批量删除数据记录
 func (svc *DictDataService) DeleteByIds(ids string) error {
-	ida := lv_conv.ToInt64Array(ids, ",")
+	ida := util.ToIntArray(ids, ",")
 	data := new(dao2.DictDataDao)
 	err := data.DeleteBatch(ida...)
 	return err
 }
 
 // 添加数据
-func (svc *DictDataService) AddSave(req *common_vo.AddDictDataReq, c *gin.Context) (int64, error) {
+func (svc *DictDataService) AddSave(req *common_vo.AddDictDataReq, c *gin.Context) (int, error) {
 	var entity models.SysDictData
 	entity.DictType = req.DictType
 	entity.Status = req.Status
@@ -105,7 +105,7 @@ func (svc *DictDataService) FindAll(params *common_vo.SelectDictDataPageReq) ([]
 }
 
 // FindPage 根据条件分页查询角色数据
-func (svc *DictDataService) FindPage(params *common_vo.SelectDictDataPageReq) (*[]models.SysDictData, int64, error) {
+func (svc *DictDataService) FindPage(params *common_vo.SelectDictDataPageReq) (*[]models.SysDictData, int, error) {
 	var dao dao2.DictDataDao
 	return dao.FindPage(params)
 }
@@ -115,7 +115,7 @@ func (svc *DictDataService) Export(param *common_vo.SelectDictDataPageReq) (stri
 	//head := []string{"字典编码", "字典排序", "字典标签", "字典键值", "字典类型", "样式属性", "表格回显样式", "是否默认", "状态", "创建者", "创建时间", "更新者", "更新时间", "备注"}
 	//col := []string{"dict_code", "dict_sort", "dict_label", "dict_value", "dict_type", "css_class", "list_class", "is_default", "status", "create_by", "create_time", "update_by", "update_time", "remark"}
 	//var dao dao2.DictDataDao
-	//db := lv_db.GetMasterGorm()
+	//db := lv_db.GetOrmDefault()
 	//build := builder.Select(col...).From("sys_dict_data", "t")
 	//if param != nil {
 	//	if param.DictLabel != "" {

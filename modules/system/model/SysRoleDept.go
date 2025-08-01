@@ -5,8 +5,8 @@ import (
 )
 
 type SysRoleDept struct {
-	RoleId int64 `gorm:"size:20;primary_key;角色id;" json:"roleId"`
-	DeptId int64 `gorm:"size:20;primary_key;部门id;" json:"deptId"`
+	RoleId int `gorm:"size:20;primary_key;角色id;" json:"roleId"`
+	DeptId int `gorm:"size:20;primary_key;部门id;" json:"deptId"`
 }
 
 // 映射数据表

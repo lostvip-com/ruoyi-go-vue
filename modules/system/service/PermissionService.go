@@ -41,7 +41,7 @@ func (svc *PermissionService) HasPermi(u interface{}, permission string) string 
 		return "disabled"
 	}
 
-	uid := cast.ToInt64(u)
+	uid := cast.ToInt(u)
 	var userService UserService
 	if uid <= 0 {
 		return "disabled"

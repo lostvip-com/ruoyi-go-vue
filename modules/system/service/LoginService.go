@@ -2,9 +2,9 @@ package service
 
 import (
 	"common/global"
+	"common/util"
 	"github.com/lostvip-com/lv_framework/lv_cache"
 	"github.com/lostvip-com/lv_framework/lv_db"
-	"github.com/lostvip-com/lv_framework/utils/lv_conv"
 	"github.com/spf13/cast"
 	"system/model"
 	"system/vo"
@@ -27,7 +27,7 @@ func GetLoginServiceInstance() *LoginService {
 }
 
 // FindPage 根据条件分页查询用户列表
-func (svc LoginService) FindPage(param *vo.LoginInfoPageReq) (*[]model.SysLoginInfo, int64, error) {
+func (svc LoginService) FindPage(param *vo.LoginInfoPageReq) (*[]model.SysLoginInfo, int, error) {
 	db := lv_db.GetOrmDefault()
 	tb := db.Table("sys_logininfor")
 	if param != nil {
@@ -55,18 +55,18 @@ func (svc LoginService) FindPage(param *vo.LoginInfoPageReq) (*[]model.SysLoginI
 	}
 	var result []model.SysLoginInfo
 	err := tb.Find(&result).Error
-	return &result, total, err
+	return &result, int(total), err
 }
 
 // FindById 根据主键查询用户信息
-func (svc LoginService) FindById(id int64) (*model.SysLoginInfo, error) {
+func (svc LoginService) FindById(id int) (*model.SysLoginInfo, error) {
 	entity := &model.SysLoginInfo{InfoId: id}
 	err := entity.FindById()
 	return entity, err
 }
 
 // DeleteById 根据主键删除用户信息
-func (svc LoginService) DeleteById(id int64) bool {
+func (svc LoginService) DeleteById(id int) bool {
 	entity := &model.SysLoginInfo{InfoId: id}
 	err := entity.Delete()
 	if err == nil {
@@ -78,7 +78,7 @@ func (svc LoginService) DeleteById(id int64) bool {
 
 // DeleteByIds 批量删除记录
 func (svc LoginService) DeleteByIds(ids string) error {
-	idarr := lv_conv.ToInt64Array(ids, ",")
+	idarr := util.ToIntArray(ids, ",")
 	err := lv_db.GetOrmDefault().Exec("delete from sys_logininfor where info_id in ? ", idarr).Error
 	return err
 }

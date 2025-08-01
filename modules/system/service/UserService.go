@@ -2,13 +2,14 @@ package service
 
 import (
 	"common/common_vo"
+	"common/global"
+	"common/util"
+	"context"
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/lostvip-com/lv_framework/lv_cache"
 	"github.com/lostvip-com/lv_framework/lv_db"
-	"github.com/lostvip-com/lv_framework/utils/lv_conv"
-	"github.com/lostvip-com/lv_framework/utils/lv_gen"
-	"github.com/lostvip-com/lv_framework/utils/lv_net"
+	"github.com/lostvip-com/lv_framework/utils/lv_err"
 	"github.com/lostvip-com/lv_framework/utils/lv_secret"
 	"github.com/spf13/cast"
 	"gorm.io/gorm"
@@ -29,13 +30,13 @@ func GetUserServiceInstance() *UserService {
 	return userService
 }
 
-func (svc *UserService) FindById(id int64) (*model.SysUser, error) {
+func (svc *UserService) FindById(id int) (*model.SysUser, error) {
 	entity := &model.SysUser{UserId: id}
 	err := entity.FindOne()
 	return entity, err
 }
 
-func (svc *UserService) FindList(param *common_vo.UserPageReq) (*[]map[string]any, int64, error) {
+func (svc *UserService) FindList(param *common_vo.UserPageReq) (*[]map[string]any, int, error) {
 	var deptService DeptService
 	var dept, _ = deptService.FindById(param.DeptId)
 	if dept != nil { //数据权限
@@ -46,7 +47,7 @@ func (svc *UserService) FindList(param *common_vo.UserPageReq) (*[]map[string]an
 }
 
 // 新增用户
-func (svc *UserService) AddSave(req *common_vo.AddUserReq, c *gin.Context) (int64, error) {
+func (svc *UserService) AddSave(req *common_vo.AddUserReq, c *gin.Context) (int, error) {
 	var u model.SysUser
 	u.UserName = req.UserName
 	u.UserName = req.UserName
@@ -59,8 +60,8 @@ func (svc *UserService) AddSave(req *common_vo.AddUserReq, c *gin.Context) (int6
 	t := time.Now()
 	u.LoginDate = &t
 	//生成密码
-	newSalt := lv_gen.GenerateSubId(6)
-	u.Password, _ = lv_secret.PasswordHash(newSalt)
+	//newSalt := lv_gen.GenerateSubId(6)
+	u.Password, _ = lv_secret.PasswordHash(u.Password)
 	u.CreateTime = time.Now()
 	createUser := svc.GetCurrUser(c)
 
@@ -69,19 +70,20 @@ func (svc *UserService) AddSave(req *common_vo.AddUserReq, c *gin.Context) (int6
 	}
 	u.DelFlag = "0"
 
-	err := lv_db.GetOrmDefault().Transaction(func(tx *gorm.DB) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	err := lv_db.GetOrmDefault().WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		if err := tx.Create(&u).Error; err != nil {
 			return err
 		}
 		//增加岗位数据
-		if req.PostIds != "" {
-			postIds := lv_conv.ToInt64Array(req.PostIds, ",")
+		if len(req.PostIds) > 0 {
 			userPosts := make([]model.SysUserPost, 0)
-			for i := range postIds {
-				if postIds[i] > 0 {
+			for i := range req.PostIds {
+				if req.PostIds[i] > 0 {
 					var userPost model.SysUserPost
 					userPost.UserId = u.UserId
-					userPost.PostId = postIds[i]
+					userPost.PostId = req.PostIds[i]
 					userPosts = append(userPosts, userPost)
 				}
 			} //end for
@@ -92,14 +94,13 @@ func (svc *UserService) AddSave(req *common_vo.AddUserReq, c *gin.Context) (int6
 			}
 		}
 		//增加角色数据
-		if req.RoleIds != "" {
-			roleIds := lv_conv.ToInt64Array(req.RoleIds, ",")
+		if len(req.RoleIds) > 0 {
 			userRoles := make([]model.SysUserRole, 0)
-			for i := range roleIds {
-				if roleIds[i] > 0 {
+			for i := range req.RoleIds {
+				if req.RoleIds[i] > 0 {
 					var userRole model.SysUserRole
 					userRole.UserId = u.UserId
-					userRole.RoleId = roleIds[i]
+					userRole.RoleId = req.RoleIds[i]
 					userRoles = append(userRoles, userRole)
 				}
 			}
@@ -135,19 +136,20 @@ func (svc *UserService) EditSave(req *common_vo.EditUserReq, c *gin.Context) err
 	if updateUser != nil {
 		userPtr.UpdateBy = updateUser.UserName
 	}
-	err = lv_db.GetOrmDefault().Transaction(func(tx *gorm.DB) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	err = lv_db.GetOrmDefault().WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		if err := tx.Updates(userPtr).Error; err != nil {
 			return err
 		}
 		//增加岗位数据
-		if req.PostIds != "" {
-			postIds := lv_conv.ToInt64Array(req.PostIds, ",")
+		if len(req.PostIds) > 0 {
 			userPosts := make([]model.SysUserPost, 0)
-			for i := range postIds {
-				if postIds[i] > 0 {
+			for i := range req.PostIds {
+				if req.PostIds[i] > 0 {
 					var userPost model.SysUserPost
 					userPost.UserId = userPtr.UserId
-					userPost.PostId = postIds[i]
+					userPost.PostId = req.PostIds[i]
 					userPosts = append(userPosts, userPost)
 				}
 			} //end for
@@ -159,14 +161,13 @@ func (svc *UserService) EditSave(req *common_vo.EditUserReq, c *gin.Context) err
 			}
 		}
 		//增加角色数据
-		if req.RoleIds != "" {
-			roleIds := lv_conv.ToInt64Array(req.RoleIds, ",")
+		if len(req.RoleIds) > 0 {
 			userRoles := make([]model.SysUserRole, 0)
-			for i := range roleIds {
-				if roleIds[i] > 0 {
+			for i := range req.RoleIds {
+				if req.RoleIds[i] > 0 {
 					var userRole model.SysUserRole
 					userRole.UserId = userPtr.UserId
-					userRole.RoleId = roleIds[i]
+					userRole.RoleId = req.RoleIds[i]
 					userRoles = append(userRoles, userRole)
 				}
 			} //end for
@@ -184,7 +185,7 @@ func (svc *UserService) EditSave(req *common_vo.EditUserReq, c *gin.Context) err
 }
 
 // 根据主键删除用户信息
-func (svc *UserService) DeleteById(id int64) error {
+func (svc *UserService) DeleteById(id int) error {
 	entity := &model.SysUser{UserId: id}
 	err := entity.Delete()
 	return err
@@ -192,31 +193,28 @@ func (svc *UserService) DeleteById(id int64) error {
 
 // 批量删除用户记录
 func (svc *UserService) DeleteByIds(ids string) error {
-	idarr := lv_conv.ToInt64Array(ids, ",")
-	idarr = lv_conv.RemoveOne(idarr, 1) //去掉admin的id
+	idarr := util.ToIntArray(ids, ",")
+	idarr = util.RemoveOne(idarr, 1) //去掉admin的id
 	if len(idarr) == 0 {
 		return errors.New("ids can not be empty ")
 	}
 	err := lv_db.GetOrmDefault().Transaction(func(tx *gorm.DB) error {
-		err := tx.Table("sys_user").Where("user_id in ? and user_id!=1 ", idarr).Update("del_flag", 1).Error
+		err := tx.Table("sys_user_post").Delete("user_id in ? and user_id!=1 ", idarr).Error
 		if err != nil {
 			return err
 		}
-		err = tx.Table("sys_user_post").Where("user_id in ? and user_id!=1 ", idarr).Update("del_flag", 1).Error
+		err = tx.Table("sys_user_role").Delete("user_id in ? ? and user_id!=1 ", idarr).Error
 		if err != nil {
 			return err
 		}
-		err = tx.Table("sys_user_role").Where("user_id in ? and user_id!=1 ", idarr).Update("del_flag", 1).Error
-		if err != nil {
-			return err
-		}
+		err = tx.Table("sys_user").Where("user_id in ? and user_id!=1 ", idarr).Update("del_flag", 1).Error
 		return err
 	})
 	return err
 }
 
 // 判断是否是系统管理员
-func (svc *UserService) IsAdmin(userId int64) bool {
+func (svc *UserService) IsAdmin(userId int) bool {
 	if userId == 1 {
 		return true
 	} else {
@@ -236,12 +234,13 @@ func (svc *UserService) CheckPassport(UserName string) bool {
 
 // 获得用户信息详情
 func (svc *UserService) GetCurrUser(c *gin.Context) *model.SysUser {
-	token := lv_net.GetParam(c, "token")
-	key := "login:" + token
-	userId, _ := lv_cache.GetCacheClient().HGet(key, "userId")
+	tokenId := c.GetString("tokenId")
+	key := global.LoginCacheKey + tokenId
+	userId, err := lv_cache.GetCacheClient().HGet(key, "userId")
+	lv_err.HasErrAndPanic(err)
 	u := new(model.SysUser)
-	u.UserId = cast.ToInt64(userId)
-	err := u.FindOne()
+	u.UserId = cast.ToInt(userId)
+	err = u.FindOne()
 	if err != nil {
 		panic(err)
 	}
@@ -329,8 +328,8 @@ func (svc *UserService) ResetPassword(params *common_vo.ResetPwdReq) error {
 		return errors.New("用户不存在")
 	}
 	//新校验密码
-	newPwd := lv_gen.GenerateSubId(6)
-	newPwd, _ = lv_secret.PasswordHash(newPwd)
+	//newPwd := lv_gen.GenerateSubId(6)
+	newPwd, _ := lv_secret.PasswordHash(params.Password)
 	user.Password = newPwd
 	err := user.Updates()
 	return err
@@ -363,19 +362,19 @@ func (svc *UserService) SelectUserByPhoneNumber(phonenumber string) (*model.SysU
 }
 
 // 查询已分配用户角色列表
-func (svc *UserService) SelectAllocatedList(roleId int64, UserName, phonenumber string) (*[]map[string]any, error) {
+func (svc *UserService) SelectAllocatedList(roleId int, UserName, phonenumber string) (*[]map[string]any, error) {
 	var vo dao.SysUserDao
 	return vo.SelectAllocatedList(roleId, UserName, phonenumber)
 }
 
 // 查询未分配用户角色列表
-func (svc *UserService) SelectUnallocatedList(roleId int64, UserName, phonenumber string) (*[]map[string]any, error) {
+func (svc *UserService) SelectUnallocatedList(roleId int, UserName, phonenumber string) (*[]map[string]any, error) {
 	var vo dao.SysUserDao
 	return vo.SelectUnallocatedList(roleId, UserName, phonenumber)
 }
 
 // 查询未分配用户角色列表
-func (svc *UserService) GetRoleKeys(userId int64) (string, error) {
+func (svc *UserService) GetRoleKeys(userId int) (string, error) {
 	if userId == 1 {
 		return "admin", nil
 	}
@@ -385,15 +384,15 @@ func (svc *UserService) GetRoleKeys(userId int64) (string, error) {
 	return roles, err
 }
 
-func (svc *UserService) GetRoles(userId int64) ([]model.SysRole, error) {
+func (svc *UserService) GetRoles(userId int) ([]model.SysRole, error) {
 	sql := " select r.* from sys_user_role ur,sys_role r where ur.user_id=? and ur.role_id = r.role_id "
 	roles := make([]model.SysRole, 0)
 	err := lv_db.GetOrmDefault().Raw(sql, userId).Scan(&roles).Error
 	return roles, err
 }
 
-func (svc *UserService) CountCol(column, value string) (int64, error) {
+func (svc *UserService) CountCol(column, value string) (int, error) {
 	var total int64
 	err := lv_db.GetOrmDefault().Table("sys_user").Where("del_flag=0 and "+column+"=?", value).Count(&total).Error
-	return total, err
+	return int(total), err
 }

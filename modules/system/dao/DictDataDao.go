@@ -20,7 +20,7 @@ func GetDictDataDaoInstance() *DictDataDao {
 }
 
 // 根据条件分页查询数据
-func (dao *DictDataDao) FindPage(param *common_vo.SelectDictDataPageReq) (*[]models.SysDictData, int64, error) {
+func (dao *DictDataDao) FindPage(param *common_vo.SelectDictDataPageReq) (*[]models.SysDictData, int, error) {
 	db := lv_db.GetOrmDefault()
 	tb := db.Table("sys_dict_data t")
 	if param != nil {
@@ -39,7 +39,7 @@ func (dao *DictDataDao) FindPage(param *common_vo.SelectDictDataPageReq) (*[]mod
 	var total int64
 	var result []models.SysDictData
 	tb.Count(&total).Offset(param.GetStartNum()).Limit(param.GetPageSize()).Order("dict_sort asc").Find(&result)
-	return &result, total, nil
+	return &result, int(total), nil
 }
 
 // FindAll 获取所有数据
@@ -65,7 +65,7 @@ func (dao *DictDataDao) FindAll(dictLabel, dictType string) ([]models.SysDictDat
 }
 
 // DeleteBatch 批量删除
-func (d *DictDataDao) DeleteBatch(codes ...int64) error {
+func (d *DictDataDao) DeleteBatch(codes ...int) error {
 	err := lv_db.GetOrmDefault().Where("dict_code in ?").Delete(codes).Error
 	return err
 }

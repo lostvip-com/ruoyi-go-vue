@@ -20,7 +20,7 @@ type ConfigApi struct {
 func (w *ConfigApi) GetConfigInfo(c *gin.Context) {
 	configId := c.Param("configId")
 	var configService = service.GetConfigServiceInstance()
-	value, err := configService.FindConfigById(cast.ToInt64(configId))
+	value, err := configService.FindConfigById(cast.ToInt(configId))
 	if err != nil {
 		util.Fail(c, err.Error())
 		return

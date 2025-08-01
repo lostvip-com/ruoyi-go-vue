@@ -20,7 +20,7 @@ func GetRoleDaoInstance() *SysRoleDao {
 }
 
 // 根据条件分页查询角色数据
-func (dao *SysRoleDao) SelectListPage(param *common_vo.RolePageReq) (result []model.SysRole, total int64, err error) {
+func (dao *SysRoleDao) SelectListPage(param *common_vo.RolePageReq) ([]model.SysRole, int, error) {
 	db := lv_db.GetOrmDefault()
 	if db == nil {
 		return nil, 0, errors.New("获取数据库连接失败")
@@ -52,8 +52,10 @@ func (dao *SysRoleDao) SelectListPage(param *common_vo.RolePageReq) (result []mo
 	if param.SortName != "" {
 		tb.Order(param.SortName + " " + param.SortOrder + " ")
 	}
-	err = tb.Count(&total).Offset(param.GetStartNum()).Limit(param.GetPageSize()).Find(&result).Error
-	return result, total, err
+	var total int64
+	var result []model.SysRole
+	err := tb.Count(&total).Offset(param.GetStartNum()).Limit(param.GetPageSize()).Find(&result).Error
+	return result, int(total), err
 }
 
 // 获取所有角色数据
@@ -89,7 +91,7 @@ func (dao *SysRoleDao) FindAll(param *common_vo.RolePageReq) ([]common_vo.SysRol
 }
 
 // 根据用户ID查询角色
-func (dao *SysRoleDao) FindRoles(userId int64) ([]model.SysRole, error) {
+func (dao *SysRoleDao) FindRoles(userId int) ([]model.SysRole, error) {
 	db := lv_db.GetOrmDefault()
 
 	if db == nil {
@@ -124,8 +126,7 @@ func (dao *SysRoleDao) FindRoleByRoleKey(roleKey string) (*model.SysRole, error)
 	return &entity, err
 }
 
-func (e *SysRoleDao) FindCount(roleKey, roleName string) (int64, error) {
-	var count int64 = 0
+func (e *SysRoleDao) FindCount(roleKey, roleName string) (int, error) {
 	tb := lv_db.GetOrmDefault()
 	if roleName != "" {
 		tb = tb.Where("role_name=? and del_flag=0", roleName)
@@ -133,6 +134,7 @@ func (e *SysRoleDao) FindCount(roleKey, roleName string) (int64, error) {
 	if roleKey != "" {
 		tb = tb.Where("role_key=? and del_flag=0", roleKey)
 	}
+	var count int64
 	err := tb.Count(&count).Error
-	return count, err
+	return int(count), err
 }

@@ -12,7 +12,7 @@ type SysDeptDao struct {
 }
 
 // 查询部门管理数据
-func (d SysDeptDao) SelectDeptList(parentId int64, deptName, status string, tenantId int64) (*[]models.SysDept, error) {
+func (d SysDeptDao) SelectDeptList(parentId int, deptName, status string, tenantId int) (*[]models.SysDept, error) {
 	sql := ` select *  from sys_dept d  where d.del_flag =0  `
 	param := map[string]any{}
 	if parentId > 0 {

@@ -21,7 +21,7 @@ type JobReq struct {
 }
 
 type JobStatus struct {
-	JobId    int64  `form:"jobId" form:"jobId"`
+	JobId    int    `form:"jobId" form:"jobId"`
 	Status   string `form:"status" form:"status"`
 	JobGroup string `form:"jobGroup" form:"jobGroup"`
 }

@@ -5,8 +5,8 @@ import (
 )
 
 type SysDept struct {
-	DeptId    int64  `gorm:"size:20;primary_key;auto_increment;部门id;" json:"deptId"`
-	ParentId  int64  `gorm:"size:20;comment:父部门id;" json:"parentId"`
+	DeptId    int    `gorm:"size:20;primary_key;auto_increment;部门id;" json:"deptId"`
+	ParentId  int    `gorm:"size:20;comment:父部门id;" json:"parentId"`
 	Ancestors string `gorm:"type:varchar(50);comment:祖级列表;index:idx_ancestors" json:"ancestors"`
 	DeptName  string `gorm:"type:varchar(30);comment:部门名称;" json:"deptName"`
 	OrderNum  int    `gorm:"type:int(10);comment:显示顺序;" json:"orderNum"`
@@ -16,7 +16,7 @@ type SysDept struct {
 	Status    string `gorm:"type:char(1);comment:部门状态（0正常 1停用）;" json:"status"`
 	UpdateBy  string `gorm:"type:varchar(64);comment:更新者;" json:"updateBy"`
 	CreateBy  string `gorm:"type:varchar(32);comment:创建人;column:create_by;"  json:"createBy"`
-	TenantId  int64  `gorm:"size:20;comment:租户id;" json:"tenantId" form:"tenantId"`
+	TenantId  int    `gorm:"size:20;comment:租户id;" json:"tenantId" form:"tenantId"`
 	DelFlag   string `gorm:"type:string;size:32;size:1;default:0;comment:删除标记;column:del_flag;" json:"delFlag"`
 	BaseModel
 	ParentName string    `gorm:"-" json:"parentName"`
@@ -34,7 +34,7 @@ func (e *SysDept) Save() error {
 }
 
 // 查
-func (e *SysDept) FindById(id int64) (*SysDept, error) {
+func (e *SysDept) FindById(id int) (*SysDept, error) {
 	err := lv_db.GetOrmDefault().Take(e, id).Error
 	return e, err
 }
@@ -59,7 +59,7 @@ func (e *SysDept) FindOne() error {
 func (e *SysDept) Update() error {
 	return lv_db.GetOrmDefault().Table(e.TableName()).Updates(e).Error
 }
-func (e *SysDept) UpdateDelFlag(id int64) error {
+func (e *SysDept) UpdateDelFlag(id int) error {
 	return lv_db.GetOrmDefault().Table(e.TableName()).Where("dept_id=?", id).Update("del_flag", "1").Error
 }
 

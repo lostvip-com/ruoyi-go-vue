@@ -20,7 +20,7 @@ type UserApi struct {
 }
 
 // 删除数据
-func (w *UserApi) Remove(c *gin.Context) {
+func (w *UserApi) RemoveUsers(c *gin.Context) {
 	userIds := c.Param("userIds")
 	var userService = service2.GetUserServiceInstance()
 	err := userService.DeleteByIds(userIds)
@@ -32,15 +32,15 @@ func (w *UserApi) Remove(c *gin.Context) {
 }
 
 func (w *UserApi) GetUserInfo(c *gin.Context) {
-	userId := cast.ToInt64(c.Param("userId"))
+	userId := cast.ToInt(c.Param("userId"))
 	user := new(model.SysUser)
 	user, err := user.FindById(userId)
 	if err != nil {
 		util.Fail(c, err.Error())
 		return
 	}
-	var roleIds []int64
-	var postIds []int64
+	var roleIds []int
+	var postIds []int
 	// 登录者的权限
 	roles, err := dao.GetRoleDaoInstance().FindRoles(userId)
 	if err != nil {
@@ -76,8 +76,8 @@ func (w *UserApi) GetUserInfoToCreate(c *gin.Context) {
 		util.Fail(c, err.Error())
 		return
 	}
-	var roleIds []int64
-	var postIds []int64
+	var roleIds []int
+	var postIds []int
 	// 暂时返回全部角色，后面再根据角色权限进行过滤
 	roles, err := dao.GetRoleDaoInstance().FindAll(nil)
 	if err != nil {
@@ -222,8 +222,8 @@ func (w *UserApi) Export(c *gin.Context) {
 func (w *UserApi) PutAuthUserRoleIds(c *gin.Context) {
 	uIdStr, _ := c.GetQuery("userId")
 	roleIds, _ := c.GetQuery("roleIds")
-	userId := cast.ToInt64(uIdStr)
-	uIds := []int64{userId}
+	userId := cast.ToInt(uIdStr)
+	uIds := []int{userId}
 	arr := strings.Split(roleIds, ",")
 	if len(arr) == 0 {
 		util.Fail(c, "请选择角色")
@@ -240,7 +240,7 @@ func (w *UserApi) PutAuthUserRoleIds(c *gin.Context) {
 
 func (w *UserApi) GetAuthUserRole(c *gin.Context) {
 	userIdStr := c.Param("userId")
-	userId := cast.ToInt64(userIdStr)
+	userId := cast.ToInt(userIdStr)
 	// 登录者的权限
 	roleSvc := service2.GetRoleServiceInstance()
 	var roles []model.SysRole

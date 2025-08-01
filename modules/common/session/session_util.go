@@ -10,7 +10,7 @@ import (
 )
 
 // 获得用户信息详情
-func GetTenantId(c *gin.Context) int64 {
+func GetTenantId(c *gin.Context) int {
 	return 0
 }
 
@@ -24,8 +24,8 @@ func GetLoginInfo(c *gin.Context) *common_vo.LoginInfo {
 	login.Avatar = mp["avatar"]
 	login.RoleKeys = mp["roleKeys"]
 	deptId := mp["deptId"]
-	login.DeptId = cast.ToInt64(deptId)
-	login.UserId = cast.ToInt64(mp["userId"])
-	login.TenantId = cast.ToInt64(mp["tenantId"])
+	login.DeptId = cast.ToInt(deptId)
+	login.UserId = cast.ToInt(mp["userId"])
+	login.TenantId = cast.ToInt(mp["tenantId"])
 	return login
 }

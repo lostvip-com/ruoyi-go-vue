@@ -16,7 +16,7 @@ type PostApi struct {
 func (w *PostApi) GetPostInfo(c *gin.Context) {
 	var postId = c.Param("postId")
 	post := new(model.SysPost)
-	post, err := post.FindById(cast.ToInt64(postId))
+	post, err := post.FindById(cast.ToInt(postId))
 	if err != nil {
 		util.Fail(c, err.Error())
 		return

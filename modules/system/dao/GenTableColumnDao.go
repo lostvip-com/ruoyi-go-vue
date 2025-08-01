@@ -9,7 +9,7 @@ type GenTableColumnDao struct {
 }
 
 // 查询业务字段列表
-func (dao GenTableColumnDao) SelectGenTableColumnListByTableId(tableId int64) ([]model.GenTableColumn, error) {
+func (dao GenTableColumnDao) SelectGenTableColumnListByTableId(tableId int) ([]model.GenTableColumn, error) {
 	db := lv_db.GetOrmDefault()
 	var result []model.GenTableColumn
 	tb := db.Table("gen_table_column t").Where("table_id=?", tableId).Order(" sort desc ")

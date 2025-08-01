@@ -65,7 +65,7 @@ func ErrResp(c *gin.Context, res lv_dto.Resp) {
 }
 
 // SuccessPage 分页数据处理 ， 自动翻译 Tag locale标记的字段
-func SuccessPage(c *gin.Context, rows any, total int64) {
+func SuccessPage(c *gin.Context, rows any, total any) {
 	c.AbortWithStatusJSON(http.StatusOK, gin.H{"code": 200, "msg": "success", "rows": rows, "total": total})
 }
 

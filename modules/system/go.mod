@@ -6,7 +6,6 @@ require (
 	github.com/shirou/gopsutil v2.19.12+incompatible
 	github.com/spf13/cast v1.7.0
 	gorm.io/gorm v1.25.7
-	xorm.io/builder v0.3.13
 )
 
 require (

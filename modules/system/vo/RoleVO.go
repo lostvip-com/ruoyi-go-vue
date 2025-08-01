@@ -6,6 +6,6 @@ type UserRoleReq struct {
 }
 
 type RoleStatusReq struct {
-	RoleId int64  `json:"roleId" form:"roleId"`
+	RoleId int    `json:"roleId" form:"roleId"`
 	Status string `json:"status" form:"status"`
 }

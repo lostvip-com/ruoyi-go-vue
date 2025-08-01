@@ -16,7 +16,7 @@ func GetBaseService() *BaseService {
 	return baseService
 }
 
-func (svc *BaseService) IsAdmin(userId int64) bool {
+func (svc *BaseService) IsAdmin(userId int) bool {
 	if userId == 1 {
 		return true
 	} else {

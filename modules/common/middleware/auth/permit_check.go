@@ -2,6 +2,7 @@ package auth
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/lostvip-com/lv_framework/utils/lv_err"
 	"github.com/lostvip-com/lv_framework/web/lv_dto"
 	"github.com/lostvip-com/lv_framework/web/router"
 	"net/http"
@@ -18,11 +19,15 @@ func PermitCheck(c *gin.Context) {
 	if strings.EqualFold(strEnd, "/") {
 		url = strings.TrimRight(url, "/")
 	}
+	tokenId, err0 := GetJwtUuid(c)
+	lv_err.HasErrAndPanic(err0)
+	c.Set("tokenId", tokenId) //给后面的接口使用，避免重复
 	//获取用户信息
 	userSvc := service.GetUserServiceInstance()
 	userPtr := userSvc.GetCurrUser(c)
-	c.Set("userId", userPtr.UserId) //供api使用
-	c.Set("user", userPtr)          //供api使用
+	c.Set("userId", userPtr.UserId)     //供api使用
+	c.Set("userName", userPtr.UserName) //供api使用
+	c.Set("user", userPtr)              //供api使用
 	if userSvc.IsAdmin(userPtr.UserId) {
 		c.Next()
 		return

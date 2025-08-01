@@ -13,7 +13,7 @@ import (
 
 // SysOperLog 操作日志记录
 type SysOperLog struct {
-	OperId        int64     `gorm:"size:20;primary_key;auto_increment;日志主键;" json:"operId"`
+	OperId        int       `gorm:"size:20;primary_key;auto_increment;日志主键;" json:"operId"`
 	Title         string    `gorm:"type:varchar(50);comment:模块标题;" json:"title"`
 	BusinessType  int       `gorm:"type:int(11);comment:业务类型（0其它 1新增 2修改 3删除）;" json:"businessType"`
 	Method        string    `gorm:"type:varchar(100);comment:方法名称;" json:"method"`
@@ -43,7 +43,7 @@ func (e *SysOperLog) Save() error {
 }
 
 // 查
-func (e *SysOperLog) FindById(id int64) (*SysOperLog, error) {
+func (e *SysOperLog) FindById(id int) (*SysOperLog, error) {
 	err := lv_db.GetOrmDefault().Take(e, id).Error
 	return e, err
 }
@@ -78,7 +78,7 @@ func (e *SysOperLog) Delete() error {
 	return lv_db.GetOrmDefault().Delete(e).Error
 }
 
-func (e *SysOperLog) Count() (int64, error) {
+func (e *SysOperLog) Count() (int, error) {
 	sql := " select count(*) from sys_oper_log where del_flag = 0 "
 
 	if e.Title != "" {
@@ -94,5 +94,6 @@ func (e *SysOperLog) Count() (int64, error) {
 		sql += " and request_method = @RequestMethod "
 	}
 
-	return namedsql.Count(lv_db.GetOrmDefault(), sql, e)
+	total, err := namedsql.Count(lv_db.GetOrmDefault(), sql, e)
+	return int(total), err
 }

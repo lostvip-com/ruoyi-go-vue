@@ -2,8 +2,8 @@ package service
 
 import (
 	"common/common_vo"
+	"common/util"
 	"github.com/gin-gonic/gin"
-	"github.com/lostvip-com/lv_framework/utils/lv_conv"
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
 	"github.com/spf13/cast"
 	dao2 "system/dao"
@@ -15,14 +15,14 @@ type DictTypeService struct {
 }
 
 // 根据主键查询数据
-func (svc *DictTypeService) FindById(id int64) (*model.SysDictType, error) {
+func (svc *DictTypeService) FindById(id int) (*model.SysDictType, error) {
 	dictType := &model.SysDictType{}
 	dictType, err := dictType.FindById(id)
 	return dictType, err
 }
 
 // 根据主键删除数据
-func (svc *DictTypeService) DeleteById(id int64) bool {
+func (svc *DictTypeService) DeleteById(id int) bool {
 	err := (&model.SysDictType{DictId: id}).Delete()
 	if err == nil {
 		return true
@@ -31,12 +31,12 @@ func (svc *DictTypeService) DeleteById(id int64) bool {
 }
 
 func (svc *DictTypeService) DeleteByIds(ids string) error {
-	ida := lv_conv.ToInt64Array(ids, ",")
+	ida := util.ToIntArray(ids, ",")
 	data := dao2.GetDictDataDaoInstance()
 	//data.DeleteBatch()
 	tp := new(model.SysDictType)
 	for _, id := range ida {
-		tp.DictId = cast.ToInt64(id)
+		tp.DictId = cast.ToInt(id)
 		_, err := tp.FindOne()
 		lv_err.HasErrAndPanic(err)
 		//delete dictType and dictData
@@ -48,7 +48,7 @@ func (svc *DictTypeService) DeleteByIds(ids string) error {
 }
 
 // 添加数据
-func (svc *DictTypeService) AddSave(req *common_vo.AddDictTypeReq, c *gin.Context) (int64, error) {
+func (svc *DictTypeService) AddSave(req *common_vo.AddDictTypeReq, c *gin.Context) (int, error) {
 	var entity model.SysDictType
 	entity.Status = req.Status
 	entity.DictType = req.DictType
@@ -66,7 +66,7 @@ func (svc *DictTypeService) AddSave(req *common_vo.AddDictTypeReq, c *gin.Contex
 }
 
 // 修改数据
-func (svc *DictTypeService) EditSave(req *common_vo.EditDictTypeReq, c *gin.Context) (int64, error) {
+func (svc *DictTypeService) EditSave(req *common_vo.EditDictTypeReq, c *gin.Context) (int, error) {
 	entity := &model.SysDictType{DictId: req.DictId}
 	entity, err := entity.FindOne()
 	if err != nil {
@@ -94,7 +94,7 @@ func (svc *DictTypeService) FindAll(params *common_vo.DictTypePageReq) ([]model.
 }
 
 // 根据条件分页查询角色数据
-func (svc *DictTypeService) FindPage(params *common_vo.DictTypePageReq) ([]model.SysDictType, int64, error) {
+func (svc *DictTypeService) FindPage(params *common_vo.DictTypePageReq) ([]model.SysDictType, int, error) {
 	var dao = dao2.GetSysDictTypeDaoInstance()
 	return dao.FindPage(params)
 }

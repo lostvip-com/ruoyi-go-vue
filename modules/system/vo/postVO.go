@@ -6,21 +6,21 @@ import (
 
 // 新增页面请求参数
 type AddPostReq struct {
-	PostName string `form:"postName"  binding:"required"`
-	PostCode string `form:"postCode"  binding:"required"`
-	PostSort int    `form:"postSort"  binding:"required"`
-	Status   string `form:"status"    binding:"required"`
-	Remark   string `form:"remark"`
+	PostName string `json:"postName"  binding:"required"`
+	PostCode string `json:"postCode"  binding:"required"`
+	PostSort int    `json:"postSort"  binding:"required"`
+	Status   string `json:"status"    binding:"required"`
+	Remark   string `json:"remark"`
 }
 
 // 修改页面请求参数
 type EditSysPostReq struct {
-	PostId   int64  `form:"postId" binding:"required"`
-	PostName string `form:"postName"  binding:"required"`
-	PostCode string `form:"postCode"  binding:"required"`
-	PostSort int    `form:"postSort"  binding:"required"`
-	Status   string `form:"status"    binding:"required"`
-	Remark   string `form:"remark"`
+	PostId   int    `json:"postId" binding:"required"`
+	PostName string `json:"postName"  binding:"required"`
+	PostCode string `json:"postCode"  binding:"required"`
+	PostSort int    `json:"postSort"  binding:"required"`
+	Status   string `json:"status"    binding:"required"`
+	Remark   string `json:"remark"`
 }
 
 // 分页请求参数
@@ -38,7 +38,7 @@ type PostPageReq struct {
 
 // 检查编码请求参数
 type CheckPostCodeReq struct {
-	PostId   int64  `form:"postId"  binding:"required"`
+	PostId   int    `form:"postId"  binding:"required"`
 	PostCode string `form:"postCode"  binding:"required"`
 }
 
@@ -49,7 +49,7 @@ type CheckPostCodeALLReq struct {
 
 // 检查名称请求参数
 type CheckPostNameReq struct {
-	PostId   int64  `form:"postId"  binding:"required"`
+	PostId   int    `form:"postId"  binding:"required"`
 	PostName string `form:"postName"  binding:"required"`
 }
 

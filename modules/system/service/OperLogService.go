@@ -70,7 +70,7 @@ func (svc OperLogService) Add(c *gin.Context, businessType int, title, inContent
 }
 
 // 根据条件分页查询用户列表
-func (svc OperLogService) FindPage(param *vo.OperLogPageReq) (*[]model.SysOperLog, int64, error) {
+func (svc OperLogService) FindPage(param *vo.OperLogPageReq) (*[]model.SysOperLog, int, error) {
 	db := lv_db.GetOrmDefault()
 	tb := db.Table("sys_oper_log")
 	if param != nil {
@@ -101,18 +101,18 @@ func (svc OperLogService) FindPage(param *vo.OperLogPageReq) (*[]model.SysOperLo
 	var result []model.SysOperLog
 	var total int64
 	err := tb.Count(&total).Offset(param.GetStartNum()).Limit(param.GetPageSize()).Order("oper_id desc").Find(&result).Error
-	return &result, total, err
+	return &result, int(total), err
 }
 
 // 根据主键查询用户信息
-func (svc OperLogService) FindById(id int64) (*model.SysOperLog, error) {
+func (svc OperLogService) FindById(id int) (*model.SysOperLog, error) {
 	entity := &model.SysOperLog{OperId: id}
 	_, err := entity.FindOne()
 	return entity, err
 }
 
 // DeleteById 根据主键删除用户信息
-func (svc OperLogService) DeleteById(id int64) bool {
+func (svc OperLogService) DeleteById(id int) bool {
 	entity := &model.SysOperLog{OperId: id}
 	err := entity.Delete()
 	if err == nil {

@@ -1,7 +1,7 @@
 package functions
 
 import (
-	"github.com/lostvip-com/lv_framework/utils/lv_conv"
+	"github.com/spf13/cast"
 	"html/template"
 	"strings"
 	"system/dao"
@@ -22,7 +22,7 @@ func PermButton(u interface{}, permission, funcName, text, aclassName, iclassNam
 
 	return template.HTML(htmlstr)
 }
-func IsAdmin(userId int64) bool {
+func IsAdmin(userId int) bool {
 	if userId == 1 {
 		return true
 	} else {
@@ -35,8 +35,7 @@ func HasPermi(u interface{}, permission string) string {
 	if u == nil {
 		return "disabled"
 	}
-
-	uid := lv_conv.Int64(u)
+	uid := cast.ToInt(u)
 	if uid <= 0 {
 		return "disabled"
 	}

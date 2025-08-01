@@ -4,9 +4,7 @@ import (
 	"common/common_vo"
 	"errors"
 	"github.com/lostvip-com/lv_framework/lv_db"
-	"github.com/lostvip-com/lv_framework/lv_db/namedsql"
 	"system/model"
-	"xorm.io/builder"
 )
 
 type DictTypeDao struct {
@@ -22,7 +20,7 @@ func GetSysDictTypeDaoInstance() *DictTypeDao {
 }
 
 // 根据条件分页查询数据
-func (dao *DictTypeDao) FindPage(param *common_vo.DictTypePageReq) ([]model.SysDictType, int64, error) {
+func (dao *DictTypeDao) FindPage(param *common_vo.DictTypePageReq) ([]model.SysDictType, int, error) {
 	db := lv_db.GetOrmDefault()
 	if db == nil {
 		return nil, 0, errors.New("获取数据库连接失败")
@@ -50,46 +48,10 @@ func (dao *DictTypeDao) FindPage(param *common_vo.DictTypePageReq) ([]model.SysD
 	var result []model.SysDictType
 	tb = tb.Order("dict_id desc").Offset(param.GetStartNum()).Limit(param.GetPageSize())
 	tb = tb.Find(&result)
-	return result, total, tb.Error
+	return result, int(total), tb.Error
 }
 
-// 导出excel
-func (dao *DictTypeDao) SelectListExport(param *common_vo.DictTypePageReq, head, col []string) (*[][]string, error) {
-	gdb := lv_db.GetOrmDefault()
-	if gdb == nil {
-		return nil, errors.New("获取数据库连接失败")
-	}
-
-	build := builder.Select(col...).From("sys_dict_type", "t")
-	if param != nil {
-		if param.DictName != "" {
-			build.Where(builder.Like{"t.dict_name", param.DictName})
-		}
-
-		if param.DictType != "" {
-			build.Where(builder.Like{"t.dict_type", param.DictType})
-		}
-
-		if param.Status != "" {
-			build.Where(builder.Eq{"t.status": param.Status})
-		}
-
-		if param.BeginTime != "" {
-			build.Where(builder.Gte{"t.create_time": param.BeginTime})
-		}
-
-		if param.EndTime != "" {
-			build.Where(builder.Lte{"t.create_time": param.EndTime})
-		}
-	}
-
-	sqlStr, _, _ := build.ToSQL()
-	arr, err := namedsql.ListArrStr(gdb, sqlStr, map[string]any{})
-
-	return arr, err
-}
-
-// 获取所有数据
+// FindAll 获取所有数据
 func (dao *DictTypeDao) FindAll(param *common_vo.DictTypePageReq) ([]model.SysDictType, error) {
 	gdb := lv_db.GetOrmDefault()
 	if gdb == nil {
@@ -109,14 +71,6 @@ func (dao *DictTypeDao) FindAll(param *common_vo.DictTypePageReq) ([]model.SysDi
 
 		if param.Status != "" {
 			tb.Where("t.status = ", param.Status)
-		}
-
-		if param.BeginTime != "" {
-			tb.Where("t.create_time >= ? ", param.BeginTime)
-		}
-
-		if param.EndTime != "" {
-			tb.Where("date_format(t.create_time,'%y%m%d') <= date_format(?,'%y%m%d') ", param.EndTime)
 		}
 	}
 	tb.Order(" t.dict_id desc ")

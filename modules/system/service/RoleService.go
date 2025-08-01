@@ -2,6 +2,8 @@ package service
 
 import (
 	"common/common_vo"
+	"common/util"
+	"context"
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/lostvip-com/lv_framework/lv_db"
@@ -28,20 +30,20 @@ func GetRoleServiceInstance() *RoleService {
 }
 
 // 根据主键查询数据
-func (svc *RoleService) FindById(id int64) (*model.SysRole, error) {
+func (svc *RoleService) FindById(id int) (*model.SysRole, error) {
 	entity := &model.SysRole{RoleId: id}
 	err := entity.FindOne()
 	return entity, err
 }
 
 // 根据主键查询数据
-func (svc *RoleService) FindPage(params *common_vo.RolePageReq) ([]model.SysRole, int64, error) {
+func (svc *RoleService) FindPage(params *common_vo.RolePageReq) ([]model.SysRole, int, error) {
 	var d dao.SysRoleDao
 	return d.SelectListPage(params)
 }
 
 // 添加数据
-func (svc *RoleService) AddSave(req *model.SysRole, c *gin.Context) (int64, error) {
+func (svc *RoleService) AddSave(req *model.SysRole, c *gin.Context) (int, error) {
 	role := new(model.SysRole)
 	role.RoleName = req.RoleName
 	role.RoleKey = req.RoleKey
@@ -82,23 +84,26 @@ func (svc *RoleService) EditSave(req *model.SysRole, user *model.SysUser) error 
 	r.UpdateTime = time.Now()
 	r.UpdateBy = user.UserName
 	r.RoleSort = req.RoleSort
-	db := lv_db.GetOrmDefault()
-	err = db.Transaction(func(tx *gorm.DB) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	err = lv_db.GetOrmDefault().WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		//更新role表
 		if err := tx.Updates(&r).Error; err != nil {
 			return err
 		}
 		//删除旧的功能权限授权，中间表
-		if req.MenuIds != nil {
-			err = svc.saveRoleMenu(tx, req, r)
-		}
+		err = svc.saveRoleMenu(tx, req, r)
 		return err
 	})
 
 	return err
 }
 
+// saveRoleMenu 角色菜单关联
 func (svc *RoleService) saveRoleMenu(tx *gorm.DB, req *model.SysRole, r *model.SysRole) (err error) {
+	if len(req.MenuIds) == 0 {
+		return nil
+	}
 	roleMenus := make([]model.SysRoleMenu, 0)
 	for i := range req.MenuIds {
 		if req.MenuIds[i] > 0 {
@@ -108,19 +113,17 @@ func (svc *RoleService) saveRoleMenu(tx *gorm.DB, req *model.SysRole, r *model.S
 			roleMenus = append(roleMenus, tmp)
 		}
 	}
-	if len(roleMenus) > 0 {
-		err = tx.Exec(" delete from sys_role_menu where role_id=? ", r.RoleId).Error
-		if err != nil {
-			return err
-		}
-		//插入新的功能权限授权，中间表
-		err = tx.CreateInBatches(roleMenus, len(roleMenus)).Error
+	err = tx.Exec(" delete from sys_role_menu where role_id=? ", r.RoleId).Error
+	if err != nil {
+		return err
 	}
+	//插入新的功能权限授权，中间表
+	err = tx.CreateInBatches(roleMenus, len(roleMenus)).Error
 	return err
 }
 
 // 保存数据权限
-func (svc *RoleService) AuthDataScope(req *common_vo.DataScopeReq, c *gin.Context) (int64, error) {
+func (svc *RoleService) AuthDataScope(req *common_vo.DataScopeReq, c *gin.Context) (int, error) {
 	entity := &model.SysRole{RoleId: req.RoleId}
 	err := entity.FindOne()
 	lv_err.HasErrAndPanic(err)
@@ -168,8 +171,8 @@ func (svc *RoleService) AuthDataScope(req *common_vo.DataScopeReq, c *gin.Contex
 
 // DeleteByIds 批量删除数据记录
 func (svc *RoleService) DeleteByIds(ids string) error {
-	idArr := lv_conv.ToInt64Array(ids, ",")
-	idsDel := make([]int64, 0)
+	idArr := util.ToIntArray(ids, ",")
+	idsDel := make([]int, 0)
 	for _, id := range idArr {
 		if id != 1 { //忽略admin
 			idsDel = append(idsDel, id)
@@ -179,13 +182,13 @@ func (svc *RoleService) DeleteByIds(ids string) error {
 	return err
 }
 
-func (svc *RoleService) DeleteRolesByUserIds(userIds []int64) {
+func (svc *RoleService) DeleteRolesByUserIds(userIds []int) {
 	err := svc.GetDb().Exec("delete from sys_user_role where user_id in (?)", userIds).Error
 	lv_err.HasErrAndPanic(err)
 }
 
 // SelectRoleContactVo 根据用户ID查询角色
-func (svc *RoleService) SelectRoleContactVo(userId int64) ([]common_vo.SysRoleFlag, error) {
+func (svc *RoleService) SelectRoleContactVo(userId int) ([]common_vo.SysRoleFlag, error) {
 	var paramsPost *common_vo.RolePageReq
 	var roleDao = dao.GetRoleDaoInstance()
 	roleAll, err := roleDao.FindAll(paramsPost)
@@ -206,23 +209,23 @@ func (svc *RoleService) SelectRoleContactVo(userId int64) ([]common_vo.SysRoleFl
 	return roleAll, nil
 }
 
-func (svc *RoleService) InsertRoleUserIds(roleId int64, userIds []string) error {
+func (svc *RoleService) InsertRoleUserIds(roleId int, userIds []string) error {
 	var roleUserList []model.SysUserRole
 	for _, userId := range userIds {
 		var tmp model.SysUserRole
 		tmp.RoleId = roleId
-		tmp.UserId = cast.ToInt64(userId)
+		tmp.UserId = cast.ToInt(userId)
 		roleUserList = append(roleUserList, tmp)
 	}
 	err := lv_db.GetOrmDefault().CreateInBatches(roleUserList, len(roleUserList)).Error
 	return err
 }
-func (svc *RoleService) InsertUserRoleIds(userId int64, arrRoleIds []string) error {
+func (svc *RoleService) InsertUserRoleIds(userId int, arrRoleIds []string) error {
 	var roleUserList []model.SysUserRole
 	for _, roleId := range arrRoleIds {
 		var tmp model.SysUserRole
 		tmp.UserId = userId
-		tmp.RoleId = cast.ToInt64(roleId)
+		tmp.RoleId = cast.ToInt(roleId)
 		roleUserList = append(roleUserList, tmp)
 	}
 	err := lv_db.GetOrmDefault().CreateInBatches(roleUserList, len(roleUserList)).Error
@@ -230,7 +233,7 @@ func (svc *RoleService) InsertUserRoleIds(userId int64, arrRoleIds []string) err
 }
 
 // DeleteUserRoleInfo 取消授权用户角色
-func (svc *RoleService) DeleteUserRoleInfo(userId, roleId int64) error {
+func (svc *RoleService) DeleteUserRoleInfo(userId, roleId int) error {
 	entity := &model.SysUserRole{UserId: userId, RoleId: roleId}
 	if entity.RoleId == 1 {
 		return errors.New("Not Allowed!")
@@ -243,8 +246,8 @@ func (svc *RoleService) DeleteUserRoleInfo(userId, roleId int64) error {
 }
 
 // DeleteUserRoleInfos 批量取消授权用户角色
-func (svc *RoleService) DeleteUserRoleInfos(roleId int64, ids string) error {
-	idarr := lv_conv.ToInt64Array(ids, ",")
+func (svc *RoleService) DeleteUserRoleInfos(roleId int, ids string) error {
+	idarr := util.ToIntArray(ids, ",")
 
 	idStr := ""
 	for _, item := range idarr {
@@ -283,7 +286,7 @@ func (svc *RoleService) IsRoleKeyExist(roleKey string) (bool, error) {
 	return false, err
 }
 
-func (svc *RoleService) IsAdminRoleId(id int64) bool {
+func (svc *RoleService) IsAdminRoleId(id int) bool {
 	if id == 1 {
 		return true
 	} else {
@@ -292,7 +295,7 @@ func (svc *RoleService) IsAdminRoleId(id int64) bool {
 }
 
 // 校验角色是否允许操作
-func (svc *RoleService) CheckRoleAllowed(roleId int64) bool {
+func (svc *RoleService) CheckRoleAllowed(roleId int) bool {
 	if svc.IsAdminRoleId(roleId) {
 		return false
 	} else {
@@ -300,7 +303,7 @@ func (svc *RoleService) CheckRoleAllowed(roleId int64) bool {
 	}
 }
 
-func (svc *RoleService) CheckRoleDataScope(roleId int64) bool {
+func (svc *RoleService) CheckRoleDataScope(roleId int) bool {
 	const baseSql = `
          select distinct r.role_id, r.role_name, r.role_key, r.role_sort, r.data_scope, r.menu_check_strictly, r.dept_check_strictly,
 		 r.status, r.del_flag, r.create_time, r.remark 
@@ -316,7 +319,7 @@ func (svc *RoleService) CheckRoleDataScope(roleId int64) bool {
 	return count < 1
 }
 
-func (svc *RoleService) GetDeptTreeRole(roleId int64) []int64 {
+func (svc *RoleService) GetDeptTreeRole(roleId int) []int {
 	role := new(model.SysRole)
 	role, err := role.FindById(roleId)
 	deptCheckStrictly := role.DeptCheckStrictly
@@ -327,13 +330,13 @@ func (svc *RoleService) GetDeptTreeRole(roleId int64) []int64 {
 		sql += " and d.dept_id not in (select d.parent_id from sys_dept d inner join sys_role_dept rd on d.dept_id = rd.dept_id and rd.role_id = " + cast.ToString(roleId) + " ) "
 	}
 	sql += " order by d.parent_id, d.order_num "
-	var count []int64
+	var count []int
 	err = lv_db.GetOrmDefault().Raw(sql).Find(&count).Error
 	lv_err.HasErrAndPanic(err)
 	return count
 }
 
-func (svc *RoleService) FindRolePermissionsById(userId int64) []model.SysRole {
+func (svc *RoleService) FindRolePermissionsById(userId int) []model.SysRole {
 	var roles []model.SysRole
 	var sql = "select distinct r.* " +
 		"from sys_role r " +
@@ -364,7 +367,7 @@ func (svc *RoleService) GetRolePermission(user model.SysUser) []string {
 	return svc.GetRolePermissionById(user.UserId)
 }
 
-func (svc *RoleService) GetRolePermissionById(userId int64) []string {
+func (svc *RoleService) GetRolePermissionById(userId int) []string {
 	if svc.IsAdmin(userId) {
 		return []string{"admin"}
 	} else {

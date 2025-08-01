@@ -54,13 +54,14 @@ func (svc *SessionService) ForceLogout(token string) error {
 	return svc.SignOut(token)
 }
 
-func (svc *SessionService) SaveSessionToRedis(tokenId string, user *model.SysLoginInfo, roleKeys string, deptName string) error {
+func (svc *SessionService) SaveSessionToRedis(tokenId string, roleKeys string, deptName string, user *model.SysUser) error {
 	fieldMap := lv_conv.StructToMap(user)
+	fieldMap["userId"] = user.UserId
 	fieldMap["tokenId"] = tokenId
 	fieldMap["loginTime"] = lv_time.GetCurrentTimeStr()
 	fieldMap["roleKeys"] = roleKeys
 	fieldMap["deptName"] = deptName
-	//fieldMap["tenantId"] = user.TenantId //租户ID
+	//fieldMap["tenantId"] = login.TenantId //租户ID
 	key := global.LoginCacheKey + tokenId
 	err := lv_cache.GetCacheClient().HMSet(key, fieldMap, 12*time.Hour)
 	lv_err.HasErrAndPanic(err)

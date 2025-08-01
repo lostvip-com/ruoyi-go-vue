@@ -15,7 +15,7 @@ type SelectConfigPageReq struct {
 
 // 检查参数键名请求参数
 type CheckConfigKeyReq struct {
-	ConfigId  int64  `form:"configId"  binding:"required"`
+	ConfigId  int    `form:"configId"  binding:"required"`
 	ConfigKey string `form:"configKey"  binding:"required"`
 }
 

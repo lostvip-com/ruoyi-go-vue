@@ -1,8 +1,8 @@
 package service
 
 import (
+	"common/util"
 	"github.com/lostvip-com/lv_framework/lv_db"
-	"github.com/lostvip-com/lv_framework/utils/lv_conv"
 	dao2 "system/dao"
 	"system/model"
 )
@@ -11,7 +11,7 @@ type TableColumnService struct {
 }
 
 // Insert 新增业务字段
-func (svc TableColumnService) Insert(entity *model.GenTableColumn) (int64, error) {
+func (svc TableColumnService) Insert(entity *model.GenTableColumn) (int, error) {
 	err := entity.Save()
 	if err != nil {
 		return 0, err
@@ -25,14 +25,14 @@ func (svc TableColumnService) Update(entity *model.GenTableColumn) error {
 }
 
 // FindById 根据主键查询数据
-func (svc TableColumnService) FindById(id int64) (*model.GenTableColumn, error) {
+func (svc TableColumnService) FindById(id int) (*model.GenTableColumn, error) {
 	entity := &model.GenTableColumn{ColumnId: id}
 	_, err := entity.FindOne()
 	return entity, err
 }
 
 // DeleteById 根据主键删除数据
-func (svc TableColumnService) DeleteById(id int64) bool {
+func (svc TableColumnService) DeleteById(id int) bool {
 	err := (&model.GenTableColumn{ColumnId: id}).Delete()
 	if err == nil {
 		return true
@@ -42,13 +42,13 @@ func (svc TableColumnService) DeleteById(id int64) bool {
 
 // DeleteByIds 批量删除数据记录
 func (svc TableColumnService) DeleteByIds(ids string) error {
-	idarr := lv_conv.ToInt64Array(ids, ",")
+	idarr := util.ToIntArray(ids, ",")
 	err := lv_db.GetOrmDefault().Exec("delete from gen_table_column where column_id in ? ", idarr).Error
 	return err
 }
 
 // 查询业务字段列表
-func (svc TableColumnService) SelectGenTableColumnListByTableId(tableId int64) ([]model.GenTableColumn, error) {
+func (svc TableColumnService) SelectGenTableColumnListByTableId(tableId int) ([]model.GenTableColumn, error) {
 	var tool dao2.GenTableColumnDao
 	return tool.SelectGenTableColumnListByTableId(tableId)
 }

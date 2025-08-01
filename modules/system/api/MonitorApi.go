@@ -3,6 +3,7 @@ package api
 import (
 	api2 "common/api"
 	"common/global"
+	"common/schedule"
 	"common/util"
 	"github.com/gin-gonic/gin"
 	"github.com/lostvip-com/lv_framework/lv_cache/lv_redis"
@@ -11,7 +12,6 @@ import (
 	"github.com/lostvip-com/lv_framework/utils/lv_net"
 	"github.com/spf13/cast"
 	"strings"
-	"system/model"
 	"system/service"
 	"system/vo"
 )
@@ -129,7 +129,7 @@ func (m MonitorApi) ListOnLine(c *gin.Context) {
 	if userName != "" || ipaddr != "" { //按条件搜索
 		rows = *m.FindSearchTarget(rows, userName, ipaddr)
 	}
-	util.SuccessPage(c, rows, int64(len(rows)))
+	util.SuccessPage(c, rows, int(len(rows)))
 }
 
 func (m MonitorApi) FindSearchTarget(rows []map[string]string, userName string, ipaddr string) *[]map[string]string {
@@ -279,8 +279,8 @@ func (m MonitorApi) ExportJob(c *gin.Context) {
 
 func (m MonitorApi) GetJobById(c *gin.Context) {
 	jobId := c.Param("jobId")
-	job := new(model.SysJob)
-	result, err := job.FindById(cast.ToInt64(jobId))
+	job := new(schedule.SysJob)
+	result, err := job.FindById(cast.ToInt(jobId))
 	if err != nil {
 		util.Fail(c, err.Error())
 		return
@@ -289,7 +289,7 @@ func (m MonitorApi) GetJobById(c *gin.Context) {
 }
 
 func (m MonitorApi) SaveJob(c *gin.Context) {
-	job := new(model.SysJob)
+	job := new(schedule.SysJob)
 	if err := c.ShouldBind(job); err != nil {
 		util.Fail(c, err.Error())
 		return
@@ -303,7 +303,7 @@ func (m MonitorApi) SaveJob(c *gin.Context) {
 }
 
 func (m MonitorApi) UploadJob(c *gin.Context) {
-	job := new(model.SysJob)
+	job := new(schedule.SysJob)
 	if err := c.ShouldBind(job); err != nil {
 		util.Fail(c, err.Error())
 		return
@@ -337,13 +337,33 @@ func (m MonitorApi) RunJob(c *gin.Context) {
 		util.Fail(c, err.Error())
 		return
 	}
-	util.Fail(c, "未实现！")
+
+	// 获取任务信息
+	job := new(schedule.SysJob)
+	job, err := job.FindById(js.JobId)
+	if err != nil {
+		util.Fail(c, "未找到指定任务")
+		return
+	}
+
+	// 立即执行一次任务
+	scheduler := schedule.GetSchedulerServiceInstance()
+	scheduler.RunJobOnce(job)
+
+	util.Success(c, "任务已启动执行")
 }
 
 func (m MonitorApi) DelectJob(c *gin.Context) {
 	jobIds := c.Param("jobIds")
 	arr := strings.Split(jobIds, ",")
-	err := lv_db.GetOrmDefault().Where("job_id in ( ? )", arr).Delete(&model.SysJob{}).Error
+
+	// 删除任务前先从调度器中移除
+	scheduler := schedule.GetSchedulerServiceInstance()
+	for _, idStr := range arr {
+		scheduler.RemoveJob(cast.ToInt(idStr))
+	}
+
+	err := lv_db.GetOrmDefault().Where("job_id in ( ? )", arr).Delete(&schedule.SysJob{}).Error
 	if err != nil {
 		util.Fail(c, err.Error())
 		return
@@ -448,8 +468,8 @@ func (m MonitorApi) ExportJobLog(c *gin.Context) {
 
 func (m MonitorApi) GetJobLog(c *gin.Context) {
 	var logId = c.Param("logId")
-	log := new(model.SysJobLog)
-	log, err := log.FindJobLogById(cast.ToInt64(logId))
+	log := new(schedule.SysJobLog)
+	log, err := log.FindJobLogById(cast.ToInt(logId))
 	if err != nil {
 		util.Fail(c, err.Error())
 		return
@@ -459,7 +479,7 @@ func (m MonitorApi) GetJobLog(c *gin.Context) {
 
 func (m MonitorApi) DetectJobLog(c *gin.Context) {
 	var ids = c.Param("jobLogIds")
-	err := lv_db.GetOrmDefault().Where("id in ( ? )", util.SplitToInt(ids, ",")).Delete(&model.SysJobLog{}).Error
+	err := lv_db.GetOrmDefault().Where("id in ( ? )", util.SplitToInt(ids, ",")).Delete(&schedule.SysJobLog{}).Error
 	if err != nil {
 		util.Fail(c, err.Error())
 		return

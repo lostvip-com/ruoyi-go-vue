@@ -25,8 +25,8 @@ func IsArray(value interface{}) bool {
 	}
 }
 
-func RemoveOne(nums []int64, val int64) []int64 {
-	newNums := make([]int64, 0)
+func RemoveOne(nums []int, val int) []int {
+	newNums := make([]int, 0)
 	for _, num := range nums {
 		if num != val {
 			newNums = append(newNums, num)

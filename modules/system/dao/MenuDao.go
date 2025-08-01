@@ -23,18 +23,18 @@ func GetMenuDaoInstance() *MenuDao {
 }
 
 // 批量删除
-func (r *MenuDao) DeleteBatch(ids ...int64) (int64, error) {
+func (r *MenuDao) DeleteBatch(ids ...int) (int, error) {
 	db := lv_db.GetOrmDefault().Table("sys_menu").Where("menu_id in ? ", ids).Update("del_flag", 1)
-	return db.RowsAffected, db.Error
+	return int(db.RowsAffected), db.Error
 }
 
-func (r *MenuDao) DeleteChildren(parentId int64) (int64, error) {
+func (r *MenuDao) DeleteChildren(parentId int) (int, error) {
 	tb := lv_db.GetOrmDefault().Table("sys_menu").Where("parent_id=?", parentId).Update("del_flag", 1)
-	return tb.RowsAffected, tb.Error
+	return int(tb.RowsAffected), tb.Error
 }
 
 // 根据主键查询数据
-func (dao *MenuDao) FindById(id int64) (*model.SysMenu, error) {
+func (dao *MenuDao) FindById(id int) (*model.SysMenu, error) {
 	tb := lv_db.GetOrmDefault()
 	if tb == nil {
 		return nil, errors.New("获取数据库连接失败")
@@ -51,7 +51,7 @@ func (dao *MenuDao) FindById(id int64) (*model.SysMenu, error) {
 }
 
 // 根据条件分页查询数据
-func (dao *MenuDao) SelectListPage(param *vo.SelectMenuPageReq) (*[]model.SysMenu, int64, error) {
+func (dao *MenuDao) SelectListPage(param *vo.SelectMenuPageReq) (*[]model.SysMenu, int, error) {
 	tb := lv_db.GetOrmDefault()
 	tb = tb.Table("sys_menu")
 	if param != nil {
@@ -77,7 +77,7 @@ func (dao *MenuDao) SelectListPage(param *vo.SelectMenuPageReq) (*[]model.SysMen
 	lv_err.HasErrAndPanic(err)
 	err = tb.Offset(0).Limit(-1).Count(&param.Total).Error
 	lv_err.HasErrAndPanic(err)
-	return &result, param.Total, nil
+	return &result, int(param.Total), nil
 }
 
 // 获取所有数据
@@ -122,7 +122,7 @@ func (dao *MenuDao) FindMenuNormalAll(noF bool) ([]model.SysMenu, error) {
 		return result, err
 	}
 }
-func (dao *MenuDao) FindMenusByUserId(userId int64, sysMenu *vo.SelectMenuPageReq) ([]model.SysMenu, error) {
+func (dao *MenuDao) FindMenusByUserId(userId int, sysMenu *vo.SelectMenuPageReq) ([]model.SysMenu, error) {
 	var sql = "select distinct m.menu_id, m.parent_id, m.menu_name, m.path, m.component, m.`query`, m.visible," +
 		" m.status, ifnull(m.perms,'') as perms, m.is_frame, m.is_cache, m.menu_type, m.icon, m.order_num, m.create_time " +
 		"from sys_menu m left join sys_role_menu rm on m.menu_id = rm.menu_id " +
@@ -147,7 +147,7 @@ func (dao *MenuDao) FindMenusByUserId(userId int64, sysMenu *vo.SelectMenuPageRe
 }
 
 // FindMenus 根据用户ID读取菜单数据， noF 非按钮
-func (dao *MenuDao) FindMenus(userId int64, noF bool, params *model.SysMenu) ([]model.SysMenu, error) {
+func (dao *MenuDao) FindMenus(userId int, noF bool, params *model.SysMenu) ([]model.SysMenu, error) {
 	var result []model.SysMenu
 	db := lv_db.GetOrmDefault()
 	tb := db.Table("sys_menu as m")
@@ -184,7 +184,7 @@ func (dao *MenuDao) FindMenus(userId int64, noF bool, params *model.SysMenu) ([]
 }
 
 // 根据角色ID查询菜单
-func (dao *MenuDao) SelectMenuTree(roleId int64) ([]string, error) {
+func (dao *MenuDao) SelectMenuTree(roleId int) ([]string, error) {
 	tb := lv_db.GetOrmDefault()
 	if tb == nil {
 		return nil, errors.New("获取数据库连接失败")

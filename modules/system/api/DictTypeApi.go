@@ -17,7 +17,7 @@ type DictTypeApi struct {
 func (w *DictTypeApi) GetTypeDict(c *gin.Context) {
 	dictId := c.Param("dictId")
 	dictType := new(model.SysDictType)
-	dictType, err := dictType.FindById(cast.ToInt64(dictId))
+	dictType, err := dictType.FindById(cast.ToInt(dictId))
 	lv_err.HasErrAndPanic(err)
 	util.Success(c, dictType)
 }
@@ -42,7 +42,7 @@ func (w *DictTypeApi) ListAjax(c *gin.Context) {
 		rows = result
 	}
 
-	util.BuildTable(c, total, rows).WriteJsonExit()
+	util.BuildTable(c, int(total), rows).WriteJsonExit()
 }
 
 // 新增页面保存

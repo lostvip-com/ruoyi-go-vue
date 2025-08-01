@@ -7,7 +7,7 @@ import (
 )
 
 type SysRole struct {
-	RoleId            int64     `json:"roleId" gorm:"column:role_id;primaryKey"` //表示主键
+	RoleId            int       `json:"roleId" gorm:"column:role_id;primaryKey"` //表示主键
 	RoleName          string    `json:"roleName" gorm:"role_name"`
 	RoleKey           string    `json:"roleKey" gorm:"role_key"`
 	RoleSort          int       `json:"roleSort" gorm:"role_sort"`
@@ -23,8 +23,8 @@ type SysRole struct {
 	DelFlag           string    `gorm:"type:string;size:32;size:1;default:0;comment:删除标记;column:del_flag;" json:"delFlag"`
 	models.BaseModel
 	//临时属性
-	MenuIds []int64 `gorm:"-" json:"menuIds"`
-	DeptIds []int64 `gorm:"-" json:"deptIds"`
+	MenuIds []int `gorm:"-" json:"menuIds"`
+	DeptIds []int `gorm:"-" json:"deptIds"`
 }
 
 // 映射数据表
@@ -59,7 +59,7 @@ func (e *SysRole) FindOne() error {
 	err := tb.First(e).Error
 	return err
 }
-func (e *SysRole) FindById(id int64) (*SysRole, error) {
+func (e *SysRole) FindById(id int) (*SysRole, error) {
 	err := lv_db.GetOrmDefault().Take(e, id).Error
 	return e, err
 }

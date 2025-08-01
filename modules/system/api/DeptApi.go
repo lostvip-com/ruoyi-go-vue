@@ -6,7 +6,6 @@ import (
 	"common/models"
 	"common/util"
 	"github.com/gin-gonic/gin"
-	"github.com/lostvip-com/lv_framework/utils/lv_conv"
 	"github.com/spf13/cast"
 	"strings"
 	"system/service"
@@ -20,7 +19,7 @@ type DeptApi struct {
 func (w *DeptApi) ExcludeDept(c *gin.Context) {
 	deptId := c.Param("deptId")
 	svc := service.GetDeptServiceInstance()
-	dept, err := svc.FindById(cast.ToInt64(deptId))
+	dept, err := svc.FindById(cast.ToInt(deptId))
 	listPtr, err := svc.FindAll(&common_vo.DeptPageReq{})
 	if err != nil {
 		util.Fail(c, err.Error())
@@ -86,7 +85,7 @@ func (w *DeptApi) EditSave(c *gin.Context) {
 
 // 删除数据
 func (w *DeptApi) Remove(c *gin.Context) {
-	id := lv_conv.Int64(c.Param("deptId"))
+	id := cast.ToInt(c.Param("deptId"))
 	err := service.GetDeptServiceInstance().DeleteDeptById(id)
 	if err != nil {
 		util.Fail(c, err.Error())
@@ -97,7 +96,7 @@ func (w *DeptApi) Remove(c *gin.Context) {
 
 // 删除数据
 func (w *DeptApi) GetDept(c *gin.Context) {
-	id := lv_conv.Int64(c.Param("deptId"))
+	id := cast.ToInt(c.Param("deptId"))
 	service := service.GetDeptServiceInstance()
 	dept, err := service.FindById(id)
 	if err != nil {
@@ -120,7 +119,7 @@ func (w *DeptApi) GetDept(c *gin.Context) {
 //func (w *DeptApi) RoleDeptTreeData(c *gin.Context) {
 //	var service service.DeptService
 //	tenantId := session.GetTenantId(c)
-//	roleId := lv_conv.Int64(c.Query("roleId"))
+//	roleId := cast.ToInt(c.Query("roleId"))
 //	result, err := service.RoleDeptTreeData(roleId, tenantId)
 //
 //	if err != nil {

@@ -6,7 +6,6 @@ import (
 	"common/util"
 	"github.com/gin-gonic/gin"
 	db2 "github.com/lostvip-com/lv_framework/lv_db"
-	"github.com/lostvip-com/lv_framework/utils/lv_conv"
 	"github.com/lostvip-com/lv_framework/web/lv_dto"
 	"github.com/spf13/cast"
 	"net/http"
@@ -32,7 +31,7 @@ func (w *RoleApi) GetRoleOptionSelect(c *gin.Context) {
 func (w *RoleApi) GetRoleInfo(c *gin.Context) {
 	roleId := c.Param("roleId")
 	role := new(model.SysRole)
-	role, err := role.FindById(cast.ToInt64(roleId))
+	role, err := role.FindById(cast.ToInt(roleId))
 	if err != nil {
 		util.Fail(c, err.Error())
 		return
@@ -114,7 +113,7 @@ func (w *RoleApi) ChangeStatus(c *gin.Context) {
 }
 
 func (w *RoleApi) GetUnAllocatedList(c *gin.Context) {
-	roleId := lv_conv.Int64(c.Query("roleId"))
+	roleId := cast.ToInt(c.Query("roleId"))
 	UserName := c.Query("userName")
 	phonenumber := c.Query("phonenumber")
 	var rows []map[string]any
@@ -166,7 +165,7 @@ func (w *RoleApi) PutDataScope(c *gin.Context) {
 
 // 查询已分配用户角色列表
 func (w *RoleApi) AllocatedList(c *gin.Context) {
-	roleId := lv_conv.Int64(c.Query("roleId"))
+	roleId := cast.ToInt(c.Query("roleId"))
 	UserName := c.Query("UserName")
 	phonenumber := c.Query("phonenumber")
 	var rows []map[string]any
@@ -187,7 +186,7 @@ func (w *RoleApi) AllocatedList(c *gin.Context) {
 }
 
 func (w *RoleApi) AuthRoleToUsers(c *gin.Context) {
-	roleId := lv_conv.Int64(c.Query("roleId"))
+	roleId := cast.ToInt(c.Query("roleId"))
 	userIds := c.Query("userIds")
 	if roleId <= 0 {
 		util.Fail(c, "roleId can not be empty")
@@ -206,7 +205,7 @@ func (w *RoleApi) AuthRoleToUsers(c *gin.Context) {
 	util.Success(c, nil)
 }
 func (w *RoleApi) CancelAll(c *gin.Context) {
-	roleId := lv_conv.Int64(c.Query("roleId"))
+	roleId := cast.ToInt(c.Query("roleId"))
 	userIds := c.Query("userIds")
 	roleService := service.GetRoleServiceInstance()
 	err := roleService.DeleteUserRoleInfos(roleId, userIds)
@@ -224,7 +223,7 @@ func (w *RoleApi) Cancel(c *gin.Context) {
 		return
 	}
 	roleService := service.GetRoleServiceInstance()
-	err := roleService.DeleteUserRoleInfo(cast.ToInt64(req.UserId), cast.ToInt64(req.RoleId))
+	err := roleService.DeleteUserRoleInfo(cast.ToInt(req.UserId), cast.ToInt(req.RoleId))
 	if err != nil {
 		util.Fail(c, err.Error())
 		return
@@ -235,7 +234,7 @@ func (w *RoleApi) Cancel(c *gin.Context) {
 func (w *RoleApi) GetDeptTreeRole(c *gin.Context) {
 	roleId := c.Param("roleId")
 	roleSvc := service.GetRoleServiceInstance()
-	checkedKeys := roleSvc.GetDeptTreeRole(cast.ToInt64(roleId))
+	checkedKeys := roleSvc.GetDeptTreeRole(cast.ToInt(roleId))
 	depts := service.GetDeptServiceInstance().SelectDeptTreeList()
 	c.AbortWithStatusJSON(http.StatusOK, gin.H{
 		"msg":         "操作成功",

@@ -2,6 +2,7 @@ package system
 
 import (
 	"common/myconf"
+	"common/schedule"
 	"github.com/lostvip-com/lv_framework/lv_db"
 	"github.com/lostvip-com/lv_framework/lv_log"
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
@@ -17,8 +18,9 @@ func init() {
 	if migrate == "create" || migrate == "update" || migrate == "true" {
 		lv_log.Warn("######### 开始同步表结构: ############## migrate" + migrate)
 		err := lv_db.GetOrmDefault().AutoMigrate(
-		//cm_model.SysDept{}, model.SysPost{}, model.SysUser{}, model.SysDictType{}, cm_model.SysDictData{},
-		//model.SysMenu{}, model.SysRole{}, model.SysUserOnline{}, model.SysOperLog{}
+			schedule.SysJobLog{}, schedule.SysJob{},
+			//cm_model.SysDept{}, model.SysPost{}, model.SysUser{}, model.SysDictType{}, cm_model.SysDictData{},
+			//model.SysMenu{}, model.SysRole{}, model.SysUserOnline{}, model.SysOperLog{}
 		)
 		lv_err.HasErrAndPanic(err)
 	} else {
