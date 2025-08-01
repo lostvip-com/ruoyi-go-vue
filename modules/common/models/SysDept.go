@@ -30,18 +30,18 @@ func (e *SysDept) TableName() string {
 
 // 增
 func (e *SysDept) Save() error {
-	return lv_db.GetMasterGorm().Save(e).Error
+	return lv_db.GetOrmDefault().Save(e).Error
 }
 
 // 查
 func (e *SysDept) FindById(id int64) (*SysDept, error) {
-	err := lv_db.GetMasterGorm().Take(e, id).Error
+	err := lv_db.GetOrmDefault().Take(e, id).Error
 	return e, err
 }
 
 // 查第一条
 func (e *SysDept) FindOne() error {
-	tb := lv_db.GetMasterGorm()
+	tb := lv_db.GetOrmDefault()
 	if e.Ancestors != "" {
 		tb = tb.Where("ancestors=?", e.Ancestors)
 	}
@@ -57,13 +57,13 @@ func (e *SysDept) FindOne() error {
 
 // 改
 func (e *SysDept) Update() error {
-	return lv_db.GetMasterGorm().Table(e.TableName()).Updates(e).Error
+	return lv_db.GetOrmDefault().Table(e.TableName()).Updates(e).Error
 }
 func (e *SysDept) UpdateDelFlag(id int64) error {
-	return lv_db.GetMasterGorm().Table(e.TableName()).Where("dept_id=?", id).Update("del_flag", "1").Error
+	return lv_db.GetOrmDefault().Table(e.TableName()).Where("dept_id=?", id).Update("del_flag", "1").Error
 }
 
 // 删
 func (e *SysDept) Delete() error {
-	return lv_db.GetMasterGorm().Table(e.TableName()).Delete(e).Error
+	return lv_db.GetOrmDefault().Table(e.TableName()).Delete(e).Error
 }

@@ -26,7 +26,7 @@ type TableService struct {
 
 // FindById 根据主键查询数据
 func (svc TableService) FindGenTableById(tableId int64) (*vo.GenTableVO, error) {
-	db := lv_db.GetMasterGorm()
+	db := lv_db.GetOrmDefault()
 	var result vo.GenTableVO
 	tb := db.Table("gen_table").Where("table_id=?", tableId)
 	err := tb.Find(&result).Error
@@ -45,7 +45,7 @@ func (svc TableService) FindGenTableById(tableId int64) (*vo.GenTableVO, error) 
 }
 
 func (svc TableService) FindGenTableByName(tbName string) (*vo.GenTableVO, error) {
-	db := lv_db.GetMasterGorm()
+	db := lv_db.GetOrmDefault()
 	var result vo.GenTableVO
 	tb := db.Table("gen_table").Where("table_name=?", tbName)
 	err := tb.Find(&result).Error
@@ -72,8 +72,8 @@ func (svc TableService) DeleteById(id int64) error {
 // 批量删除数据记录
 func (svc TableService) DeleteByIds(ids string) error {
 	idarr := lv_conv.ToInt64Array(ids, ",")
-	err := lv_db.GetMasterGorm().Exec("delete from gen_table where table_id in (?)", idarr).Error
-	err = lv_db.GetMasterGorm().Exec("delete from gen_table_column where table_id in (?)", idarr).Error
+	err := lv_db.GetOrmDefault().Exec("delete from gen_table where table_id in (?)", idarr).Error
+	err = lv_db.GetOrmDefault().Exec("delete from gen_table_column where table_id in (?)", idarr).Error
 	return err
 }
 
@@ -86,7 +86,7 @@ func (svc TableService) SaveEdit(req *vo.EditGenTableVO) error {
 	}
 	_ = lv_reflect.CopyProperties(req, table)
 	table.UpdateTime = time.Now()
-	err = lv_db.GetMasterGorm().Transaction(func(tx *gorm.DB) error {
+	err = lv_db.GetOrmDefault().Transaction(func(tx *gorm.DB) error {
 		var err error
 		err = table.Updates()
 		var columnList = req.Columns
@@ -155,7 +155,7 @@ func (svc TableService) SelectTableByName(tableName string) (*model.GenTable, er
 func (svc TableService) ImportGenTable(tableList *[]model.GenTable, operName string) error {
 	var err error
 	if tableList != nil && operName != "" {
-		err = lv_db.GetMasterGorm().Transaction(func(tx *gorm.DB) error {
+		err = lv_db.GetOrmDefault().Transaction(func(tx *gorm.DB) error {
 			var err error
 			for _, table := range *tableList {
 				tableName := table.Table_Name

@@ -43,7 +43,7 @@ func (svc TableColumnService) DeleteById(id int64) bool {
 // DeleteByIds 批量删除数据记录
 func (svc TableColumnService) DeleteByIds(ids string) error {
 	idarr := lv_conv.ToInt64Array(ids, ",")
-	err := lv_db.GetMasterGorm().Exec("delete from gen_table_column where column_id in ? ", idarr).Error
+	err := lv_db.GetOrmDefault().Exec("delete from gen_table_column where column_id in ? ", idarr).Error
 	return err
 }
 

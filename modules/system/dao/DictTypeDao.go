@@ -23,7 +23,7 @@ func GetSysDictTypeDaoInstance() *DictTypeDao {
 
 // 根据条件分页查询数据
 func (dao *DictTypeDao) FindPage(param *common_vo.DictTypePageReq) ([]model.SysDictType, int64, error) {
-	db := lv_db.GetMasterGorm()
+	db := lv_db.GetOrmDefault()
 	if db == nil {
 		return nil, 0, errors.New("获取数据库连接失败")
 	}
@@ -55,7 +55,7 @@ func (dao *DictTypeDao) FindPage(param *common_vo.DictTypePageReq) ([]model.SysD
 
 // 导出excel
 func (dao *DictTypeDao) SelectListExport(param *common_vo.DictTypePageReq, head, col []string) (*[][]string, error) {
-	gdb := lv_db.GetMasterGorm()
+	gdb := lv_db.GetOrmDefault()
 	if gdb == nil {
 		return nil, errors.New("获取数据库连接失败")
 	}
@@ -91,7 +91,7 @@ func (dao *DictTypeDao) SelectListExport(param *common_vo.DictTypePageReq, head,
 
 // 获取所有数据
 func (dao *DictTypeDao) FindAll(param *common_vo.DictTypePageReq) ([]model.SysDictType, error) {
-	gdb := lv_db.GetMasterGorm()
+	gdb := lv_db.GetOrmDefault()
 	if gdb == nil {
 		return nil, errors.New("获取数据库连接失败")
 	}

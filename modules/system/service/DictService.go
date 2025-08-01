@@ -30,7 +30,7 @@ func (svc *DictService) DictLabel(dictType string, dictValue string) string {
 
 // 根据字典类型查询字典数据
 func (svc *DictService) SelectDictDataByType(dictType string) ([]models.SysDictData, error) {
-	tb := db2.GetMasterGorm().Table("sys_dict_data")
+	tb := db2.GetOrmDefault().Table("sys_dict_data")
 	var list []models.SysDictData
 	err := tb.Where(&list, "status = '0' and dict_type = ? ", dictType).Order("dict_sort asc").Find(&list).Error
 	return list, err

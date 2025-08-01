@@ -43,7 +43,7 @@ func (svc *MenuService) SelectListPage(params *vo.SelectMenuPageReq) (*[]model.S
 }
 
 func (svc *MenuService) DeleteById(menuId int64) error {
-	err := lv_db.GetMasterGorm().Transaction(func(tx *gorm.DB) error {
+	err := lv_db.GetOrmDefault().Transaction(func(tx *gorm.DB) error {
 		err := tx.Exec("delete from sys_menu where menu_id=?", menuId).Error
 		if err != nil {
 			return err
@@ -114,7 +114,7 @@ func (svc *MenuService) SelectMenuTree(userId int64, menu *model.SysMenu) ([]mod
 		}
 	}
 
-	err := lv_db.GetMasterGorm().Raw(sql).Scan(&menus).Error
+	err := lv_db.GetOrmDefault().Raw(sql).Scan(&menus).Error
 	return menus, err
 }
 
@@ -239,7 +239,7 @@ func (svc *MenuService) SelectMenuListByRoleId(roleId string, menuCheckStrictly 
 	}
 	sql += "order by m.parent_id, m.order_num"
 	var menuIds []int
-	err := lv_db.GetMasterGorm().Raw(sql).Scan(&menuIds).Error
+	err := lv_db.GetOrmDefault().Raw(sql).Scan(&menuIds).Error
 	return menuIds, err
 }
 
@@ -250,7 +250,7 @@ func (svc *MenuService) FindRouterTreeAll() ([]model.SysMenu, error) {
              where m.menu_type in ('M', 'C') and m.status = 0 
              order by m.parent_id, m.order_num
            `
-	err := lv_db.GetMasterGorm().Raw(sql).Scan(&menus).Error
+	err := lv_db.GetOrmDefault().Raw(sql).Scan(&menus).Error
 	return menus, err
 }
 
@@ -265,7 +265,7 @@ func (svc *MenuService) FindRouterTreeAllByUserId(id int64) ([]model.SysMenu, er
              where u.user_id = ? and m.menu_type in ('M', 'C') and m.status = 0  AND ro.status = 0
              order by m.parent_id, m.order_num
            `
-	err := lv_db.GetMasterGorm().Raw(sql, id).Scan(&menus).Error
+	err := lv_db.GetOrmDefault().Raw(sql, id).Scan(&menus).Error
 	return menus, err
 }
 
@@ -416,7 +416,7 @@ func SelectMenuListByRoleId(roleId string, menuCheckStrictly bool) []int {
 	}
 	sql += "order by m.parent_id, m.order_num"
 	var menuIds []int
-	err := lv_db.GetMasterGorm().Raw(sql).Scan(&menuIds).Error
+	err := lv_db.GetOrmDefault().Raw(sql).Scan(&menuIds).Error
 	if err != nil {
 		panic(errors.New(err.Error()))
 	}
@@ -428,7 +428,7 @@ func FindMenuInfoById(menuId string) model.SysMenu {
 		"from sys_menu "
 	sql = sql + "where menu_id = " + menuId
 	var list model.SysMenu
-	err := lv_db.GetMasterGorm().Raw(sql).First(&list).Error
+	err := lv_db.GetOrmDefault().Raw(sql).First(&list).Error
 	if err != nil {
 		panic(errors.New(err.Error()))
 	}
@@ -437,13 +437,13 @@ func FindMenuInfoById(menuId string) model.SysMenu {
 
 func hasChildByMenuId(menuId string) model.SysMenu {
 	var menu model.SysMenu
-	lv_db.GetMasterGorm().Where("parent_id = ? ", menuId).First(&menu)
+	lv_db.GetOrmDefault().Where("parent_id = ? ", menuId).First(&menu)
 	return menu
 }
 
 func hasChildCountByMenuId(menuId string) int {
 	var menuCount int
-	err := lv_db.GetMasterGorm().Where("parent_id = ? ", menuId).Scan(&menuCount).Error
+	err := lv_db.GetOrmDefault().Where("parent_id = ? ", menuId).Scan(&menuCount).Error
 	if err != nil {
 		panic(errors.New(err.Error()))
 	}
@@ -452,7 +452,7 @@ func hasChildCountByMenuId(menuId string) int {
 
 func checkMenuExistRole(menuId string) int {
 	var menuCount int
-	err := lv_db.GetMasterGorm().Raw("select count(1) from sys_role_menu where menu_id = " + menuId).Scan(&menuCount).Error
+	err := lv_db.GetOrmDefault().Raw("select count(1) from sys_role_menu where menu_id = " + menuId).Scan(&menuCount).Error
 	if err != nil {
 		panic(errors.New(err.Error()))
 	}
@@ -470,7 +470,7 @@ func DeleteMenu(menuIds string) error {
 		return errors.New("菜单已分配,不允许删除")
 	}
 
-	err := lv_db.GetMasterGorm().Exec("delete from sys_menu where menu_id in (?) ", menuIds).Error
+	err := lv_db.GetOrmDefault().Exec("delete from sys_menu where menu_id in (?) ", menuIds).Error
 	if err == nil {
 		errors.New("删除部门关联用户失败")
 	}
@@ -479,7 +479,7 @@ func DeleteMenu(menuIds string) error {
 
 func checkMenuNameUnique(parentId int, menuName string) int {
 	var menuCount int
-	err := lv_db.GetMasterGorm().Raw("select count(1) from sys_menu where menu_name = "+menuName+" and parent_id = "+strconv.Itoa(parentId), &menuCount).Error
+	err := lv_db.GetOrmDefault().Raw("select count(1) from sys_menu where menu_name = "+menuName+" and parent_id = "+strconv.Itoa(parentId), &menuCount).Error
 	if err != nil {
 		panic(errors.New(err.Error()))
 	}

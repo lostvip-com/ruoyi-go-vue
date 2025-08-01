@@ -25,7 +25,7 @@ var (
 )
 
 func init() {
-	fmt.Println("-----正在初始化数据库连接-------")
+	fmt.Println("-----init orm-------")
 }
 
 // GetInstance 初始化数据操作 driver为数据库类型
@@ -37,26 +37,37 @@ func GetInstance() *dbEngine {
 	return instance
 }
 
-// GetOrm 获取操作实例 如果传入slave 并且成功配置了slave 返回slave orm引擎 否则返回master orm引擎
-func (db *dbEngine) GetOrm(dbType string) *gorm.DB {
-	gdb := db.gormMap[dbType]
+// GetDB 获取操作实例 如果传入slave 并且成功配置了slave 返回slave orm引擎 否则返回master orm引擎
+func (db *dbEngine) GetDB(dbName string) *gorm.DB {
+	gdb := db.gormMap[dbName]
 	if gdb == nil {
-		return GetMasterGorm()
+		var config = lv_global.Config()
+		driverName := config.GetDriver(dbName)
+		url := config.GetValueStr(fmt.Sprintf("application.datasource.%s.url", dbName))
+		gdb = createGormDB(driverName, url)
+		db.gormMap[dbName] = gdb
 	}
 	return gdb
 }
-func GetMasterGorm() *gorm.DB {
-	master := GetInstance().gormMap["master"]
-	if master == nil {
-		var config = lv_global.Config()
-		driverName := config.GetDriver()
-		master = createGorm(driverName, config.GetMaster())
-		GetInstance().gormMap["master"] = master
+func GetOrmDefault() *gorm.DB {
+	var config = lv_global.Config()
+	dbName := config.GetDBNameDefault()
+	if dbName == "" { //先取配置文件
+		dbName = lv_global.Config().GetValueStr("application.datasource.default")
+		config.SetDBNameDefault(dbName)
+		config.SetDBDriverDefault(config.GetDriver(dbName))
 	}
-	return master
+	if dbName == "" {
+		panic("default database not found!")
+	}
+	defaultDb := GetInstance().gormMap[dbName]
+	if defaultDb == nil {
+		defaultDb = GetInstance().GetDB(dbName)
+	}
+	return defaultDb
 }
 
-func createGorm(driverName, url string) *gorm.DB {
+func createGormDB(driverName, url string) *gorm.DB {
 	if !strings.Contains(url, "?") {
 		url = url + "?"
 	}
@@ -81,22 +92,23 @@ func createGorm(driverName, url string) *gorm.DB {
 	var dialector gorm.Dialector
 	if "mysql" == driverName {
 		dialector = mysql.Open(url)
-	} else {
+	} else if "sqlite" == driverName {
 		dialector = sqlite.Open(url)
+	} else {
+		panic("不支持的数据库类型：" + driverName)
 	}
-
 	showSql := lv_global.Config().GetBool("application.datasource.show-sql")
 	config := &gorm.Config{NamingStrategy: schema.NamingStrategy{SingularTable: true}} //表名用单数
 	if showSql {
 		config.Logger = logger.Default.LogMode(logger.Info)
 	}
-	//if lv_global.IsDebug {
-	//	master = master.Debug() //会开启sql打印
-	//}
+
 	gormDB, err := gorm.Open(dialector, config)
 	if err != nil {
-		fmt.Println("database: " + lv_global.Config().GetMaster())
-		panic("  gorm init failush！" + err.Error())
+		panic("  gorm init fail！" + err.Error())
+	}
+	if lv_global.IsDebug {
+		gormDB = gormDB.Debug() //会开启sql打印
 	}
 	sqlDB, err := gormDB.DB() //dr
 	if err != nil {

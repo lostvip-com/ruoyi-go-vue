@@ -28,7 +28,7 @@ func GetLoginServiceInstance() *LoginService {
 
 // FindPage 根据条件分页查询用户列表
 func (svc LoginService) FindPage(param *vo.LoginInfoPageReq) (*[]model.SysLoginInfo, int64, error) {
-	db := lv_db.GetMasterGorm()
+	db := lv_db.GetOrmDefault()
 	tb := db.Table("sys_logininfor")
 	if param != nil {
 		if param.UserName != "" {
@@ -79,13 +79,13 @@ func (svc LoginService) DeleteById(id int64) bool {
 // DeleteByIds 批量删除记录
 func (svc LoginService) DeleteByIds(ids string) error {
 	idarr := lv_conv.ToInt64Array(ids, ",")
-	err := lv_db.GetMasterGorm().Exec("delete from sys_logininfor where info_id in ? ", idarr).Error
+	err := lv_db.GetOrmDefault().Exec("delete from sys_logininfor where info_id in ? ", idarr).Error
 	return err
 }
 
 // 清空记录
 func (svc LoginService) DeleteRecordAll() error {
-	db := lv_db.GetMasterGorm()
+	db := lv_db.GetOrmDefault()
 	err := db.Exec(" truncate table sys_logininfor ").Error
 	return err
 }
@@ -94,7 +94,7 @@ func (svc LoginService) DeleteRecordAll() error {
 func (svc LoginService) Export(param *vo.LoginInfoPageReq) (string, error) {
 	//head := []string{"访问编号", "登录名称", "登录地址", "登录地点", "浏览器", "操作系统", "登录状态", "操作信息", "登录时间"}
 	//col := []string{"info_id", "user_name", "ipaddr", "login_location", "browser", "os", "status", "msg", "login_time"}
-	//db := lv_db.GetMasterGorm()
+	//db := lv_db.GetOrmDefault()
 	//build := builder.Select(col...).From(" sys_logininfor ", "t")
 	//if param != nil {
 	//	if param.UserName != "" {

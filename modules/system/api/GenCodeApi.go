@@ -61,7 +61,7 @@ func (w *GenCodeApi) CreateMenu(c *gin.Context) {
 	batis, err := lv_batis.LoadFromFile(sqlFile)
 	lv_err.HasErrAndPanic(err)
 	// Run queries
-	tb := lv_db.GetMasterGorm()
+	tb := lv_db.GetOrmDefault()
 	//cfg := global.GetConfigInstance()
 	_, err = batis.ExecMultiSqlInTransaction(tb, "create_menu")
 	lv_err.HasErrAndPanic(err)

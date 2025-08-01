@@ -323,7 +323,7 @@ func (m MonitorApi) ChangeStatus(c *gin.Context) {
 		util.Fail(c, err.Error())
 		return
 	}
-	err := lv_db.GetMasterGorm().Table("sys_job").Where("job_id=?", js.JobId).UpdateColumn("status", js.Status).Error
+	err := lv_db.GetOrmDefault().Table("sys_job").Where("job_id=?", js.JobId).UpdateColumn("status", js.Status).Error
 	if err != nil {
 		util.Fail(c, err.Error())
 		return
@@ -343,7 +343,7 @@ func (m MonitorApi) RunJob(c *gin.Context) {
 func (m MonitorApi) DelectJob(c *gin.Context) {
 	jobIds := c.Param("jobIds")
 	arr := strings.Split(jobIds, ",")
-	err := lv_db.GetMasterGorm().Where("job_id in ( ? )", arr).Delete(&model.SysJob{}).Error
+	err := lv_db.GetOrmDefault().Where("job_id in ( ? )", arr).Delete(&model.SysJob{}).Error
 	if err != nil {
 		util.Fail(c, err.Error())
 		return
@@ -459,7 +459,7 @@ func (m MonitorApi) GetJobLog(c *gin.Context) {
 
 func (m MonitorApi) DetectJobLog(c *gin.Context) {
 	var ids = c.Param("jobLogIds")
-	err := lv_db.GetMasterGorm().Where("id in ( ? )", util.SplitToInt(ids, ",")).Delete(&model.SysJobLog{}).Error
+	err := lv_db.GetOrmDefault().Where("id in ( ? )", util.SplitToInt(ids, ",")).Delete(&model.SysJobLog{}).Error
 	if err != nil {
 		util.Fail(c, err.Error())
 		return
@@ -468,7 +468,7 @@ func (m MonitorApi) DetectJobLog(c *gin.Context) {
 }
 
 func (m MonitorApi) ClearJobLog(c *gin.Context) {
-	err := lv_db.GetMasterGorm().Exec("truncate table sys_job_log").Error
+	err := lv_db.GetOrmDefault().Exec("truncate table sys_job_log").Error
 	if err != nil {
 		util.Fail(c, err.Error())
 		return

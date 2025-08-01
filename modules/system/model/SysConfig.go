@@ -23,18 +23,18 @@ func (e *SysConfig) TableName() string {
 
 // 增
 func (e *SysConfig) Save() error {
-	return lv_db.GetMasterGorm().Save(e).Error
+	return lv_db.GetOrmDefault().Save(e).Error
 }
 
 // 查
 func (e *SysConfig) FindById(id int64) (*SysConfig, error) {
-	err := lv_db.GetMasterGorm().Table(e.TableName()).First(e, id).Error
+	err := lv_db.GetOrmDefault().Table(e.TableName()).First(e, id).Error
 	return e, err
 }
 
 // 查第一条
 func (e *SysConfig) FindOne() (*SysConfig, error) {
-	tb := lv_db.GetMasterGorm().Table(e.TableName())
+	tb := lv_db.GetOrmDefault().Table(e.TableName())
 	if e.ConfigId != 0 {
 		tb = tb.Where("config_id=?", e.ConfigId)
 	}
@@ -51,10 +51,10 @@ func (e *SysConfig) FindOne() (*SysConfig, error) {
 
 // 改
 func (e *SysConfig) Update() error {
-	return lv_db.GetMasterGorm().Table(e.TableName()).Updates(e).Error
+	return lv_db.GetOrmDefault().Table(e.TableName()).Updates(e).Error
 }
 
 // 删
 func (e *SysConfig) Delete() error {
-	return lv_db.GetMasterGorm().Table(e.TableName()).Delete(e).Error
+	return lv_db.GetOrmDefault().Table(e.TableName()).Delete(e).Error
 }

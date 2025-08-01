@@ -16,18 +16,18 @@ func (e *SysUserRole) TableName() string {
 
 // 增
 func (e *SysUserRole) Save() error {
-	return lv_db.GetMasterGorm().Save(e).Error
+	return lv_db.GetOrmDefault().Save(e).Error
 }
 
 // 查
 func (e *SysUserRole) FindById() error {
-	err := lv_db.GetMasterGorm().Take(e, " user_id=? and role_id=? ", e.UserId, e.RoleId).Error
+	err := lv_db.GetOrmDefault().Take(e, " user_id=? and role_id=? ", e.UserId, e.RoleId).Error
 	return err
 }
 
 // 查第一条
 func (e *SysUserRole) FindOne() (*SysUserRole, error) {
-	tb := lv_db.GetMasterGorm().Table(e.TableName())
+	tb := lv_db.GetOrmDefault().Table(e.TableName())
 	if e.UserId != 0 && e.RoleId != 0 {
 		tb = tb.Table(e.TableName()).Where("role_id=? and user_id=?", e.RoleId, e.UserId)
 	}
@@ -37,5 +37,5 @@ func (e *SysUserRole) FindOne() (*SysUserRole, error) {
 
 // 删
 func (e *SysUserRole) Delete() error {
-	return lv_db.GetMasterGorm().Delete(e).Error
+	return lv_db.GetOrmDefault().Delete(e).Error
 }

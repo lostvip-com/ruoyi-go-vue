@@ -35,16 +35,16 @@ func (e *SysJob) TableName() string {
 
 func (e *SysJob) FindById(jobId int64) (*SysJob, error) {
 	var job SysJob
-	err := lv_db.GetMasterGorm().Where("job_id = ?", jobId).First(&job).Error
+	err := lv_db.GetOrmDefault().Where("job_id = ?", jobId).First(&job).Error
 	return &job, err
 }
 
 func (e *SysJob) Save() (*SysJob, error) {
-	err := lv_db.GetMasterGorm().Create(e).Error
+	err := lv_db.GetOrmDefault().Create(e).Error
 	return e, err
 }
 
 func (e *SysJob) Update() (*SysJob, error) {
-	err := lv_db.GetMasterGorm().Updates(e).Error
+	err := lv_db.GetOrmDefault().Updates(e).Error
 	return e, err
 }

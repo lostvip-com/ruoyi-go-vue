@@ -16,7 +16,7 @@ func init() {
 	migrate := cfg.GetAutoMigrate()
 	if migrate == "create" || migrate == "update" || migrate == "true" {
 		lv_log.Warn("######### 开始同步表结构: ############## migrate" + migrate)
-		err := lv_db.GetMasterGorm().AutoMigrate(
+		err := lv_db.GetOrmDefault().AutoMigrate(
 		//cm_model.SysDept{}, model.SysPost{}, model.SysUser{}, model.SysDictType{}, cm_model.SysDictData{},
 		//model.SysMenu{}, model.SysRole{}, model.SysUserOnline{}, model.SysOperLog{}
 		)

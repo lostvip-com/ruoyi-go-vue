@@ -69,7 +69,7 @@ func (svc *DeptService) EditSave(req *models.SysDept) (*models.SysDept, error) {
 // UpdateChildrenAncestors 修改子元素关系（替换前半部分）
 func (svc *DeptService) UpdateChildrenAncestors(dept *models.SysDept, parentCodes string) {
 	dept.Ancestors = parentCodes + "," + cast.ToString(dept.DeptId)
-	lv_db.GetMasterGorm().Table("sys_dept").Where("dept_id=", dept.DeptId).Update("ancestors", dept.Ancestors)
+	lv_db.GetOrmDefault().Table("sys_dept").Where("dept_id=", dept.DeptId).Update("ancestors", dept.Ancestors)
 	// ancestors 上级ancestors发生变化，修改下级
 	deptList, _ := svc.FindChildren(dept.DeptId)
 	if deptList == nil || len(deptList) <= 0 {
@@ -136,7 +136,7 @@ func (svc *DeptService) FindById(deptId int64) (*models.SysDept, error) {
 }
 
 func (svc *DeptService) FindChildren(parentId int64) ([]*models.SysDept, error) {
-	db := lv_db.GetMasterGorm()
+	db := lv_db.GetOrmDefault()
 	var rs []*models.SysDept
 	err := db.Table("sys_dept").Where("parent_id=?", parentId).Find(&rs).Error
 	return rs, err
@@ -151,7 +151,7 @@ func (svc *DeptService) SelectDeptList(parentId int64, deptName, status string, 
 func (svc *DeptService) SelectDeptTreeList() []vo.TreeSelect {
 	var deptResults []vo.TreeSelect
 	var depts []models.SysDept
-	err := lv_db.GetMasterGorm().Where("del_flag = '0'").Order("parent_id, order_num").Find(&depts).Error
+	err := lv_db.GetOrmDefault().Where("del_flag = '0'").Order("parent_id, order_num").Find(&depts).Error
 	lv_err.HasErrAndPanic(err)
 	for i := 0; i < len(depts); i++ {
 		dept := depts[i]

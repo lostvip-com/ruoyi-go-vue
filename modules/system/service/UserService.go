@@ -69,7 +69,7 @@ func (svc *UserService) AddSave(req *common_vo.AddUserReq, c *gin.Context) (int6
 	}
 	u.DelFlag = "0"
 
-	err := lv_db.GetMasterGorm().Transaction(func(tx *gorm.DB) error {
+	err := lv_db.GetOrmDefault().Transaction(func(tx *gorm.DB) error {
 		if err := tx.Create(&u).Error; err != nil {
 			return err
 		}
@@ -135,7 +135,7 @@ func (svc *UserService) EditSave(req *common_vo.EditUserReq, c *gin.Context) err
 	if updateUser != nil {
 		userPtr.UpdateBy = updateUser.UserName
 	}
-	err = lv_db.GetMasterGorm().Transaction(func(tx *gorm.DB) error {
+	err = lv_db.GetOrmDefault().Transaction(func(tx *gorm.DB) error {
 		if err := tx.Updates(userPtr).Error; err != nil {
 			return err
 		}
@@ -197,7 +197,7 @@ func (svc *UserService) DeleteByIds(ids string) error {
 	if len(idarr) == 0 {
 		return errors.New("ids can not be empty ")
 	}
-	err := lv_db.GetMasterGorm().Transaction(func(tx *gorm.DB) error {
+	err := lv_db.GetOrmDefault().Transaction(func(tx *gorm.DB) error {
 		err := tx.Table("sys_user").Where("user_id in ? and user_id!=1 ", idarr).Update("del_flag", 1).Error
 		if err != nil {
 			return err
@@ -381,19 +381,19 @@ func (svc *UserService) GetRoleKeys(userId int64) (string, error) {
 	}
 	var sql = " SELECT GROUP_CONCAT(r.role_key) roles from sys_user_role ur,sys_role r where ur.user_id=? and ur.role_id = r.role_id "
 	var roles string
-	err := lv_db.GetMasterGorm().Raw(sql, userId).Scan(&roles).Error
+	err := lv_db.GetOrmDefault().Raw(sql, userId).Scan(&roles).Error
 	return roles, err
 }
 
 func (svc *UserService) GetRoles(userId int64) ([]model.SysRole, error) {
 	sql := " select r.* from sys_user_role ur,sys_role r where ur.user_id=? and ur.role_id = r.role_id "
 	roles := make([]model.SysRole, 0)
-	err := lv_db.GetMasterGorm().Raw(sql, userId).Scan(&roles).Error
+	err := lv_db.GetOrmDefault().Raw(sql, userId).Scan(&roles).Error
 	return roles, err
 }
 
 func (svc *UserService) CountCol(column, value string) (int64, error) {
 	var total int64
-	err := lv_db.GetMasterGorm().Table("sys_user").Where("del_flag=0 and "+column+"=?", value).Count(&total).Error
+	err := lv_db.GetOrmDefault().Table("sys_user").Where("del_flag=0 and "+column+"=?", value).Count(&total).Error
 	return total, err
 }

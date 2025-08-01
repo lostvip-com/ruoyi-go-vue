@@ -22,13 +22,13 @@ func GetSysPostDaoInstance() *SysPostDao {
 }
 
 func (e SysPostDao) DeleteByIds(ida []int64) (int64, error) {
-	db := lv_db.GetMasterGorm().Table("sys_post").Delete("post_id in ? ", ida)
+	db := lv_db.GetOrmDefault().Table("sys_post").Delete("post_id in ? ", ida)
 	return db.RowsAffected, db.Error
 }
 
 // 根据条件分页查询用户列表
 func (d SysPostDao) FindPage(param *vo.PostPageReq) (*[]map[string]any, int64, error) {
-	db := lv_db.GetMasterGorm()
+	db := lv_db.GetOrmDefault()
 	sqlParams, sql := d.GetSql(param)
 	limitSql := sql + " order by u.post_id desc "
 	limitSql += "  limit " + cast.ToString(param.GetStartNum()) + "," + cast.ToString(param.GetPageSize())
@@ -72,7 +72,7 @@ func (d SysPostDao) GetSql(param *vo.PostPageReq) (map[string]interface{}, strin
 
 // 导出excel
 func (d SysPostDao) ListAll(param *vo.PostPageReq) (*[]model.SysPost, error) {
-	db := lv_db.GetMasterGorm()
+	db := lv_db.GetOrmDefault()
 	sqlParams, sql := d.GetSql(param)
 	allSql := sql + " order by u.post_id desc "
 	result, err := namedsql.ListData[model.SysPost](db, allSql, &sqlParams)
@@ -81,7 +81,7 @@ func (d SysPostDao) ListAll(param *vo.PostPageReq) (*[]model.SysPost, error) {
 
 // 导出excel
 func (d SysPostDao) ListAllMap(param *vo.PostPageReq, camel bool) (*[]map[string]any, error) {
-	db := lv_db.GetMasterGorm()
+	db := lv_db.GetOrmDefault()
 	sqlParams, sql := d.GetSql(param)
 	allSql := sql + " order by u.post_id desc "
 	result, err := namedsql.ListMap(db, allSql, &sqlParams, camel)
@@ -90,7 +90,7 @@ func (d SysPostDao) ListAllMap(param *vo.PostPageReq, camel bool) (*[]map[string
 
 // 根据用户ID查询岗位
 func (dao SysPostDao) FindPostsByUserId(userId int64) (*[]model.SysPost, error) {
-	db := lv_db.GetMasterGorm()
+	db := lv_db.GetOrmDefault()
 	if db == nil {
 		return nil, errors.New("获取数据库连接失败")
 	}
@@ -107,6 +107,6 @@ func (dao SysPostDao) FindPostsByUserId(userId int64) (*[]model.SysPost, error) 
 
 // CountCol 按字段值统计数量
 func (dao SysPostDao) CountCol(column, value string) (total int64, err error) {
-	err = lv_db.GetMasterGorm().Table("sys_post").Where(column+"=?", value).Count(&total).Error
+	err = lv_db.GetOrmDefault().Table("sys_post").Where(column+"=?", value).Count(&total).Error
 	return
 }

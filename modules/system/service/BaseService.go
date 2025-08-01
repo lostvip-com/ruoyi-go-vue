@@ -25,5 +25,5 @@ func (svc *BaseService) IsAdmin(userId int64) bool {
 }
 
 func (svc *BaseService) GetDb() *gorm.DB {
-	return lv_db.GetMasterGorm()
+	return lv_db.GetOrmDefault()
 }

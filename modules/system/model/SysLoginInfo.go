@@ -30,21 +30,21 @@ func (*SysLoginInfo) TableName() string {
 
 // Insert 插入数据
 func (r *SysLoginInfo) Insert() error {
-	return lv_db.GetMasterGorm().Save(r).Error
+	return lv_db.GetOrmDefault().Save(r).Error
 }
 
 // Update 更新数据
 func (r *SysLoginInfo) Update() error {
-	return lv_db.GetMasterGorm().Updates(r).Error
+	return lv_db.GetOrmDefault().Updates(r).Error
 }
 
 // Delete 删除
 func (r *SysLoginInfo) Delete() error {
-	return lv_db.GetMasterGorm().Delete(r).Error
+	return lv_db.GetOrmDefault().Delete(r).Error
 }
 
 // 查
 func (e *SysLoginInfo) FindById() error {
-	err := lv_db.GetMasterGorm().Take(e, e.InfoId).Error
+	err := lv_db.GetOrmDefault().Take(e, e.InfoId).Error
 	return err
 }

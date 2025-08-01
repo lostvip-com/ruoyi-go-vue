@@ -37,18 +37,18 @@ func (e *SysMenu) TableName() string {
 
 // 增
 func (e *SysMenu) Save() error {
-	return lv_db.GetMasterGorm().Save(e).Error
+	return lv_db.GetOrmDefault().Save(e).Error
 }
 
 // 查
 func (e *SysMenu) FindById(id int64) (*SysMenu, error) {
-	err := lv_db.GetMasterGorm().Take(e, id).Error
+	err := lv_db.GetOrmDefault().Take(e, id).Error
 	return e, err
 }
 
 // 查第一条
 func (e *SysMenu) FindOne() error {
-	tb := lv_db.GetMasterGorm().Table("sys_menu")
+	tb := lv_db.GetOrmDefault().Table("sys_menu")
 	if e.MenuId != 0 {
 		tb = tb.Where("menu_id=?", e.MenuId)
 	}
@@ -69,7 +69,7 @@ func (e *SysMenu) FindOne() error {
 
 // 查第一条
 func (e *SysMenu) FindLastOne() error {
-	tb := lv_db.GetMasterGorm().Table("sys_menu")
+	tb := lv_db.GetOrmDefault().Table("sys_menu")
 	if e.MenuId != 0 {
 		tb = tb.Where("menu_id=?", e.MenuId)
 	}
@@ -90,10 +90,10 @@ func (e *SysMenu) FindLastOne() error {
 
 // 改
 func (e *SysMenu) Update() error {
-	return lv_db.GetMasterGorm().Table(e.TableName()).Updates(e).Error
+	return lv_db.GetOrmDefault().Table(e.TableName()).Updates(e).Error
 }
 
 // 删
 func (e *SysMenu) Delete() error {
-	return lv_db.GetMasterGorm().Table(e.TableName()).Delete(e).Error
+	return lv_db.GetOrmDefault().Table(e.TableName()).Delete(e).Error
 }

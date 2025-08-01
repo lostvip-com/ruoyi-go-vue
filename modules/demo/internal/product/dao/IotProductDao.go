@@ -6,30 +6,32 @@
 package dao
 
 import (
-    "github.com/lostvip-com/lv_framework/lv_db"
-    "github.com/lostvip-com/lv_framework/lv_db/lv_batis"
-    "github.com/lostvip-com/lv_framework/lv_db/lv_dao"
-    "github.com/lostvip-com/lv_framework/utils/lv_err"
-    "demo/internal/product/vo"
-    "demo/internal/product/model"
+	"demo/internal/product/model"
+	"demo/internal/product/vo"
+	"github.com/lostvip-com/lv_framework/lv_db"
+	"github.com/lostvip-com/lv_framework/lv_db/lv_batis"
+	"github.com/lostvip-com/lv_framework/lv_db/lv_dao"
+	"github.com/lostvip-com/lv_framework/utils/lv_err"
 )
 
-type IotProductDao struct { }
+type IotProductDao struct{}
+
 var productDao *IotProductDao
 
 func GetIotProductDaoInstance() *IotProductDao {
-    if productDao == nil {
-        productDao = &IotProductDao{}
-    }
-    return productDao
+	if productDao == nil {
+		productDao = &IotProductDao{}
+	}
+	return productDao
 }
+
 // ListMapByPage 根据条件分页查询数据
 func (d IotProductDao) ListMapByPage(req *vo.IotProductReq) (*[]map[string]any, int64, error) {
 	ibatis := lv_batis.NewInstance("demo/iot_product_mapper.sql") //under the mapper directory
 	// 约定用方法名ListByPage对应sql文件中的同名tagName
 	limitSQL, err := ibatis.GetLimitSql("ListIotProduct", req)
 	//查询数据
-	rows, err := lv_dao.ListMapByNamedSql(limitSQL, req,true)
+	rows, err := lv_dao.ListMapByNamedSql(limitSQL, req, true)
 	lv_err.HasErrAndPanic(err)
 	count, err := lv_dao.CountByNamedSql(ibatis.GetCountSql(), req)
 	lv_err.HasErrAndPanic(err)
@@ -63,12 +65,12 @@ func (d IotProductDao) ListAll(req *vo.IotProductReq, isCamel bool) (*[]map[stri
 // Find 根据条件查询
 func (d IotProductDao) Find(where, order string) (*[]model.IotProduct, error) {
 	var list []model.IotProduct
-	err := lv_db.GetMasterGorm().Table("iot_product").Where(where).Order(order).Find(&list).Error
+	err := lv_db.GetOrmDefault().Table("iot_product").Where(where).Order(order).Find(&list).Error
 	return &list, err
 }
 
 // Find 通过主键批量删除
-func (d IotProductDao) DeleteByIds(ida []int64) (int64,error) {
-	db := lv_db.GetMasterGorm().Table("iot_product").Where("id in ? ", ida).Update("del_flag", 1)
-    return db.RowsAffected, db.Error
+func (d IotProductDao) DeleteByIds(ida []int64) (int64, error) {
+	db := lv_db.GetOrmDefault().Table("iot_product").Where("id in ? ", ida).Update("del_flag", 1)
+	return db.RowsAffected, db.Error
 }

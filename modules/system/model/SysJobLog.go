@@ -25,22 +25,22 @@ func (e *SysJobLog) TableName() string {
 }
 
 func (e *SysJobLog) FindJobLogById(id int64) (*SysJobLog, error) {
-	err := lv_db.GetMasterGorm().Where("id = ?", id).First(e).Error
+	err := lv_db.GetOrmDefault().Where("id = ?", id).First(e).Error
 	return e, err
 }
 
 func (e *SysJobLog) Save() (*SysJobLog, error) {
-	err := lv_db.GetMasterGorm().Create(e).Error
+	err := lv_db.GetOrmDefault().Create(e).Error
 	return e, err
 }
 
 func (e *SysJobLog) DetectJobLog(ids string) error {
 	arr := util.SplitToInt(ids, ",")
-	err := lv_db.GetMasterGorm().Where("id in ( ? )", arr).Delete(&SysJobLog{}).Error
+	err := lv_db.GetOrmDefault().Where("id in ( ? )", arr).Delete(&SysJobLog{}).Error
 	return err
 }
 
 func (e *SysJobLog) ClearJobLog() error {
-	err := lv_db.GetMasterGorm().Exec("truncate table sys_job_log").Error
+	err := lv_db.GetOrmDefault().Exec("truncate table sys_job_log").Error
 	return err
 }

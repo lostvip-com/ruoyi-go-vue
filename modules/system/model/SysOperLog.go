@@ -39,18 +39,18 @@ func (e *SysOperLog) TableName() string {
 
 // 增
 func (e *SysOperLog) Save() error {
-	return lv_db.GetMasterGorm().Save(e).Error
+	return lv_db.GetOrmDefault().Save(e).Error
 }
 
 // 查
 func (e *SysOperLog) FindById(id int64) (*SysOperLog, error) {
-	err := lv_db.GetMasterGorm().Take(e, id).Error
+	err := lv_db.GetOrmDefault().Take(e, id).Error
 	return e, err
 }
 
 // 查第一条
 func (e *SysOperLog) FindOne() (*SysOperLog, error) {
-	tb := lv_db.GetMasterGorm().Table(e.TableName())
+	tb := lv_db.GetOrmDefault().Table(e.TableName())
 
 	if e.Title != "" {
 		tb = tb.Where("title=?", e.Title)
@@ -70,12 +70,12 @@ func (e *SysOperLog) FindOne() (*SysOperLog, error) {
 
 // 改
 func (e *SysOperLog) Updates() error {
-	return lv_db.GetMasterGorm().Table(e.TableName()).Updates(e).Error
+	return lv_db.GetOrmDefault().Table(e.TableName()).Updates(e).Error
 }
 
 // 删
 func (e *SysOperLog) Delete() error {
-	return lv_db.GetMasterGorm().Delete(e).Error
+	return lv_db.GetOrmDefault().Delete(e).Error
 }
 
 func (e *SysOperLog) Count() (int64, error) {
@@ -94,5 +94,5 @@ func (e *SysOperLog) Count() (int64, error) {
 		sql += " and request_method = @RequestMethod "
 	}
 
-	return namedsql.Count(lv_db.GetMasterGorm(), sql, e)
+	return namedsql.Count(lv_db.GetOrmDefault(), sql, e)
 }

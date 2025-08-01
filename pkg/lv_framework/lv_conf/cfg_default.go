@@ -12,6 +12,10 @@ import (
 	"text/template"
 )
 
+var appName string
+var defaultDB = ""
+var defaultDBDriver = ""
+
 type CfgDefault struct {
 	vipperCfg     *viper.Viper
 	proxyMap      map[string]string
@@ -23,6 +27,20 @@ type CfgDefault struct {
 	autoMigrate   string
 }
 
+func (e *CfgDefault) GetDBNameDefault() string {
+	return defaultDB
+}
+func (e *CfgDefault) SetDBNameDefault(dbName string) bool {
+	defaultDB = dbName
+	return true
+}
+func (e *CfgDefault) GetDBDriverDefault() string {
+	return defaultDBDriver
+}
+func (e *CfgDefault) SetDBDriverDefault(driverName string) bool {
+	defaultDBDriver = driverName
+	return true
+}
 func (e *CfgDefault) GetResourcesPath() string {
 	if e.resourcesPath == "" {
 		e.resourcesPath = e.GetValueStr("application.resources-path")
@@ -80,6 +98,7 @@ func (e *CfgDefault) GetValueStr(key string) string {
 		e.LoadConf()
 	}
 	val := cast.ToString(e.vipperCfg.Get(key))
+	fmt.Println("====================", e.vipperCfg.Get("application.datasource.default"))
 	if strings.HasPrefix(val, "$") { //存在动态表达式
 		val = strings.TrimSpace(val)             //去空格
 		val = lv_conv.SubStr(val, 2, len(val)-1) //去掉 ${}
@@ -224,8 +243,6 @@ func (e *CfgDefault) GetConf(key string) string {
 	return v
 }
 
-var appName string
-
 func (e *CfgDefault) GetAppName() string {
 	if appName == "" {
 		appName = e.GetValueStr("application.name")
@@ -235,22 +252,27 @@ func (e *CfgDefault) GetAppName() string {
 	}
 	return appName
 }
-func (e *CfgDefault) GetDriver() string {
-	driver := e.GetValueStr("application.datasource.driver")
+func (e *CfgDefault) GetDriver(dbName string) string {
+	key := fmt.Sprintf("application.datasource.%s.driver", dbName)
+	driver := e.GetValueStr(key)
 	if driver == "" {
-		driver = "sqlite3"
+		driver = defaultDBDriver
 	}
 	return driver
 }
-func (e *CfgDefault) GetMaster() string {
-	master := e.GetValueStr("application.datasource.master")
-	if master == "" {
-		master = "data.lv_db"
+func (e *CfgDefault) GetDBUrl(dbName string) string {
+	key := fmt.Sprintf("application.datasource.%s.url", dbName)
+	driver := e.GetValueStr(key)
+	if driver == "" {
+		driver = defaultDB
 	}
-	return master
+	return driver
 }
-func (e *CfgDefault) GetSlave() string {
-	return e.GetValueStr("application.datasource.slave")
+func (e *CfgDefault) GetDriverDefault() string {
+	return e.GetDriver(defaultDBDriver)
+}
+func (e *CfgDefault) GetDBUrlDefault() string {
+	return e.GetDBUrl(defaultDB)
 }
 
 // IsDebug todo

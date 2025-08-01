@@ -12,7 +12,7 @@ type GenTableDao struct {
 //
 //// 根据ID获取记录
 //func (r *GenTableDao) ListColumn(tableId int64) (*vo.GenTableVO, error) {
-//	db := lv_db.GetMasterGorm()
+//	db := lv_db.GetOrmDefault()
 //	var result vo.GenTableVO
 //	tb := db.Table("gen_table").Where("table_id=?", tableId)
 //	err := tb.Find(&result).Error
@@ -33,7 +33,7 @@ type GenTableDao struct {
 
 // 根据条件分页查询数据
 func (r *GenTableDao) FindPage(param *vo.GenTablePageReq) ([]model.GenTable, int64, error) {
-	db := lv_db.GetMasterGorm()
+	db := lv_db.GetOrmDefault()
 	tb := db.Table(" gen_table t")
 
 	if param != nil {
@@ -60,7 +60,7 @@ func (r *GenTableDao) FindPage(param *vo.GenTablePageReq) ([]model.GenTable, int
 
 // 查询据库列表
 func (r *GenTableDao) SelectDbTableList(req *vo.GenTablePageReq) ([]model.GenTable, int64, error) {
-	db := lv_db.GetMasterGorm()
+	db := lv_db.GetOrmDefault()
 	tb := db.Table("information_schema.tables")
 	tb.Where("table_schema = (select database())")
 	tb.Where("table_name NOT LIKE 'qrtz_%' AND table_name NOT LIKE 'gen_%' ")
@@ -85,7 +85,7 @@ func (r *GenTableDao) SelectDbTableList(req *vo.GenTablePageReq) ([]model.GenTab
 
 // 查询据库列表
 func (r *GenTableDao) SelectDbTableListByNames(tableNames []string) ([]model.GenTable, error) {
-	db := lv_db.GetMasterGorm()
+	db := lv_db.GetOrmDefault()
 	tb := db.Table("information_schema.tables")
 	tb.Select("0 as TableId, table_name as Table_Name,ifnull(table_comment,table_name) as TableComment")
 	tb.Where("table_name NOT LIKE 'qrtz_%'")
@@ -102,7 +102,7 @@ func (r *GenTableDao) SelectDbTableListByNames(tableNames []string) ([]model.Gen
 
 // 查询据库列表
 func (r *GenTableDao) SelectTableByName(tableName string) (*model.GenTable, error) {
-	db := lv_db.GetMasterGorm()
+	db := lv_db.GetOrmDefault()
 	tb := db.Table("information_schema.tables")
 	tb.Select("0 as TableId, table_name Table_Name, table_comment TableComment")
 	tb.Where("table_comment <> ''")

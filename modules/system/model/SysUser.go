@@ -44,25 +44,25 @@ func (e *SysUser) TableName() string {
 
 // 增
 func (e *SysUser) Insert() error {
-	return lv_db.GetMasterGorm().Save(e).Error
+	return lv_db.GetOrmDefault().Save(e).Error
 }
 
 // 查
 func (e *SysUser) GetById() error {
-	err := lv_db.GetMasterGorm().Take(e).Error
+	err := lv_db.GetOrmDefault().Take(e).Error
 	return err
 }
 
 // 查
 func (e *SysUser) FindById(uerId int64) (*SysUser, error) {
-	tb := lv_db.GetMasterGorm()
+	tb := lv_db.GetOrmDefault()
 	err := tb.Take(e, uerId).Error
 	return e, err
 }
 
 // 查
 func (e *SysUser) FindOne() error {
-	tb := lv_db.GetMasterGorm()
+	tb := lv_db.GetOrmDefault()
 	if e.UserId != 0 {
 		tb = tb.Where("user_id=?", e.UserId)
 	}
@@ -76,12 +76,12 @@ func (e *SysUser) FindOne() error {
 
 // 改
 func (e *SysUser) Updates() error {
-	return lv_db.GetMasterGorm().Table(e.TableName()).Updates(e).Error
+	return lv_db.GetOrmDefault().Table(e.TableName()).Updates(e).Error
 }
 
 // 删
 func (e *SysUser) Delete() error {
-	return lv_db.GetMasterGorm().Delete(e).Error
+	return lv_db.GetOrmDefault().Delete(e).Error
 }
 
 func (e *SysUser) GetRoleKeys() []string {

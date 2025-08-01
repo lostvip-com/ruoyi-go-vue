@@ -52,18 +52,18 @@ func (u *GenTableColumn) BeforeUpdate(db *gorm.DB) error {
 
 // 增
 func (e *GenTableColumn) Save() error {
-	return lv_db.GetMasterGorm().Save(e).Error
+	return lv_db.GetOrmDefault().Save(e).Error
 }
 
 // 查
 func (e *GenTableColumn) FindById(id int64) (*GenTableColumn, error) {
-	err := lv_db.GetMasterGorm().Take(e, id).Error
+	err := lv_db.GetOrmDefault().Take(e, id).Error
 	return e, err
 }
 
 // 查第一条
 func (e *GenTableColumn) FindOne() (*GenTableColumn, error) {
-	tb := lv_db.GetMasterGorm().Table(e.TableName())
+	tb := lv_db.GetOrmDefault().Table(e.TableName())
 
 	if e.TableId != 0 {
 		tb = tb.Where("table_id=?", e.TableId)
@@ -83,12 +83,12 @@ func (e *GenTableColumn) FindOne() (*GenTableColumn, error) {
 
 // 改
 func (e *GenTableColumn) Updates() error {
-	return lv_db.GetMasterGorm().Table(e.TableName()).Updates(e).Error
+	return lv_db.GetOrmDefault().Table(e.TableName()).Updates(e).Error
 }
 
 // 删
 func (e *GenTableColumn) Delete() error {
-	return lv_db.GetMasterGorm().Delete(e).Error
+	return lv_db.GetOrmDefault().Delete(e).Error
 }
 
 func (e *GenTableColumn) Count() (int64, error) {
@@ -107,5 +107,5 @@ func (e *GenTableColumn) Count() (int64, error) {
 		sql += " and column_type = @ColumnType "
 	}
 
-	return namedsql.Count(lv_db.GetMasterGorm(), sql, e)
+	return namedsql.Count(lv_db.GetOrmDefault(), sql, e)
 }

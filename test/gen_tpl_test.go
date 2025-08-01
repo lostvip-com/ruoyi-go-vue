@@ -12,7 +12,7 @@ import (
 
 func TestGenTpl1(t *testing.T) {
 	cfg := myconf.GetConfigInstance()
-	lv_db.GetMasterGorm()
+	lv_db.GetOrmDefault()
 	fmt.Println(cfg)
 	tableId := int64(7)
 	tableService := service.TableService{}

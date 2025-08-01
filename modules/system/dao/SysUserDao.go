@@ -24,7 +24,7 @@ func GetUserDaoInstance() *SysUserDao {
 	return userDao
 }
 func (e SysUserDao) DeleteByIds(ida []int64) int64 {
-	db := lv_db.GetMasterGorm().Table("sys_user").Where("user_id in ? and user_id!=1 ", ida).Update("del_flag", 1)
+	db := lv_db.GetOrmDefault().Table("sys_user").Where("user_id in ? and user_id!=1 ", ida).Update("del_flag", 1)
 	if db.Error != nil {
 		panic(db.Error)
 	}
@@ -33,7 +33,7 @@ func (e SysUserDao) DeleteByIds(ida []int64) int64 {
 
 // 根据条件分页查询用户列表
 func (d SysUserDao) FindPage(param *common_vo.UserPageReq) (*[]map[string]any, int64, error) {
-	db := lv_db.GetMasterGorm()
+	db := lv_db.GetOrmDefault()
 	sqlParams, sql := d.GetSql(param)
 	limitSql := sql + " order by u.user_id desc "
 	limitSql += "  limit " + cast.ToString(param.GetPageSize()) + " offset " + cast.ToString(param.GetStartNum())
@@ -92,7 +92,7 @@ func (d SysUserDao) GetSql(param *common_vo.UserPageReq) (map[string]interface{}
 
 // 导出excel
 func (d SysUserDao) SelectExportList(param *common_vo.UserPageReq) (*[]map[string]any, error) {
-	db := lv_db.GetMasterGorm()
+	db := lv_db.GetOrmDefault()
 	sqlParams, sql := d.GetSql(param)
 	limitSql := sql + " order by u.user_id desc "
 	result, err := namedsql.ListMap(db, limitSql, &sqlParams, true)
@@ -101,7 +101,7 @@ func (d SysUserDao) SelectExportList(param *common_vo.UserPageReq) (*[]map[strin
 
 // 根据条件分页查询已分配用户角色列表
 func (d SysUserDao) SelectAllocatedList(roleId int64, UserName, phonenumber string) (*[]map[string]any, error) {
-	db := lv_db.GetMasterGorm()
+	db := lv_db.GetOrmDefault()
 	sqlParams := make(map[string]interface{})
 	sql := `
             select distinct u.user_id, u.dept_id, u.user_name, u.nick_name, u.email, u.avatar, u.phonenumber,u.status, u.create_time
@@ -127,7 +127,7 @@ func (d SysUserDao) SelectAllocatedList(roleId int64, UserName, phonenumber stri
 
 // 根据条件分页查询未分配用户角色列表
 func (d SysUserDao) SelectUnallocatedList(roleId int64, UserName, phonenumber string) (*[]map[string]any, error) {
-	db := lv_db.GetMasterGorm()
+	db := lv_db.GetOrmDefault()
 	sqlParams := make(map[string]interface{})
 	sql := `
             select distinct u.user_id, u.dept_id, u.user_name, u.nick_name, u.email, u.avatar, u.phonenumber,u.status, u.create_time
@@ -150,7 +150,7 @@ func (d SysUserDao) SelectUnallocatedList(roleId int64, UserName, phonenumber st
 
 // CountPhone 检查手机号是否已使用 ,存在返回true,否则false
 func (d SysUserDao) CountPhone(phone string) (int64, error) {
-	db := lv_db.GetMasterGorm()
+	db := lv_db.GetOrmDefault()
 	var total int64
 	err := db.Table("sys_user").Where("phonenumber = ?", phone).Count(&total).Error
 	return total, err

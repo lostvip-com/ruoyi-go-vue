@@ -49,7 +49,7 @@ func (mySvr *MyHttpServer) ListenAndServe() {
 	fmt.Println("application.name: " + lv_global.Config().GetAppName())
 	fmt.Println("application.cache: " + lv_global.Config().GetValueStr("application.cache"))
 	fmt.Println("application.redis.host: " + lv_global.Config().GetValueStr("application.redis.host"))
-	fmt.Println("application.datasource.master: " + lv_global.Config().GetMaster())
+	fmt.Println("application.datasource.default: " + lv_global.Config().GetDBUrlDefault())
 	fmt.Println("http://localhost:" + port + strings.ReplaceAll(path, "//", "/"))
 	fmt.Println("http://localhost:" + port + strings.ReplaceAll(path+"/swagger/index.html", "//", "/"))
 	fmt.Println("http://" + host + ":" + port + strings.ReplaceAll(path+"/swagger/index.html", "//", "/"))

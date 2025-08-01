@@ -56,7 +56,7 @@ func (svc *RoleService) AddSave(req *model.SysRole, c *gin.Context) (int64, erro
 	if user != nil {
 		role.CreateBy = user.UserName
 	}
-	session := lv_db.GetMasterGorm().Begin()
+	session := lv_db.GetOrmDefault().Begin()
 	err := session.Save(role).Error
 	lv_err.HasErrAndPanic(err)
 	if err != nil {
@@ -82,7 +82,7 @@ func (svc *RoleService) EditSave(req *model.SysRole, user *model.SysUser) error 
 	r.UpdateTime = time.Now()
 	r.UpdateBy = user.UserName
 	r.RoleSort = req.RoleSort
-	db := lv_db.GetMasterGorm()
+	db := lv_db.GetOrmDefault()
 	err = db.Transaction(func(tx *gorm.DB) error {
 		//更新role表
 		if err := tx.Updates(&r).Error; err != nil {
@@ -134,7 +134,7 @@ func (svc *RoleService) AuthDataScope(req *common_vo.DataScopeReq, c *gin.Contex
 	}
 	entity.UpdateTime = time.Now()
 
-	db := lv_db.GetMasterGorm()
+	db := lv_db.GetOrmDefault()
 	err = db.Transaction(func(tx *gorm.DB) error {
 		//更新role表
 		if err := tx.Updates(&entity).Error; err != nil {
@@ -175,7 +175,7 @@ func (svc *RoleService) DeleteByIds(ids string) error {
 			idsDel = append(idsDel, id)
 		}
 	}
-	err := lv_db.GetMasterGorm().Exec("delete from sys_role where role_id in ?  ", idsDel).Error
+	err := lv_db.GetOrmDefault().Exec("delete from sys_role where role_id in ?  ", idsDel).Error
 	return err
 }
 
@@ -214,7 +214,7 @@ func (svc *RoleService) InsertRoleUserIds(roleId int64, userIds []string) error 
 		tmp.UserId = cast.ToInt64(userId)
 		roleUserList = append(roleUserList, tmp)
 	}
-	err := lv_db.GetMasterGorm().CreateInBatches(roleUserList, len(roleUserList)).Error
+	err := lv_db.GetOrmDefault().CreateInBatches(roleUserList, len(roleUserList)).Error
 	return err
 }
 func (svc *RoleService) InsertUserRoleIds(userId int64, arrRoleIds []string) error {
@@ -225,7 +225,7 @@ func (svc *RoleService) InsertUserRoleIds(userId int64, arrRoleIds []string) err
 		tmp.RoleId = cast.ToInt64(roleId)
 		roleUserList = append(roleUserList, tmp)
 	}
-	err := lv_db.GetMasterGorm().CreateInBatches(roleUserList, len(roleUserList)).Error
+	err := lv_db.GetOrmDefault().CreateInBatches(roleUserList, len(roleUserList)).Error
 	return err
 }
 
@@ -259,7 +259,7 @@ func (svc *RoleService) DeleteUserRoleInfos(roleId int64, ids string) error {
 			}
 		}
 	}
-	err := lv_db.GetMasterGorm().Exec("delete from sys_user_role where role_id=? and user_id in (?)", roleId, idStr).Error
+	err := lv_db.GetOrmDefault().Exec("delete from sys_user_role where role_id=? and user_id in (?)", roleId, idStr).Error
 	return err
 }
 
@@ -311,7 +311,7 @@ func (svc *RoleService) CheckRoleDataScope(roleId int64) bool {
         `
 	var sql = baseSql + " where r.del_flag = '0' AND r.role_id = " + cast.ToString(roleId)
 	var count int64
-	err := lv_db.GetMasterGorm().Raw(sql).Count(&count).Error
+	err := lv_db.GetOrmDefault().Raw(sql).Count(&count).Error
 	lv_err.HasErrAndPanic(err)
 	return count < 1
 }
@@ -328,7 +328,7 @@ func (svc *RoleService) GetDeptTreeRole(roleId int64) []int64 {
 	}
 	sql += " order by d.parent_id, d.order_num "
 	var count []int64
-	err = lv_db.GetMasterGorm().Raw(sql).Find(&count).Error
+	err = lv_db.GetOrmDefault().Raw(sql).Find(&count).Error
 	lv_err.HasErrAndPanic(err)
 	return count
 }
@@ -344,7 +344,7 @@ func (svc *RoleService) FindRolePermissionsById(userId int64) []model.SysRole {
 	if !svc.IsAdmin(userId) {
 		sql += " and ur.user_id = " + cast.ToString(userId)
 	}
-	err := lv_db.GetMasterGorm().Raw(sql).Scan(&roles).Error
+	err := lv_db.GetOrmDefault().Raw(sql).Scan(&roles).Error
 	lv_err.HasErrAndPanic(err)
 	return roles
 }
@@ -378,7 +378,7 @@ func (svc *RoleService) GetMenuPermission(user *model.SysUser) []string {
 		return []string{"*:*:*"}
 	} else {
 		var permissions []string
-		err := lv_db.GetMasterGorm().Raw("select distinct m.perms "+
+		err := lv_db.GetOrmDefault().Raw("select distinct m.perms "+
 			"from sys_menu m "+
 			"left join sys_role_menu rm on m.menu_id = rm.menu_id "+
 			"left join sys_user_role ur on rm.role_id = ur.role_id "+

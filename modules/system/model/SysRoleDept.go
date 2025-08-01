@@ -16,13 +16,13 @@ func (r *SysRoleDept) TableName() string {
 
 // 查
 func (e *SysRoleDept) FindById() error {
-	err := lv_db.GetMasterGorm().Take(e, "role_id=? and dept_id=?", e.RoleId, e.DeptId).Error
+	err := lv_db.GetOrmDefault().Take(e, "role_id=? and dept_id=?", e.RoleId, e.DeptId).Error
 	return err
 }
 
 // 查第一条
 func (e *SysRoleDept) FindOne() error {
-	tb := lv_db.GetMasterGorm()
+	tb := lv_db.GetOrmDefault()
 	if e.RoleId != 0 && e.DeptId != 0 {
 		tb = tb.Where("role_id=? and dept_id=?", e.RoleId, e.DeptId)
 	}
@@ -32,15 +32,15 @@ func (e *SysRoleDept) FindOne() error {
 
 // 改
 func (e *SysRoleDept) Update() error {
-	return lv_db.GetMasterGorm().Table(e.TableName()).Updates(e).Error
+	return lv_db.GetOrmDefault().Table(e.TableName()).Updates(e).Error
 }
 
 // 插入数据
 func (r *SysRoleDept) Insert() error {
-	return lv_db.GetMasterGorm().Save(r).Error
+	return lv_db.GetOrmDefault().Save(r).Error
 }
 
 // 删除
 func (r *SysRoleDept) Delete() error {
-	return lv_db.GetMasterGorm().Delete(r).Error
+	return lv_db.GetOrmDefault().Delete(r).Error
 }

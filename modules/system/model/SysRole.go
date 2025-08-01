@@ -34,22 +34,22 @@ func (r *SysRole) TableName() string {
 
 // 插入数据
 func (r *SysRole) Insert() error {
-	return lv_db.GetMasterGorm().Save(r).Error
+	return lv_db.GetOrmDefault().Save(r).Error
 }
 
 // 更新数据
 func (r *SysRole) Update() error {
-	return lv_db.GetMasterGorm().Updates(r).Error
+	return lv_db.GetOrmDefault().Updates(r).Error
 }
 
 // 删除
 func (r *SysRole) Delete() error {
-	return lv_db.GetMasterGorm().Delete(r).Error
+	return lv_db.GetOrmDefault().Delete(r).Error
 }
 
 // 根据结构体中已有的非空数据来获得单条数据
 func (e *SysRole) FindOne() error {
-	tb := lv_db.GetMasterGorm()
+	tb := lv_db.GetOrmDefault()
 	if e.RoleId != 0 {
 		tb = tb.Where("role_id=? and del_flag=0", e.RoleId)
 	}
@@ -60,6 +60,6 @@ func (e *SysRole) FindOne() error {
 	return err
 }
 func (e *SysRole) FindById(id int64) (*SysRole, error) {
-	err := lv_db.GetMasterGorm().Take(e, id).Error
+	err := lv_db.GetOrmDefault().Take(e, id).Error
 	return e, err
 }

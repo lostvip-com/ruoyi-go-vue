@@ -24,18 +24,18 @@ func GetMenuDaoInstance() *MenuDao {
 
 // 批量删除
 func (r *MenuDao) DeleteBatch(ids ...int64) (int64, error) {
-	db := lv_db.GetMasterGorm().Table("sys_menu").Where("menu_id in ? ", ids).Update("del_flag", 1)
+	db := lv_db.GetOrmDefault().Table("sys_menu").Where("menu_id in ? ", ids).Update("del_flag", 1)
 	return db.RowsAffected, db.Error
 }
 
 func (r *MenuDao) DeleteChildren(parentId int64) (int64, error) {
-	tb := lv_db.GetMasterGorm().Table("sys_menu").Where("parent_id=?", parentId).Update("del_flag", 1)
+	tb := lv_db.GetOrmDefault().Table("sys_menu").Where("parent_id=?", parentId).Update("del_flag", 1)
 	return tb.RowsAffected, tb.Error
 }
 
 // 根据主键查询数据
 func (dao *MenuDao) FindById(id int64) (*model.SysMenu, error) {
-	tb := lv_db.GetMasterGorm()
+	tb := lv_db.GetOrmDefault()
 	if tb == nil {
 		return nil, errors.New("获取数据库连接失败")
 	}
@@ -52,7 +52,7 @@ func (dao *MenuDao) FindById(id int64) (*model.SysMenu, error) {
 
 // 根据条件分页查询数据
 func (dao *MenuDao) SelectListPage(param *vo.SelectMenuPageReq) (*[]model.SysMenu, int64, error) {
-	tb := lv_db.GetMasterGorm()
+	tb := lv_db.GetOrmDefault()
 	tb = tb.Table("sys_menu")
 	if param != nil {
 		if param.MenuName != "" {
@@ -82,7 +82,7 @@ func (dao *MenuDao) SelectListPage(param *vo.SelectMenuPageReq) (*[]model.SysMen
 
 // 获取所有数据
 func (dao *MenuDao) FindAll(sysMenu *vo.SelectMenuPageReq) ([]model.SysMenu, error) {
-	tb := lv_db.GetMasterGorm()
+	tb := lv_db.GetOrmDefault()
 	var rows []model.SysMenu
 	var sql = `select menu_id, menu_name, parent_id, order_num, path, component, query, is_frame, is_cache, menu_type, 
                       visible,status, ifnull(perms,'') as perms, icon, create_time 
@@ -107,7 +107,7 @@ func (dao *MenuDao) FindAll(sysMenu *vo.SelectMenuPageReq) ([]model.SysMenu, err
 func (dao *MenuDao) FindMenuNormalAll(noF bool) ([]model.SysMenu, error) {
 	var result []model.SysMenu
 
-	tb := lv_db.GetMasterGorm()
+	tb := lv_db.GetOrmDefault()
 	tb = tb.Table("sys_menu as m")
 	tb.Where(" m.visible = 0")
 	if noF == true {
@@ -142,14 +142,14 @@ func (dao *MenuDao) FindMenusByUserId(userId int64, sysMenu *vo.SelectMenuPageRe
 	}
 	sql += "order by m.parent_id, m.order_num"
 	var list []model.SysMenu
-	err := lv_db.GetMasterGorm().Raw(sql).Scan(&list).Error
+	err := lv_db.GetOrmDefault().Raw(sql).Scan(&list).Error
 	return list, err
 }
 
 // FindMenus 根据用户ID读取菜单数据， noF 非按钮
 func (dao *MenuDao) FindMenus(userId int64, noF bool, params *model.SysMenu) ([]model.SysMenu, error) {
 	var result []model.SysMenu
-	db := lv_db.GetMasterGorm()
+	db := lv_db.GetOrmDefault()
 	tb := db.Table("sys_menu as m")
 	tb.Joins("LEFT join sys_role_menu as rm on m.menu_id = rm.menu_id")
 	tb.Joins("LEFT join sys_user_role as ur on rm.role_id = ur.role_id")
@@ -185,7 +185,7 @@ func (dao *MenuDao) FindMenus(userId int64, noF bool, params *model.SysMenu) ([]
 
 // 根据角色ID查询菜单
 func (dao *MenuDao) SelectMenuTree(roleId int64) ([]string, error) {
-	tb := lv_db.GetMasterGorm()
+	tb := lv_db.GetOrmDefault()
 	if tb == nil {
 		return nil, errors.New("获取数据库连接失败")
 	}

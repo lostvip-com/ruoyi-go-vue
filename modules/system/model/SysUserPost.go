@@ -23,18 +23,18 @@ func (e *SysUserPost) TableName() string {
 
 // 增
 func (e *SysUserPost) Save() error {
-	return lv_db.GetMasterGorm().Save(e).Error
+	return lv_db.GetOrmDefault().Save(e).Error
 }
 
 // 查
 func (e *SysUserPost) FindById() (*SysUserPost, error) {
-	err := lv_db.GetMasterGorm().Take(e, "user_id=? and post_id=?", e.UserId, e.PostId).Error
+	err := lv_db.GetOrmDefault().Take(e, "user_id=? and post_id=?", e.UserId, e.PostId).Error
 	return e, err
 }
 
 // 查第一条
 func (e *SysUserPost) FindOne() (*SysUserPost, error) {
-	err := lv_db.GetMasterGorm().Table(e.TableName()).First(e, "user_id=? and post_id=?", e.UserId, e.PostId).Error
+	err := lv_db.GetOrmDefault().Table(e.TableName()).First(e, "user_id=? and post_id=?", e.UserId, e.PostId).Error
 	return e, err
 }
 
@@ -42,7 +42,7 @@ func (e *SysUserPost) FindOne() (*SysUserPost, error) {
 func (e *SysUserPost) Delete() error {
 	e, err := e.FindById()
 	if err == nil {
-		return lv_db.GetMasterGorm().Delete(e).Error
+		return lv_db.GetOrmDefault().Delete(e).Error
 	}
 	return err
 }

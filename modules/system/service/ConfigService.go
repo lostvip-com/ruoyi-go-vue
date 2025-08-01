@@ -97,19 +97,19 @@ func (svc *ConfigService) EditSave(param *model.SysConfig) {
 
 // 批量删除
 func (d *ConfigService) Count(configKey string) (total int64, err error) {
-	err = lv_db.GetMasterGorm().Table("sys_config").Where("config_key=?", configKey).Count(&total).Error
+	err = lv_db.GetOrmDefault().Table("sys_config").Where("config_key=?", configKey).Count(&total).Error
 	return total, err
 }
 
 // 批量删除
 func (d *ConfigService) DeleteBatch(ids ...int64) error {
-	err := lv_db.GetMasterGorm().Delete(&model.SysConfig{}, ids).Error
+	err := lv_db.GetOrmDefault().Delete(&model.SysConfig{}, ids).Error
 	return err
 }
 
 // 根据条件分页查询用户列表
 func (d ConfigService) FindPage(param *common_vo.SelectConfigPageReq) (*[]map[string]any, int64, error) {
-	db := lv_db.GetMasterGorm()
+	db := lv_db.GetOrmDefault()
 	sqlParams, sql := d.GetSql(param)
 	countSql := "select count(*) from (" + sql + ") t "
 	total, err := namedsql.Count(db, countSql, sqlParams)
@@ -155,7 +155,7 @@ func (d ConfigService) GetSql(param *common_vo.SelectConfigPageReq) (map[string]
 
 // 导出excel
 func (d ConfigService) SelectExportList(param *common_vo.SelectConfigPageReq) (*[]map[string]any, error) {
-	db := lv_db.GetMasterGorm()
+	db := lv_db.GetOrmDefault()
 	sqlParams, sql := d.GetSql(param)
 	limitSql := sql + " order by u.user_id desc "
 	result, err := namedsql.ListMapAny(db, limitSql, &sqlParams, false)
@@ -164,7 +164,7 @@ func (d ConfigService) SelectExportList(param *common_vo.SelectConfigPageReq) (*
 
 // 获取所有数据
 func (d *ConfigService) FindAll(param *common_vo.SelectConfigPageReq) ([]model.SysConfig, error) {
-	db := lv_db.GetMasterGorm()
+	db := lv_db.GetOrmDefault()
 	tb := db.Table("sys_config t")
 
 	if param != nil {

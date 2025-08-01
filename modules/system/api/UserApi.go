@@ -159,7 +159,7 @@ func (w *UserApi) ChangeStatus(c *gin.Context) {
 	userId := c.Query("userId")
 	status := c.Query("status")
 	sql := " update sys_user set status=? where user_id = ? "
-	rows := lv_db.GetMasterGorm().Exec(sql, status, userId).RowsAffected
+	rows := lv_db.GetOrmDefault().Exec(sql, status, userId).RowsAffected
 	util.Success(c, rows)
 }
 

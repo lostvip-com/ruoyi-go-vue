@@ -71,7 +71,7 @@ func (svc OperLogService) Add(c *gin.Context, businessType int, title, inContent
 
 // 根据条件分页查询用户列表
 func (svc OperLogService) FindPage(param *vo.OperLogPageReq) (*[]model.SysOperLog, int64, error) {
-	db := lv_db.GetMasterGorm()
+	db := lv_db.GetOrmDefault()
 	tb := db.Table("sys_oper_log")
 	if param != nil {
 		if param.Title != "" {
@@ -122,6 +122,6 @@ func (svc OperLogService) DeleteById(id int64) bool {
 }
 
 func (svc OperLogService) DeleteRecordAll() error {
-	err := lv_db.GetMasterGorm().Exec("truncate table sys_oper_log").Error
+	err := lv_db.GetOrmDefault().Exec("truncate table sys_oper_log").Error
 	return err
 }

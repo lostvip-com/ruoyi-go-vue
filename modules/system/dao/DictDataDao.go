@@ -21,7 +21,7 @@ func GetDictDataDaoInstance() *DictDataDao {
 
 // 根据条件分页查询数据
 func (dao *DictDataDao) FindPage(param *common_vo.SelectDictDataPageReq) (*[]models.SysDictData, int64, error) {
-	db := lv_db.GetMasterGorm()
+	db := lv_db.GetOrmDefault()
 	tb := db.Table("sys_dict_data t")
 	if param != nil {
 		if param.DictLabel != "" {
@@ -44,7 +44,7 @@ func (dao *DictDataDao) FindPage(param *common_vo.SelectDictDataPageReq) (*[]mod
 
 // FindAll 获取所有数据
 func (dao *DictDataDao) FindAll(dictLabel, dictType string) ([]models.SysDictData, error) {
-	db := lv_db.GetMasterGorm()
+	db := lv_db.GetOrmDefault()
 	if db == nil {
 		return nil, errors.New("获取数据库连接失败")
 	}
@@ -66,12 +66,12 @@ func (dao *DictDataDao) FindAll(dictLabel, dictType string) ([]models.SysDictDat
 
 // DeleteBatch 批量删除
 func (d *DictDataDao) DeleteBatch(codes ...int64) error {
-	err := lv_db.GetMasterGorm().Where("dict_code in ?").Delete(codes).Error
+	err := lv_db.GetOrmDefault().Where("dict_code in ?").Delete(codes).Error
 	return err
 }
 
 // 批量删除
 func (d *DictDataDao) DeleteByType(dictType string) error {
-	err := lv_db.GetMasterGorm().Delete(&models.SysDictData{}, "dict_type=?", dictType).Error
+	err := lv_db.GetOrmDefault().Delete(&models.SysDictData{}, "dict_type=?", dictType).Error
 	return err
 }

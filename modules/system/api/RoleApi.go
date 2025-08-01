@@ -109,7 +109,7 @@ func (w *RoleApi) ChangeStatus(c *gin.Context) {
 		return
 	}
 	sql := " update sys_role set status=? where role_id = ? "
-	rows := db2.GetMasterGorm().Exec(sql, req.Status, req.RoleId).RowsAffected
+	rows := db2.GetOrmDefault().Exec(sql, req.Status, req.RoleId).RowsAffected
 	util.Success(c, rows)
 }
 

@@ -27,18 +27,18 @@ func (e *SysDictType) TableName() string {
 
 // 增
 func (e *SysDictType) Save() error {
-	return lv_db.GetMasterGorm().Save(e).Error
+	return lv_db.GetOrmDefault().Save(e).Error
 }
 
 // 查
 func (e *SysDictType) FindById(id int64) (*SysDictType, error) {
-	err := lv_db.GetMasterGorm().Take(e, id).Error
+	err := lv_db.GetOrmDefault().Take(e, id).Error
 	return e, err
 }
 
 // 查第一条
 func (e *SysDictType) FindOne() (*SysDictType, error) {
-	tb := lv_db.GetMasterGorm().Table(e.TableName())
+	tb := lv_db.GetOrmDefault().Table(e.TableName())
 
 	if e.DictName != "" {
 		tb = tb.Where("dict_name=?", e.DictName)
@@ -55,12 +55,12 @@ func (e *SysDictType) FindOne() (*SysDictType, error) {
 
 // 改
 func (e *SysDictType) Updates() error {
-	return lv_db.GetMasterGorm().Table(e.TableName()).Updates(e).Error
+	return lv_db.GetOrmDefault().Table(e.TableName()).Updates(e).Error
 }
 
 // 删
 func (e *SysDictType) Delete() error {
-	return lv_db.GetMasterGorm().Delete(e).Error
+	return lv_db.GetOrmDefault().Delete(e).Error
 }
 
 func (e *SysDictType) Count() (int64, error) {
@@ -68,5 +68,5 @@ func (e *SysDictType) Count() (int64, error) {
 	if e.DictType != "" {
 		sql += " and dict_type = @DictType "
 	}
-	return namedsql.Count(lv_db.GetMasterGorm(), sql, e)
+	return namedsql.Count(lv_db.GetOrmDefault(), sql, e)
 }
