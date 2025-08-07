@@ -32,7 +32,7 @@ func (w *DeptApi) ExcludeDept(c *gin.Context) {
 			}
 			dist = append(dist, it)
 		}
-		util.Success(c, dist)
+		util.SuccessData(c, dist)
 	}
 }
 
@@ -48,7 +48,7 @@ func (w *DeptApi) ListAjax(c *gin.Context) {
 		util.Fail(c, err.Error())
 		return
 	}
-	util.Success(c, result)
+	util.SuccessData(c, result)
 }
 
 // AddSave 新增页面保存
@@ -64,7 +64,7 @@ func (w *DeptApi) AddSave(c *gin.Context) {
 		util.Fail(c, err.Error())
 		return
 	}
-	util.Success(c, rid)
+	util.SuccessData(c, rid)
 }
 
 // EditSave 修改页面保存
@@ -80,7 +80,7 @@ func (w *DeptApi) EditSave(c *gin.Context) {
 		util.Fail(c, err.Error())
 		return
 	}
-	util.Success(c, po)
+	util.SuccessData(c, po)
 }
 
 // 删除数据
@@ -90,7 +90,7 @@ func (w *DeptApi) Remove(c *gin.Context) {
 	if err != nil {
 		util.Fail(c, err.Error())
 	} else {
-		util.Success(c, id)
+		util.SuccessData(c, id)
 	}
 }
 
@@ -102,7 +102,7 @@ func (w *DeptApi) GetDept(c *gin.Context) {
 	if err != nil {
 		util.Fail(c, err.Error())
 	} else {
-		util.Success(c, dept)
+		util.SuccessData(c, dept)
 	}
 }
 

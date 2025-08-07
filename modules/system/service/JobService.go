@@ -75,3 +75,10 @@ func (e *JobService) FindJobLogList(params *vo.JobReq) (*[]schedule.SysJobLog, i
 	err := db.Find(&list).Error
 	return &list, int(total), err
 }
+
+func (e *JobService) ListActive() (*[]schedule.SysJob, error) {
+	db := e.GetDb().Table("sys_job").Where("status = 0 ")
+	var list []schedule.SysJob
+	err := db.Find(&list).Error
+	return &list, err
+}

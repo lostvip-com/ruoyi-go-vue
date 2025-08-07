@@ -8,7 +8,6 @@ import (
 	"github.com/lostvip-com/lv_framework/utils/lv_conv"
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
 	"github.com/lostvip-com/lv_framework/utils/lv_secret"
-	"github.com/lostvip-com/lv_framework/utils/lv_time"
 	"system/model"
 	"time"
 )
@@ -54,15 +53,10 @@ func (svc *SessionService) ForceLogout(token string) error {
 	return svc.SignOut(token)
 }
 
-func (svc *SessionService) SaveSessionToRedis(tokenId string, roleKeys string, deptName string, user *model.SysUser) error {
-	fieldMap := lv_conv.StructToMap(user)
-	fieldMap["userId"] = user.UserId
-	fieldMap["tokenId"] = tokenId
-	fieldMap["loginTime"] = lv_time.GetCurrentTimeStr()
-	fieldMap["roleKeys"] = roleKeys
-	fieldMap["deptName"] = deptName
-	//fieldMap["tenantId"] = login.TenantId //租户ID
-	key := global.LoginCacheKey + tokenId
+func (svc *SessionService) SaveSessionToRedis(loginInfo *model.SysLoginInfo) error {
+	fieldMap := lv_conv.StructToMap(loginInfo)
+	fieldMap["username"] = loginInfo.UserName
+	key := global.LoginCacheKey + loginInfo.TokenId
 	err := lv_cache.GetCacheClient().HMSet(key, fieldMap, 12*time.Hour)
 	lv_err.HasErrAndPanic(err)
 	err = lv_cache.GetCacheClient().Expire(key, 12*time.Hour)
@@ -74,7 +68,7 @@ func (svc *SessionService) Refresh(token string) {
 	lv_cache.GetCacheClient().Expire(token, 8*time.Hour)
 }
 
-func (svc *SessionService) SaveLogs(login *model.SysLoginInfo, msg string) {
+func (svc *SessionService) SaveLogs(login *model.SysLoginInfo, msg string) error {
 	login.Msg = msg
-	login.Insert()
+	return login.Insert()
 }

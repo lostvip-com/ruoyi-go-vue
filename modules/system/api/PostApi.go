@@ -21,7 +21,7 @@ func (w *PostApi) GetPostInfo(c *gin.Context) {
 		util.Fail(c, err.Error())
 		return
 	}
-	util.Success(c, post)
+	util.SuccessData(c, post)
 }
 
 // GetPostOptionSelect 列表分页数据
@@ -36,7 +36,7 @@ func (w *PostApi) GetPostOptionSelect(c *gin.Context) {
 		util.Fail(c, err.Error())
 		return
 	}
-	util.Success(c, result)
+	util.SuccessData(c, result)
 }
 
 // ListAjax 列表分页数据
@@ -71,7 +71,7 @@ func (w *PostApi) AddSave(c *gin.Context) {
 		util.Fail(c, err.Error())
 		return
 	}
-	util.Success(c, pid)
+	util.SuccessData(c, pid)
 }
 
 // EditSave 修改页面保存
@@ -87,7 +87,7 @@ func (w *PostApi) EditSave(c *gin.Context) {
 		util.Fail(c, err.Error())
 		return
 	}
-	util.Success(c, nil)
+	util.SuccessData(c, nil)
 }
 
 // Remove 删除数据
@@ -98,7 +98,7 @@ func (w *PostApi) Remove(c *gin.Context) {
 		util.Fail(c, err.Error())
 		return
 	}
-	util.Success(c, nil)
+	util.SuccessData(c, nil)
 }
 
 func (w *PostApi) Export(c *gin.Context) {
@@ -113,5 +113,5 @@ func (w *PostApi) Export(c *gin.Context) {
 		util.Fail(c, err.Error())
 		return
 	}
-	util.Success(c, url)
+	util.SuccessData(c, url)
 }

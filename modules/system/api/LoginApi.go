@@ -78,23 +78,31 @@ func (w *LoginApi) Login(c *gin.Context) {
 	loginInfo.Browser, _ = ua.Browser()
 	loginInfo.LoginTime = time.Now()
 	loginInfo.LoginLocation = util.GetCityByIp(loginInfo.Ipaddr)
+	dept, err := service.GetDeptServiceInstance().FindById(user.DeptId)
+	lv_err.HasErrAndPanic(err)
+	loginInfo.DeptId = dept.DeptId
+	loginInfo.DeptName = dept.DeptName
+	loginInfo.UserId = user.UserId
+	loginInfo.UserName = user.UserName
+	loginInfo.RoleKeys = roles
+	loginInfo.TokenId = tokenId
+	var msg = "success"
 	if err != nil {
 		loginSvc.SetPasswordCounts(clientIp)
 		errTimes4UserName := loginSvc.SetPasswordCounts(req.UserName)
 		having := global2.ErrTimes2Lock - errTimes4UserName
-		svc.SaveLogs(loginInfo, "账号或密码不正确") //记录日志
 		if having <= 5 {
-			util.Fail(c, "账号或密码不正确,还有"+lv_conv.String(having)+"次之后账号将锁定")
+			msg = "账号或密码不正确,还有" + lv_conv.String(having) + "次之后账号将锁定"
 		} else {
-			util.Fail(c, "账号或密码不正确")
+			msg = "账号或密码不正确"
 		}
 		return
+	} else {
+		loginInfo.Status = "0"
+		svc.SaveSessionToRedis(loginInfo)
 	}
-	loginInfo.Status = "0" //成功
-	dept, err := service.GetDeptServiceInstance().FindById(user.DeptId)
-	lv_err.HasErrAndPanic(err)
-	svc.SaveSessionToRedis(tokenId, roles, dept.DeptName, user)
-	svc.SaveLogs(loginInfo, "login success") //记录日志
+	//成功
+	err = svc.SaveLogs(loginInfo, msg) //记录日志
 	if err != nil {
 		lv_log.Error(err.Error())
 	}
@@ -120,7 +128,7 @@ func (w *LoginApi) Logout(c *gin.Context) {
 		uuidStr := token.Claims.(jwt.MapClaims)["uuid"]
 		var user service.SessionService
 		err = user.SignOut(cast.ToString(uuidStr))
-		util.Success(c, nil)
+		util.SuccessData(c, nil)
 	} else {
 		util.Fail(c, "bad token！")
 	}

@@ -64,7 +64,7 @@ func (w *GenCodeApi) CreateMenu(c *gin.Context) {
 	//cfg := global.GetConfigInstance()
 	_, err = batis.ExecMultiSqlInTransaction(tb, "create_menu")
 	lv_err.HasErrAndPanic(err)
-	util2.Success(c, nil)
+	util2.SuccessData(c, nil)
 }
 
 // swagger文档
@@ -122,7 +122,7 @@ func (w *GenCodeApi) RemoveByTableId(c *gin.Context) {
 		util2.Fail(c, err.Error())
 		return
 	}
-	util2.Success(c, nil)
+	util2.SuccessData(c, nil)
 }
 
 // EditSave 修改数据保存
@@ -139,7 +139,7 @@ func (w *GenCodeApi) EditSave(c *gin.Context) {
 		util2.Fail(c, err.Error())
 		return
 	}
-	util2.Success(c, nil)
+	util2.SuccessData(c, nil)
 }
 
 // Preview 预览代码
@@ -159,7 +159,7 @@ func (w *GenCodeApi) Preview(c *gin.Context) {
 			retMap[k] = v
 		}
 	}
-	util2.Success(c, retMap)
+	util2.SuccessData(c, retMap)
 }
 func (w *GenCodeApi) DataList(c *gin.Context) {
 	var req *vo.GenTablePageReq
@@ -218,7 +218,7 @@ func (w *GenCodeApi) ImportTableSave(c *gin.Context) {
 		util2.Fail(c, err.Error())
 		return
 	}
-	util2.Success(c, nil)
+	util2.SuccessData(c, nil)
 }
 
 // 生成代码
@@ -231,7 +231,7 @@ func (w *GenCodeApi) GenCode(c *gin.Context) {
 	var codeGenService service.CodeGenService
 	codeGenService.GenCode(entity, true)
 	//(genService)
-	util2.Success(c, nil)
+	util2.SuccessData(c, nil)
 }
 
 func (w *GenCodeApi) GetGenTableInfo(c *gin.Context) {
@@ -247,5 +247,5 @@ func (w *GenCodeApi) GetGenTableInfo(c *gin.Context) {
 	m["info"] = table
 	m["rows"] = columns
 	//m["tables"] = selectGenTableAllInfoById()
-	util2.Success(c, m)
+	util2.SuccessData(c, m)
 }

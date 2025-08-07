@@ -7,7 +7,7 @@ import (
 )
 
 type SysRole struct {
-	RoleId            int       `json:"roleId" gorm:"column:role_id;primaryKey"` //表示主键
+	RoleId            int       `json:"roleId" gorm:"type:bigint;column:role_id;primaryKey"` //表示主键
 	RoleName          string    `json:"roleName" gorm:"role_name"`
 	RoleKey           string    `json:"roleKey" gorm:"role_key"`
 	RoleSort          int       `json:"roleSort" gorm:"role_sort"`

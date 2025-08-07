@@ -8,7 +8,7 @@ import (
 
 // SysConfig 参数配置
 type SysConfig struct {
-	ConfigId    int    `gorm:"type:int(11);primary_key;auto_increment;参数主键;" json:"configId" form:"configId"`
+	ConfigId    int    `gorm:"type:bigint(11);primary_key;auto_increment;参数主键;" json:"configId" form:"configId"`
 	ConfigName  string `gorm:"type:varchar(100);comment:参数名称;" json:"configName" form:"configName"`
 	ConfigKey   string `gorm:"type:varchar(100);comment:参数键名;" json:"configKey" form:"configKey"`
 	ConfigValue string `gorm:"type:varchar(500);comment:参数键值;" json:"configValue" form:"configValue"`

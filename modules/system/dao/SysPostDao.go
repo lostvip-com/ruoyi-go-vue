@@ -31,7 +31,7 @@ func (d SysPostDao) FindPage(param *vo.PostPageReq) (*[]map[string]any, int, err
 	db := lv_db.GetOrmDefault()
 	sqlParams, sql := d.GetSql(param)
 	limitSql := sql + " order by u.post_id desc "
-	limitSql += "  limit " + cast.ToString(param.GetStartNum()) + "," + cast.ToString(param.GetPageSize())
+	limitSql += "  limit " + cast.ToString(param.GetStartNum()) + " offset " + cast.ToString(param.GetPageSize())
 	result, err := namedsql.ListMap(db, limitSql, sqlParams, true)
 	if err != nil {
 		return nil, 0, err

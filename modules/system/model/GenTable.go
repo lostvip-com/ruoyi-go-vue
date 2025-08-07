@@ -9,8 +9,7 @@ import (
 )
 
 type GenTable struct {
-	TableId int `gorm:"type:int(20);primary_key;auto_increment;参数主键;" json:"tableId" form:"tableId"`
-
+	TableId        int    `gorm:"type:bigint;size:20;primary_key;auto_increment;参数主键;" json:"tableId" form:"tableId"`
 	ParentMenuId   int    `json:"parentMenuId" gorm:"size:20;comment:上级菜单ID;"`
 	Table_Name     string `json:"tableName,omitempty" gorm:"size:32"`
 	TableComment   string `json:"tableComment" gorm:"size:32"`

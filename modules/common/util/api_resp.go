@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/lostvip-com/lv_framework/web/lv_dto"
 	"net/http"
+	"reflect"
 )
 
 func WriteTpl(c *gin.Context, tpl string, params ...gin.H) {
@@ -36,20 +37,76 @@ func FailNoAuth(c *gin.Context, msg string) {
 	c.AbortWithStatusJSON(http.StatusOK, &ret)
 }
 
-// Success 通常成功数据处理
-func Success(c *gin.Context, data any) {
-	//if data!=nil{
-	//	if reflect.TypeOf(data).Kind() == reflect.Ptr {
-	//		util.TranslateByTag(data)
-	//	}
-	//}
-	msg := lv_dto.CommonRes{
+func Success(c *gin.Context, data any, msg string) {
+	if data != nil {
+		local := c.GetHeader("Accept-Language")
+		TranslateI18nTagAll(local, data) //只翻译指针类型如：结构体指针 或 结构体切片指针
+	}
+	c.AbortWithStatusJSON(http.StatusOK, &lv_dto.CommonRes{
 		Code: 200,
 		Data: data,
-		Msg:  "Success",
+		Msg:  msg,
+	})
+}
+
+// TranslateI18nTagAll 递归翻译 data 内部的所有结构体
+// 支持的类型：
+// 1. 结构体指针 (*struct)
+// 2. 结构体 (struct)
+// 3. 切片指针 (*[]struct)
+// 4. 切片 ([]struct)
+func TranslateI18nTagAll(local string, data any) {
+	if data == nil {
+		return
 	}
-	c.AbortWithStatusJSON(http.StatusOK, &msg)
-	//c.AbortWithStatusJSON(http.StatusOK, gin.H{"code": 200, "data": data, "msg": "success"})
+	local = local[0:2] //如 zh-CN -> zh
+	val := reflect.ValueOf(data)
+
+	// 处理指针类型
+	if val.Kind() == reflect.Ptr {
+		if val.IsNil() {
+			return
+		}
+		// 解引用指针
+		val = val.Elem()
+	}
+
+	switch val.Kind() {
+	case reflect.Struct:
+		// 结构体：取地址后翻译
+		if val.CanAddr() {
+			TranslateI18nTag(local, val.Addr().Interface())
+		}
+	case reflect.Slice:
+		// 切片：遍历每个元素进行翻译
+		for i := 0; i < val.Len(); i++ {
+			item := val.Index(i)
+			// 如果元素本身是指针，则直接传入翻译
+			if item.Kind() == reflect.Ptr && !item.IsNil() && item.Elem().Kind() == reflect.Struct {
+				TranslateI18nTag(local, item.Interface())
+			} else if item.Kind() == reflect.Struct {
+				// 如果元素是结构体，则取地址后翻译
+				if item.CanAddr() {
+					TranslateI18nTag(local, item.Addr().Interface())
+				}
+			}
+			// 忽略非结构体元素，继续处理下一个
+		}
+	}
+}
+
+// SuccessData 通常成功数据处理
+func SuccessData(c *gin.Context, data any) {
+	Success(c, data, "Success")
+}
+
+func SuccessMsg(c *gin.Context, msg string) {
+
+	c.AbortWithStatusJSON(http.StatusOK, &lv_dto.CommonRes{
+		Code: 200,
+		Data: nil,
+		Msg:  msg,
+	})
 }
 
 // Error 失败数据处理
@@ -66,6 +123,10 @@ func ErrResp(c *gin.Context, res lv_dto.Resp) {
 
 // SuccessPage 分页数据处理 ， 自动翻译 Tag locale标记的字段
 func SuccessPage(c *gin.Context, rows any, total any) {
+	if rows != nil {
+		local := c.GetHeader("Accept-Language")
+		TranslateI18nTagAll(local, rows) //只翻译指针类型如：结构体指针 或 结构体切片指针
+	}
 	c.AbortWithStatusJSON(http.StatusOK, gin.H{"code": 200, "msg": "success", "rows": rows, "total": total})
 }
 

@@ -82,12 +82,12 @@ func (s *SchedulerService) AddJob(job *SysJob) error {
 // UpdateJob 更新定时任务
 func (s *SchedulerService) UpdateJob(job *SysJob) error {
 	// 更新任务相当于先移除再添加
-	s.RemoveJob(job.JobId)
+	s.removeFromCache(job.JobId)
 	return s.AddJob(job)
 }
 
 // RemoveJob 删除定时任务
-func (s *SchedulerService) RemoveJob(jobId int) error {
+func (s *SchedulerService) removeFromCache(jobId int) error {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
@@ -114,12 +114,11 @@ func (s *SchedulerService) StartJob(job *SysJob) error {
 }
 
 // StopJob 停止定时任务
-func (s *SchedulerService) StopJob(jobId int) error {
+func (s *SchedulerService) StopJob(job *SysJob) error {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
 	// 更新任务状态为停止
-	job := &SysJob{JobId: jobId}
 	job.Status = "1"
 	_, err := job.Update()
 	if err != nil {
@@ -127,10 +126,10 @@ func (s *SchedulerService) StopJob(jobId int) error {
 	}
 
 	// 从调度器中移除任务
-	if entryID, exists := s.jobs[jobId]; exists {
+	if entryID, exists := s.jobs[job.JobId]; exists {
 		s.cron.Remove(entryID)
-		delete(s.jobs, jobId)
-		lv_log.Info("停止定时任务成功:", jobId)
+		delete(s.jobs, job.JobId)
+		lv_log.Info("停止定时任务成功:", job.JobId)
 	}
 
 	return nil
@@ -164,7 +163,6 @@ func (s *SchedulerService) createJobFunc(job *SysJob) func() {
 			jobLog.Status = "1" // 执行失败
 			jobLog.JobMessage = "未找到指定的函数"
 		}
-
 		// 保存执行日志
 		_, err := jobLog.Save()
 		if err != nil {

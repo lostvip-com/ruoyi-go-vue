@@ -60,7 +60,7 @@ func (w *ProfileApi) Update(c *gin.Context) {
 	if err != nil {
 		util.Fail(c, err.Error())
 	} else {
-		util.Success(c, "")
+		util.SuccessData(c, "")
 	}
 }
 
@@ -72,7 +72,7 @@ func (w *ProfileApi) UpdatePassword(c *gin.Context) {
 	var userService service.UserService
 	err = userService.UpdatePassword(&req, c)
 	lv_err.HasErrAndPanic(err)
-	util.Success(c, nil)
+	util.SuccessData(c, nil)
 }
 
 // 保存头像
@@ -94,6 +94,6 @@ func (w *ProfileApi) UpdateAvatar(c *gin.Context) {
 	if err != nil {
 		util.Fail(c, err.Error())
 	} else {
-		util.Success(c, httpUrl)
+		util.SuccessData(c, httpUrl)
 	}
 }

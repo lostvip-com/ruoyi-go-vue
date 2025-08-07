@@ -23,7 +23,7 @@ type SysJob struct {
 	CronExpression string `json:"cronExpression" form:"cronExpression" gorm:"size:64;comment:cron执行表达式;"`
 	MisfirePolicy  string `json:"misfirePolicy" form:"misfirePolicy" gorm:"size:64;comment:计划执行错误策略（1立即执行 2执行一次 3放弃执行）;"`
 	Concurrent     string `json:"concurrent" form:"concurrent"  gorm:"size:64;comment:是否并发执行（0允许 1禁止）;"`
-	Status         string `json:"status" form:"status" gorm:"size:64;comment:调用目标函数;"`
+	Status         string `json:"status" form:"status" gorm:"size:64;comment:调用目标函数;1正常 0暂停"`
 	Remark         string `json:"remark" form:"remark" gorm:"size:64;comment:备注信息;"`
 	models.BaseModel
 }

@@ -9,6 +9,7 @@ import (
 	"github.com/lostvip-com/lv_framework/lv_cache/lv_redis"
 	"github.com/lostvip-com/lv_framework/lv_db"
 	"github.com/lostvip-com/lv_framework/lv_log"
+	"github.com/lostvip-com/lv_framework/utils/lv_err"
 	"github.com/lostvip-com/lv_framework/utils/lv_net"
 	"github.com/spf13/cast"
 	"strings"
@@ -29,7 +30,7 @@ func (m MonitorApi) CacheHandler(c *gin.Context) {
 	list = append(list, vo.CacheVO{CacheName: "repeat_submit:", Remark: "防重提交"})
 	list = append(list, vo.CacheVO{CacheName: "rate_limit:", Remark: "限流处理"})
 	list = append(list, vo.CacheVO{CacheName: "pwd_err_cnt:", Remark: "密码错误次数"})
-	util.Success(c, list)
+	util.SuccessData(c, list)
 }
 func (m MonitorApi) GetCacheKeysHandler(c *gin.Context) {
 	cacheName := c.Param("cacheName")
@@ -38,7 +39,7 @@ func (m MonitorApi) GetCacheKeysHandler(c *gin.Context) {
 	if err != nil {
 		util.Fail(c, err.Error())
 	}
-	util.Success(c, keys)
+	util.SuccessData(c, keys)
 }
 
 func (m MonitorApi) GetCacheValueHandler(c *gin.Context) {
@@ -55,7 +56,7 @@ func (m MonitorApi) GetCacheValueHandler(c *gin.Context) {
 		CacheKey:   cacheKey,
 		CacheValue: value,
 	}
-	util.Success(c, cache)
+	util.SuccessData(c, cache)
 }
 
 func (m MonitorApi) ClearCacheNameHandler(c *gin.Context) {
@@ -72,7 +73,7 @@ func (m MonitorApi) ClearCacheNameHandler(c *gin.Context) {
 			lv_log.Error("ClearCacheNameHandler error:", err.Error())
 		}
 	}
-	util.Success(c, nil)
+	util.SuccessData(c, nil)
 }
 
 func (m MonitorApi) ClearCacheKeyHandler(c *gin.Context) {
@@ -83,7 +84,7 @@ func (m MonitorApi) ClearCacheKeyHandler(c *gin.Context) {
 		util.Fail(c, err.Error())
 		return
 	}
-	util.Success(c, nil)
+	util.SuccessData(c, nil)
 }
 
 func (m MonitorApi) ClearCacheAllHandler(c *gin.Context) {
@@ -99,7 +100,7 @@ func (m MonitorApi) ClearCacheAllHandler(c *gin.Context) {
 			return
 		}
 	}
-	util.Success(c, nil)
+	util.SuccessData(c, nil)
 }
 
 func (m MonitorApi) ServerInfo(c *gin.Context) {
@@ -111,7 +112,7 @@ func (m MonitorApi) ServerInfo(c *gin.Context) {
 	info.Mem = server.GetMem()
 	info.Sys = server.GetSys(ip)
 	info.SysFile = server.GetSysFile()
-	util.Success(c, info)
+	util.SuccessData(c, info)
 }
 
 func (m MonitorApi) ListOnLine(c *gin.Context) {
@@ -159,7 +160,7 @@ func (m MonitorApi) DetectOnLine(c *gin.Context) {
 		util.Fail(c, error.Error())
 		return
 	}
-	util.Success(c, nil)
+	util.SuccessData(c, nil)
 }
 
 func (m MonitorApi) ListJob(c *gin.Context) {
@@ -285,7 +286,7 @@ func (m MonitorApi) GetJobById(c *gin.Context) {
 		util.Fail(c, err.Error())
 		return
 	}
-	util.Success(c, result)
+	util.SuccessData(c, result)
 }
 
 func (m MonitorApi) SaveJob(c *gin.Context) {
@@ -299,7 +300,7 @@ func (m MonitorApi) SaveJob(c *gin.Context) {
 		util.Fail(c, err.Error())
 		return
 	}
-	util.Success(c, result)
+	util.SuccessData(c, result)
 }
 
 func (m MonitorApi) UploadJob(c *gin.Context) {
@@ -314,21 +315,38 @@ func (m MonitorApi) UploadJob(c *gin.Context) {
 		util.Fail(c, err.Error())
 		return
 	}
-	util.Success(c, result)
+	if job.Status == "1" { //停止状态，移除缓存任务
+		err = schedule.GetSchedulerServiceInstance().StopJob(job)
+	} else {
+		err = schedule.GetSchedulerServiceInstance().StartJob(job)
+	}
+	util.SuccessData(c, result)
 }
 
 func (m MonitorApi) ChangeStatus(c *gin.Context) {
 	js := new(vo.JobStatus)
-	if err := c.ShouldBind(js); err != nil {
-		util.Fail(c, err.Error())
-		return
-	}
-	err := lv_db.GetOrmDefault().Table("sys_job").Where("job_id=?", js.JobId).UpdateColumn("status", js.Status).Error
+	err := c.ShouldBind(js)
 	if err != nil {
 		util.Fail(c, err.Error())
 		return
 	}
-	util.Success(c, nil)
+	// 移除缓存
+	job := new(schedule.SysJob)
+	job, err = job.FindById(js.JobId)
+	lv_err.HasErrAndPanic(err)
+	if js.Status == "1" { //停止状态，移除缓存任务
+		err = schedule.GetSchedulerServiceInstance().StopJob(job)
+	} else {
+		err = schedule.GetSchedulerServiceInstance().StartJob(job)
+	}
+	lv_err.HasErrAndPanic(err)
+	//更新状态
+	err = lv_db.GetOrmDefault().Table("sys_job").Where("job_id=?", js.JobId).UpdateColumn("status", js.Status).Error
+	if err != nil {
+		util.Fail(c, err.Error())
+		return
+	}
+	util.SuccessData(c, nil)
 }
 
 func (m MonitorApi) RunJob(c *gin.Context) {
@@ -337,7 +355,6 @@ func (m MonitorApi) RunJob(c *gin.Context) {
 		util.Fail(c, err.Error())
 		return
 	}
-
 	// 获取任务信息
 	job := new(schedule.SysJob)
 	job, err := job.FindById(js.JobId)
@@ -345,30 +362,25 @@ func (m MonitorApi) RunJob(c *gin.Context) {
 		util.Fail(c, "未找到指定任务")
 		return
 	}
-
 	// 立即执行一次任务
-	scheduler := schedule.GetSchedulerServiceInstance()
-	scheduler.RunJobOnce(job)
-
-	util.Success(c, "任务已启动执行")
+	schedule.GetSchedulerServiceInstance().RunJobOnce(job)
+	util.SuccessData(c, "任务已启动执行")
 }
 
-func (m MonitorApi) DelectJob(c *gin.Context) {
+func (m MonitorApi) DelJobs(c *gin.Context) {
 	jobIds := c.Param("jobIds")
 	arr := strings.Split(jobIds, ",")
 
 	// 删除任务前先从调度器中移除
 	scheduler := schedule.GetSchedulerServiceInstance()
 	for _, idStr := range arr {
-		scheduler.RemoveJob(cast.ToInt(idStr))
+		job := new(schedule.SysJob)
+		job, err := job.FindById(cast.ToInt(idStr))
+		lv_err.HasErrAndPanic(err)
+		err = scheduler.StopJob(job)
+		lv_err.HasErrAndPanic(err)
 	}
-
-	err := lv_db.GetOrmDefault().Where("job_id in ( ? )", arr).Delete(&schedule.SysJob{}).Error
-	if err != nil {
-		util.Fail(c, err.Error())
-		return
-	}
-	util.Success(c, nil)
+	util.SuccessData(c, nil)
 }
 
 func (m MonitorApi) ListJobLog(c *gin.Context) {
@@ -474,17 +486,17 @@ func (m MonitorApi) GetJobLog(c *gin.Context) {
 		util.Fail(c, err.Error())
 		return
 	}
-	util.Success(c, nil)
+	util.SuccessData(c, nil)
 }
 
-func (m MonitorApi) DetectJobLog(c *gin.Context) {
+func (m MonitorApi) DelLogs(c *gin.Context) {
 	var ids = c.Param("jobLogIds")
-	err := lv_db.GetOrmDefault().Where("id in ( ? )", util.SplitToInt(ids, ",")).Delete(&schedule.SysJobLog{}).Error
+	err := lv_db.GetOrmDefault().Table("sys_job_log").Where("job_log_id in ?", util.SplitToInt(ids, ",")).Delete(&schedule.SysJobLog{}).Error
 	if err != nil {
 		util.Fail(c, err.Error())
 		return
 	}
-	util.Success(c, nil)
+	util.SuccessData(c, nil)
 }
 
 func (m MonitorApi) ClearJobLog(c *gin.Context) {
@@ -493,5 +505,5 @@ func (m MonitorApi) ClearJobLog(c *gin.Context) {
 		util.Fail(c, err.Error())
 		return
 	}
-	util.Success(c, nil)
+	util.SuccessData(c, nil)
 }

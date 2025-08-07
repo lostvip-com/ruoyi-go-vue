@@ -12,8 +12,8 @@ import (
 
 // SysUserPost 用户与岗位关联
 type SysUserPost struct {
-	UserId int `gorm:"size:20;primary_key;auto_increment;用户ID;"     json:"userId"  form:"userId"`
-	PostId int `gorm:"size:20;primary_key;auto_increment;岗位ID;"     json:"postId"  form:"postId"`
+	UserId int `gorm:"type:bigint;size:20;primary_key;auto_increment;用户ID;"     json:"userId"  form:"userId"`
+	PostId int `gorm:"type:bigint;size:20;primary_key;auto_increment;岗位ID;"     json:"postId"  form:"postId"`
 }
 
 func (e *SysUserPost) TableName() string {

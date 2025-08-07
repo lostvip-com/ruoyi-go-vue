@@ -25,14 +25,14 @@ func (w *ConfigApi) GetConfigInfo(c *gin.Context) {
 		util.Fail(c, err.Error())
 		return
 	}
-	util.Success(c, value)
+	util.SuccessData(c, value)
 }
 
 func (w *ConfigApi) GetConfigValueByKey(c *gin.Context) {
 	configKey := c.Param("configKey")
 	var configService = service.GetConfigServiceInstance()
 	value := configService.GetValue(configKey)
-	util.Success(c, value)
+	util.SuccessData(c, value)
 }
 
 func (w *ConfigApi) ListAjax(c *gin.Context) {
@@ -73,7 +73,7 @@ func (w *ConfigApi) AddSave(c *gin.Context) {
 		util.Fail(c, err.Error())
 		return
 	}
-	util.Success(c, "")
+	util.SuccessData(c, "")
 }
 
 func (w *ConfigApi) EditSave(c *gin.Context) {
@@ -83,14 +83,14 @@ func (w *ConfigApi) EditSave(c *gin.Context) {
 	w.FillInUpdate(c, &req.BaseModel)
 	var configService = service.GetConfigServiceInstance()
 	configService.EditSave(req)
-	util.Success(c, "")
+	util.SuccessData(c, "")
 }
 
 func (w *ConfigApi) Remove(c *gin.Context) {
 	var configIds = c.Param("configIds")
 	var configService service.ConfigService
 	configService.DeleteByIds(configIds)
-	util.Success(c, "")
+	util.SuccessData(c, "")
 }
 
 func (w *ConfigApi) Export(c *gin.Context) {
@@ -101,7 +101,7 @@ func (w *ConfigApi) Export(c *gin.Context) {
 	url, err := configService.Export(req)
 	lv_err.HasErrAndPanic(err)
 
-	util.Success(c, url)
+	util.SuccessData(c, url)
 }
 
 func (w *ConfigApi) RefreshCacheConfig(c *gin.Context) {
@@ -114,5 +114,5 @@ func (w *ConfigApi) RefreshCacheConfig(c *gin.Context) {
 		err = redisCache.Del(key)
 		lv_err.HasErrAndPanic(err)
 	}
-	util.Success(c, nil)
+	util.SuccessData(c, nil)
 }

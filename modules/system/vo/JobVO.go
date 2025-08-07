@@ -21,7 +21,7 @@ type JobReq struct {
 }
 
 type JobStatus struct {
-	JobId    int    `form:"jobId" form:"jobId"`
+	JobId    int    `form:"jobId" form:"jobId"` // 0 正常 1 禁用
 	Status   string `form:"status" form:"status"`
 	JobGroup string `form:"jobGroup" form:"jobGroup"`
 }

@@ -34,3 +34,13 @@ const (
 const (
 	KEY_CACHE_TYPE = "application.cache-type"
 )
+
+// gin 协程内共享的变量 set get 使用
+const (
+	KEY_GIN_USER_PTR = "user"
+	KEY_GIN_USERNAME = "userName"
+	KEY_GIN_USER_ID  = "userId"
+	KEY_GIN_DEPT_ID  = "deptId"
+	KEY_GIN_BIZ_TYPE = "bizCode" //操作编码，用于业务日志记录
+	KEY_GIN_IN_PARAM = "inParam"
+)

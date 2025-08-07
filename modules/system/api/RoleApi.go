@@ -26,7 +26,7 @@ func (w *RoleApi) GetRoleOptionSelect(c *gin.Context) {
 		util.Fail(c, err.Error())
 		return
 	}
-	util.Success(c, arr)
+	util.SuccessData(c, arr)
 }
 func (w *RoleApi) GetRoleInfo(c *gin.Context) {
 	roleId := c.Param("roleId")
@@ -36,7 +36,7 @@ func (w *RoleApi) GetRoleInfo(c *gin.Context) {
 		util.Fail(c, err.Error())
 		return
 	}
-	util.Success(c, role)
+	util.SuccessData(c, role)
 }
 
 // 列表分页数据
@@ -82,7 +82,7 @@ func (w *RoleApi) AddSave(c *gin.Context) {
 		util.Fail(c, err.Error())
 		return
 	}
-	util.Success(c, nil)
+	util.SuccessData(c, nil)
 }
 
 func (w *RoleApi) EditSave(c *gin.Context) {
@@ -98,7 +98,7 @@ func (w *RoleApi) EditSave(c *gin.Context) {
 		util.Fail(c, err.Error())
 		return
 	}
-	util.Success(c, nil)
+	util.SuccessData(c, nil)
 }
 
 func (w *RoleApi) ChangeStatus(c *gin.Context) {
@@ -109,7 +109,7 @@ func (w *RoleApi) ChangeStatus(c *gin.Context) {
 	}
 	sql := " update sys_role set status=? where role_id = ? "
 	rows := db2.GetOrmDefault().Exec(sql, req.Status, req.RoleId).RowsAffected
-	util.Success(c, rows)
+	util.SuccessData(c, rows)
 }
 
 func (w *RoleApi) GetUnAllocatedList(c *gin.Context) {
@@ -140,7 +140,7 @@ func (w *RoleApi) Remove(c *gin.Context) {
 	if err != nil {
 		util.Fail(c, err.Error())
 	} else {
-		util.Success(c, nil)
+		util.SuccessData(c, nil)
 	}
 }
 
@@ -160,7 +160,7 @@ func (w *RoleApi) PutDataScope(c *gin.Context) {
 		util.Fail(c, err.Error())
 		return
 	}
-	util.Success(c, nil)
+	util.SuccessData(c, nil)
 }
 
 // 查询已分配用户角色列表
@@ -202,7 +202,7 @@ func (w *RoleApi) AuthRoleToUsers(c *gin.Context) {
 		util.Fail(c, err.Error())
 		return
 	}
-	util.Success(c, nil)
+	util.SuccessData(c, nil)
 }
 func (w *RoleApi) CancelAll(c *gin.Context) {
 	roleId := cast.ToInt(c.Query("roleId"))
@@ -213,7 +213,7 @@ func (w *RoleApi) CancelAll(c *gin.Context) {
 		util.Fail(c, err.Error())
 		return
 	}
-	util.Success(c, nil)
+	util.SuccessData(c, nil)
 }
 
 func (w *RoleApi) Cancel(c *gin.Context) {
@@ -228,7 +228,7 @@ func (w *RoleApi) Cancel(c *gin.Context) {
 		util.Fail(c, err.Error())
 		return
 	}
-	util.Success(c, nil)
+	util.SuccessData(c, nil)
 }
 
 func (w *RoleApi) GetDeptTreeRole(c *gin.Context) {

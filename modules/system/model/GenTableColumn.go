@@ -9,7 +9,7 @@ import (
 )
 
 type GenTableColumn struct {
-	ColumnId      int    `gorm:"size:20;primary_key;auto_increment;编号;" json:"columnId"`
+	ColumnId      int    `gorm:"type:bigint;size:20;primary_key;auto_increment;编号;" json:"columnId"`
 	TableId       int    `gorm:"size:20;comment:归属表编号;" json:"tableId"`
 	ColumnName    string `gorm:"type:string;size:32;comment:列名称;" json:"columnName"`
 	ColumnComment string `gorm:"type:string;size:32;comment:列描述;" json:"columnComment"`

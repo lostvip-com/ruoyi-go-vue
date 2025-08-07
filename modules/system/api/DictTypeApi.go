@@ -19,7 +19,7 @@ func (w *DictTypeApi) GetTypeDict(c *gin.Context) {
 	dictType := new(model.SysDictType)
 	dictType, err := dictType.FindById(cast.ToInt(dictId))
 	lv_err.HasErrAndPanic(err)
-	util.Success(c, dictType)
+	util.SuccessData(c, dictType)
 }
 
 // ListAjax 列表分页数据
@@ -67,7 +67,7 @@ func (w *DictTypeApi) AddSave(c *gin.Context) {
 		util.Fail(c, err.Error())
 		return
 	}
-	util.Success(c, nil)
+	util.SuccessData(c, nil)
 }
 
 // EditSave 修改页面保存
@@ -90,7 +90,7 @@ func (w *DictTypeApi) EditSave(c *gin.Context) {
 		util.Fail(c, err.Error())
 		return
 	}
-	util.Success(c, nil)
+	util.SuccessData(c, nil)
 }
 
 // Remove 删除数据
@@ -99,7 +99,7 @@ func (w *DictTypeApi) Remove(c *gin.Context) {
 	var dictTypeService service.DictTypeService
 	err := dictTypeService.DeleteByIds(dictIds)
 	if err == nil {
-		util.Success(c, nil)
+		util.SuccessData(c, nil)
 	} else {
 		util.Fail(c, err.Error())
 	}
@@ -123,7 +123,7 @@ func (w *DictTypeApi) Export(c *gin.Context) {
 	//var dictTypeService service.DictTypeService
 	//url, err := dictTypeService.Export(req)
 	//if err == nil {
-	//	util.Success(c, url)
+	//	util.SuccessData(c, url)
 	//} else {
 	//	util.Fail(c, err.Error())
 	//}
@@ -136,5 +136,5 @@ func (w *DictTypeApi) GetOptionSelect(c *gin.Context) {
 		util.Fail(c, err.Error())
 		return
 	}
-	util.Success(c, result)
+	util.SuccessData(c, result)
 }

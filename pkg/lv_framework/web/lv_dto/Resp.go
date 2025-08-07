@@ -8,7 +8,12 @@ type Resp struct {
 	// 消息
 	Msg string `json:"msg"`
 }
-
+func (r *Resp) GetCode() int  {
+	return r.Code
+}
+func (r *Resp) GetMsg() string  {
+	return r.Msg
+}
 func (res *Resp) ReturnOK() *Resp {
 	res.Code = 200
 	res.Msg = "Success!"

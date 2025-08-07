@@ -13,7 +13,7 @@ import (
 
 // SysPost 岗位信息
 type SysPost struct {
-	PostId   int    `gorm:"size:20;primary_key;auto_increment;岗位ID;"     json:"postId"  form:"postId"`
+	PostId   int    `gorm:"type:bigint;size:20;primary_key;auto_increment;岗位ID;"     json:"postId"  form:"postId"`
 	PostCode string `gorm:"type:varchar(64);comment:岗位编码;" json:"postCode" form:"postCode"`
 	PostName string `gorm:"type:varchar(50);comment:岗位名称;" json:"postName" form:"postName"`
 	PostSort int    `gorm:"type:int(11);comment:显示顺序;" json:"postSort" form:"postSort"`

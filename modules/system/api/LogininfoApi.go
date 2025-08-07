@@ -1,6 +1,7 @@
 package api
 
 import (
+	api2 "common/api"
 	"common/util"
 	"github.com/gin-gonic/gin"
 	"system/model"
@@ -9,6 +10,7 @@ import (
 )
 
 type LogininfoApi struct {
+	api2.BaseApi
 }
 
 // ListAjax 用户列表分页数据
@@ -34,7 +36,7 @@ func (w *LogininfoApi) Remove(c *gin.Context) {
 	//获取参数
 	err := service.GetLoginServiceInstance().DeleteByIds(ids)
 	if err == nil {
-		util.Success(c, nil)
+		util.SuccessData(c, nil)
 	} else {
 		util.Fail(c, "fail")
 	}
@@ -45,7 +47,7 @@ func (w *LogininfoApi) Clean(c *gin.Context) {
 	err := service.GetLoginServiceInstance().DeleteRecordAll()
 
 	if err == nil {
-		util.Success(c, nil)
+		util.SuccessData(c, nil)
 	} else {
 		util.Fail(c, err.Error())
 	}
@@ -63,7 +65,7 @@ func (w *LogininfoApi) Export(c *gin.Context) {
 	if err != nil {
 		util.Fail(c, err.Error())
 	} else {
-		util.Success(c, url)
+		util.SuccessData(c, url)
 	}
 }
 
@@ -76,7 +78,7 @@ func (w *LogininfoApi) Unlock(c *gin.Context) {
 		var loginService = service.GetLoginServiceInstance()
 		loginService.RemovePasswordCounts(UserName)
 		loginService.Unlock(UserName)
-		util.Success(c, nil)
+		util.SuccessData(c, nil)
 	}
 
 }

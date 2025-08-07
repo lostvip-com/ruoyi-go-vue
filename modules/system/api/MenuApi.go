@@ -24,7 +24,7 @@ func (w *MenuApi) GetMenuInfo(c *gin.Context) {
 		util.Fail(c, err.Error())
 		return
 	}
-	util.Success(c, menu)
+	util.SuccessData(c, menu)
 }
 
 // ListMenu 列表分页数据
@@ -45,7 +45,7 @@ func (w *MenuApi) ListMenu(c *gin.Context) {
 	if err != nil {
 		util.Fail(c, err.Error())
 	}
-	util.Success(c, rows)
+	util.SuccessData(c, rows)
 }
 
 // AddSave 新增页面保存
@@ -66,7 +66,7 @@ func (w *MenuApi) AddSave(c *gin.Context) {
 		util.Fail(c, err.Error())
 		return
 	}
-	util.Success(c, id)
+	util.SuccessData(c, id)
 }
 
 // EditSave 修改页面保存
@@ -82,14 +82,14 @@ func (w *MenuApi) EditSave(c *gin.Context) {
 		util.Fail(c, err.Error())
 		return
 	}
-	util.Success(c, req)
+	util.SuccessData(c, req)
 }
 
 func (w *MenuApi) RemoveMenu(c *gin.Context) {
 	var menuId = cast.ToInt(c.Param("menuId"))
 	err := service.GetMenuServiceInstance().DeleteById(menuId)
 	if err == nil {
-		util.Success(c, gin.H{"id": menuId})
+		util.SuccessData(c, gin.H{"id": menuId})
 	} else {
 		util.Fail(c, err.Error())
 	}
@@ -109,7 +109,7 @@ func (w *MenuApi) GetTreeSelect(c *gin.Context) {
 		return
 	}
 	var arrTree = svc.BuildMenuTreeSelect(menus)
-	util.Success(c, arrTree)
+	util.SuccessData(c, arrTree)
 }
 
 func (w *MenuApi) TreeSelectByRole(c *gin.Context) {

@@ -3,8 +3,10 @@ package api
 import (
 	"common/util"
 	"github.com/gin-gonic/gin"
+	"github.com/lostvip-com/lv_framework/lv_db"
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
 	"github.com/spf13/cast"
+	"strings"
 	"system/service"
 	"system/vo"
 )
@@ -26,13 +28,15 @@ func (w *OperateLogApi) ListAjax(c *gin.Context) {
 
 // 清空记录
 func (w *OperateLogApi) Clean(c *gin.Context) {
-	var operlogService service.OperLogService
-	err := operlogService.DeleteRecordAll()
+	err := service.GetOperLogServiceInstance().DeleteRecordAll()
 	lv_err.HasErrAndPanic(err)
-	util.Success(c, nil)
+	util.SuccessData(c, nil)
 }
 
-func (w *OperateLogApi) DelectOperlog(context *gin.Context) {
-	var operId = context.Param("operId")
-	service.GetOperLogServiceInstance().DeleteById(cast.ToInt(operId))
+func (w *OperateLogApi) DelLogs(c *gin.Context) {
+	var operIds = c.Param("operIds")
+	ids := strings.Split(operIds, ",")
+	db := lv_db.GetOrmDefault().Table("sys_oper_log").Delete("oper_id in ? ", ids)
+	lv_err.HasErrAndPanic(db.Error)
+	util.SuccessMsg(c, "rows:"+cast.ToString(db.RowsAffected))
 }

@@ -28,7 +28,7 @@ func (w *UserApi) RemoveUsers(c *gin.Context) {
 		util.Fail(c, err.Error())
 		return
 	}
-	util.Success(c, nil)
+	util.SuccessData(c, nil)
 }
 
 func (w *UserApi) GetUserInfo(c *gin.Context) {
@@ -152,7 +152,7 @@ func (w *UserApi) AddSave(c *gin.Context) {
 		util.Fail(c, err.Error())
 		return
 	}
-	util.Success(c, uid)
+	util.SuccessData(c, uid)
 }
 
 func (w *UserApi) ChangeStatus(c *gin.Context) {
@@ -160,7 +160,7 @@ func (w *UserApi) ChangeStatus(c *gin.Context) {
 	status := c.Query("status")
 	sql := " update sys_user set status=? where user_id = ? "
 	rows := lv_db.GetOrmDefault().Exec(sql, status, userId).RowsAffected
-	util.Success(c, rows)
+	util.SuccessData(c, rows)
 }
 
 func (w *UserApi) ResetPwdSave(c *gin.Context) {
@@ -175,7 +175,7 @@ func (w *UserApi) ResetPwdSave(c *gin.Context) {
 		util.Fail(c, err.Error())
 		return
 	}
-	util.Success(c, nil)
+	util.SuccessData(c, nil)
 }
 
 func (w *UserApi) EditSave(c *gin.Context) {
@@ -190,7 +190,7 @@ func (w *UserApi) EditSave(c *gin.Context) {
 		util.Fail(c, err.Error())
 		return
 	}
-	util.Success(c, req.UserId)
+	util.SuccessData(c, req.UserId)
 }
 
 // 导出
@@ -235,7 +235,7 @@ func (w *UserApi) PutAuthUserRoleIds(c *gin.Context) {
 		util.Fail(c, err.Error())
 		return
 	}
-	util.Success(c, nil)
+	util.SuccessData(c, nil)
 }
 
 func (w *UserApi) GetAuthUserRole(c *gin.Context) {
@@ -256,7 +256,7 @@ func (w *UserApi) GetAuthUserRole(c *gin.Context) {
 func (w *UserApi) GetUserDeptTree(c *gin.Context) {
 	var deptSvc = service2.GetDeptServiceInstance()
 	list := deptSvc.SelectDeptTreeList()
-	util.Success(c, list)
+	util.SuccessData(c, list)
 }
 
 func (w *UserApi) ExportExport(context *gin.Context) {

@@ -6,7 +6,7 @@ import (
 )
 
 type SysMenu struct {
-	MenuId   int    `json:"menuId" gorm:"column:menu_id;primaryKey"`
+	MenuId   int    `json:"menuId" gorm:"type:bigint;column:menu_id;primary_key;auto_increment;"`
 	MenuName string `json:"menuName" gorm:"menu_name"`
 	ParentId int    `json:"parentId" gorm:"parent_id"`
 	OrderNum int    `json:"orderNum" gorm:"order_num"`

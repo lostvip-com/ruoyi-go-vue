@@ -13,7 +13,7 @@ import (
 
 // SysLogininfor 系统访问记录
 type SysLoginInfo struct {
-	InfoId        int       `gorm:"size:20;primary_key;auto_increment;访问ID;" json:"infoId"`
+	InfoId        int       `gorm:"type:bigint;size:20;primary_key;auto_increment;访问ID;" json:"infoId"`
 	UserName      string    `gorm:"type:varchar(50);comment:登录账号;" json:"userName"`
 	Ipaddr        string    `gorm:"type:varchar(50);comment:登录IP地址;" json:"ipaddr"`
 	LoginLocation string    `gorm:"type:varchar(255);comment:登录地点;" json:"loginLocation"`
@@ -22,6 +22,14 @@ type SysLoginInfo struct {
 	Status        string    `gorm:"type:char(1);comment:登录状态（0成功 1失败）;" json:"status"`
 	Msg           string    `gorm:"type:varchar(255);comment:提示消息;" json:"msg"`
 	LoginTime     time.Time `gorm:"type:datetime;comment:访问时间;" json:"loginTime" time_format:"2006-01-02 15:04:05"`
+
+	UserId   int    `gorm:"-" json:"userId"`
+	DeptId   int    `gorm:"-" json:"deptId"`
+	TokenId  string `gorm:"-" json:"tokenId"`
+	RoleKeys string `gorm:"-" json:"roleKeys"`
+	DeptName string `gorm:"-" json:"deptName"`
+	Avatar   string `gorm:"-" json:"avatar"` //登录名称对应的头像
+	TenantId int    `gorm:"-" json:"avatar"`
 }
 
 func (*SysLoginInfo) TableName() string {

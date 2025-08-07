@@ -5,8 +5,8 @@ import (
 )
 
 type SysRoleMenu struct {
-	RoleId int `gorm:"size:20;primary_key;comment:用户ID;"`
-	MenuId int `gorm:"size:20;primary_key;comment:菜单ID;"`
+	RoleId int `gorm:"type:bigint;size:20;primary_key;comment:用户ID;"`
+	MenuId int `gorm:"type:bigint;size:20;primary_key;comment:菜单ID;"`
 }
 
 // 映射数据表

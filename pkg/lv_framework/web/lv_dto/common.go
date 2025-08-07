@@ -25,6 +25,12 @@ type CommonRes struct {
 	Data interface{} `json:"data"` //数据内容
 }
 
+func (r *CommonRes) GetCode() int  {
+	return r.Code
+}
+func (r *CommonRes) GetMsg() string  {
+	return r.Msg
+}
 // 验证码响应
 type CaptchaRes struct {
 	Code           int         `json:"code"` //响应编码 0 成功 500 错误 403 无权限

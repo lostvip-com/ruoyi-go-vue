@@ -20,7 +20,7 @@ func (w *DictDataApi) GetDictDataByDictType(c *gin.Context) {
 		util.Fail(c, err.Error())
 		return
 	} else {
-		util.Success(c, list)
+		util.SuccessData(c, list)
 	}
 }
 
@@ -58,7 +58,7 @@ func (w *DictDataApi) AddSave(c *gin.Context) {
 		util.Fail(c, err.Error())
 		return
 	}
-	util.Success(c, nil)
+	util.SuccessData(c, nil)
 }
 
 // 修改页面保存
@@ -71,7 +71,7 @@ func (w *DictDataApi) EditSave(c *gin.Context) {
 	var dictService service.DictDataService
 	err := dictService.EditSave(req, c)
 	if err == nil {
-		util.Success(c, nil)
+		util.SuccessData(c, nil)
 	} else {
 		util.Fail(c, err.Error())
 	}
@@ -83,7 +83,7 @@ func (w *DictDataApi) Remove(c *gin.Context) {
 	var dictService service.DictDataService
 	err := dictService.DeleteByIds(dictCodes)
 	if err == nil {
-		util.Success(c, nil)
+		util.SuccessData(c, nil)
 	} else {
 		util.Fail(c, err.Error())
 	}
@@ -100,7 +100,7 @@ func (w *DictDataApi) Export(c *gin.Context) {
 	var dictService service.DictDataService
 	url, err := dictService.Export(req)
 	if err == nil {
-		util.Success(c, url)
+		util.SuccessData(c, url)
 	} else {
 		util.Fail(c, err.Error())
 	}

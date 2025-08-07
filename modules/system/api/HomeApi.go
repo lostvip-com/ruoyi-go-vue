@@ -45,5 +45,5 @@ func (w *HomeApi) GetRouters(c *gin.Context) {
 	}
 	lv_err.HasErrAndPanic(err)
 	var data = menuService.BuildMenus(menus) //获取配置数
-	util.Success(c, data)
+	util.SuccessData(c, data)
 }

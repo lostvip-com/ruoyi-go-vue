@@ -21,8 +21,8 @@ func init() {
 	//操作日志
 	operApi := api.OperateLogApi{}
 	monitor.GET("/operlog/list", "monitor:operlog:list", operApi.ListAjax)
-	monitor.DELETE("/operlog/:operId", "monitor:operlog:Remove", operApi.DelectOperlog)
-	monitor.DELETE("/operlog/clean", "monitor:operlog:export", operApi.Clean)
+	monitor.DELETE("/operlog/:operIds", "monitor:operlog:remove", operApi.DelLogs)
+	monitor.DELETE("/operlog/clean", "monitor:operlog:remove", operApi.Clean)
 	// 监控
 
 	monitor.GET("/cache", "", monitorApi.CacheHandler)
@@ -43,13 +43,13 @@ func init() {
 	monitor.GET("/job/list", "", monitorApi.ListJob)
 	monitor.POST("/job/export", "", monitorApi.ExportJob)
 	monitor.PUT("/job/changeStatus", "", monitorApi.ChangeStatus)
-	monitor.DELETE("/job/:jobIds", "", monitorApi.DelectJob)
+	monitor.DELETE("/job/:jobIds", "", monitorApi.DelJobs)
 	monitor.PUT("/job/run", "", monitorApi.RunJob)
 	//job log
 	monitor.GET("/jobLog/list", "", monitorApi.ListJobLog)
 	monitor.POST("/jobLog/export", "", monitorApi.ExportJobLog)
 	monitor.GET("/jobLog/:logId", "", monitorApi.GetJobLog)
-	monitor.DELETE("/jobLog/:jobLogIds", "", monitorApi.DetectJobLog)
+	monitor.DELETE("/jobLog/:jobLogIds", "", monitorApi.DelLogs)
 	monitor.DELETE("/jobLog/clean", "", monitorApi.ClearJobLog)
 
 }
