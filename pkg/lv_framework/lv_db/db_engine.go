@@ -38,7 +38,7 @@ func GetInstance() *dbEngine {
 }
 
 // GetDB 获取操作实例 如果传入slave 并且成功配置了slave 返回slave orm引擎 否则返回master orm引擎
-func (db *dbEngine) GetDB(dbName string) *gorm.DB {
+func (db *dbEngine) GetOrmDB(dbName string) *gorm.DB {
 	gdb := db.gormMap[dbName]
 	if gdb == nil {
 		var config = lv_global.Config()
@@ -46,6 +46,17 @@ func (db *dbEngine) GetDB(dbName string) *gorm.DB {
 		url := config.GetValueStr(fmt.Sprintf("application.datasource.%s.url", dbName))
 		gdb = createGormDB(driverName, url)
 		db.gormMap[dbName] = gdb
+	}
+	return gdb
+}
+func GetDB(dbName string) *gorm.DB {
+	gdb := GetInstance().gormMap[dbName]
+	if gdb == nil {
+		var config = lv_global.Config()
+		driverName := config.GetDriver(dbName)
+		url := config.GetValueStr(fmt.Sprintf("application.datasource.%s.url", dbName))
+		gdb = createGormDB(driverName, url)
+		GetInstance().gormMap[dbName] = gdb
 	}
 	return gdb
 }
@@ -62,7 +73,7 @@ func GetOrmDefault() *gorm.DB {
 	}
 	defaultDb := GetInstance().gormMap[dbName]
 	if defaultDb == nil {
-		defaultDb = GetInstance().GetDB(dbName)
+		defaultDb = GetDB(dbName)
 	}
 	return defaultDb
 }

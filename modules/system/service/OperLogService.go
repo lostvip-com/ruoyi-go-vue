@@ -3,6 +3,8 @@ package service
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/lostvip-com/lv_framework/lv_db"
+	"github.com/lostvip-com/lv_framework/utils/lv_if"
+	"github.com/spf13/cast"
 	"system/model"
 	"system/vo"
 	"time"
@@ -73,8 +75,8 @@ func (svc OperLogService) SaveLog(c *gin.Context, status int, inContent, outCont
 	}
 	operLog.OperIp = c.ClientIP()
 	//operLog.OperLocation = GetCityByIp(operLog.OperIp)
-	operLog.OperParam = inContent
-	operLog.JsonResult = outContent
+	operLog.OperParam = cast.ToString(lv_if.IfTrue(len(inContent) > 100, inContent, inContent[0:100])) + "..."
+	operLog.JsonResult = cast.ToString(lv_if.IfTrue(len(outContent) > 100, outContent, outContent[0:100])) + "..."
 	//操作类别（0其它 1后台用户 2手机端用户）
 	operLog.OperatorType = 1
 	//操作状态（0正常 1异常）
@@ -82,7 +84,8 @@ func (svc OperLogService) SaveLog(c *gin.Context, status int, inContent, outCont
 	operLog.OperName = user.UserName
 	operLog.RequestMethod = c.Request.Method
 	operLog.DeptName = user.Dept.DeptName
-	operLog.OperUrl = c.Request.URL.Path
+	path := c.Request.URL.Path
+	operLog.OperUrl = cast.ToString(lv_if.IfTrue(len(path) > 100, path, path[0:100])) + "..."
 	operLog.Method = c.Request.Method
 	operLog.OperTime = time.Now()
 	return operLog.Save()

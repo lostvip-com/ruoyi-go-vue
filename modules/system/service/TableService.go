@@ -6,7 +6,7 @@ import (
 	"common/util"
 	"context"
 	"errors"
-	"github.com/lostvip-com/lv_framework/utils/lv_logic"
+	"github.com/lostvip-com/lv_framework/utils/lv_if"
 	"os"
 	"strings"
 	"system/dao"
@@ -213,7 +213,7 @@ func (svc TableService) InitTable(table *model.GenTable, createBy string) {
 	table.TableComment = strings.ReplaceAll(table.TableComment, "表", "")
 	if table.TableComment == "" {
 		table.TableComment = table.ClassName
-		funcName := lv_logic.IfTrue(len(table.TableComment) < 10, table.TableComment, table.TableComment[0:10])
+		funcName := lv_if.IfTrue(len(table.TableComment) < 10, table.TableComment, table.TableComment[0:10])
 		table.FunctionName = cast.ToString(funcName)
 	}
 }

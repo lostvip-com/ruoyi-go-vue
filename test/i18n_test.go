@@ -6,7 +6,7 @@ import (
 	"common/util"
 	"fmt"
 	"github.com/lostvip-com/lv_framework/lv_db"
-	"github.com/lostvip-com/lv_framework/utils/lv_conv"
+	"github.com/lostvip-com/lv_framework/utils/lv_json"
 	"testing"
 )
 
@@ -15,21 +15,21 @@ func TestI18n(t *testing.T) {
 	lv_db.GetOrmDefault()
 	fmt.Println(cfg)
 	paramId := 1
-	model := models.DevParam{}
+	model := models.SysDictData{}
 	modelPtr, _ := model.FindById(paramId)
 	//model.GroupCode = "home"
 	util.TranslateI18nTagAll("zh", modelPtr)
-	fmt.Println("==============modelPtr===========", modelPtr.Name)
+	fmt.Println("==============modelPtr===========", modelPtr.DictLabel)
 
-	list := []models.DevParam{}
+	list := []models.SysDictData{}
 	list = append(list, model)
 	util.TranslateI18nTagAll("zh", &list)
-	str := lv_conv.ToJsonStr(list)
+	str := lv_json.ToJsonStr(list)
 	fmt.Println("==============list===========", str)
 
 	list = append(list, model)
 	util.TranslateI18nTagAll("zh", list)
-	str = lv_conv.ToJsonStr(list)
+	str = lv_json.ToJsonStr(list)
 	fmt.Println("============== arr ===========", str)
 	//
 	//listPtr, _ := dao.GetDevParamDaoInstance().SelectByCodes("home", []string{"FLOAT_AC1_PHASEVOL_A_ID"})

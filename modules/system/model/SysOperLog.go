@@ -24,8 +24,8 @@ type SysOperLog struct {
 	OperUrl       string    `gorm:"type:varchar(255);comment:请求URL;" json:"operUrl"`
 	OperIp        string    `gorm:"type:varchar(50);comment:主机地址;" json:"operIp"`
 	OperLocation  string    `gorm:"type:varchar(255);comment:操作地点;" json:"operLocation"`
-	OperParam     string    `gorm:"type:varchar(2000);comment:请求参数;" json:"operParam"`
-	JsonResult    string    `gorm:"type:varchar(2000);comment:返回参数;" json:"jsonResult"`
+	OperParam     string    `gorm:"type:text;comment:请求参数;" json:"operParam"`
+	JsonResult    string    `gorm:"type:text;comment:返回参数;" json:"jsonResult"`
 	Status        int       `gorm:"type:int(11);comment:操作状态（0正常 1异常）;" json:"status"`
 	ErrorMsg      string    `gorm:"type:varchar(2000);comment:错误消息;" json:"errorMsg"`
 	OperTime      time.Time `gorm:"type:datetime;comment:操作时间;" json:"operTime" time_format:"2006-01-02 15:04:05"`

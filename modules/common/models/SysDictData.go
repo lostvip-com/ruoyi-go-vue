@@ -12,9 +12,9 @@ import (
 
 // SysDictData 字典数据
 type SysDictData struct {
-	DictCode  int    `gorm:"size:20;primary_key;auto_increment;字典编码;" json:"dictCode"`
+	DictCode  int    `gorm:"type:bigint;size:20;primary_key;auto_increment;字典编码;" json:"dictCode"`
 	DictSort  int    `gorm:"type:int(11);comment:字典排序;" json:"dictSort"`
-	DictLabel string `gorm:"type:varchar(100);comment:字典标签;" json:"dictLabel"`
+	DictLabel string `gorm:"type:varchar(100);comment:字典标签;" json:"dictLabel" i18n:"dict:{{.DictType}}:{{.DictCode}}" `
 	DictValue string `gorm:"type:varchar(100);comment:字典键值;" json:"dictValue"`
 	DictType  string `gorm:"type:varchar(100);comment:字典类型;" json:"dictType"`
 	CssClass  string `gorm:"type:varchar(100);comment:样式属性（其他样式扩展）;" json:"cssClass"`

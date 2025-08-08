@@ -14,7 +14,7 @@ import (
 // SysDictType 字典类型
 type SysDictType struct {
 	DictId   int    `gorm:"type:bigint;size:20;primary_key;auto_increment;字典主键;" json:"dictId"`
-	DictName string `gorm:"type:varchar(100);comment:字典名称;" json:"dictName"`
+	DictName string `gorm:"type:varchar(100);comment:字典名称;" json:"dictName" i18n:"dept:{{.DictId}}" `
 	DictType string `gorm:"type:varchar(100);comment:字典类型;" json:"dictType"`
 	Status   string `gorm:"type:char(1);comment:状态（0正常 1停用）;" json:"status"`
 	Remark   string `gorm:"type:varchar(500);comment:备注;" json:"remark"`

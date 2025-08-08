@@ -12,7 +12,7 @@ type BaseModel struct {
 	UpdateTime time.Time `gorm:"type:datetime;comment:更新日期;autoUpdateTime" time_format:"2006-01-02 15:04:05" json:"updateTime,omitzero"`
 	UpdateBy   string    `gorm:"type:string;size:32;size:32;comment:更新者;" json:"updateBy"`
 	CreateBy   string    `gorm:"type:string;size:32;size:32;comment:创建者;" json:"createBy"`
-	//TenantId   int     `gorm:"type:string;size:32;size:32;comment:租户id;" json:"tenantId" form:"tenantId"`
+	//TenantId   int     `gorm:"type:string;size:32;index:idx_tenant_id;not null;comment:租户id;" json:"tenantId" form:"tenantId"`
 }
 
 // BeforeCreate 实现钩子

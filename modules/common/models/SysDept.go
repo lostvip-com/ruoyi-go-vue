@@ -5,10 +5,10 @@ import (
 )
 
 type SysDept struct {
-	DeptId    int    `gorm:"size:20;primary_key;auto_increment;部门id;" json:"deptId"`
+	DeptId    int    `gorm:"type:bigint;size:20;primary_key;auto_increment;部门id;" json:"deptId"`
 	ParentId  int    `gorm:"size:20;comment:父部门id;" json:"parentId"`
 	Ancestors string `gorm:"type:varchar(50);comment:祖级列表;index:idx_ancestors" json:"ancestors"`
-	DeptName  string `gorm:"type:varchar(30);comment:部门名称;" json:"deptName"`
+	DeptName  string `gorm:"type:varchar(30);comment:部门名称;" json:"deptName" i18n:"dept:{{.DeptId}}" `
 	OrderNum  int    `gorm:"type:int(10);comment:显示顺序;" json:"orderNum"`
 	Leader    string `gorm:"type:varchar(20);comment:负责人;" json:"leader"`
 	Phone     string `gorm:"type:varchar(11);comment:联系电话;" json:"phone"`
