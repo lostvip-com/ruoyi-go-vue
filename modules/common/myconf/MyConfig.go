@@ -6,7 +6,6 @@ import (
 	"github.com/lostvip-com/lv_framework/lv_conf"
 	"github.com/lostvip-com/lv_framework/lv_global"
 	"github.com/lostvip-com/lv_framework/lv_log"
-	"github.com/lostvip-com/lv_framework/utils/lv_logic"
 	"github.com/lostvip-com/lv_framework/utils/lv_time"
 	"html/template"
 	"os"
@@ -48,7 +47,7 @@ func (e *MyConfig) LoadConf() {
 	//	nacos.LoadRemoteConfig(e.CfgDefault, resetCfg)
 	//}
 	//日志
-	lv_global.IsDebug = lv_logic.IfTrue(e.GetLogLevel() == "debug", true, false).(bool)
+	lv_global.IsDebug = lv_if.IfTrue(e.GetLogLevel() == "debug", true, false).(bool)
 	lv_global.LogOutputType = e.GetLogOutput()
 	return
 }
