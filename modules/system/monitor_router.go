@@ -2,7 +2,6 @@ package system
 
 import (
 	auth2 "common/middleware/auth"
-	"common/middleware/operate"
 	"github.com/lostvip-com/lv_framework/web/router"
 	"system/api"
 )
@@ -10,7 +9,7 @@ import (
 // 加载路由
 func init() {
 	monitorApi := new(api.MonitorApi)
-	monitor := router.New("/monitor", auth2.TokenCheck(), auth2.PermitCheck, operate.Logger())
+	monitor := router.New("/monitor", auth2.TokenCheck(), auth2.PermitCheck)
 	//登录日志
 	loginInfoApi := api.LogininfoApi{}
 	monitor.GET("/logininfor/list", "monitor:logininfor:list", loginInfoApi.ListAjax)

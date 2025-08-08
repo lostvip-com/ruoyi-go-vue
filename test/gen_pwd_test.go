@@ -8,7 +8,7 @@ import (
 )
 
 func TestGenTpl(t *testing.T) {
-	password := "admin123"
+	password := "Qwer1234"
 	pwd, err := lv_secret.PasswordHash(password)
 	lv_log.Error("------------" + pwd)
 	//校验密码

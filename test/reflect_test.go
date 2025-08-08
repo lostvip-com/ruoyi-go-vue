@@ -32,17 +32,15 @@ func TestReflect(t *testing.T) {
 	if val, ok := lv_reflect.GetFieldValue(user, "Name"); ok {
 		fmt.Println("Name:", val) // 输出: Name: 张三
 	}
-
-	// 获取嵌套字段
-	if val, ok := lv_reflect.GetFieldValue(user, "Address.City"); ok {
-		fmt.Println("City:", val) // 输出: City: 北京
-	}
-
 	// 通过json标签获取
 	if val, ok := lv_reflect.GetFieldValue(user, "name"); ok {
 		fmt.Println("Name by tag:", val) // 输出: Name by tag: 张三
 	}
 
+	// 获取嵌套字段
+	if val, ok := lv_reflect.GetFieldValue(user, "Address.City"); ok {
+		fmt.Println("City:", val) // 输出: City: 北京
+	}
 	// 使用简化版本（仅支持简单字段）
 	if val, ok := lv_reflect.GetFieldValueSimple(user, "Name"); ok {
 		fmt.Println("Name (simple):", val) // 输出: Name (simple): 张三

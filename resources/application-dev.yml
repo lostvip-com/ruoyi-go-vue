@@ -1,12 +1,13 @@
 application:
   log:
     level: debug        # debug info warn error
-    output: stdout,file # stdout：只写控制台，file:只写文件，默认：双写
+    output: stdout # stdout：只写控制台，file:只写文件，默认stdout,file：双写
     path: tmp/logs # 日志目录
     max-size: 100 # 单个日志文件最大100M
     max-backups: 10 # 最多保留10个备份
     max-age: 7 # 保留7天
   cache-type: redis
+  cache-tpl: false # 默认不缓存模板,省内存，方便开发
   redis:
     host: ${REDIS_HOST:172.16.61.62}
     port: ${REDIS_PORT:6379}
@@ -14,19 +15,22 @@ application:
   datasource:
     show-sql: true   # 打印SQL到日志
     auto-migrate: update # update/none 同步表结构，见 init.go
-    default: db-master
-    db-master:
+    default: db-sys
+    db-sys:
       driver: mysql
       url: ${MYSQL_MASTER:"root:qwer1234@tcp(172.16.61.62:3306)/lostvip?charset=utf8"}
+#    db-sys:
+#      driver: sqlite
+#      url: sys.db
     db-alert:
-      driver: sqlite
-      url: alert.db
+      driver: mysql
+      url: ${MYSQL_MASTER:"root:qwer1234@tcp(172.16.61.62:3306)/lostvip?charset=utf8"}
     db-data:
-      driver: sqlite
-      url: data.db
+      driver: mysql
+      url: ${MYSQL_MASTER:"root:qwer1234@tcp(172.16.61.62:3306)/lostvip?charset=utf8"}
     db-log:
-      driver: sqlite
-      url: log.db
+      driver: mysql
+      url: ${MYSQL_MASTER:"root:qwer1234@tcp(172.16.61.62:3306)/lostvip?charset=utf8"}
 #代理转发
 #  proxy:
 #    enable: true
@@ -34,12 +38,8 @@ application:
 #      - /video=192.168.100.110
 #代码生成器配置
 gen:
-  author: lv
-  #大模块，如lv_framework、main、demo
+  author: dpc
+  #大模块，如 main、demo
   moduleName: demo
-  #小模块，业务包
-  businessName: iot_driver
   #覆盖旧的代码
   overwrite: true
-  #新生成的菜单挂到哪个菜单下
-  parent_menu_id: 4

@@ -2,7 +2,6 @@ package system
 
 import (
 	auth2 "common/middleware/auth"
-	"common/middleware/operate"
 	"github.com/lostvip-com/lv_framework/web/router"
 	"system/api"
 )
@@ -10,7 +9,7 @@ import (
 // 加载路由
 func init() {
 	codeGenApi := new(api.GenCodeApi)
-	tool := router.New("/tool", auth2.TokenCheck(), auth2.PermitCheck, operate.Logger())
+	tool := router.New("/tool", auth2.TokenCheck(), auth2.PermitCheck)
 	tool.GET("/build", "", codeGenApi.Build)
 	tool.GET("/swagger", "", codeGenApi.Swagger)
 	//code gen

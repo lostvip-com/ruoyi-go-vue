@@ -235,6 +235,13 @@ func (svc *UserService) CheckPassport(UserName string) bool {
 // 获得用户信息详情
 func (svc *UserService) GetCurrUser(c *gin.Context) *model.SysUser {
 	tokenId := c.GetString("tokenId")
+	user, err := svc.GetProfile(tokenId)
+	lv_err.HasErrAndPanic(err)
+	return user
+}
+
+// 获得用户信息详情
+func (svc *UserService) GetProfile(tokenId string) (*model.SysUser, error) {
 	key := global.LoginCacheKey + tokenId
 	userId, err := lv_cache.GetCacheClient().HGet(key, "userId")
 	lv_err.HasErrAndPanic(err)
@@ -242,12 +249,12 @@ func (svc *UserService) GetCurrUser(c *gin.Context) *model.SysUser {
 	u.UserId = cast.ToInt(userId)
 	err = u.FindOne()
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 	// 部门
-	u.Dept, _ = GetDeptServiceInstance().FindById(u.DeptId)
-	u.Roles, _ = dao.GetRoleDaoInstance().FindRoles(u.UserId)
-	return u
+	u.Dept, err = GetDeptServiceInstance().FindById(u.DeptId)
+	u.Roles, err = dao.GetRoleDaoInstance().FindRoles(u.UserId)
+	return u, err
 }
 
 // 更新用户信息详情

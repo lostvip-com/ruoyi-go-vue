@@ -2,11 +2,14 @@ package operate
 
 import (
 	"bytes"
+	"common/global"
+	"common/util"
 	"github.com/gin-gonic/gin"
 	"github.com/lostvip-com/lv_framework/lv_log"
 	"github.com/lostvip-com/lv_framework/utils/lv_if"
 	"github.com/spf13/cast"
 	"io"
+	"system/model"
 	"system/service"
 	"time"
 )
@@ -20,6 +23,12 @@ func Logger() gin.HandlerFunc {
 		path := c.Request.URL.Path
 		params := c.Request.URL.Query()
 
+		// 从context中获取用户信息
+		u, ok := c.Get(global.KEY_GIN_USER_PTR)
+		if !ok {
+			util.Fail(c, "获取用户信息失败")
+		}
+		userPtr := u.(*model.SysUser)
 		var bodyStr string
 		// 读取请求体（需要特殊处理）
 		if c.Request.Body != nil {
@@ -28,7 +37,7 @@ func Logger() gin.HandlerFunc {
 			// 重新设置body，因为读取后会被清空
 			c.Request.Body = io.NopCloser(bytes.NewBuffer(body))
 		}
-		lv_log.Info("Logger ----------> Request \nMethod:", method, "\n Path:", path, "\n Params:", params, "\n Body:", bodyStr)
+		lv_log.Debug("Logger ----------> Request \nMethod:", method, "\n Path:", path, "\n Params:", params, "\n Body:", bodyStr)
 		// 包装ResponseWriter来捕获响应
 		blw := &BodyLogWriter{body: bytes.NewBufferString(""), ResponseWriter: c.Writer}
 		c.Writer = blw
@@ -41,8 +50,9 @@ func Logger() gin.HandlerFunc {
 		status := c.Writer.Status()
 		resBody := blw.body.String()
 
-		service.GetOperLogServiceInstance().SaveLog(c, status, lv_if.IfEmpty(bodyStr, cast.ToString(params)), resBody)
-		lv_log.Info("Logger ----------> Response \nStatus:", status, "\n Body:", resBody, "\n Duration:", duration)
+		// 将用户信息传递给SaveLog方法（如果需要）
+		service.GetOperLogServiceInstance().SaveLog(c, status, lv_if.IfEmpty(bodyStr, cast.ToString(params)), resBody, userPtr)
+		lv_log.Debug("Logger ----------> Response \nStatus:", status, "\n Body:", resBody, "\n Duration:", duration, "\n User:", userPtr)
 	}
 }
 

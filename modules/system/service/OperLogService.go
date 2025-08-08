@@ -1,7 +1,6 @@
 package service
 
 import (
-	global2 "common/global"
 	"github.com/gin-gonic/gin"
 	"github.com/lostvip-com/lv_framework/lv_db"
 	"system/model"
@@ -62,9 +61,9 @@ func (svc OperLogService) TruncateLogTable() error {
 }
 
 // SaveLog  新增记录
-func (svc OperLogService) SaveLog(c *gin.Context, status int, inContent, outContent string) error {
+func (svc OperLogService) SaveLog(c *gin.Context, status int, inContent, outContent string, user *model.SysUser) error {
 	var operLog model.SysOperLog
-	operLog.Title = c.Request.Method
+	operLog.Title = c.Request.RequestURI
 	if c.Request.Method == "POST" { // 0其它 1新增 2修改 3删除
 		operLog.BusinessType = 1
 	} else if c.Request.Method == "PUT" {
@@ -80,8 +79,6 @@ func (svc OperLogService) SaveLog(c *gin.Context, status int, inContent, outCont
 	operLog.OperatorType = 1
 	//操作状态（0正常 1异常）
 	operLog.Status = status
-	u, _ := c.Get(global2.KEY_GIN_USER_PTR)
-	user := u.(*model.SysUser)
 	operLog.OperName = user.UserName
 	operLog.RequestMethod = c.Request.Method
 	operLog.DeptName = user.Dept.DeptName

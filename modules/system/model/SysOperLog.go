@@ -29,8 +29,6 @@ type SysOperLog struct {
 	Status        int       `gorm:"type:int(11);comment:操作状态（0正常 1异常）;" json:"status"`
 	ErrorMsg      string    `gorm:"type:varchar(2000);comment:错误消息;" json:"errorMsg"`
 	OperTime      time.Time `gorm:"type:datetime;comment:操作时间;" json:"operTime" time_format:"2006-01-02 15:04:05"`
-	CreateTime    time.Time `gorm:"type:datetime;comment:创建时间;column:create_time;" json:"createTime" time_format:"2006-01-02 15:04:05"`
-	CreateBy      string    `gorm:"type:varchar(32);comment:创建人;column:create_by;"  json:"createBy"`
 }
 
 func (e *SysOperLog) TableName() string {
@@ -39,7 +37,8 @@ func (e *SysOperLog) TableName() string {
 
 // 增
 func (e *SysOperLog) Save() error {
-	return lv_db.GetInstance().GetDB("db-log").Save(e).Error
+	//return lv_db.GetInstance().GetDB("db-log").Save(e).Error
+	return lv_db.GetOrmDefault().Save(e).Error
 }
 
 // 查

@@ -5,8 +5,8 @@ import (
 	"errors"
 	"github.com/lostvip-com/lv_framework/lv_cache"
 	"github.com/lostvip-com/lv_framework/lv_log"
+	"github.com/lostvip-com/lv_framework/utils/lv_conv"
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
-	"github.com/lostvip-com/lv_framework/utils/lv_json"
 	"github.com/lostvip-com/lv_framework/utils/lv_secret"
 	"system/model"
 	"time"
@@ -54,7 +54,7 @@ func (svc *SessionService) ForceLogout(token string) error {
 }
 
 func (svc *SessionService) SaveSessionToRedis(loginInfo *model.SysLoginInfo) error {
-	fieldMap := lv_json.StructToMap(loginInfo)
+	fieldMap := lv_conv.StructToMap(loginInfo)
 	fieldMap["username"] = loginInfo.UserName
 	key := global.LoginCacheKey + loginInfo.TokenId
 	err := lv_cache.GetCacheClient().HMSet(key, fieldMap, 12*time.Hour)
