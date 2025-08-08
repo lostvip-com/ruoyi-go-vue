@@ -2,6 +2,7 @@ package system
 
 import (
 	"common/middleware/auth"
+	"common/middleware/operate"
 	"github.com/lostvip-com/lv_framework/web/router"
 	"system/api"
 )
@@ -16,7 +17,7 @@ func init() {
 	g0.GET("/captchaImage", "", index.CaptchaImage)
 	g0.POST("/login", "", login.Login)
 	//下在要检测是否登录
-	g1 := router.New("/", auth.TokenCheck(), auth.PermitCheck)
+	g1 := router.New("/", auth.TokenCheck(), auth.PermitCheck, operate.Logger())
 	home := api.HomeApi{}
 
 	g1.GET("/getInfo", "", home.GetUserInfo)

@@ -2,18 +2,19 @@ package system
 
 import (
 	auth2 "common/middleware/auth"
+	"common/middleware/operate"
 	"github.com/lostvip-com/lv_framework/web/router"
 	"system/api"
 )
 
 func init() {
 
-	common := router.New("/common", auth2.TokenCheck(), auth2.PermitCheck)
+	common := router.New("/common", auth2.TokenCheck(), auth2.PermitCheck, operate.Logger())
 	commonApi := api.CommonApi{}
 	common.GET("/download", "", commonApi.DownloadTmp)
 	common.GET("/downloadUpload", "", commonApi.DownloadUpload)
 	//系统配置
-	system := router.New("/system", auth2.TokenCheck(), auth2.PermitCheck)
+	system := router.New("/system", auth2.TokenCheck(), auth2.PermitCheck, operate.Logger())
 	config := api.ConfigApi{}
 	system.GET("/config/:configId", "system:config:list", config.GetConfigInfo)
 	system.GET("/config/list", "system:config:list", config.ListAjax)

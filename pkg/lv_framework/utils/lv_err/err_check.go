@@ -1,7 +1,7 @@
 package lv_err
 
 import (
-	"github.com/lostvip-com/lv_framework/utils/lv_conv"
+	"github.com/lostvip-com/lv_framework/utils/lv_json"
 	"github.com/lostvip-com/lv_framework/web/lv_dto"
 	"log"
 	"runtime"
@@ -26,7 +26,7 @@ func Assert1(conditionYes bool, msg string) {
 		var res lv_dto.Resp
 		res.Msg = msg
 		res.Code = 1
-		json := lv_conv.ToJsonStr(res)
+		json := lv_json.ToJsonStr(res)
 		panic(json)
 	}
 }

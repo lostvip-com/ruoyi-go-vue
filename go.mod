@@ -4,7 +4,7 @@ go 1.24
 
 require (
 	github.com/gin-gonic/gin v1.10.1
-	github.com/lostvip-com/lv_framework v1.2.1
+	github.com/lostvip-com/lv_framework v1.2.4
 )
 
 require (

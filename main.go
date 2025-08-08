@@ -9,7 +9,7 @@ import (
 	"github.com/lostvip-com/lv_framework/lv_global"
 	"github.com/lostvip-com/lv_framework/lv_log"
 	"github.com/lostvip-com/lv_framework/lv_log/lv_log_impl"
-	"github.com/lostvip-com/lv_framework/utils/lv_conv"
+	"github.com/lostvip-com/lv_framework/utils/lv_json"
 	"github.com/lostvip-com/lv_framework/web/server"
 	"os"
 	"os/signal"
@@ -25,7 +25,7 @@ var httpSvr *server.MyHttpServer
 // @host localhost
 // @BasePath /
 func main() {
-	fmt.Println("---------test--->" + lv_conv.ToJsonStr(new(models.BaseModel)))
+	fmt.Println("---------test--->" + lv_json.ToJsonStr(new(models.BaseModel)))
 	cfg := myconf.GetConfigInstance()
 	log := lv_log_impl.InitLog(cfg.GetAppName() + ".log")
 	lv_log.Log = log

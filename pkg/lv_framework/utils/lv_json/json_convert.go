@@ -1,4 +1,4 @@
-package lv_conv
+package lv_json
 
 import (
 	"encoding/json"

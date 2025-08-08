@@ -5,8 +5,8 @@ import (
 	"common/util"
 	"github.com/gin-gonic/gin"
 	"github.com/lostvip-com/lv_framework/lv_log"
-	"github.com/lostvip-com/lv_framework/utils/lv_conv"
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
+	"github.com/lostvip-com/lv_framework/utils/lv_json"
 	"github.com/lostvip-com/lv_framework/utils/lv_net"
 	"github.com/lostvip-com/lv_framework/web/lv_dto"
 	"io"
@@ -84,7 +84,7 @@ func (w *IndexApi) CaptchaImage(c *gin.Context) {
 	} else {
 		json, err := lv_net.Get(url_captcha)
 		lv_err.HasErrAndPanic(err)
-		dataMap := lv_conv.ToMap(json)
+		dataMap := lv_json.ToMap(json)
 		captcha.Img = dataMap["img"]
 	}
 	c.JSON(http.StatusOK, captcha)

@@ -28,7 +28,7 @@ func (w *OperateLogApi) ListAjax(c *gin.Context) {
 
 // 清空记录
 func (w *OperateLogApi) Clean(c *gin.Context) {
-	err := service.GetOperLogServiceInstance().DeleteRecordAll()
+	err := service.GetOperLogServiceInstance().TruncateLogTable()
 	lv_err.HasErrAndPanic(err)
 	util.SuccessData(c, nil)
 }
