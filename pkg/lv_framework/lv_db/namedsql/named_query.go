@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"github.com/lostvip-com/lv_framework/lv_global"
 	"github.com/lostvip-com/lv_framework/lv_log"
+	"github.com/lostvip-com/lv_framework/utils/lv_reflect"
 	"github.com/lostvip-com/lv_framework/utils/lv_sql"
 	"github.com/spf13/cast"
 	"gorm.io/gorm"
@@ -77,6 +78,25 @@ func ListData[T any](db *gorm.DB, limitSql string, req any) (*[]T, error) {
 	return &list, err
 }
 
+// ListData2Map 通用泛型查询
+func ListData2Map[T any](db *gorm.DB, limitSql string, req any, mapKey string) (*map[string]T, error) {
+	listPtr, err := ListData[T](db, limitSql, req)
+	if err != nil {
+		return nil, err
+	}
+	mp := make(map[string]T)
+	list := *listPtr
+	for i := range list {
+		it := list[i]
+		value, ok := lv_reflect.GetFieldValueSimple(it, mapKey)
+		if ok {
+			mp[cast.ToString(value)] = it
+		} else {
+			lv_log.Warn("mapKey not found", mapKey)
+		}
+	}
+	return &mp, err
+}
 func Count(db *gorm.DB, countSql string, params any) (int64, error) {
 	if lv_global.IsDebug {
 		db = db.Debug()
