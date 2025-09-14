@@ -2,12 +2,11 @@ package lv_db
 
 import (
 	"fmt"
-	_ "github.com/glebarez/go-sqlite"
-	"github.com/glebarez/sqlite"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/lostvip-com/lv_framework/lv_global"
 	"github.com/lostvip-com/lv_framework/lv_log"
 	"gorm.io/driver/mysql"
+	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"

@@ -23,9 +23,9 @@ type {{.ClassName}}Api struct {
 func (w {{.ClassName}}Api) GetRoleInfo(c *gin.Context) {
 	id := c.Param("id")
 	role := model.{{.ClassName}}{}
-	{{.BusinessName}}, err := role.FindById(cast.ToInt64(id))
+	{{.BusinessName}}, err := role.FindById(cast.ToInt(id))
 	lv_err.HasErrAndPanic(err)
-	util.Success(c, {{.BusinessName}})
+	util.Success(c, {{.BusinessName}},"Success")
 }
 // List{{.ClassName}} 查询列表
 func (w {{.ClassName}}Api) List{{.ClassName}}(c *gin.Context) {
@@ -53,7 +53,7 @@ func (w {{.ClassName}}Api) Create{{.ClassName}}(c *gin.Context) {
 	var svc = service.Get{{.ClassName}}ServiceInstance()
 	po,err := svc.AddSave(&form)
 	lv_err.HasErrAndPanic(err)
-	util.Success(c, po)
+	util.Success(c, po,"Success")
 }
 
 // Save{{.ClassName}} 修改页面保存
@@ -67,7 +67,7 @@ func (w {{.ClassName}}Api) Update{{.ClassName}}(c *gin.Context) {
 	var svc = service.Get{{.ClassName}}ServiceInstance()
 	po,err := svc.EditSave(&form)
 	lv_err.HasErrAndPanic(err)
-	util.Success(c, po)
+	util.Success(c, po,"Success")
 }
 
 // Remove{{.ClassName}} 删除数据
@@ -75,7 +75,7 @@ func (w {{.ClassName}}Api) Delete{{.ClassName}}(c *gin.Context) {
     var ids = c.Param("ids")
 	rows,err := service.Get{{.ClassName}}ServiceInstance().DeleteByIds(ids)
 	lv_err.HasErrAndPanic(err)
-	util.Success(c, rows)
+	util.Success(c, rows,"Success")
 }
 
 //Export{{.ClassName}} 导出

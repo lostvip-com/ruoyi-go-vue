@@ -11,6 +11,9 @@ import (
 
 // ProcessTpl 后面优化：使用缓存
 func ProcessTpl(locale, key string, dataPtr any) string {
+	if locale == "" {
+		return ""
+	}
 	tpl, err := template.New("i18n").Parse(key)
 	if err != nil {
 		lv_log.Error(" ProcessTpl error !!!!", locale, key, err.Error())
@@ -23,12 +26,15 @@ func ProcessTpl(locale, key string, dataPtr any) string {
 		return ""
 	}
 	localeKey := buf.String()
-	localName := service.GetI18nService().GetValue(locale, localeKey)
+	localName := service.GetI18nServiceInstance().GetI18nText(locale, localeKey)
 	return localName
 }
 
 // TranslateI18nTag 解析结构体中所有带有i18n标签的字段
 func TranslateI18nTag(local string, dataPtr any) error {
+	if local == "" {
+		return nil
+	}
 	v := reflect.ValueOf(dataPtr)
 	if v.Kind() != reflect.Ptr || v.Elem().Kind() != reflect.Struct {
 		return errors.New("ptr must be pointer to struct")

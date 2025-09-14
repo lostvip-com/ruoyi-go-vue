@@ -5,9 +5,6 @@ import (
 	"github.com/xuri/excelize/v2"
 )
 
-/**
-* 按list返回 map列表
- */
 func ReadFile(f *excelize.File, sheetName string, keys []string) ([]map[string]interface{}, error) {
 	listArr := make([]map[string]interface{}, 0)
 

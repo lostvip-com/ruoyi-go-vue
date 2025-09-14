@@ -8,7 +8,6 @@ import (
 	"github.com/spf13/cast"
 	dao2 "system/dao"
 	"system/model"
-	"time"
 )
 
 type DictTypeService struct {
@@ -54,7 +53,7 @@ func (svc *DictTypeService) AddSave(req *common_vo.AddDictTypeReq, c *gin.Contex
 	entity.DictType = req.DictType
 	entity.DictName = req.DictName
 	entity.Remark = req.Remark
-	entity.CreateTime = time.Now()
+	//entity.CreateTime = time.Now()
 	entity.CreateBy = ""
 	var userService UserService
 	user := userService.GetCurrUser(c)
@@ -76,7 +75,7 @@ func (svc *DictTypeService) EditSave(req *common_vo.EditDictTypeReq, c *gin.Cont
 	entity.DictType = req.DictType
 	entity.DictName = req.DictName
 	entity.Remark = req.Remark
-	entity.UpdateTime = time.Now()
+	//entity.UpdateTime = time.Now()
 	entity.UpdateBy = ""
 	var userService UserService
 	user := userService.GetCurrUser(c)

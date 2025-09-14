@@ -56,12 +56,10 @@ func Success(c *gin.Context, data any, msg string) {
 // 3. 切片指针 (*[]struct)
 // 4. 切片 ([]struct)
 func TranslateI18nTagAll(local string, data any) {
-	if data == nil {
+	if data == nil || local == "" {
 		return
 	}
-	local = local[0:2] //如 zh-CN -> zh
 	val := reflect.ValueOf(data)
-
 	// 处理指针类型
 	if val.Kind() == reflect.Ptr {
 		if val.IsNil() {
@@ -92,6 +90,8 @@ func TranslateI18nTagAll(local string, data any) {
 			}
 			// 忽略非结构体元素，继续处理下一个
 		}
+	default: // 其它类型：退出
+		return
 	}
 }
 

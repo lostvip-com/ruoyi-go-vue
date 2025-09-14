@@ -37,7 +37,7 @@ func (e *SysOperLog) TableName() string {
 
 // 增
 func (e *SysOperLog) Save() error {
-	//return lv_db.GetInstance().GetDB("db-log").Save(e).Error
+	//return lv_db.GetDB("db-log").Save(e).Error
 	return lv_db.GetOrmDefault().Save(e).Error
 }
 

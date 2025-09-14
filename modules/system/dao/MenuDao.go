@@ -23,14 +23,14 @@ func GetMenuDaoInstance() *MenuDao {
 }
 
 // 批量删除
-func (r *MenuDao) DeleteBatch(ids ...int) (int, error) {
+func (r *MenuDao) DeleteBatch(ids ...int) (int64, error) {
 	db := lv_db.GetOrmDefault().Table("sys_menu").Where("menu_id in ? ", ids).Update("del_flag", 1)
-	return int(db.RowsAffected), db.Error
+	return db.RowsAffected, db.Error
 }
 
-func (r *MenuDao) DeleteChildren(parentId int) (int, error) {
+func (r *MenuDao) DeleteChildren(parentId int) (int64, error) {
 	tb := lv_db.GetOrmDefault().Table("sys_menu").Where("parent_id=?", parentId).Update("del_flag", 1)
-	return int(tb.RowsAffected), tb.Error
+	return tb.RowsAffected, tb.Error
 }
 
 // 根据主键查询数据
@@ -51,7 +51,7 @@ func (dao *MenuDao) FindById(id int) (*model.SysMenu, error) {
 }
 
 // 根据条件分页查询数据
-func (dao *MenuDao) SelectListPage(param *vo.SelectMenuPageReq) (*[]model.SysMenu, int, error) {
+func (dao *MenuDao) SelectListPage(param *vo.SelectMenuPageReq) (*[]model.SysMenu, int64, error) {
 	tb := lv_db.GetOrmDefault()
 	tb = tb.Table("sys_menu")
 	if param != nil {
@@ -77,7 +77,7 @@ func (dao *MenuDao) SelectListPage(param *vo.SelectMenuPageReq) (*[]model.SysMen
 	lv_err.HasErrAndPanic(err)
 	err = tb.Offset(0).Limit(-1).Count(&param.Total).Error
 	lv_err.HasErrAndPanic(err)
-	return &result, int(param.Total), nil
+	return &result, param.Total, nil
 }
 
 // 获取所有数据
@@ -99,6 +99,7 @@ func (dao *MenuDao) FindAll(sysMenu *vo.SelectMenuPageReq) ([]model.SysMenu, err
 	if status != "" {
 		sql += " AND status = " + status
 	}
+	sql += " order by order_num "
 	err := tb.Raw(sql).Find(&rows).Error
 	return rows, err
 }
@@ -140,7 +141,7 @@ func (dao *MenuDao) FindMenusByUserId(userId int, sysMenu *vo.SelectMenuPageReq)
 	if status != "" {
 		sql += "AND m.status = " + status + " "
 	}
-	sql += "order by m.parent_id, m.order_num"
+	sql += "order by m.order_num"
 	var list []model.SysMenu
 	err := lv_db.GetOrmDefault().Raw(sql).Scan(&list).Error
 	return list, err

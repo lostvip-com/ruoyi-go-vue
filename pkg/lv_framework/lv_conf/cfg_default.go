@@ -93,12 +93,10 @@ func (e *CfgDefault) GetValueStrDefault(key string, defaultVal string) string {
 }
 
 func (e *CfgDefault) GetValueStr(key string) string {
-
 	if e.vipperCfg == nil {
 		e.LoadConf()
 	}
 	val := cast.ToString(e.vipperCfg.Get(key))
-	fmt.Println("====================", e.vipperCfg.Get("application.datasource.default"))
 	if strings.HasPrefix(val, "$") { //存在动态表达式
 		val = strings.TrimSpace(val)             //去空格
 		val = lv_conv.SubStr(val, 2, len(val)-1) //去掉 ${}

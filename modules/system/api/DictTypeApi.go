@@ -114,16 +114,16 @@ func (w *DictTypeApi) Remove(c *gin.Context) {
 
 // 导出
 func (w *DictTypeApi) Export(c *gin.Context) {
-	//var req *common_vo.DictTypePageReq
-	//
-	//if err := c.ShouldBind(&req); err != nil {
-	//	util.ErrorResp(c).SetMsg(err.Error()).Log("字典管理", req).WriteJsonExit()
-	//	return
-	//}
+	var req *common_vo.DictTypePageReq
+
+	if err := c.ShouldBind(&req); err != nil {
+		util.ErrorResp(c).SetMsg(err.Error()).Log("字典管理", req).WriteJsonExit()
+		return
+	}
 	//var dictTypeService service.DictTypeService
 	//url, err := dictTypeService.Export(req)
 	//if err == nil {
-	//	util.SuccessData(c, url)
+	util.SuccessData(c, "")
 	//} else {
 	//	util.Fail(c, err.Error())
 	//}

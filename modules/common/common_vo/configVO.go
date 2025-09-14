@@ -4,7 +4,7 @@ import (
 	"github.com/lostvip-com/lv_framework/web/lv_dto"
 )
 
-type SelectConfigPageReq struct {
+type ConfigPageReq struct {
 	ConfigName string `form:"configName"` //参数名称
 	ConfigKey  string `form:"configKey"`  //参数键名
 	ConfigType string `form:"configType"` //状态

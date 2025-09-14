@@ -99,7 +99,7 @@ func (svc *DeptService) SelectRoleDeptTree(roleId int) ([]any, error) {
              `
 	param := map[string]any{}
 	param["roleId"] = roleId
-	listMap, err := lv_dao.ListMapByNamedSql(sql, param, false)
+	listMap, err := lv_dao.ListMapByNamedSql(lv_db.GetOrmDefault(), sql, param, false)
 	lv_err.HasErrAndPanic(err)
 	var result []any
 	var rs = *listMap
@@ -200,7 +200,7 @@ func (svc *DeptService) CheckDeptExistUser(deptId int) bool {
 	param := map[string]any{}
 	param["deptId"] = deptId
 	sql += " and dept_id= @deptId "
-	count, err := lv_dao.CountByNamedSql(sql, param)
+	count, err := lv_dao.CountByNamedSql(lv_db.GetOrmDefault(), sql, param)
 	if err != nil {
 		panic(err)
 	}
@@ -223,7 +223,7 @@ func (svc *DeptService) SelectDeptCount(deptId, parentId int) int {
 		param["parentId"] = parentId
 		sql += " and parent_id= @parentId "
 	}
-	count, err := lv_dao.CountByNamedSql(sql, param)
+	count, err := lv_dao.CountByNamedSql(lv_db.GetOrmDefault(), sql, param)
 	if err != nil {
 		panic(err)
 	}

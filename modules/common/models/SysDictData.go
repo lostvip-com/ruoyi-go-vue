@@ -67,7 +67,7 @@ func (e *SysDictData) Delete() error {
 	return lv_db.GetOrmDefault().Delete(e).Error
 }
 
-func (e *SysDictData) Count() (int, error) {
+func (e *SysDictData) Count() (int64, error) {
 	sql := " select count(*) from sys_dict_data where del_flag = 0 "
 
 	if e.DictSort != 0 {
@@ -84,5 +84,5 @@ func (e *SysDictData) Count() (int, error) {
 	}
 
 	total, err := namedsql.Count(lv_db.GetOrmDefault(), sql, e)
-	return int(total), err
+	return total, err
 }

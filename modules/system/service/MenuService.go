@@ -55,7 +55,6 @@ func (svc *MenuService) DeleteById(menuId int) error {
 }
 
 func (svc *MenuService) AddSave(req *model.SysMenu) (int, error) {
-	req.CreateTime = time.Now()
 	err := req.Save()
 	return req.MenuId, err
 }
@@ -67,7 +66,7 @@ func (svc *MenuService) Edit(req *model.SysMenu) error {
 		return err
 	}
 	lv_reflect.CopyProp(req, entity, true)
-	entity.UpdateTime = time.Now()
+	//entity.UpdateTime = time.Now()
 	err = entity.Update()
 	return err
 }
@@ -176,7 +175,7 @@ func (svc *MenuService) menu2RouteVo(menu *model.SysMenu) vo.RouterVO {
 
 func (svc *MenuService) IsRolePermited(roles []string, perm string) (bool, interface{}) {
 	sql := "SELECT count(*) from sys_menu m,sys_role_menu rm,sys_role r where m.menu_id=rm.menu_id and rm.role_id = r.role_id and r.role_key in @roles and m.perms=@perm"
-	count, err := lv_dao.CountByNamedSql(sql, map[string]interface{}{"roles": roles, "perm": perm})
+	count, err := lv_dao.CountByNamedSql(lv_db.GetOrmDefault(), sql, map[string]interface{}{"roles": roles, "perm": perm})
 	return count > 0, err
 }
 
@@ -331,7 +330,7 @@ func (svc *MenuService) BuildChildMenus(ParentId int, lists []model.SysMenu) []v
 }
 
 func (svc *MenuService) IsMenuNameExist(name string) bool {
-	count, err := lv_dao.CountColumnAll("sys_menu", "menu_name", name)
+	count, err := lv_dao.CountColumnAll(lv_db.GetOrmDefault(), "sys_menu", "menu_name", name)
 	if err != nil {
 		panic(err)
 	}

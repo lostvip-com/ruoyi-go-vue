@@ -2,6 +2,7 @@ package dao
 
 import (
 	"common/models"
+	"github.com/lostvip-com/lv_framework/lv_db"
 	"github.com/lostvip-com/lv_framework/lv_db/lv_dao"
 )
 
@@ -33,5 +34,5 @@ func (d SysDeptDao) SelectDeptList(parentId int, deptName, status string, tenant
 	}
 	sql += " order by d.parent_id, d.order_num desc "
 
-	return lv_dao.ListByNamedSql[models.SysDept](sql, param)
+	return lv_dao.ListByNamedSql[models.SysDept](lv_db.GetOrmDefault(), sql, param)
 }

@@ -63,12 +63,12 @@ func (d {{.ClassName}}Dao) ListAll(req *vo.{{.ClassName}}Req, isCamel bool) (*[]
 // Find 根据条件查询
 func (d {{.ClassName}}Dao) Find(where, order string) (*[]model.{{.ClassName}}, error) {
 	var list []model.{{.ClassName}}
-	err := lv_db.GetMasterGorm().Table("{{.Table_Name}}").Where(where).Order(order).Find(&list).Error
+	err := lv_db.GetOrmDefault().Table("{{.Table_Name}}").Where(where).Order(order).Find(&list).Error
 	return &list, err
 }
 
 // Find 通过主键批量删除
-func (d {{.ClassName}}Dao) DeleteByIds(ida []int64) (int64,error) {
-	db := lv_db.GetMasterGorm().Table("{{.Table_Name}}").Where("{{.PkColumn.ColumnName}} in ? ", ida).Update("del_flag", 1)
+func (d {{.ClassName}}Dao) DeleteByIds(ida []int) (int64,error) {
+	db := lv_db.GetOrmDefault().Table("{{.Table_Name}}").Where("{{.PkColumn.ColumnName}} in ? ", ida).Update("del_flag", 1)
     return db.RowsAffected, db.Error
 }

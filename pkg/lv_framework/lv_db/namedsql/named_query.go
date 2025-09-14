@@ -18,6 +18,20 @@ import (
 	"time"
 )
 
+func GetPageByNamedSql[T any](db *gorm.DB, sql string, req any) (*[]T, int64, error) {
+	//查询数据
+	limitSql, err := lv_sql.GetLimitSql(sql, req)
+	if err != nil {
+		return nil, 0, err
+	}
+	rows, err := ListData[T](db, limitSql, req)
+	if err != nil {
+		return rows, 0, err
+	}
+	count, err := Count(db, lv_sql.GetCountSql(sql), req)
+	return rows, count, err
+}
+
 func Exec(db *gorm.DB, dmlSql string, req map[string]any) (int64, error) {
 	if lv_global.IsDebug {
 		db = db.Debug()
@@ -88,15 +102,35 @@ func ListData2Map[T any](db *gorm.DB, limitSql string, req any, mapKey string) (
 	list := *listPtr
 	for i := range list {
 		it := list[i]
-		value, ok := lv_reflect.GetFieldValueSimple(it, mapKey)
+		valueAsKey, ok := lv_reflect.GetFieldValueSimple(it, mapKey)
 		if ok {
-			mp[cast.ToString(value)] = it
+			mp[cast.ToString(valueAsKey)] = it
 		} else {
 			lv_log.Warn("mapKey not found", mapKey)
 		}
 	}
 	return &mp, err
 }
+
+func ListMap2Map(db *gorm.DB, limitSql string, req any, mapKey string, isCamel bool) (*map[string]map[string]any, error) {
+	listPtr, err := ListMap(db, limitSql, req, isCamel)
+	if err != nil {
+		return nil, err
+	}
+	mp := make(map[string]map[string]any)
+	list := *listPtr
+	for i := range list {
+		it := list[i]
+		valueAsKey, ok := it[mapKey]
+		if ok {
+			mp[cast.ToString(valueAsKey)] = it
+		} else {
+			lv_log.Warn("mapKey not found", mapKey)
+		}
+	}
+	return &mp, err
+}
+
 func Count(db *gorm.DB, countSql string, params any) (int64, error) {
 	if lv_global.IsDebug {
 		db = db.Debug()

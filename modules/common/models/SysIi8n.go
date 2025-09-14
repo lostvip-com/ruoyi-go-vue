@@ -13,7 +13,7 @@ import (
 type SysI18n struct {
 	Id         int    `gorm:"type:bigint;size:20;primary_key;auto_increment;id;" json:"id"`
 	Locale     string `gorm:"type:varchar(64);index:idx_local;defalut:zh,comment:本地标识" json:"locale"`
-	LocaleKey  string `gorm:"type:varchar(64);index:idx_key;comment:国际化key" json:"localeKey"`
+	LocaleKey  string `gorm:"type:varchar(64);index:idx_locale_key;comment:国际化key" json:"localeKey"`
 	LocaleName string `gorm:"type:varchar(64);comment:国际化名称;" json:"localeName"`
 	Sort       int    `gorm:"type:int(11);defalut:100;not null;comment:字典排序;" json:"sort"`
 	Remark     string `gorm:"type:varchar(100);comment:备注;" json:"remark"`

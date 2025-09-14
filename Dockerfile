@@ -5,8 +5,8 @@
 #  如果有 ld-linux-armhf.so.3 则可使用此镜像 （硬浮点）
 #  如果是  /lib/ld-linux.so.3 刚不能使用此镜像
 #############################################
-#FROM golang:1.24-bullseye
-FROM cgo-arm7
+FROM golang:1.24-bullseye
+#FROM cgo-arm7
 # 安装软浮点工具链
 RUN apt-get update && apt-get install -y \
         gcc-arm-linux-gnueabi \

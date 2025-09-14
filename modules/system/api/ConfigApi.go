@@ -36,7 +36,7 @@ func (w *ConfigApi) GetConfigValueByKey(c *gin.Context) {
 }
 
 func (w *ConfigApi) ListAjax(c *gin.Context) {
-	req := new(common_vo.SelectConfigPageReq)
+	req := new(common_vo.ConfigPageReq)
 	var configService service.ConfigService
 	if err := c.ShouldBind(req); err != nil {
 		util.Fail(c, err.Error())
@@ -81,8 +81,7 @@ func (w *ConfigApi) EditSave(c *gin.Context) {
 	err := c.ShouldBind(req)
 	lv_err.HasErrAndPanic(err)
 	w.FillInUpdate(c, &req.BaseModel)
-	var configService = service.GetConfigServiceInstance()
-	configService.EditSave(req)
+	service.GetConfigServiceInstance().EditSave(req)
 	util.SuccessData(c, "")
 }
 
@@ -94,14 +93,22 @@ func (w *ConfigApi) Remove(c *gin.Context) {
 }
 
 func (w *ConfigApi) Export(c *gin.Context) {
-	req := new(common_vo.SelectConfigPageReq)
-	err := c.ShouldBind(req)
+	var req common_vo.ConfigPageReq
+	err := c.ShouldBind(&req)
 	lv_err.HasErrAndPanic(err)
-	var configService service.ConfigService
-	url, err := configService.Export(req)
+	listMap, _, err := service.GetConfigServiceInstance().FindPage(&req)
 	lv_err.HasErrAndPanic(err)
-
-	util.SuccessData(c, url)
+	headerMap := []map[string]string{
+		{"key": "ConfigName", "title": "参数名称", "width": "10"},
+		{"key": "configKey", "title": "参数键名", "width": "15"},
+		{"key": "configValue", "title": "参数键值", "width": "10"},
+		{"key": "configType", "title": "系统内置", "width": "10"},
+		{"key": "remark", "title": "备注信息", "width": "10"},
+		{"key": "updateTime", "title": "更新时间", "width": "10"},
+		{"key": "createTime", "title": "创建时间", "width": "10"},
+	}
+	ex := util.NewMyExcel()
+	ex.ExportToWeb(c, headerMap, *listMap)
 }
 
 func (w *ConfigApi) RefreshCacheConfig(c *gin.Context) {

@@ -57,12 +57,11 @@ func (svc *UserService) AddSave(req *common_vo.AddUserReq, c *gin.Context) (int,
 	u.Sex = req.Sex
 	u.DeptId = req.DeptId
 	u.Remark = req.Remark
-	t := time.Now()
-	u.LoginDate = &t
+	//u.LoginDate = time.Now()
 	//生成密码
 	//newSalt := lv_gen.GenerateSubId(6)
 	u.Password, _ = lv_secret.PasswordHash(u.Password)
-	u.CreateTime = time.Now()
+	//u.CreateTime = u.LoginDate
 	createUser := svc.GetCurrUser(c)
 
 	if createUser != nil {
@@ -130,7 +129,7 @@ func (svc *UserService) EditSave(req *common_vo.EditUserReq, c *gin.Context) err
 	userPtr.Sex = req.Sex
 	userPtr.DeptId = req.DeptId
 	userPtr.Remark = req.Remark
-	userPtr.UpdateTime = time.Now()
+	//userPtr.UpdateTime = time.Now()
 	updateUser := svc.GetCurrUser(c)
 
 	if updateUser != nil {

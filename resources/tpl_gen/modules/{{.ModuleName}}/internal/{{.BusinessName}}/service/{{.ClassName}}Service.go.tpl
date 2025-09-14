@@ -39,7 +39,7 @@ func (svc {{.ClassName}}Service) DeleteById(id {{.PkColumn.GoType}}) error {
 
 // DeleteByIds 批量删除数据记录
 func (svc {{.ClassName}}Service) DeleteByIds(ids string) (int64,error) {
-    ida := lv_conv.ToInt64Array(ids, ",")
+    ida := lv_conv.ToIntArray(ids, ",")
     var {{.BusinessName}}Dao = dao.Get{{.ClassName}}DaoInstance()
     rows,err := {{.BusinessName}}Dao.DeleteByIds(ida)
     return rows,err
@@ -65,7 +65,7 @@ func (svc {{.ClassName}}Service) EditSave(form *model.{{.ClassName}})  (*model.{
 }
 
 // ListByPage 根据条件分页查询数据
-func (svc {{.ClassName}}Service) ListByPage(params *vo.{{.ClassName}}Req) (*[]vo.{{.ClassName}}Resp,int64, error) {
+func (svc {{.ClassName}}Service) ListByPage(params *vo.{{.ClassName}}Req) (*[]vo.{{.ClassName}}Resp,int, error) {
     var {{.BusinessName}}Dao = dao.Get{{.ClassName}}DaoInstance()
     return {{.BusinessName}}Dao.ListByPage(params)
 }

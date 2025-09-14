@@ -23,6 +23,7 @@ func init() {
 	monitor.GET("/operlog/list", "monitor:operlog:list", operApi.ListAjax)
 	monitor.DELETE("/operlog/:operIds", "monitor:operlog:remove", operApi.DelLogs)
 	monitor.DELETE("/operlog/clean", "monitor:operlog:remove", operApi.Clean)
+	monitor.POST("/operlog/export", "monitor:operlog:export", operApi.Export)
 	// 监控
 
 	monitor.GET("/cache", "", monitorApi.CacheHandler)

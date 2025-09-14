@@ -16,6 +16,11 @@ func HasErrAndPanic(err error) {
 		panic(err)
 	}
 }
+func IfErrPanic(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
 
 // HasError 错误断言
 // 当 error 不为 nil 时触发 panic

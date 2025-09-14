@@ -9,7 +9,6 @@ import (
 	"github.com/spf13/cast"
 	"system/model"
 	"system/service"
-	"time"
 )
 
 type BaseApi struct {
@@ -51,9 +50,7 @@ func (api *BaseApi) IsAdmin(userId int) bool {
 
 func (api *BaseApi) FillInUpdate(c *gin.Context, po *models.BaseModel) {
 	po.UpdateBy = api.GetCurrUsername(c)
-	po.UpdateTime = time.Now()
 }
 func (api *BaseApi) FillInCreate(c *gin.Context, po *models.BaseModel) {
 	po.CreateBy = api.GetCurrUsername(c)
-	po.CreateTime = time.Now()
 }

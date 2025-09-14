@@ -1,7 +1,10 @@
 package lv_sql
 
 import (
+	"errors"
 	"fmt"
+	"github.com/morrisxyang/xreflect"
+	"github.com/spf13/cast"
 	"reflect"
 	"strings"
 )
@@ -103,5 +106,59 @@ func ResolveSearchQuery(driver string, q interface{}, condition Condition) {
 				condition.SetOrder(fmt.Sprintf("`%s`.`%s` %s", t.Table, t.Column, qValue.Field(i).String()))
 			}
 		}
+	}
+}
+
+func GetLimitSql(sql string, params interface{}) (string, error) {
+	var pageNum, pageSize any
+	paramType := reflect.TypeOf(params).Kind()
+	if paramType == reflect.Map {
+		paramMap := params.(map[string]interface{})
+		pageNum = paramMap["pageNum"]
+		pageSize = paramMap["pageSize"]
+	} else {
+		pageNum, _ = xreflect.FieldValue(params, "PageNum")
+		pageSize, _ = xreflect.FieldValue(params, "PageSize")
+	}
+	if pageSize == nil || pageNum == nil {
+		return sql, errors.New("PageSize or PageNum nil error ")
+	}
+	start := cast.ToInt64(pageSize) * (cast.ToInt64(pageNum) - 1)
+	//sql = sql + " limit  " + cast.ToString(start) + "," + cast.ToString(pageSize)
+	// 改为可以兼容mysql和postgresql的分页方式
+	sql = sql + " limit  " + cast.ToString(pageSize) + " offset " + cast.ToString(start)
+	return sql, nil
+}
+
+func GetCountSql(sql string) string {
+	// 移除SQL中的ORDER BY子句，因为计数查询不需要排序
+	sqlWithoutOrder := removeOrderBy(sql)
+	return " select count(*)  from (" + sqlWithoutOrder + ") t "
+}
+
+// removeOrderBy 移除SQL中的ORDER BY子句，保留原始大小写
+// removeOrderBy 移除SQL中的ORDER BY子句，保留原始大小写
+func removeOrderBy(sql string) string {
+	// 先转为大写用于查找位置，但不改变原始字符串
+	sqlUpper := strings.ToUpper(sql)
+
+	// 查找ORDER BY的位置（不区分大小写）
+	orderbyIndex := strings.Index(sqlUpper, " ORDER BY ")
+	if orderbyIndex == -1 {
+		return sql // 如果没有找到ORDER BY，直接返回原SQL
+	}
+
+	// 查找ORDER BY之后是否有LIMIT子句
+	limitIndex := strings.Index(sqlUpper[orderbyIndex+len(" ORDER BY "):], " LIMIT ")
+	if limitIndex != -1 {
+		// 如果有LIMIT，只移除ORDER BY部分到LIMIT之前
+		limitStart := orderbyIndex + len(" ORDER BY ") + limitIndex
+		// 找到LIMIT前一个ORDER BY部分的结束位置
+		//orderbyPart := sql[orderbyIndex:limitStart]
+		// 保留LIMIT及其后的内容
+		return sql[:orderbyIndex] + sql[limitStart:]
+	} else {
+		// 如果没有LIMIT，移除ORDER BY及其后所有内容
+		return sql[:orderbyIndex]
 	}
 }

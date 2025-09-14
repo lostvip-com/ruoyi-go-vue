@@ -9,7 +9,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/lostvip-com/lv_framework/utils/lv_reflect"
 	dao2 "system/dao"
-	"time"
 )
 
 type DictDataService struct {
@@ -65,7 +64,7 @@ func (svc *DictDataService) AddSave(req *common_vo.AddDictDataReq, c *gin.Contex
 	entity.IsDefault = req.IsDefault
 	entity.ListClass = req.ListClass
 	entity.Remark = req.Remark
-	entity.CreateTime = time.Now()
+	//entity.CreateTime = time.Now()
 	entity.CreateBy = ""
 	var userService UserService
 	user := userService.GetCurrUser(c)
@@ -87,7 +86,7 @@ func (svc *DictDataService) EditSave(req *common_vo.EditDictDataReq, c *gin.Cont
 		return errors.New("数据不存在")
 	}
 	lv_reflect.CopyProperties(req, po)
-	po.UpdateTime = time.Now()
+	//po.UpdateTime = time.Now()
 	po.UpdateBy = session.GetLoginInfo(c).Username
 	var userService UserService
 	user := userService.GetCurrUser(c)

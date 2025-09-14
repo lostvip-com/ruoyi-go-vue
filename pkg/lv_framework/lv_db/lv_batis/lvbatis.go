@@ -11,6 +11,7 @@ import (
 	"bytes"
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"github.com/lostvip-com/lv_framework/lv_log"
 	"github.com/lostvip-com/lv_framework/utils/lv_file"
@@ -62,8 +63,8 @@ func NewInstance(relativePath string) *LvBatis {
 	return dot
 }
 
-func (e *LvBatis) GetSql(tagName string, params interface{}) (string, error) {
-	query, err := e.LookupQuery(tagName)
+func (d *LvBatis) GetSql(tagName string, params interface{}) (string, error) {
+	query, err := d.LookupQuery(tagName)
 	if err != nil || query == "" {
 		panic("tpl文件格式错误!")
 	}
@@ -71,9 +72,9 @@ func (e *LvBatis) GetSql(tagName string, params interface{}) (string, error) {
 	sql, err := lv_tpl.ParseTemplateStr(query, params)
 	if sql == "" || err != nil {
 		lv_log.Error(err)
-		panic(e.getTplFile() + " 可能存在错误：<p/>1.使用了参数对象中不存在的属性<p/>2.template语法错误！")
+		panic(d.getTplFile() + " 可能存在错误：<p/>1.使用了参数对象中不存在的属性<p/>2.template语法错误！")
 	}
-	e.CurrBaseSql = sql //缓存当前正在执行的分页sql
+	d.CurrBaseSql = sql //缓存当前正在执行的分页sql
 	return sql, err
 }
 
@@ -84,10 +85,10 @@ func (e *LvBatis) GetSql(tagName string, params interface{}) (string, error) {
 /**
  * 从mapper目录解析sql文件
  */
-func (e *LvBatis) GetLimitSqlParams(tagName string, params interface{}) (string, map[string]any, error) {
+func (d *LvBatis) GetLimitSqlParams(tagName string, params interface{}) (string, map[string]any, error) {
 	var pageNum, pageSize any
 	paramType := reflect.TypeOf(params).Kind()
-	sqlParams := e.Vars[tagName]
+	sqlParams := d.Vars[tagName]
 	if paramType == reflect.Map {
 		paramMap := params.(map[string]interface{})
 		pageNum = paramMap["pageNum"]
@@ -101,60 +102,94 @@ func (e *LvBatis) GetLimitSqlParams(tagName string, params interface{}) (string,
 		lv_reflect.CopyProperties2Map(params, sqlParams) //合并参数
 	}
 	if pageSize == nil || pageNum == nil {
-		panic("???????????分页信息错误")
+		return "", nil, errors.New("pageSize and pageNum can not be empty! ")
 	}
-	sql, err := e.GetSql(tagName, sqlParams)
+	sql, err := d.GetSql(tagName, sqlParams)
 	start := cast.ToInt64(pageSize) * (cast.ToInt64(pageNum) - 1)
 	sql = sql + " limit  " + cast.ToString(start) + "," + cast.ToString(pageSize)
 	return sql, sqlParams, err
 }
 
-func (e *LvBatis) GetLimitSql(tagName string, params interface{}) (string, error) {
-	var pageNum, pageSize any
+func (d *LvBatis) GetLimitSql(tagName string, params interface{}) (string, error) {
+	var pageNum, pageSize int
 	paramType := reflect.TypeOf(params).Kind()
-	sqlParams := e.Vars[tagName]
+	sqlParams := d.Vars[tagName]
 	if paramType == reflect.Map {
 		paramMap := params.(map[string]interface{})
-		pageNum = paramMap["pageNum"]
-		pageSize = paramMap["pageSize"]
+		pNum := paramMap["pageNum"]
+		pSize := paramMap["pageSize"]
+		pageNum  = cast.ToInt(pNum)
+		pageSize = cast.ToInt(pSize)
 		for key, value := range paramMap { //合并参数
 			sqlParams[key] = value // 覆盖或新增键值对
 		}
 	} else {
-		pageNum, _ = xreflect.FieldValue(params, "PageNum")
-		pageSize, _ = xreflect.FieldValue(params, "PageSize")
+		pNum, _ := xreflect.FieldValue(params, "PageNum")
+		pSize, _ := xreflect.FieldValue(params, "PageSize")
+		pageNum  = cast.ToInt(pNum)
+		pageSize = cast.ToInt(pSize)
 		lv_reflect.CopyProperties2Map(params, sqlParams) //合并参数
 	}
-	if pageSize == nil || pageNum == nil {
-		panic("???????????分页信息错误")
+
+	if pageSize==0{
+		pageSize = 1000;
 	}
-	sql, err := e.GetSql(tagName, sqlParams)
+	if pageNum == 0 {
+		pageNum = 1
+	}
+	if d.CurrBaseSql == "" {
+		sql,err := d.GetSql(tagName, sqlParams)
+		if err!=nil{
+			return "",err
+		}
+		d.CurrBaseSql = sql
+	}
 	start := cast.ToInt64(pageSize) * (cast.ToInt64(pageNum) - 1)
 	//sql = sql + " limit  " + cast.ToString(start) + "," + cast.ToString(pageSize)
 	// 改为可以兼容mysql和postgresql的分页方式
-	sql = sql + " limit  " + cast.ToString(pageSize) + " offset " + cast.ToString(start)
-	return sql, err
+	sql := d.CurrBaseSql + " limit  " + cast.ToString(pageSize) + " offset " + cast.ToString(start)
+	return sql, nil
 }
 
-func (e *LvBatis) GetCountSql() string {
-	if e.CurrBaseSql == "" {
-		panic("未初始化过ibatis对象,未传入过sql参数！" + e.getTplFile())
+func (d *LvBatis) GetCountSql(tagName string, sqlParams interface{}) (string, error) {
+	if d.CurrBaseSql == "" {
+		sql,err := d.GetSql(tagName, sqlParams)
+		if err!=nil{
+			return "",err
+		}
+		d.CurrBaseSql = sql
 	}
-	sql := " select count(1)  from (" + e.CurrBaseSql + ") t "
-	return sql
+	index := strings.Index(d.CurrBaseSql, " order ")
+	noOrderSql := d.CurrBaseSql
+	if index >20  { // select * from t where order by
+		noOrderSql = d.CurrBaseSql[:index]
+	}else{
+		noOrderSql = d.CurrBaseSql
+	}
+	sql := " select count(*)  from (" + noOrderSql + ") t "
+	return sql, nil
 }
 
-func (d LvBatis) LookupQuery(name string) (query string, err error) {
+func (d *LvBatis) GetPageSql(tagName string, sqlParams any) (string, string, error) {
+	countSql, err := d.GetCountSql(tagName,sqlParams)
+	if err != nil {
+		return "", "", err
+	}
+	limitSql, err := d.GetLimitSql(tagName, sqlParams)
+	return limitSql, countSql, err
+}
+
+func (d *LvBatis) LookupQuery(name string) (query string, err error) {
 	query, ok := d.Queries[name]
 	if !ok {
-		err = fmt.Errorf("dotsql: '%s' could not be found", name)
+		err = fmt.Errorf("sql: '%s' could not be found", name)
 	}
 
 	return
 }
 
-// 默认只能执行单条sql，除非mysql配置为allowMultiQueries=true
-func (d LvBatis) Exec(db Execer, name string, args ...interface{}) (*gorm.DB, error) {
+// Exec 默认只能执行单条sql，除非mysql配置为allowMultiQueries=true
+func (d *LvBatis) Exec(db Execer, name string, args ...interface{}) (*gorm.DB, error) {
 	query, err := d.LookupQuery(name)
 	if err != nil {
 		return nil, err
@@ -162,8 +197,8 @@ func (d LvBatis) Exec(db Execer, name string, args ...interface{}) (*gorm.DB, er
 	return db.Exec(query, args...), err
 }
 
-// ExecMultiSql 在事务中执行多个SQL语句
-func (d LvBatis) ExecMultiSqlInTransaction(db *gorm.DB, name string, args ...interface{}) (*gorm.DB, error) {
+// ExecMultiSqlInTransaction 在事务中执行多个SQL语句
+func (d *LvBatis) ExecMultiSqlInTransaction(db *gorm.DB, name string, args ...interface{}) (*gorm.DB, error) {
 	query, err := d.LookupQuery(name)
 	if err != nil {
 		return nil, err
@@ -200,7 +235,7 @@ func (d LvBatis) ExecMultiSqlInTransaction(db *gorm.DB, name string, args ...int
 }
 
 // ExecContext is a wrapper for database/sql's ExecContext(), using dotsql named query.
-func (d LvBatis) ExecContext(ctx context.Context, db ExecerContext, name string, args ...interface{}) (sql.Result, error) {
+func (d *LvBatis) ExecContext(ctx context.Context, db ExecerContext, name string, args ...interface{}) (sql.Result, error) {
 	query, err := d.LookupQuery(name)
 	if err != nil {
 		return nil, err
@@ -210,17 +245,17 @@ func (d LvBatis) ExecContext(ctx context.Context, db ExecerContext, name string,
 }
 
 // GetRawSql returns the query, everything after the --name tag
-func (d LvBatis) GetRawSql(name string) (string, error) {
+func (d *LvBatis) GetRawSql(name string) (string, error) {
 	return d.LookupQuery(name)
 }
 
 // GetQueryMap returns a map[string]string of loaded Queries
-func (d LvBatis) GetQueryMap() map[string]string {
+func (d *LvBatis) GetQueryMap() map[string]string {
 	return d.Queries
 }
 
-func (e *LvBatis) getTplFile() string {
-	return e.TplFile
+func (d *LvBatis) getTplFile() string {
+	return d.TplFile
 }
 
 // Load imports sql Queries from any io.Reader.
@@ -259,7 +294,7 @@ func parseVarName(funSql map[string]string) map[string]map[string]any {
 // LoadFromFile imports SQL Queries from the file.
 func LoadFromFile(sqlFile string) (*LvBatis, error) {
 	if !lv_file.IsFileExist(sqlFile) {
-		panic("生成代码后再执行此操作!未发现文件 " + sqlFile)
+		return nil, errors.New("file not be found! " + sqlFile)
 	}
 	f, err := os.Open(sqlFile)
 	if err != nil {
@@ -276,7 +311,7 @@ func LoadFromString(sql string) (*LvBatis, error) {
 	return Load(buf)
 }
 
-// Merge takes one or more *LvBatis and merge its Queries
+// Merge takes one or mord *LvBatis and merge its Queries
 // It's in-order, so the last source will override Queries with the same name
 // in the previous arguments if any.
 func Merge(dots ...*LvBatis) *LvBatis {

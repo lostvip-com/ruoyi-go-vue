@@ -4,8 +4,6 @@ import (
 	"common/models"
 	"github.com/lostvip-com/lv_framework/lv_db"
 	"github.com/lostvip-com/lv_framework/lv_db/namedsql"
-	"github.com/lostvip-com/lv_framework/utils/lv_time"
-	"gorm.io/gorm"
 )
 
 type GenTable struct {
@@ -35,17 +33,17 @@ func (r *GenTable) TableName() string {
 }
 
 // BeforeCreate 实现钩子
-func (u *GenTable) BeforeCreate(db *gorm.DB) error {
-	u.CreateTime = lv_time.GetCurrentTime() // 设置创建时的更新时间
-	u.UpdateTime = u.CreateTime             // 设置创建时的更新时间
-	return nil
-}
-
-// BeforeUpdate 实现 BeforeUpdate 钩子
-func (u *GenTable) BeforeUpdate(db *gorm.DB) error {
-	u.CreateTime = lv_time.GetCurrentTime() // 设置更新时的更新时间
-	return nil
-}
+//func (u *GenTable) BeforeCreate(db *gorm.DB) error {
+//	u.CreateTime = lv_time.GetCurrentTime() // 设置创建时的更新时间
+//	u.UpdateTime = u.CreateTime             // 设置创建时的更新时间
+//	return nil
+//}
+//
+//// BeforeUpdate 实现 BeforeUpdate 钩子
+//func (u *GenTable) BeforeUpdate(db *gorm.DB) error {
+//	u.CreateTime = lv_time.GetCurrentTime() // 设置更新时的更新时间
+//	return nil
+//}
 
 // Save 增
 func (e *GenTable) Save() error {

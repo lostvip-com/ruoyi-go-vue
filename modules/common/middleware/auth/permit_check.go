@@ -1,12 +1,15 @@
 package auth
 
 import (
+	"common/global"
+	"common/util"
 	"github.com/gin-gonic/gin"
-	"github.com/lostvip-com/lv_framework/utils/lv_err"
+	"github.com/lostvip-com/lv_framework/lv_log"
 	"github.com/lostvip-com/lv_framework/web/lv_dto"
 	"github.com/lostvip-com/lv_framework/web/router"
 	"net/http"
 	"strings"
+	"system/model"
 	"system/service"
 )
 
@@ -19,15 +22,15 @@ func PermitCheck(c *gin.Context) {
 	if strings.EqualFold(strEnd, "/") {
 		url = strings.TrimRight(url, "/")
 	}
-	tokenId, err0 := GetJwtUuid(c)
-	lv_err.HasErrAndPanic(err0)
-	c.Set("tokenId", tokenId) //给后面的接口使用，避免重复
+	//获取用户菜单列表
+	u, ok := c.Get(global.KEY_GIN_USER_PTR)
+	if !ok {
+		util.Fail(c, "获取用户信息失败")
+	}
+	userPtr := u.(*model.SysUser)
 	//获取用户信息
 	userSvc := service.GetUserServiceInstance()
-	userPtr := userSvc.GetCurrUser(c)
-	c.Set("userId", userPtr.UserId)     //供api使用
-	c.Set("userName", userPtr.UserName) //供api使用
-	c.Set("user", userPtr)              //供api使用
+	lv_log.Debug("=====================token check ", userPtr, ok)
 	if userSvc.IsAdmin(userPtr.UserId) {
 		c.Next()
 		return
@@ -38,23 +41,15 @@ func PermitCheck(c *gin.Context) {
 		c.Next()
 		return
 	}
-	//获取用户菜单列表
-	menuSvc := service.GetMenuServiceInstance()
-	hasPermission, err := menuSvc.IsRolePermited(userPtr.GetRoleKeys(), permission)
+
+	hasPermission, err := service.GetMenuServiceInstance().IsRolePermited(userPtr.GetRoleKeys(), permission)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusForbidden, lv_dto.CommonRes{
-			Code: http.StatusForbidden,
-			Msg:  "Operate Forbidden",
-		})
+		c.AbortWithStatusJSON(http.StatusForbidden, lv_dto.CommonRes{Code: http.StatusForbidden, Msg: "Operate Forbidden"})
 		return
 	}
 	//fmt.Println("url:" + url + "---permission:" + permission)
 	if !hasPermission {
-		c.AbortWithStatusJSON(http.StatusForbidden, lv_dto.CommonRes{
-			Code: http.StatusForbidden,
-			Msg:  "Operate Forbidden",
-		})
+		c.AbortWithStatusJSON(http.StatusForbidden, lv_dto.CommonRes{Code: http.StatusForbidden, Msg: "Operate Forbidden"})
 	}
-
 	c.Next()
 }

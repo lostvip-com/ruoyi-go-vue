@@ -6,7 +6,6 @@ import (
 	"common/util"
 	"context"
 	"errors"
-	"github.com/lostvip-com/lv_framework/utils/lv_if"
 	"os"
 	"strings"
 	"system/dao"
@@ -87,7 +86,7 @@ func (svc TableService) SaveEdit(req *vo.EditGenTableVO) error {
 		return errors.New("数据不存在")
 	}
 	_ = lv_reflect.CopyProperties(req, table)
-	table.UpdateTime = time.Now()
+	//table.UpdateTime = time.Now()
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	err = lv_db.GetOrmDefault().WithContext(ctx).Transaction(func(tx *gorm.DB) error {
@@ -208,13 +207,16 @@ func (svc TableService) InitTable(table *model.GenTable, createBy string) {
 	table.FunctionAuthor = lv_global.Config().GetVipperCfg().GetString("gen.author")
 	table.CreateBy = createBy
 	table.TplCategory = "crud"
-	table.CreateTime = time.Now()
+	//table.CreateTime = time.Now()
 	table.UpdateTime = table.CreateTime
 	table.TableComment = strings.ReplaceAll(table.TableComment, "表", "")
 	if table.TableComment == "" {
 		table.TableComment = table.ClassName
-		funcName := lv_if.IfTrue(len(table.TableComment) < 10, table.TableComment, table.TableComment[0:10])
-		table.FunctionName = cast.ToString(funcName)
+	}
+	if len(table.TableComment) > 10 {
+		table.FunctionName = table.TableComment[0:10]
+	} else {
+		table.FunctionName = table.TableComment
 	}
 }
 

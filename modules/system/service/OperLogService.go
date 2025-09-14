@@ -3,8 +3,6 @@ package service
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/lostvip-com/lv_framework/lv_db"
-	"github.com/lostvip-com/lv_framework/utils/lv_if"
-	"github.com/spf13/cast"
 	"system/model"
 	"system/vo"
 	"time"
@@ -39,16 +37,16 @@ func (svc OperLogService) FindPage(param *vo.OperLogPageReq) (*[]model.SysOperLo
 			tb.Where("status = ?", param.Status)
 		}
 
-		if param.BusinessTypes >= 0 {
+		if param.BusinessTypes != "" {
 			tb.Where("business_type = ?", param.BusinessTypes)
 		}
 
 		if param.BeginTime != "" {
-			tb.Where("date_format(oper_time,'%y%m%d') >= date_format(?,'%y%m%d')", param.BeginTime)
+			tb.Where("oper_time >= ? ", param.BeginTime)
 		}
 
 		if param.EndTime != "" {
-			tb.Where("date_format(oper_time,'%y%m%d') <= date_format(?,'%y%m%d')", param.EndTime)
+			tb.Where("oper_time <= ? ", param.EndTime)
 		}
 	}
 	var result []model.SysOperLog
@@ -75,8 +73,14 @@ func (svc OperLogService) SaveLog(c *gin.Context, status int, inContent, outCont
 	}
 	operLog.OperIp = c.ClientIP()
 	//operLog.OperLocation = GetCityByIp(operLog.OperIp)
-	operLog.OperParam = cast.ToString(lv_if.IfTrue(len(inContent) > 100, inContent, inContent[0:100])) + "..."
-	operLog.JsonResult = cast.ToString(lv_if.IfTrue(len(outContent) > 100, outContent, outContent[0:100])) + "..."
+	if len(inContent) > 64 {
+		inContent = inContent[0:64]
+	}
+	operLog.OperParam = inContent + "..."
+	if len(outContent) > 64 {
+		outContent = outContent[0:64] + "..."
+	}
+	operLog.JsonResult = outContent
 	//操作类别（0其它 1后台用户 2手机端用户）
 	operLog.OperatorType = 1
 	//操作状态（0正常 1异常）
@@ -85,7 +89,10 @@ func (svc OperLogService) SaveLog(c *gin.Context, status int, inContent, outCont
 	operLog.RequestMethod = c.Request.Method
 	operLog.DeptName = user.Dept.DeptName
 	path := c.Request.URL.Path
-	operLog.OperUrl = cast.ToString(lv_if.IfTrue(len(path) > 100, path, path[0:100])) + "..."
+	if len(path) > 64 {
+		path = path[0:64] + "..."
+	}
+	operLog.OperUrl = path
 	operLog.Method = c.Request.Method
 	operLog.OperTime = time.Now()
 	return operLog.Save()

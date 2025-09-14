@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/lostvip-com/lv_framework/lv_db"
 	"github.com/lostvip-com/lv_framework/lv_db/lv_dao"
 	"github.com/lostvip-com/lv_framework/lv_log"
 	"github.com/spf13/cast"
@@ -74,7 +75,7 @@ func (svc *PermissionService) FindPerms(roles []string) []string {
 	 where r.role_key in (@roles)
   `
 	params := map[string]any{"roles": roles}
-	listPerms, err := lv_dao.ListMapByNamedSql(sql, params, false)
+	listPerms, err := lv_dao.ListMapByNamedSql(lv_db.GetOrmDefault(), sql, params, false)
 	if err != nil {
 		lv_log.Error(err)
 		return []string{}

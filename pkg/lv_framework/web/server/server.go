@@ -32,7 +32,7 @@ type MyHttpServer struct {
 	MaxHeaderBytes int           //http头大小设置
 }
 
-// 启动服务
+// ListenAndServe 启动服务
 func (mySvr *MyHttpServer) ListenAndServe() {
 	mySvr.server = &http.Server{
 		Addr:           mySvr.Address,
@@ -51,8 +51,7 @@ func (mySvr *MyHttpServer) ListenAndServe() {
 	fmt.Println("application.redis.host: " + lv_global.Config().GetValueStr("application.redis.host"))
 	fmt.Println("application.datasource.default: " + lv_global.Config().GetDBUrlDefault())
 	fmt.Println("http://localhost:" + port + strings.ReplaceAll(path, "//", "/"))
-	fmt.Println("http://localhost:" + port + strings.ReplaceAll(path+"/swagger/index.html", "//", "/"))
-	fmt.Println("http://" + host + ":" + port + strings.ReplaceAll(path+"/swagger/index.html", "//", "/"))
+	fmt.Println("http://" + host + ":" + port + strings.ReplaceAll(path, "//", "/"))
 	fmt.Println("##############################################################")
 	err := mySvr.server.ListenAndServe()
 	if err != nil {

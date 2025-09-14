@@ -69,10 +69,8 @@
       {{- range $column := .Columns -}}
         {{- $HtmlField := $column.HtmlField -}}
         {{- $comment := $column.ColumnComment -}}
-        <!-- 主键列 -->
         {{- if eq "1" $column.IsPk -}}
-          <el-table-column label="{{$comment}}" align="center" prop="{{$HtmlField}}" />
-        <!-- 日期列 -->
+          	{{- continue -}}
         {{- else if (eq $column.HtmlType "datetime") -}}
           <el-table-column label="{{$comment}}" align="center" prop="{{$HtmlField}}" width="180">
             <template #default="scope">
@@ -80,13 +78,13 @@
             </template>
           </el-table-column>
         <!-- 图片列 -->
-        {{- else if (eq $column.HtmlType "imageUpload") -}}
+        {{ else if (eq $column.HtmlType "imageUpload") -}}
           <el-table-column label="{{$comment}}" align="center" prop="{{$HtmlField}}" width="100">
             <template #default="scope">
               <image-preview :src="scope.row.{{$HtmlField}}" :width="50" :height="50"/>
             </template>
           </el-table-column>
-        {{- else if (ne $column.DictType "") -}}
+        {{ else if (ne $column.DictType "") -}}
           <el-table-column label="{{$comment}}" align="center" prop="{{$HtmlField}}">
             <template #default="scope">
               {{- if eq $column.HtmlType "checkbox" -}}
@@ -96,9 +94,9 @@
               {{- end -}}
             </template>
           </el-table-column>
-        {{- else if and  (ne $HtmlField "") -}}
+        {{ else if and  (ne $HtmlField "") -}}
           <el-table-column label="{{$comment}}" align="center" prop="{{$HtmlField}}" />
-        {{- end -}}
+        {{ end -}}
       {{- end  -}}
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
@@ -114,7 +112,9 @@
         <el-form ref="{{.BusinessName}}Ref" :model="form" :rules="rules" label-width="80px">
         {{ range $column := .Columns }}
           {{- $field := $column.HtmlField  -}}
-          {{ if and (eq "1" $column.IsInsert) (ne "1" $column.IsPk) }}
+          {{- if or (eq "1" $column.IsPk) (eq $column.GoField "CreateTime") (eq $column.GoField "UpdateTime") (eq $column.GoField "CreateBy") (eq $column.GoField "UpdateBy") -}}
+               {{- continue -}}
+          {{- else if and (eq "1" $column.IsInsert) (ne "1" $column.IsPk) }}
               {{- $comment := $column.ColumnComment -}}
               {{- $dictType := $column.DictType}}
               {{- if eq $column.HtmlType "input" }}

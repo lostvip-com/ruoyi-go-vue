@@ -83,7 +83,7 @@ func (svc *ConfigService) DeleteByIds(ids string) {
 }
 
 // 修改数据
-func (svc *ConfigService) EditSave(param *model.SysConfig) {
+func (svc *ConfigService) EditSave(param *model.SysConfig) error {
 	po := new(model.SysConfig)
 	po, err := po.FindById(param.ConfigId)
 	lv_err.HasErrAndPanic(err)
@@ -92,26 +92,27 @@ func (svc *ConfigService) EditSave(param *model.SysConfig) {
 	//保存到缓存
 	err = po.Update()
 	lv_err.HasErrAndPanic(err)
-	_ = svc.SetCache(po)
+	err = svc.SetCache(po)
+	return err
 }
 
 // 批量删除
-func (d *ConfigService) Count(configKey string) (int, error) {
+func (svc *ConfigService) Count(configKey string) (int, error) {
 	var total int64
 	err := lv_db.GetOrmDefault().Table("sys_config").Where("config_key=?", configKey).Count(&total).Error
 	return int(total), err
 }
 
 // 批量删除
-func (d *ConfigService) DeleteBatch(ids ...int) error {
+func (svc *ConfigService) DeleteBatch(ids ...int) error {
 	err := lv_db.GetOrmDefault().Delete(&model.SysConfig{}, ids).Error
 	return err
 }
 
-// 根据条件分页查询用户列表
-func (d ConfigService) FindPage(param *common_vo.SelectConfigPageReq) (*[]map[string]any, int, error) {
+// FindPage 根据条件分页查询用户列表
+func (svc *ConfigService) FindPage(param *common_vo.ConfigPageReq) (*[]map[string]any, int, error) {
 	db := lv_db.GetOrmDefault()
-	sqlParams, sql := d.GetSql(param)
+	sqlParams, sql := svc.GetSql(param)
 	countSql := "select count(*) from (" + sql + ") t "
 	total, err := namedsql.Count(db, countSql, sqlParams)
 	lv_err.HasErrAndPanic(err)
@@ -122,7 +123,15 @@ func (d ConfigService) FindPage(param *common_vo.SelectConfigPageReq) (*[]map[st
 	return result, int(total), err
 }
 
-func (d ConfigService) GetSql(param *common_vo.SelectConfigPageReq) (map[string]interface{}, string) {
+// 导出excel
+func (svc *ConfigService) SelectAllList(param *common_vo.ConfigPageReq) (*[]map[string]any, error) {
+	db := lv_db.GetOrmDefault()
+	sqlParams, sql := svc.GetSql(param)
+	limitSql := sql + " order by u.user_id desc "
+	result, err := namedsql.ListMapAny(db, limitSql, &sqlParams, false)
+	return result, err
+}
+func (svc *ConfigService) GetSql(param *common_vo.ConfigPageReq) (map[string]interface{}, string) {
 	sqlParams := make(map[string]interface{})
 	sql := `
            select * from sys_config u where 1=1
@@ -152,54 +161,4 @@ func (d ConfigService) GetSql(param *common_vo.SelectConfigPageReq) (map[string]
 
 	}
 	return sqlParams, sql
-}
-
-// 导出excel
-func (d ConfigService) SelectExportList(param *common_vo.SelectConfigPageReq) (*[]map[string]any, error) {
-	db := lv_db.GetOrmDefault()
-	sqlParams, sql := d.GetSql(param)
-	limitSql := sql + " order by u.user_id desc "
-	result, err := namedsql.ListMapAny(db, limitSql, &sqlParams, false)
-	return result, err
-}
-
-// 获取所有数据
-func (d *ConfigService) FindAll(param *common_vo.SelectConfigPageReq) ([]model.SysConfig, error) {
-	db := lv_db.GetOrmDefault()
-	tb := db.Table("sys_config t")
-
-	if param != nil {
-		if param.ConfigName != "" {
-			tb.Where("t.config_name like ?", "%"+param.ConfigName+"%")
-		}
-
-		if param.ConfigType != "" {
-			tb.Where("t.status = ", param.ConfigType)
-		}
-
-		if param.ConfigKey != "" {
-			tb.Where("t.config_key like ?", "%"+param.ConfigKey+"%")
-		}
-
-		if param.BeginTime != "" {
-			tb.Where("t.create_time >= ? ", param.BeginTime)
-		}
-
-		if param.EndTime != "" {
-			tb.Where("t.create_time <= ? ", param.EndTime)
-		}
-	}
-	var result []model.SysConfig
-	err := tb.Find(&result).Error
-	return result, err
-}
-
-// 导出excel
-func (svc *ConfigService) Export(param *common_vo.SelectConfigPageReq) (string, error) {
-	//head := []string{"参数主键", "参数名称", "参数键名", "参数键值", "系统内置（Y是 N否）", "状态"}
-	//col := []string{"config_id", "config_name", "config_key", "config_value", "config_type"}
-	//var d dao2.ConfigDao
-	//listMap, err := d.SelectExportList(param)
-	//lv_err.HasErrAndPanic(err)
-	return "", nil
 }

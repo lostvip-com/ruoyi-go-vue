@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/lostvip-com/lv_framework/lv_cache"
+	"github.com/lostvip-com/lv_framework/lv_db"
 	"github.com/lostvip-com/lv_framework/lv_db/lv_batis"
 	"github.com/lostvip-com/lv_framework/lv_db/lv_dao"
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
@@ -26,11 +27,11 @@ func (w DemoController) MybatisMap(c *gin.Context) {
 	}
 
 	ibatis := lv_batis.NewInstance(SQL_FILE_POST)
-	sql, err := ibatis.GetLimitSql("listSql", &req)
+	sql, countSql, err := ibatis.GetPageSql("listSql", &req)
 	lv_err.HasErrAndPanic(err)
-	listMap, err := lv_dao.ListMapByNamedSql(sql, &req, true)
+	listMap, err := lv_dao.ListMapByNamedSql(lv_db.GetOrmDefault(), sql, &req, true)
 	lv_err.HasErrAndPanic(err)
-	count, err := lv_dao.CountByNamedSql(ibatis.GetCountSql(), &req)
+	count, err := lv_dao.CountByNamedSql(lv_db.GetOrmDefault(), countSql, &req)
 	lv_err.HasErrAndPanic(err)
 	util2.SuccessPage(c, listMap, count)
 }
@@ -42,11 +43,11 @@ func (w DemoController) MybatisStruct(c *gin.Context) {
 		return
 	}
 	ibatis := lv_batis.NewInstance(SQL_FILE_POST)
-	sql, err := ibatis.GetLimitSql("listSql", &req)
+	sql, countSql, err := ibatis.GetPageSql("listSql", &req)
 	lv_err.HasErrAndPanic(err)
-	list, err := lv_dao.ListByNamedSql[model.SysPost](sql, &req)
+	list, err := lv_dao.ListByNamedSql[model.SysPost](lv_db.GetOrmDefault(), sql, &req)
 	lv_err.HasErrAndPanic(err)
-	count, err := lv_dao.CountByNamedSql(ibatis.GetCountSql(), &req)
+	count, err := lv_dao.CountByNamedSql(lv_db.GetOrmDefault(), countSql, &req)
 	lv_err.HasErrAndPanic(err)
 	util2.SuccessPage(c, list, count)
 }
@@ -60,7 +61,7 @@ func (w DemoController) MybatisStructPage(c *gin.Context) {
 		util2.ErrorResp(c).SetMsg(err.Error()).WriteJsonExit()
 		return
 	}
-	rows, total, err := lv_dao.GetPageByNamedSql[model.SysPost](SQL_FILE_POST, "listSql", &req)
+	rows, total, err := lv_dao.GetPageByNamedSql[model.SysPost](lv_db.GetOrmDefault(), SQL_FILE_POST, "listSql", &req)
 	if err != nil {
 		util2.Fail(c, err.Error())
 	}

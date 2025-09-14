@@ -4,12 +4,12 @@ import (
 	"common/util"
 	"errors"
 	"github.com/gin-gonic/gin"
+	"github.com/lostvip-com/lv_framework/lv_db"
 	"github.com/lostvip-com/lv_framework/lv_db/lv_dao"
 	"github.com/lostvip-com/lv_framework/utils/lv_err"
 	"system/dao"
 	"system/model"
 	"system/vo"
-	"time"
 )
 
 type PostService struct {
@@ -38,7 +38,7 @@ func (svc *PostService) AddSave(req *vo.AddPostReq, c *gin.Context) (int, error)
 	entity.Status = req.Status
 	entity.PostSort = req.PostSort
 	entity.Remark = req.Remark
-	entity.CreateTime = time.Now()
+	//entity.CreateTime = time.Now()
 	entity.CreateBy = ""
 	var userService UserService
 	user := userService.GetCurrUser(c)
@@ -61,7 +61,7 @@ func (svc *PostService) EditSave(req *vo.EditSysPostReq, c *gin.Context) error {
 	entity.Status = req.Status
 	entity.Remark = req.Remark
 	entity.PostSort = req.PostSort
-	entity.UpdateTime = time.Now()
+	//entity.UpdateTime = time.Now()
 	entity.UpdateBy = ""
 	var userService UserService
 	user := userService.GetCurrUser(c)
@@ -122,7 +122,7 @@ func (svc *PostService) ListAllPostsAndSelected(userId int) (*[]model.SysPost, e
 // IsPostCodeExist 检查岗位编码是否唯一
 func (svc *PostService) IsPostCodeExist(postCode string) (exist bool) {
 	//total, err := d.CountColumnDelFlag0("post_code", postCode)
-	total, err := lv_dao.CountColumnDelFlag0("sys_post", "post_code", postCode)
+	total, err := lv_dao.CountColumnDelFlag0(lv_db.GetOrmDefault(), "sys_post", "post_code", postCode)
 	lv_err.HasErrAndPanic(err)
 	if total > 0 {
 		exist = true

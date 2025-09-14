@@ -4,8 +4,6 @@ import (
 	"common/models"
 	"github.com/lostvip-com/lv_framework/lv_db"
 	"github.com/lostvip-com/lv_framework/lv_db/namedsql"
-	"github.com/lostvip-com/lv_framework/utils/lv_time"
-	"gorm.io/gorm"
 )
 
 type GenTableColumn struct {
@@ -15,8 +13,8 @@ type GenTableColumn struct {
 	ColumnComment string `gorm:"type:string;size:32;comment:列描述;" json:"columnComment"`
 	ColumnType    string `gorm:"type:string;size:32;comment:列类型;" json:"columnType"`
 	ColumnSize    int    `gorm:"type:int;comment:列类长度;" json:"columnSize"`
-	GoType        string `gorm:"type:string;size:32;comment:Go类型;为兼容若依前段json映射为javaType"   json:"javaType"`
-	GoField       string `gorm:"type:string;size:32;comment:Go字段名;为兼容若依前段json映射为GoField" json:"GoField"`
+	GoType        string `gorm:"type:string;size:32;comment:Go类型;"   json:"goType"`
+	GoField       string `gorm:"type:string;size:32;comment:Go字段名;" json:"goField"`
 	HtmlField     string `gorm:"type:string;size:32;comment:html字段名;" json:"htmlField"`
 	IsPk          string `gorm:"type:char,size:1;comment:是否主键（1是）;" json:"isPk"`
 	IsIncrement   string `gorm:"type:char;size:1;comment:是否自增（1是）;" json:"isIncrement"`
@@ -37,18 +35,18 @@ func (GenTableColumn) TableName() string {
 	return "gen_table_column"
 }
 
-// BeforeCreate 实现钩子
-func (u *GenTableColumn) BeforeCreate(db *gorm.DB) error {
-	u.CreateTime = lv_time.GetCurrentTime() // 设置创建时的更新时间
-	u.UpdateTime = u.CreateTime             // 设置创建时的更新时间
-	return nil
-}
-
-// BeforeUpdate 实现 BeforeUpdate 钩子
-func (u *GenTableColumn) BeforeUpdate(db *gorm.DB) error {
-	u.CreateTime = lv_time.GetCurrentTime() // 设置更新时的更新时间
-	return nil
-}
+//// BeforeCreate 实现钩子
+//func (u *GenTableColumn) BeforeCreate(db *gorm.DB) error {
+//	u.CreateTime = lv_time.GetCurrentTime() // 设置创建时的更新时间
+//	u.UpdateTime = u.CreateTime             // 设置创建时的更新时间
+//	return nil
+//}
+//
+//// BeforeUpdate 实现 BeforeUpdate 钩子
+//func (u *GenTableColumn) BeforeUpdate(db *gorm.DB) error {
+//	u.CreateTime = lv_time.GetCurrentTime() // 设置更新时的更新时间
+//	return nil
+//}
 
 // 增
 func (e *GenTableColumn) Save() error {

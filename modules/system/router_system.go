@@ -109,4 +109,12 @@ func init() {
 	system.DELETE("/post/:postIds", "system:post:remove", postApi.Remove)
 	system.POST("/post/export", "system:post:export", postApi.Export)
 	system.GET("/optionselect", "system:post:list", postApi.GetPostOptionSelect)
+	//国际化
+	i18nApi := api.SysI18nApi{}
+	system.GET("/i18n/:id", "system:i18n:info", i18nApi.GetI18nInfo)
+	system.GET("/i18n/listSysI18n", "system:i18n:list", i18nApi.ListSysI18n)
+	system.POST("/i18n", "system:i18n:new", i18nApi.CreateSysI18n)
+	system.PUT("/i18n", "system:i18n:edit", i18nApi.UpdateSysI18n)
+	system.DELETE("/i18n/ids", "system:i18n:del", i18nApi.DeleteSysI18n)
+	system.POST("/i18n/exportSysI18n", "i18n:i18n:export", i18nApi.ExportSysI18n)
 }

@@ -7,7 +7,7 @@ select
      t.{{$column.ColumnName}}
  {{- end }}
 
-from {{.Table_Name}} t where 1=1 and t.del_flag=0
+from {{.Table_Name}} t where 1=1
 {{range $index, $column := .Columns -}}
 {{if eq $column.IsQuery "0"}}
     {{- continue -}}

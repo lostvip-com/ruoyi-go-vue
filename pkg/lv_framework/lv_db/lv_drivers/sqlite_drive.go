@@ -2,8 +2,8 @@ package lv_drivers
 
 import (
 	"fmt"
-	"github.com/glebarez/sqlite"
 	"github.com/lostvip-com/lv_framework/lv_global"
+	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
