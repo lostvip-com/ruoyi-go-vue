@@ -15,6 +15,7 @@ import (
 	"os/signal"
 	"syscall"
 	_ "system"
+	_ "things"
 )
 
 var httpSvr *server.MyHttpServer
@@ -34,7 +35,10 @@ func main() {
 	} else {
 		gin.SetMode(gin.ReleaseMode)
 	}
+	//启动http 端口监听
 	go server.NewHttpServer().ListenAndServe()
+	//启动grpc 端口监听
+	//go rpcserver.NewRPCServer().ListenAndServe()
 	//监听信号
 	catchSignal()
 }
