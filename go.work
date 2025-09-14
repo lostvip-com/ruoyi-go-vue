@@ -1,15 +1,9 @@
 go 1.24.0
 
 use (
-    ./pkg/lv_framework
-    ./pkg/lv_grpc_driver_proto
 	./modules/common
 	./modules/system
 	./modules/demo
-	./modules/things
 	./test
 	.
 )
-
-// 方便本地库与github库的代码切换
-//replace github.com/lostvip-com/lv_framework v1.2.5 => ./pkg/lv_framework
