@@ -1,9 +1,9 @@
 module main
 
 go 1.24
-
-require github.com/lostvip-com/lv_framework v1.3.2
-
+require (
+	github.com/lostvip-com/lv_framework v1.3.3 // indirect
+)
 require (
 	github.com/axgle/mahonia v0.0.0-20180208002826-3358181d7394 // indirect
 	github.com/bytedance/sonic v1.13.3 // indirect
